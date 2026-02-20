@@ -62,15 +62,6 @@
   .screen-back span{font-family:'Saira',sans-serif;font-size:12px;color:var(--cyan);letter-spacing:3px;font-weight:700;text-transform:uppercase}
   .screen-back svg{width:16px;height:16px;fill:none;stroke:var(--cyan);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
 
-  /* Screen forward button — admin-only, top-right */
-  .screen-forward{position:absolute;top:20px;right:20px;z-index:20;cursor:pointer;display:none;align-items:center;gap:6px;padding:10px 20px;
-    border-radius:5px;transition:all .25s;
-    background:linear-gradient(180deg,rgba(0,255,136,.1),rgba(0,255,136,.05));border:1px solid rgba(0,255,136,.35);
-    box-shadow:0 0 10px rgba(0,255,136,.06)}
-  .screen-forward:hover{background:linear-gradient(180deg,rgba(0,255,136,.18),rgba(0,255,136,.1));border-color:rgba(0,255,136,.5);box-shadow:0 0 18px rgba(0,255,136,.12)}
-  .screen-forward span{font-family:'Saira',sans-serif;font-size:12px;color:var(--green);letter-spacing:3px;font-weight:700;text-transform:uppercase}
-  .screen-forward svg{width:16px;height:16px;fill:none;stroke:var(--green);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-  body.admin-mode .screen-forward{display:flex}
 
   /* ══════ LANDING PAGE ══════ */
   #landingScreen{display:flex;align-items:center;justify-content:center;
@@ -105,7 +96,10 @@
   @keyframes breatheLanding{0%,100%{text-shadow:0 0 15px rgba(0,255,136,.1),0 0 30px rgba(0,255,136,.03)}50%{text-shadow:0 0 25px rgba(0,255,136,.18),0 0 50px rgba(0,255,136,.06)}}
   .landing-subtitle{font-family:'Chakra Petch',sans-serif;font-size:12px;letter-spacing:4px;color:#8a8a8a;font-weight:600;text-transform:uppercase;text-align:center;animation:fadeUp .8s ease .3s both;margin-bottom:40px}
 
-  .landing-actions{display:flex;flex-direction:column;gap:18px;width:100%;animation:fadeUp .8s ease .45s both}
+  .landing-actions{display:flex;flex-direction:column;gap:14px;width:100%;align-items:center;animation:fadeUp .8s ease .45s both}
+  .landing-register-link{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#888;cursor:pointer;transition:color .2s;padding:8px 0;letter-spacing:.5px}
+  .landing-register-link:hover{color:var(--cyan)}
+  .landing-register-link span:last-child{color:var(--cyan);text-decoration:underline;text-underline-offset:3px}
   .landing-btn{position:relative;width:100%;padding:24px 28px;border-radius:10px;cursor:pointer;transition:all .35s;overflow:hidden;display:flex;align-items:center;gap:20px;
     background:
       linear-gradient(180deg,rgba(22,26,36,.95) 0%,rgba(14,17,24,.98) 100%);
@@ -382,6 +376,8 @@
   .timer-label{font-family:'Saira',sans-serif;font-size:9px;color:#888;letter-spacing:3px;font-weight:600;text-transform:uppercase;margin-top:3px}
   .console-team{font-family:'Saira',sans-serif;font-size:11px;color:#888;letter-spacing:2px;font-weight:600;cursor:pointer;transition:color .2s;position:relative}
   .console-team:hover{color:#b0e8cc}
+  body.admin-mode .console-team{cursor:default;color:#b0a880}
+  body.admin-mode .console-team:hover{color:#b0a880}
 
   /* Team splash card — glass panel */
   .team-card{position:absolute;top:100%;right:0;margin-top:10px;width:280px;border-radius:6px;padding:0;z-index:100;opacity:0;pointer-events:none;transform:translateY(-6px);transition:all .25s ease;
@@ -687,10 +683,20 @@
   .admin-err{font-family:'Chakra Petch',sans-serif;font-size:10px;color:var(--red);margin-bottom:10px;min-height:14px;font-weight:500}
 
   /* Admin bar — REMOVED, replaced by dropdown menu */
+  /* Admin panel tab bar — navigation between admin panels */
+  .admin-tabs{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:760;display:none;gap:2px;padding:6px 8px;border-radius:0 0 8px 8px;
+    background:linear-gradient(180deg,#1a1d28,#111318);border:1px solid rgba(255,170,51,.12);border-top:none;
+    box-shadow:0 4px 20px rgba(0,0,0,.6)}
+  .admin-tabs.visible{display:flex}
+  .admin-tab{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#888;cursor:pointer;padding:6px 14px;border-radius:3px;transition:all .15s;white-space:nowrap;border:1px solid transparent}
+  .admin-tab:hover{color:#ccc;background:rgba(255,255,255,.04)}
+  .admin-tab.active{color:var(--amber);background:rgba(255,170,51,.08);border-color:rgba(255,170,51,.15)}
 
   /* Admin Profile Panel */
   #adminPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #adminPanel.active{opacity:1;pointer-events:all}
+  #teamMonitorPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #teamMonitorPanel.active{opacity:1;pointer-events:all}
   .ap-container{width:560px;max-height:85vh;overflow-y:auto;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
     border:1px solid rgba(255,255,255,.05);box-shadow:0 25px 80px rgba(0,0,0,.7)}
@@ -1090,8 +1096,6 @@
     /* Back/Forward nav buttons — tighter to edges */
     .screen-back{top:12px;left:12px;padding:8px 14px}
     .screen-back span{font-size:10px;letter-spacing:2px}
-    .screen-forward{top:12px;right:12px;padding:8px 14px}
-    .screen-forward span{font-size:10px;letter-spacing:2px}
 
     /* Login */
     .login-container{gap:14px}
@@ -1310,19 +1314,15 @@
     <div class="landing-title" id="landingTitleEl">Code Breakers</div>
     <div class="landing-subtitle" id="landingSubEl">Team Challenge Experience</div>
     <div class="landing-actions">
-      <div class="landing-btn register-entry" onclick="goToRegistration()">
-        <div class="landing-btn-icon register">👥</div>
-        <div class="landing-btn-text">
-          <span class="landing-btn-title" id="landingNewBtnTitle">New Team</span>
-          <span class="landing-btn-desc" id="landingNewBtnDesc">Register your team and receive your unique access code to begin the mission.</span>
-        </div>
-      </div>
       <div class="landing-btn vault-entry" onclick="goToLogin()">
         <div class="landing-btn-icon vault">🔑</div>
         <div class="landing-btn-text">
-          <span class="landing-btn-title" id="landingVaultTitle">Enter Mission</span>
-          <span class="landing-btn-desc" id="landingVaultDesc">Already registered? Enter your Team ID to proceed.</span>
+          <span class="landing-btn-title" id="landingVaultTitle">Login</span>
+          <span class="landing-btn-desc" id="landingVaultDesc">Enter your Team ID to access the console.</span>
         </div>
+      </div>
+      <div class="landing-register-link" onclick="goToRegistration()">
+        <span id="landingNewBtnTitle">New team?</span> <span id="landingNewBtnDesc">Register here</span>
       </div>
     </div>
   </div>
@@ -1383,7 +1383,6 @@
 <!-- LOGIN -->
 <div class="screen" id="loginScreen">
   <div class="screen-back" onclick="showScreen('landingScreen')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span>Back</span></div>
-  <div class="screen-forward" onclick="goToConsole()"><span>Console</span><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
   <div class="login-container">
     <div style="display:flex;align-items:center;justify-content:center"><div class="login-title" id="loginTitle">Operation Dead Drop</div><button class="admin-edit-inline" onclick="event.stopPropagation();editOperationName()">✎</button></div>
     <div class="login-subtitle">Enter Your Credentials</div>
@@ -1398,7 +1397,7 @@
         <input type="password" id="loginPw" placeholder="Enter password">
       </div>
       <div class="login-err" id="loginErr"></div>
-      <button class="login-submit" id="loginSubmitBtn" onclick="submitLogin()">◈ Enter Mission ◈</button>
+      <button class="login-submit" id="loginSubmitBtn" onclick="submitLogin()">ENTER</button>
       <div class="login-status">
         <div class="v-dot" id="loginDot"></div>
         <span class="v-lbl" id="loginLbl">AWAITING INPUT</span>
@@ -1412,6 +1411,15 @@
 <!-- ADMIN BAR (fixed, body-level) -->
 <!-- CONSOLE -->
 <div class="screen" id="consoleScreen">
+
+<!-- ADMIN TAB BAR -->
+<div class="admin-tabs" id="adminTabs">
+  <div class="admin-tab" data-panel="adminPanel" onclick="switchAdminTab('adminPanel')">⚙ Settings</div>
+  <div class="admin-tab" data-panel="broadcastPanel" onclick="switchAdminTab('broadcastPanel')">📢 Broadcast</div>
+  <div class="admin-tab" data-panel="leaderboardModule" onclick="switchAdminTab('leaderboardModule')">🏆 Leaderboard</div>
+  <div class="admin-tab" data-panel="keysCodesPanel" onclick="switchAdminTab('keysCodesPanel')">🔐 Keys</div>
+  <div class="admin-tab" data-panel="teamMonitorPanel" onclick="switchAdminTab('teamMonitorPanel')">📡 Monitor</div>
+</div>
 
 <!-- ADMIN PROFILE PANEL -->
 <div id="adminPanel">
@@ -1466,7 +1474,15 @@
     </div>
     <div class="ap-section"><h4>🏠 Landing Page</h4>
       <p>Customize the landing page banner and text.</p>
-      <div class="ap-field" style="margin-bottom:10px"><label>Banner Image URL (leave blank for default icon)</label><input id="apBannerUrl" placeholder="https://..." onchange="updateLandingBanner()"></div>
+      <div class="ap-field" style="margin-bottom:10px"><label>Banner Image</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="apBannerUrl" placeholder="Paste image URL or upload below" onchange="updateLandingBanner()" style="flex:1">
+          <label style="cursor:pointer;font-size:9px;color:var(--cyan);letter-spacing:1px;padding:8px 12px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.05);white-space:nowrap;font-family:'IBM Plex Mono',monospace">
+            📁 Upload
+            <input type="file" accept="image/*" onchange="handleAdminBannerUpload(this)" style="display:none">
+          </label>
+        </div>
+      </div>
       <div class="edit-field-row" style="gap:12px;margin-bottom:12px">
         <div class="ap-field"><label>Title</label><input id="apLandingTitle" value="Code Breakers" onchange="updateLandingTitle()"></div>
         <div class="ap-field"><label>Subtitle</label><input id="apLandingSubtitle" value="Team Challenge Experience" onchange="updateLandingSubtitle()"></div>
@@ -1489,18 +1505,21 @@
         <span id="apRegStatus" style="font-family:IBM Plex Mono,monospace;font-size:8px;color:var(--green);letter-spacing:1px">● OPEN</span>
       </div>
     </div>
-    <div class="ap-section"><h4>📡 Team Monitor</h4>
+  </div>
+</div>
+
+<!-- TEAM MONITOR PANEL -->
+<div id="teamMonitorPanel">
+  <div class="ap-container" style="width:640px">
+    <div class="ap-header"><h3>📡 Team Monitor</h3><button class="mv-close" onclick="closeTeamMonitor()">✕ CLOSE</button></div>
+    <div class="ap-section">
       <p>Real-time view of all registered teams and their activity status. Teams inactive for 5+ minutes are flagged.</p>
       <div style="display:flex;gap:8px;margin-bottom:12px">
         <div class="ap-status-pill active"><span class="ap-status-dot on"></span> Active: <strong id="apActiveCount">0</strong></div>
         <div class="ap-status-pill inactive"><span class="ap-status-dot off"></span> Inactive: <strong id="apInactiveCount">0</strong></div>
         <div class="ap-status-pill total">Total: <strong id="apTotalCount">0</strong></div>
       </div>
-      <div class="ap-team-list" id="apTeamMonitor" style="max-height:220px"></div>
-    </div>
-    <div class="ap-section"><h4>🏆 Leaderboard Preview</h4>
-      <p>Top 5 standings — <span style="color:var(--cyan);cursor:pointer;text-decoration:underline" onclick="closeAdminPanel();openLeaderboard()">open full leaderboard</span> for complete view with team drill-down.</p>
-      <div id="apLeaderboard"></div>
+      <div class="ap-team-list" id="apTeamMonitor" style="max-height:60vh"></div>
     </div>
   </div>
 </div>
@@ -1873,6 +1892,8 @@ function proceedToLogin(){
 let teamCardOpen=false,elapsedSec=0,elapsedInterval=null;
 function toggleTeamCard(e){
   e.stopPropagation();
+  // Don't show team card for admin — just a label
+  if(isAdmin)return;
   teamCardOpen=!teamCardOpen;
   document.getElementById('teamCard').classList.toggle('open',teamCardOpen);
   if(teamCardOpen)updateTeamCardStats();
@@ -2050,7 +2071,7 @@ rg();let resizeTimer;addEventListener('resize',()=>{clearTimeout(resizeTimer);re
 for(let i=0;i<5;i++){const p=document.createElement('div');p.className='dust';p.style.left=Math.random()*100+'vw';p.style.animationDuration=(12+Math.random()*16)+'s';p.style.animationDelay=(Math.random()*12)+'s';const s=1+Math.random()*1.5;p.style.width=s+'px';p.style.height=s+'px';document.body.appendChild(p)}
 
 // ══════ LOGIN SCREEN ══════
-let masterAccessKey='';let manualVaultKeys=[];
+let manualVaultKeys=[];
 let currentVaultTeam=null;
 
 function submitLogin(){
@@ -2067,7 +2088,7 @@ function submitLogin(){
     if(pwField.style.display==='none'){
       pwField.style.display='block';
       document.getElementById('loginPw').focus();
-      document.getElementById('loginSubmitBtn').textContent='◈ Authenticate ◈';
+      document.getElementById('loginSubmitBtn').textContent='AUTHENTICATE';
       err.textContent='';
       return;
     }
@@ -2091,21 +2112,20 @@ function submitLogin(){
 
   // Reset password field if visible
   pwField.style.display='none';
-  document.getElementById('loginSubmitBtn').textContent='◈ Enter Mission ◈';
+  document.getElementById('loginSubmitBtn').textContent='ENTER';
 
   // Check against registered teams
   const team=registeredTeams.find(t=>t.id===idVal);
-  const isMasterKey=masterAccessKey&&idVal===masterAccessKey.toUpperCase();
   const manualMatch=manualVaultKeys.find(k=>k.key.toUpperCase()===idVal);
 
-  if(team||isMasterKey||manualMatch){
+  if(team||manualMatch){
     err.textContent='';
     if(team){
       currentVaultTeam=team;
       team.lastActive=Date.now();
       updateConsoleForTeam(team);
     }else{
-      currentVaultTeam={id:idVal,name:isMasterKey?'Master Access':(manualMatch.label||'Manual Key'),type:'team',members:['Admin'],memberDetails:[]};
+      currentVaultTeam={id:idVal,name:manualMatch.label||'Manual Key',type:'team',members:['Admin'],memberDetails:[]};
       updateConsoleForTeam(currentVaultTeam);
     }
     loginSuccess();
@@ -2135,7 +2155,7 @@ document.getElementById('loginId')?.addEventListener('input',function(){
   const pwField=document.getElementById('loginPwField');
   if(!isAdminUser&&pwField.style.display!=='none'){
     pwField.style.display='none';
-    document.getElementById('loginSubmitBtn').textContent='◈ Enter Mission ◈';
+    document.getElementById('loginSubmitBtn').textContent='ENTER';
   }
 });
 
@@ -2316,8 +2336,8 @@ let vaultSubFont='';
 let gridTiles=[
   {id:'feed',icon:'📡',label:'Intelligence Feed',labelFont:'',sub:'Surveillance imagery & intercepted visuals',subFont:'',badgeId:'feedBadge',dotClass:'live',status:'LIVE'},
   {id:'media',icon:'🔊',label:'Media Lab',labelFont:'',sub:'Audio, maps, documents & video',subFont:'',badgeId:'mediaBadge',dotClass:'live',status:'LIVE'},
-  {id:'intel',icon:'🎯',label:'Intel Submissions',labelFont:'',sub:'Submit decoded intelligence',subFont:'',badgeId:'intelBadge',dotClass:'pending',status:'AWAITING INPUT'},
-  {id:'vault',icon:'🔐',label:'The Vault',labelFont:'',sub:'Enter solved codes to unlock items',subFont:'',badgeId:'vaultBadge',dotClass:'pending',status:'LOCKED'}
+  {id:'vault',icon:'🔐',label:'The Vault',labelFont:'',sub:'Enter solved codes to unlock items',subFont:'',badgeId:'vaultBadge',dotClass:'pending',status:'LOCKED'},
+  {id:'intel',icon:'🎯',label:'Intel Submissions',labelFont:'',sub:'Submit decoded intelligence',subFont:'',badgeId:'intelBadge',dotClass:'pending',status:'AWAITING INPUT'}
 ];
 let intelFields=[
   {label:'Seller Codename',emoji:'🕵️',type:'text',font:'',answer:{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}},
@@ -3076,7 +3096,7 @@ function goToLogin(){
   document.getElementById('loginPw').value='';
   document.getElementById('loginPwField').style.display='none';
   document.getElementById('loginErr').textContent='';
-  document.getElementById('loginSubmitBtn').textContent='◈ Enter Mission ◈';
+  document.getElementById('loginSubmitBtn').textContent='ENTER';
   document.getElementById('loginDot').classList.remove('ok');
   document.getElementById('loginLbl').classList.remove('ok');
   document.getElementById('loginLbl').textContent='AWAITING INPUT';
@@ -3104,23 +3124,19 @@ function updateLandingForMode(){
   const newBtn=document.getElementById('landingNewBtnTitle');
   const newDesc=document.getElementById('landingNewBtnDesc');
   const vaultDesc=document.getElementById('landingVaultDesc');
-  const regIcon=document.querySelector('.landing-btn-icon.register');
   if(!newBtn)return;
   if(mode==='team'){
-    newBtn.textContent='New Team';
-    newDesc.textContent='Register your team and receive your unique access code to begin the mission.';
-    vaultDesc.textContent='Already registered? Enter your Team ID to proceed.';
-    if(regIcon)regIcon.textContent='👥';
+    newBtn.textContent='New team?';
+    newDesc.textContent='Register here';
+    if(vaultDesc)vaultDesc.textContent='Enter your Team ID to access the console.';
   }else if(mode==='individual'){
-    newBtn.textContent='Register';
-    newDesc.textContent='Register and receive your unique access code to begin the mission.';
-    vaultDesc.textContent='Already registered? Enter your Participant ID to proceed.';
-    if(regIcon)regIcon.textContent='👤';
+    newBtn.textContent='New here?';
+    newDesc.textContent='Register now';
+    if(vaultDesc)vaultDesc.textContent='Enter your Participant ID to access the console.';
   }else{
-    newBtn.textContent='New Registration';
-    newDesc.textContent='Register as a team or individual and receive your unique access code to begin the mission.';
-    vaultDesc.textContent='Already registered? Enter your Team or Participant ID to proceed.';
-    if(regIcon)regIcon.textContent='👥';
+    newBtn.textContent='New here?';
+    newDesc.textContent='Register your team or yourself';
+    if(vaultDesc)vaultDesc.textContent='Enter your Team or Participant ID to access the console.';
   }
 }
 function updateLandingBanner(){
@@ -3146,6 +3162,9 @@ function handleBannerUpload(input){
   };
   reader.readAsDataURL(input.files[0]);
 }
+function handleAdminBannerUpload(input){
+  handleBannerUpload(input);
+}
 function updateLandingTitle(){
   regSettings.landingTitle=document.getElementById('apLandingTitle')?.value||'Code Breakers';
   document.getElementById('landingTitleEl').textContent=regSettings.landingTitle;
@@ -3164,11 +3183,11 @@ function onLeaderboardStyleChange(){
 }
 
 // ── Admin Panel ──
+const adminPanelIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel'];
 function closeAllAdminPanels(){
-  ['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel'].forEach(id=>{
+  adminPanelIds.forEach(id=>{
     const el=document.getElementById(id);
-    el.classList.remove('active');
-    el.style.cssText='';
+    if(el){el.classList.remove('active');el.style.cssText=''}
   });
   // Also instant-close content panels
   const ov=document.getElementById('panelOverlay');
@@ -3178,17 +3197,32 @@ function closeAllAdminPanels(){
   if(teamMonitorInterval){clearInterval(teamMonitorInterval);teamMonitorInterval=null}
   if(bcMediaRecorder&&bcMediaRecorder.state==='recording')bcMediaRecorder.stop();
   lbExpandedTeam=null;
+  hideAdminTabs();
 }
-function _instantShow(el){
-  el.style.cssText='opacity:1;pointer-events:all;transition:none';
-  el.classList.add('active');
+function showAdminTabs(activeId){
+  const tabs=document.getElementById('adminTabs');
+  tabs.classList.add('visible');
+  tabs.querySelectorAll('.admin-tab').forEach(t=>{
+    t.classList.toggle('active',t.dataset.panel===activeId);
+  });
 }
-function openAdminPanel(){
-  closeAllAdminPanels();
-  _instantShow(document.getElementById('adminPanel'));
-  renderAdminList();renderTeamList();renderTeamMonitor();renderLeaderboard();
-  startTeamMonitor();
-  // Sync registration settings to UI
+function hideAdminTabs(){document.getElementById('adminTabs').classList.remove('visible')}
+function switchAdminTab(panelId){
+  // Close current, open new — without closing tab bar
+  adminPanelIds.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.classList.remove('active');el.style.cssText=''}
+  });
+  if(teamMonitorInterval){clearInterval(teamMonitorInterval);teamMonitorInterval=null}
+  _instantShow(document.getElementById(panelId));
+  showAdminTabs(panelId);
+  // Trigger panel-specific init
+  if(panelId==='adminPanel'){renderAdminList();renderTeamList();syncAdminPanelSettings()}
+  if(panelId==='leaderboardModule'){renderFullLeaderboard()}
+  if(panelId==='teamMonitorPanel'){renderTeamMonitor();startTeamMonitor()}
+  if(panelId==='keysCodesPanel'){renderKeysPanel()}
+}
+function syncAdminPanelSettings(){
   const minEl=document.getElementById('apMinSize');
   const maxEl=document.getElementById('apMaxSize');
   const maxTEl=document.getElementById('apMaxTeams');
@@ -3201,13 +3235,33 @@ function openAdminPanel(){
   const regO=document.getElementById('apRegOpen');if(regO)regO.checked=regSettings.registrationOpen;
   const status=document.getElementById('apRegStatus');
   if(status){status.textContent=regSettings.registrationOpen?'● OPEN':'● CLOSED';status.style.color=regSettings.registrationOpen?'var(--green)':'var(--red)'}
-  // Sync timer display
   const apTimer=document.getElementById('apTimerDisplay');
   if(apTimer)apTimer.textContent=document.getElementById('cTimer').textContent;
 }
+function _instantShow(el){
+  el.style.cssText='opacity:1;pointer-events:all;transition:none';
+  el.classList.add('active');
+}
+function openAdminPanel(){
+  closeAllAdminPanels();
+  _instantShow(document.getElementById('adminPanel'));
+  showAdminTabs('adminPanel');
+  renderAdminList();renderTeamList();
+  syncAdminPanelSettings();
+}
 function closeAdminPanel(){
   const el=document.getElementById('adminPanel');
-  el.style.cssText='';el.classList.remove('active');
+  el.style.cssText='';el.classList.remove('active');hideAdminTabs();
+}
+function openTeamMonitor(){
+  closeAllAdminPanels();
+  _instantShow(document.getElementById('teamMonitorPanel'));
+  showAdminTabs('teamMonitorPanel');
+  renderTeamMonitor();startTeamMonitor();
+}
+function closeTeamMonitor(){
+  const el=document.getElementById('teamMonitorPanel');
+  el.style.cssText='';el.classList.remove('active');hideAdminTabs();
   if(teamMonitorInterval){clearInterval(teamMonitorInterval);teamMonitorInterval=null}
 }
 
@@ -3358,10 +3412,9 @@ function simulateActivity(){
 function startTeamMonitor(){
   if(teamMonitorInterval)clearInterval(teamMonitorInterval);
   teamMonitorInterval=setInterval(()=>{
-    if(document.getElementById('adminPanel').classList.contains('active')){
+    if(document.getElementById('teamMonitorPanel').classList.contains('active')){
       simulateActivity();
       renderTeamMonitor();
-      renderLeaderboard();
     }
     if(document.getElementById('leaderboardModule').classList.contains('active')){
       simulateActivity();
@@ -3377,13 +3430,13 @@ let lbExpandedTeam=null;
 function openLeaderboard(){
   closeAllAdminPanels();
   _instantShow(document.getElementById('leaderboardModule'));
+  showAdminTabs('leaderboardModule');
   renderFullLeaderboard();
-  startTeamMonitor();
 }
 function closeLeaderboard(){
   const el=document.getElementById('leaderboardModule');
   el.style.cssText='';el.classList.remove('active');
-  lbExpandedTeam=null;
+  lbExpandedTeam=null;hideAdminTabs();
 }
 function setLbFilter(btn,f){
   document.querySelectorAll('.lb-filter').forEach(b=>b.classList.remove('active'));
@@ -3512,25 +3565,14 @@ function toggleLbTeam(id){
 function openKeysCodes(){
   closeAllAdminPanels();
   _instantShow(document.getElementById('keysCodesPanel'));
+  showAdminTabs('keysCodesPanel');
   renderKeysCodes();
 }
-function closeKeysCodes(){const el=document.getElementById('keysCodesPanel');el.style.cssText='';el.classList.remove('active')}
+function closeKeysCodes(){const el=document.getElementById('keysCodesPanel');el.style.cssText='';el.classList.remove('active');hideAdminTabs()}
 
 function renderKeysCodes(){
   const body=document.getElementById('kcBody');
   let html='';
-
-  // Master Access Key
-  html+=`<div class="kc-section">
-    <div class="kc-section-title">🔑 Master Access Key</div>
-    <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#666;margin-bottom:8px">A universal override code that grants vault access without a Team ID. Useful for testing, late arrivals, or emergency entry.</div>
-    <div class="kc-row">
-      <span class="kc-icon">🔑</span>
-      <span class="kc-label">Master key</span>
-      <span class="kc-value" id="kcMasterKey">${masterAccessKey||'<span class="kc-empty">not set</span>'}</span>
-      <span class="kc-edit" onclick="editMasterKey()">✎</span>
-    </div>
-  </div>`;
 
   // Manual Vault Keys
   html+=`<div class="kc-section">
@@ -3590,17 +3632,6 @@ function renderKeysCodes(){
   body.innerHTML=html;
 }
 
-function editMasterKey(){
-  showEditModal(`<h3>Edit Master Access Key</h3>
-    <div style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#888;margin-bottom:16px;line-height:1.6">This key grants vault access without a Team ID. Leave blank to disable.</div>
-    <div class="edit-field"><label>Master Key</label><input id="ek_master" value="${masterAccessKey}" placeholder="e.g. ADMIN2026" style="font-size:14px;letter-spacing:3px;text-transform:uppercase"></div>
-    <div style="display:flex;gap:10px;margin-top:12px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveMasterKey()">Save</button></div>`);
-}
-function saveMasterKey(){
-  masterAccessKey=document.getElementById('ek_master').value.trim().toUpperCase();
-  hideEditModal();
-  renderKeysCodes();
-}
 function addManualKey(){
   showEditModal(`<h3>Add Manual Vault Key</h3>
     <div class="edit-field"><label>Label</label><input id="ek_mk_label" placeholder="e.g. VIP Access, Late Entry, Test Key"></div>
@@ -3646,7 +3677,7 @@ let bcBannerAudio=null;
 function openBroadcast(){
   closeAllAdminPanels();
   _instantShow(document.getElementById('broadcastPanel'));
-  // Request mic permission after panel is visible
+  showAdminTabs('broadcastPanel');
   setTimeout(()=>{
     if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
       navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{s.getTracks().forEach(t=>t.stop())}).catch(e=>{
@@ -3657,7 +3688,7 @@ function openBroadcast(){
 }
 function closeBroadcast(){
   const el=document.getElementById('broadcastPanel');
-  el.style.cssText='';el.classList.remove('active');
+  el.style.cssText='';el.classList.remove('active');hideAdminTabs();
   if(bcMediaRecorder&&bcMediaRecorder.state==='recording')bcMediaRecorder.stop();
 }
 function switchBcTab(btn,tab){
