@@ -151,14 +151,8 @@
   .admin-choice-box p{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#888;margin-bottom:24px;font-weight:500}
   .admin-choice-btns{display:flex;gap:12px;justify-content:center}
 
-  /* Admin View-as-Team toggle */
-  .admin-bar-viewteam{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;padding:6px 14px;border-radius:3px;transition:all .2s;
-    background:linear-gradient(180deg,rgba(0,255,136,.08),rgba(0,255,136,.03));border:1px solid rgba(0,255,136,.15);color:var(--green);margin-left:6px}
-  .admin-bar-viewteam:hover{background:rgba(0,255,136,.12);border-color:rgba(0,255,136,.25)}
-  #teamViewReturn{position:fixed;bottom:10px;right:46px;padding:8px 16px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.3);border-radius:4px;color:var(--cyan);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;z-index:850;text-transform:uppercase;display:none;box-shadow:0 2px 10px rgba(0,212,255,.08);transition:all .2s}
-  #teamViewReturn:hover{background:rgba(0,212,255,.18);border-color:rgba(0,212,255,.45)}
-
-  /* Registration type choice (hybrid mode) */
+  /* Admin View-as-Team toggle — now in dropdown */
+  /* Team View mode — hides all admin edit affordances */
   .reg-type-choice{display:flex;gap:12px;width:100%;margin-bottom:16px}
   .reg-type-btn{flex:1;padding:16px;background:rgba(255,255,255,.01);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .2s;text-align:center}
   .reg-type-btn:hover{border-color:rgba(0,255,136,.15)}
@@ -595,6 +589,41 @@
   .admin-trigger:hover{opacity:1;border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.06)}
   .admin-trigger svg{width:14px;height:14px;fill:none;stroke:#999;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
   .admin-trigger:hover svg{stroke:var(--cyan)}
+  /* Admin mode: gear becomes amber avatar */
+  body.admin-mode .admin-trigger{opacity:1;width:32px;height:32px;border-radius:50%;background:linear-gradient(180deg,rgba(255,170,51,.15),rgba(255,140,20,.08));border-color:rgba(255,170,51,.4);box-shadow:0 0 10px rgba(255,170,51,.12),0 0 20px rgba(255,170,51,.04)}
+  body.admin-mode .admin-trigger svg{stroke:var(--amber);width:15px;height:15px}
+  body.admin-mode .admin-trigger:hover{border-color:rgba(255,170,51,.6);box-shadow:0 0 14px rgba(255,170,51,.2)}
+  body.admin-mode .admin-trigger::after{content:'';position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px rgba(255,170,51,.6);animation:ledPulse 2s ease-in-out infinite}
+  body.team-view-mode .admin-trigger{opacity:.3}
+  body.team-view-mode .admin-trigger::after{display:none}
+
+  /* Admin dropdown menu */
+  .admin-dropdown{position:fixed;bottom:52px;right:10px;z-index:810;width:220px;border-radius:6px;
+    background:linear-gradient(180deg,#1e2028,#14161c 40%,#10121a);
+    border:1px solid rgba(255,170,51,.15);
+    box-shadow:0 8px 40px rgba(0,0,0,.7),0 0 1px rgba(255,170,51,.2),inset 0 1px 0 rgba(255,255,255,.03);
+    opacity:0;pointer-events:none;transform:translateY(8px) scale(.96);transition:all .2s cubic-bezier(.25,.46,.45,.94);overflow:hidden}
+  .admin-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}
+  .admin-dropdown-header{padding:12px 16px;border-bottom:1px solid rgba(255,170,51,.1);display:flex;align-items:center;gap:8px}
+  .admin-dropdown-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);box-shadow:0 0 4px rgba(255,170,51,.5);animation:ledPulse 2s ease-in-out infinite;flex-shrink:0}
+  .admin-dropdown-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--amber);font-weight:600;text-transform:uppercase}
+  .admin-dropdown-body{padding:6px 0}
+  .admin-dropdown-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left}
+  .admin-dropdown-item:hover{background:rgba(255,255,255,.04)}
+  .admin-dropdown-item .adm-icon{font-size:13px;width:20px;text-align:center;flex-shrink:0}
+  .admin-dropdown-item .adm-label{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#ccc;letter-spacing:.5px;font-weight:500}
+  .admin-dropdown-item:hover .adm-label{color:#fff}
+  .admin-dropdown-item.adm-danger .adm-label{color:#ff6655}
+  .admin-dropdown-item.adm-danger:hover{background:rgba(255,50,50,.06)}
+  .admin-dropdown-item.adm-danger:hover .adm-label{color:#ff4433}
+  .admin-dropdown-sep{height:1px;background:rgba(255,255,255,.04);margin:4px 12px}
+  .admin-dropdown-toggle{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left}
+  .admin-dropdown-toggle:hover{background:rgba(255,255,255,.04)}
+  .admin-dropdown-toggle .adm-icon{font-size:13px;width:20px;text-align:center;flex-shrink:0}
+  .admin-dropdown-toggle .adm-label{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#ccc;letter-spacing:.5px;font-weight:500;flex:1}
+  .admin-dropdown-toggle .adm-toggle{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;padding:2px 8px;border-radius:2px;font-weight:600}
+  .admin-dropdown-toggle .adm-toggle.on{color:var(--green);background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15)}
+  .admin-dropdown-toggle .adm-toggle.off{color:#666;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
 
   .logout-btn{position:fixed;bottom:20px;left:20px;z-index:790;display:none;align-items:center;gap:6px;border-radius:5px;padding:10px 20px;cursor:pointer;transition:all .25s;
     background:linear-gradient(180deg,rgba(255,50,50,.1),rgba(255,50,50,.05));border:1px solid rgba(255,50,50,.35);
@@ -623,23 +652,7 @@
   .admin-field input:focus{border-color:rgba(0,212,255,.3)}
   .admin-err{font-family:'Chakra Petch',sans-serif;font-size:10px;color:var(--red);margin-bottom:10px;min-height:14px;font-weight:500}
 
-  .admin-bar{display:none;position:fixed;top:0;left:0;right:0;height:44px;z-index:800;
-    background:linear-gradient(180deg,rgba(255,170,51,.14),rgba(255,140,20,.07));
-    border-bottom:1px solid rgba(255,170,51,.3);
-    box-shadow:0 3px 16px rgba(255,140,20,.1);
-    align-items:center;justify-content:center;padding:0 24px;gap:14px}
-  .admin-bar.active{display:flex}
-  .admin-bar-label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--amber);font-weight:600;text-transform:uppercase}
-  .admin-bar-dot{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px rgba(255,170,51,.5);animation:ledPulse 2s ease-in-out infinite}
-  .admin-bar-exit{position:absolute;right:16px;font-size:10px;letter-spacing:2px;color:#ff6655;cursor:pointer;
-    background:linear-gradient(180deg,rgba(60,20,20,.5),rgba(40,12,12,.6));
-    border:1px solid rgba(255,50,50,.2);border-bottom:2px solid rgba(255,50,50,.15);
-    padding:6px 16px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-weight:600;transition:all .2s}
-  .admin-bar-exit:hover{color:#ff4433;border-color:rgba(255,50,50,.4);background:rgba(255,50,50,.1)}
-  .admin-bar-exit:active{transform:translateY(1px);border-bottom-width:1px}
-  .admin-bar-btn{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;color:#ccc;cursor:pointer;padding:6px 14px;border-radius:3px;transition:all .2s;
-    background:linear-gradient(180deg,rgba(50,52,58,.5),rgba(30,32,38,.6));border:1px solid rgba(255,255,255,.08);margin-left:6px}
-  .admin-bar-btn:hover{border-color:rgba(0,212,255,.2);color:var(--cyan)}
+  /* Admin bar — REMOVED, replaced by dropdown menu */
 
   /* Admin Profile Panel */
   #adminPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
@@ -805,9 +818,8 @@
   .bc-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
 
   /* Player broadcast banner */
-  #playerBanner{position:fixed;top:-60px;left:0;right:0;z-index:900;transition:top .5s cubic-bezier(.25,.46,.45,.94);pointer-events:none}
-  #playerBanner.show{top:0;pointer-events:all}
-  body.admin-mode #playerBanner.show{top:44px}
+  #playerBanner{position:fixed;top:-60px;left:0;right:0;z-index:900;transition:top .5s cubic-bezier(.25,.46,.45,.94);pointer-events:none;visibility:hidden;opacity:0}
+  #playerBanner.show{top:0;pointer-events:all;visibility:visible;opacity:1}
   .pb-inner{display:flex;align-items:center;gap:12px;padding:12px 20px;
     background:linear-gradient(180deg,rgba(255,170,51,.12),rgba(255,140,20,.06));
     border-bottom:1px solid rgba(255,170,51,.2);box-shadow:0 4px 20px rgba(0,0,0,.4);backdrop-filter:blur(4px)}
@@ -820,14 +832,9 @@
   .pb-audio-label{font-family:'Chakra Petch',sans-serif;font-size:10px;color:var(--amber);letter-spacing:1px;font-weight:600}
   .pb-close{font-size:16px;cursor:pointer;color:#999;flex-shrink:0;padding:4px;transition:color .2s}
   .pb-close:hover{color:#fff}
-  /* Push content below admin bar when active */
-  body.admin-mode .screen{top:44px}
-  body.admin-mode #consoleScreen{top:44px}
-  body.admin-mode .admin-trigger{bottom:10px}
+  /* Admin mode — no content offset (dropdown-based) */
 
-  /* Admin timer controls */
-  .admin-timer-ctrl{display:none;align-items:center;gap:8px;margin-left:12px}
-  body.admin-mode .admin-timer-ctrl{display:flex}
+  /* Admin timer controls — now in admin panel */
   .admin-timer-btn{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;padding:3px 10px;cursor:pointer;border-radius:2px;transition:all .2s;background:none;border:1px solid rgba(0,212,255,.2);color:var(--cyan)}
   .admin-timer-btn:hover{background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.4)}
   .admin-timer-input{width:70px;background:#080a10;border:1px solid var(--border);border-radius:2px;padding:3px 6px;color:var(--cyan);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;outline:none;text-align:center}
@@ -850,7 +857,6 @@
   body.team-view-mode .admin-edit-inline{display:none !important}
   body.team-view-mode .admin-add-btn{display:none !important}
   body.team-view-mode .admin-row-edit{display:none !important}
-  body.team-view-mode .admin-timer-ctrl{display:none !important}
   .edit-field-row{display:flex;gap:10px}.edit-field-row .edit-field{flex:1}
   .edit-box .edit-field input[type="file"]{padding:8px}
   .edit-font-row{display:flex;gap:10px;align-items:flex-end}
@@ -1034,17 +1040,6 @@
 
   /* Half-screen desktop / narrow window */
   @media(max-width:1100px){
-    /* Admin bar — single row, compact */
-    .admin-bar{height:38px;padding:0 12px;gap:6px}
-    .admin-bar-label{font-size:7px;letter-spacing:1px}
-    .admin-bar-dot{width:5px;height:5px}
-    .admin-bar-exit{font-size:8px;padding:4px 10px;right:8px}
-    .admin-bar label span{font-size:0 !important}
-    .admin-bar label{margin-left:4px !important}
-    .admin-bar-btn{font-size:10px;padding:4px 8px;margin-left:2px;overflow:hidden;max-width:30px;white-space:nowrap;text-overflow:clip}
-    .admin-bar-viewteam{font-size:10px;padding:4px 8px;overflow:hidden;max-width:30px;white-space:nowrap;text-overflow:clip}
-    body.admin-mode .screen{top:38px}
-    body.admin-mode #consoleScreen{top:38px}
 
     /* Topbar — keep horizontal, just tighter */
     .console-topbar{height:auto;min-height:48px;padding:8px 14px}
@@ -1053,9 +1048,6 @@
     .timer-digits{font-size:18px;letter-spacing:3px}
     .timer-label{font-size:7px;letter-spacing:2px}
     .console-team{font-size:9px;letter-spacing:2px}
-    .admin-timer-ctrl{margin-left:4px;gap:4px}
-    .admin-timer-btn{font-size:7px;padding:2px 6px}
-    .admin-timer-input{width:55px;font-size:8px;padding:2px 4px}
 
     /* Grid — 2 columns, centered */
     .console-grid{grid-template-columns:1fr 1fr;gap:16px;padding:16px;align-content:start;padding-top:20px}
@@ -1201,14 +1193,13 @@
     /* Admin */
     .admin-login-box{width:90vw;max-width:340px;padding:22px 18px}
     .edit-box{width:94vw;max-width:500px;padding:18px}
-    .admin-timer-ctrl{display:none !important}
-    .admin-bar-btn{display:none}
     .ap-container{width:96vw;max-height:90vh}
     .ap-section{padding:14px 16px}
     .ap-row{flex-direction:column}
     .bc-container{width:96vw}
     .pb-inner{padding:10px 14px}
     .pb-text{font-size:11px}
+    .admin-dropdown{width:200px;bottom:48px;right:8px}
     .lb-container{width:100vw;height:100vh;border-radius:0}
     .lb-toolbar{flex-direction:column;align-items:stretch}
     .lb-search{width:100%}
@@ -1245,7 +1236,26 @@
 <div class="flash-green" id="flashG"></div>
 <div class="flash-red" id="flashR"></div>
 
-<div class="admin-trigger" onclick="showAdminLogin()" title="System"><svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53a7.76 7.76 0 0 0 0-1.94l2.11-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5 0 0 0-.61-.22l-2.49 1a7.2 7.2 0 0 0-1.69-.98l-.38-2.65A.49.49 0 0 0 14 2h-4a.49.49 0 0 0-.49.42l-.38 2.65a7.2 7.2 0 0 0-1.69.98l-2.49-1a.5.5 0 0 0-.61.22l-2 3.46a.49.49 0 0 0 .12.64l2.11 1.65a7.9 7.9 0 0 0 0 1.94l-2.11 1.65a.5.5 0 0 0-.12.64l2 3.46a.5.5 0 0 0 .61.22l2.49-1c.52.4 1.08.72 1.69.98l.38 2.65c.05.24.26.42.49.42h4c.24 0 .44-.18.49-.42l.38-2.65a7.2 7.2 0 0 0 1.69-.98l2.49 1a.5.5 0 0 0 .61-.22l2-3.46a.49.49 0 0 0-.12-.64z"/></svg></div>
+<div class="admin-trigger" id="adminTrigger" onclick="handleAdminTrigger()" title="System"><svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53a7.76 7.76 0 0 0 0-1.94l2.11-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5 0 0 0-.61-.22l-2.49 1a7.2 7.2 0 0 0-1.69-.98l-.38-2.65A.49.49 0 0 0 14 2h-4a.49.49 0 0 0-.49.42l-.38 2.65a7.2 7.2 0 0 0-1.69.98l-2.49-1a.5.5 0 0 0-.61.22l-2 3.46a.49.49 0 0 0 .12.64l2.11 1.65a7.9 7.9 0 0 0 0 1.94l-2.11 1.65a.5.5 0 0 0-.12.64l2 3.46a.5.5 0 0 0 .61.22l2.49-1c.52.4 1.08.72 1.69.98l.38 2.65c.05.24.26.42.49.42h4c.24 0 .44-.18.49-.42l.38-2.65a7.2 7.2 0 0 0 1.69-.98l2.49 1a.5.5 0 0 0 .61-.22l2-3.46a.49.49 0 0 0-.12-.64z"/></svg></div>
+
+<!-- Admin Dropdown Menu -->
+<div class="admin-dropdown" id="adminDropdown">
+  <div class="admin-dropdown-header">
+    <div class="admin-dropdown-dot"></div>
+    <span class="admin-dropdown-label">Admin</span>
+  </div>
+  <div class="admin-dropdown-body">
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openAdminPanel()"><span class="adm-icon">⚙</span><span class="adm-label">Admin Panel</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openBroadcast()"><span class="adm-icon">📢</span><span class="adm-label">Broadcast</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openLeaderboard()"><span class="adm-icon">🏆</span><span class="adm-label">Leaderboard</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openKeysCodes()"><span class="adm-icon">🔐</span><span class="adm-label">Keys & Codes</span></div>
+    <div class="admin-dropdown-sep"></div>
+    <div class="admin-dropdown-toggle" onclick="toggleAllowDownloads()"><span class="adm-icon">⬇</span><span class="adm-label">Allow Downloads</span><span class="adm-toggle off" id="admDlToggle">OFF</span></div>
+    <div class="admin-dropdown-toggle" onclick="toggleViewAsTeam()"><span class="adm-icon">👁</span><span class="adm-label">View as Player</span><span class="adm-toggle off" id="admViewToggle">OFF</span></div>
+    <div class="admin-dropdown-sep"></div>
+    <div class="admin-dropdown-item adm-danger" onclick="closeAdminDropdown();exitAdmin()"><span class="adm-icon">✕</span><span class="adm-label">Exit Admin</span></div>
+  </div>
+</div>
 
 <div class="notepad-trigger" id="notepadTrigger" onclick="toggleNotepad()"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg><span>Field Notes</span><div class="notepad-dot" id="notepadDot"></div></div>
 
@@ -1367,9 +1377,6 @@
 <div id="vaultOpenOverlay"><div class="vo-text" id="voText">ACCESS GRANTED</div><div class="vo-sub" id="voSub">Initializing operations console...</div><div class="vo-bar" id="voBar"><div class="vo-fill" id="voFill"></div></div></div>
 
 <!-- ADMIN BAR (fixed, body-level) -->
-<div class="admin-bar" id="adminBar"><div class="admin-bar-dot"></div><span class="admin-bar-label">⚠ Admin Mode Active</span><label style="display:flex;align-items:center;gap:5px;cursor:pointer;margin-left:16px"><input type="checkbox" id="adminDlToggle" onchange="allowDownloads=this.checked"><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#888;letter-spacing:1px">Allow Downloads</span></label><button class="admin-bar-btn" onclick="openAdminPanel()">⚙ Panel</button><button class="admin-bar-btn" onclick="openBroadcast()">📢 Broadcast</button><button class="admin-bar-btn" onclick="openLeaderboard()">🏆 Leaderboard</button><button class="admin-bar-btn" onclick="openKeysCodes()">🔐 Keys</button><button class="admin-bar-viewteam" id="adminViewTeamBtn" onclick="toggleViewAsTeam()">👁 View as Player</button><button class="admin-bar-exit" onclick="exitAdmin()">✕ EXIT ADMIN</button></div>
-<div id="teamViewReturn" onclick="toggleViewAsTeam()">◈ Return to Admin</div>
-
 <!-- CONSOLE -->
 <div class="screen" id="consoleScreen">
 
@@ -1408,7 +1415,17 @@
       <div class="ap-team-list" id="apTeamList"></div>
     </div>
     <div class="ap-section"><h4>🎮 Event Settings</h4>
-      <p>Configure participant mode and leaderboard display for this event.</p>
+      <p>Configure participant mode, countdown timer, and leaderboard display.</p>
+      <div style="margin-bottom:16px">
+        <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">⏱ Countdown Timer</label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="admin-timer-btn" id="pauseBtn" onclick="togglePause()">⏸ PAUSE</button>
+          <input class="admin-timer-input" id="timerInput" placeholder="HH:MM:SS" maxlength="8">
+          <button class="admin-timer-btn" onclick="setNewTime()">SET</button>
+          <button class="admin-timer-btn" onclick="resetTimer()">RESET</button>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#888;letter-spacing:1px;margin-left:4px" id="apTimerDisplay">—</span>
+        </div>
+      </div>
       <div class="edit-field-row" style="gap:12px;margin-bottom:12px">
         <div class="ap-field"><label>Participant Mode</label><select id="apParticipantMode" onchange="onParticipantModeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%;outline:none"><option value="team">Team Only</option><option value="individual">Individual Only</option><option value="hybrid">Open (Hybrid)</option></select></div>
         <div class="ap-field"><label>Leaderboard Style</label><select id="apLeaderboardStyle" onchange="onLeaderboardStyleChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%;outline:none"><option value="mixed">Single Mixed</option><option value="split">Split by Type</option><option value="labeled">Single with Labels</option></select></div>
@@ -1537,12 +1554,6 @@
     <span class="console-title" id="consoleTitle">◈ Operation Dead Drop</span><button class="admin-edit-inline" onclick="event.stopPropagation();editOperationName()">✎</button>
     <div style="display:flex;align-items:center">
       <div class="timer-block"><div class="timer-digits" id="cTimer">01:28:45</div><div class="timer-label">Time Remaining</div></div>
-      <div class="admin-timer-ctrl">
-        <button class="admin-timer-btn" id="pauseBtn" onclick="togglePause()">⏸ PAUSE</button>
-        <input class="admin-timer-input" id="timerInput" placeholder="HH:MM:SS" maxlength="8">
-        <button class="admin-timer-btn" onclick="setNewTime()">SET</button>
-        <button class="admin-timer-btn" onclick="resetTimer()">RESET</button>
-      </div>
     </div>
     <span class="console-team" onclick="toggleTeamCard(event)">—
       <div class="team-card" id="teamCard">
@@ -2796,33 +2807,54 @@ function adminAuth(){
   const u=document.getElementById('adUser').value,p=document.getElementById('adPass').value;
   const match=adminUsers.find(a=>a.user===u&&a.pass===p);
   if(match){
-    isAdmin=true;document.body.classList.add('admin-mode');document.getElementById('adminBar').classList.add('active');document.getElementById('adminDlToggle').checked=allowDownloads;hideAdminLogin();dismissBanner();renderGrid();renderIntelForm();
+    isAdmin=true;document.body.classList.add('admin-mode');hideAdminLogin();dismissBanner();renderGrid();renderIntelForm();
+    syncAdminDropdownToggles();
   }
   else{document.getElementById('adErr').textContent='Authentication failed';document.getElementById('adPass').value=''}
 }
 function adminGoVault(){document.getElementById('adminChoiceModal').classList.remove('active');goToVault()}
 function adminGoConsole(){document.getElementById('adminChoiceModal').classList.remove('active');goToConsole()}
+
+// ── Admin dropdown ──
+function handleAdminTrigger(){
+  if(!isAdmin){showAdminLogin();return}
+  const dd=document.getElementById('adminDropdown');
+  if(dd.classList.contains('open')){closeAdminDropdown()}else{openAdminDropdown()}
+}
+function openAdminDropdown(){
+  syncAdminDropdownToggles();
+  document.getElementById('adminDropdown').classList.add('open');
+}
+function closeAdminDropdown(){document.getElementById('adminDropdown').classList.remove('open')}
+function syncAdminDropdownToggles(){
+  const dlEl=document.getElementById('admDlToggle');
+  if(dlEl){dlEl.textContent=allowDownloads?'ON':'OFF';dlEl.className='adm-toggle '+(allowDownloads?'on':'off')}
+  const vwEl=document.getElementById('admViewToggle');
+  const isTV=document.body.classList.contains('team-view-mode');
+  if(vwEl){vwEl.textContent=isTV?'ON':'OFF';vwEl.className='adm-toggle '+(isTV?'on':'off')}
+}
+function toggleAllowDownloads(){
+  allowDownloads=!allowDownloads;
+  syncAdminDropdownToggles();
+}
+// Close dropdown when clicking outside
+document.addEventListener('click',e=>{
+  const dd=document.getElementById('adminDropdown');
+  const trigger=document.getElementById('adminTrigger');
+  if(dd.classList.contains('open')&&!dd.contains(e.target)&&!trigger.contains(e.target)){closeAdminDropdown()}
+});
+
 function toggleViewAsTeam(){
-  const bar=document.getElementById('adminBar');
-  const ret=document.getElementById('teamViewReturn');
-  const btn=document.getElementById('adminViewTeamBtn');
   const isTeamView=document.body.classList.contains('team-view-mode');
   if(!isTeamView){
-    // Enter team view
     document.body.classList.add('team-view-mode');
-    bar.style.opacity='.12';bar.style.pointerEvents='none';
-    ret.style.display='block';
-    btn.textContent='👁 Player View Active';
-    // Re-render to strip admin edit buttons from dynamic content
     renderGrid();renderFeed();renderMedia();renderIntelForm();
   }else{
-    // Exit team view
     document.body.classList.remove('team-view-mode');
-    bar.style.opacity='1';bar.style.pointerEvents='all';
-    ret.style.display='none';
-    btn.textContent='👁 View as Player';
     renderGrid();renderFeed();renderMedia();renderIntelForm();
   }
+  syncAdminDropdownToggles();
+  closeAdminDropdown();
 }
 document.getElementById('adPass').addEventListener('keydown',e=>{if(e.key==='Enter')adminAuth()});
 // Global keyboard shortcuts
@@ -2838,7 +2870,7 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('contextmenu',e=>{
   if(e.target.closest('.feed-card-img')||e.target.closest('.feed-single-img')||e.target.closest('.mv-body')||e.target.closest('.no-download-shield'))e.preventDefault();
 });
-function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');document.body.classList.remove('team-view-mode');document.getElementById('adminBar').classList.remove('active');document.getElementById('teamViewReturn').style.display='none';document.getElementById('adminBar').style.opacity='1';document.getElementById('adminBar').style.pointerEvents='all';closeAdminPanel();closeBroadcast();closeLeaderboard();closeKeysCodes();renderGrid();renderIntelForm()}
+function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');document.body.classList.remove('team-view-mode');closeAdminDropdown();closeAdminPanel();closeBroadcast();closeLeaderboard();closeKeysCodes();renderGrid();renderIntelForm()}
 
 // ══════ SCREEN NAVIGATION ══════
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',id==='consoleScreen')}
@@ -2990,6 +3022,9 @@ function openAdminPanel(){
   const regO=document.getElementById('apRegOpen');if(regO)regO.checked=regSettings.registrationOpen;
   const status=document.getElementById('apRegStatus');
   if(status){status.textContent=regSettings.registrationOpen?'● OPEN':'● CLOSED';status.style.color=regSettings.registrationOpen?'var(--green)':'var(--red)'}
+  // Sync timer display
+  const apTimer=document.getElementById('apTimerDisplay');
+  if(apTimer)apTimer.textContent=document.getElementById('cTimer').textContent;
 }
 function closeAdminPanel(){
   const el=document.getElementById('adminPanel');
