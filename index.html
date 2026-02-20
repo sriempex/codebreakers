@@ -171,14 +171,14 @@
   .login-register-link span.lrl-action{color:var(--cyan);text-decoration:underline;text-underline-offset:3px}
 
   /* ══════ VAULT PUZZLE (in-console) ══════ */
-  .vault-puzzle-layout{display:flex;flex-direction:column;align-items:center;gap:20px;max-width:500px;margin:0 auto}
-  .vault-keypad-section{width:100%;max-width:460px}
-  .vault-unlock-section{width:100%;max-width:460px}
-  .vault-unlock-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(0,255,136,.08)}
+  .vault-puzzle-layout{display:flex;flex-direction:column;align-items:center;gap:24px;max-width:500px;margin:0 auto}
+  .vault-keypad-section{width:420px;max-width:100%}
+  .vault-unlock-section{width:420px;max-width:100%;padding:0}
+  .vault-unlock-header{display:flex;align-items:center;justify-content:space-between;padding:0 0 10px;border-bottom:1px solid rgba(0,255,136,.08);margin-bottom:0}
   .vault-unlock-title{font-family:'Saira',sans-serif;font-size:12px;color:#d0e8d8;letter-spacing:3px;font-weight:700;text-transform:uppercase}
   .vault-unlock-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#888;letter-spacing:1px}
-  .vault-unlock-list{display:flex;flex-direction:column;gap:6px}
-  .vault-unlock-empty{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#555;line-height:1.8;font-weight:500;text-align:center;padding:30px 16px}
+  .vault-unlock-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+  .vault-unlock-empty{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#555;line-height:1.8;font-weight:500;text-align:center;padding:20px 16px}
   .vault-unlock-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(0,255,136,.1);border-radius:4px;background:rgba(0,255,136,.02)}
   .vault-unlock-item.locked{border-color:var(--border);background:rgba(255,255,255,.01);opacity:.5}
   .vault-unlock-item .vui-icon{font-size:16px;flex-shrink:0}
@@ -189,9 +189,8 @@
   .vault-unlock-item .vui-status.unlocked{color:var(--green)}
   .vault-unlock-item .vui-status.locked{color:#555}
   @media(max-width:768px){
-    .vault-puzzle-layout{flex-direction:column}
-    .vault-keypad-section{flex:none;width:100%;max-width:420px;margin:0 auto}
-    .vault-unlock-section{width:100%}
+    .vault-keypad-section{width:100%;max-width:420px}
+    .vault-unlock-section{width:100%;max-width:420px}
   }
 
   /* Panel — cold zinc/steel with brushed texture */
@@ -666,6 +665,9 @@
   .notif-bell:hover{background:rgba(255,255,255,.04)}
   .notif-bell svg{width:18px;height:18px;fill:none;stroke:#888;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s}
   .notif-bell:hover svg{stroke:#ccc}
+  body.admin-mode .notif-bell{display:none}
+  .admin-topbar-label{display:none;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--amber);font-weight:600;text-transform:uppercase;padding:4px 10px;border:1px solid rgba(255,170,51,.2);border-radius:3px;background:rgba(255,170,51,.06)}
+  body.admin-mode .admin-topbar-label{display:inline-flex}
   .notif-badge{position:absolute;top:2px;right:2px;min-width:14px;height:14px;border-radius:7px;background:var(--red);font-family:'IBM Plex Mono',monospace;font-size:8px;color:#fff;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 3px;box-shadow:0 0 6px rgba(255,50,50,.4);animation:badgePulse 2s ease infinite}
   .notif-badge.has-notifs{display:flex}
   @keyframes badgePulse{0%,100%{box-shadow:0 0 6px rgba(255,50,50,.4)}50%{box-shadow:0 0 12px rgba(255,50,50,.6)}}
@@ -1301,8 +1303,6 @@
     <div class="admin-dropdown-sep"></div>
     <div class="admin-dropdown-toggle" onclick="toggleAllowDownloads()"><span class="adm-icon">⬇</span><span class="adm-label">Allow Downloads</span><span class="adm-toggle off" id="admDlToggle">OFF</span></div>
     <div class="admin-dropdown-toggle" onclick="toggleEditMode()"><span class="adm-icon">✎</span><span class="adm-label">Edit Mode</span><span class="adm-toggle off" id="admEditToggle">OFF</span></div>
-    <div class="admin-dropdown-sep"></div>
-    <div class="admin-dropdown-item adm-danger" onclick="closeAdminDropdown();exitAdmin()"><span class="adm-icon">✕</span><span class="adm-label">Exit Admin</span></div>
   </div>
 </div>
 
@@ -1695,6 +1695,7 @@
         <div id="notifList"><div class="notif-empty">No notifications yet</div></div>
       </div>
     </div>
+    <span class="admin-topbar-label">Administrator</span>
   </div>
   <div class="console-grid" id="consoleGrid"></div>
   <div class="console-worldmap"></div>
@@ -3735,8 +3736,8 @@ function renderKeysCodes(){
 
   // Manual Vault Keys
   html+=`<div class="kc-section">
-    <div class="kc-section-title">🚪 Manual Vault Keys (${manualVaultKeys.length})</div>
-    <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#666;margin-bottom:8px">Additional custom access codes that work on the vault keypad. Assign labels to track their purpose.</div>`;
+    <div class="kc-section-title">🔐 Vault Puzzle Codes (${manualVaultKeys.length})</div>
+    <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#666;margin-bottom:8px">Codes that players discover by solving clues in the Intelligence Feed and Media Lab. Entering a correct code on The Vault keypad unlocks the corresponding entry in the Unlock Log.</div>`;
   if(manualVaultKeys.length){
     manualVaultKeys.forEach((k,i)=>{
       html+=`<div class="kc-row">
@@ -3747,9 +3748,9 @@ function renderKeysCodes(){
       </div>`;
     });
   }else{
-    html+=`<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:4px 0">No manual keys created</div>`;
+    html+=`<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:4px 0">No vault codes created yet</div>`;
   }
-  html+=`<div style="margin-top:8px"><button class="ap-btn ap-btn-green" onclick="addManualKey()" style="font-size:9px;padding:5px 12px">+ Add Manual Key</button></div>`;
+  html+=`<div style="margin-top:8px"><button class="ap-btn ap-btn-green" onclick="addManualKey()" style="font-size:9px;padding:5px 12px">+ Add Vault Code</button></div>`;
   html+=`</div>`;
 
   // Locked Media Keys
@@ -3792,10 +3793,10 @@ function renderKeysCodes(){
 }
 
 function addManualKey(){
-  showEditModal(`<h3>Add Manual Vault Key</h3>
-    <div class="edit-field"><label>Label</label><input id="ek_mk_label" placeholder="e.g. VIP Access, Late Entry, Test Key"></div>
-    <div class="edit-field"><label>Key Code</label><input id="ek_mk_key" placeholder="e.g. VIP2026" style="font-size:14px;letter-spacing:3px;text-transform:uppercase"></div>
-    <div style="display:flex;gap:10px;margin-top:12px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-green" onclick="saveNewManualKey()">Add Key</button></div>`);
+  showEditModal(`<h3>Add Vault Puzzle Code</h3>
+    <div class="edit-field"><label>Label (what this code unlocks)</label><input id="ek_mk_label" placeholder="e.g. Suspect's Date of Birth, Country of Origin"></div>
+    <div class="edit-field"><label>Code (what players must enter)</label><input id="ek_mk_key" placeholder="e.g. 03/15/1988" style="font-size:14px;letter-spacing:3px;text-transform:uppercase"></div>
+    <div style="display:flex;gap:10px;margin-top:12px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-green" onclick="saveNewManualKey()">Add Code</button></div>`);
 }
 function saveNewManualKey(){
   const label=document.getElementById('ek_mk_label').value.trim();
@@ -3807,9 +3808,9 @@ function saveNewManualKey(){
 }
 function editManualKey(i){
   const k=manualVaultKeys[i];
-  showEditModal(`<h3>Edit Manual Key</h3>
-    <div class="edit-field"><label>Label</label><input id="ek_mk_label" value="${k.label}"></div>
-    <div class="edit-field"><label>Key Code</label><input id="ek_mk_key" value="${k.key}" style="font-size:14px;letter-spacing:3px;text-transform:uppercase"></div>
+  showEditModal(`<h3>Edit Vault Puzzle Code</h3>
+    <div class="edit-field"><label>Label (what this code unlocks)</label><input id="ek_mk_label" value="${k.label}"></div>
+    <div class="edit-field"><label>Code (what players must enter)</label><input id="ek_mk_key" value="${k.key}" style="font-size:14px;letter-spacing:3px;text-transform:uppercase"></div>
     <div style="display:flex;gap:10px;margin-top:12px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-red" onclick="deleteManualKey(${i})">Delete</button><button class="btn-standard btn-cyan" onclick="saveManualKey(${i})">Save</button></div>`);
 }
 function saveManualKey(i){
