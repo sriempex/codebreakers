@@ -167,12 +167,53 @@
   .v-rate-limit-text{font-family:'Saira',sans-serif;font-size:11px;letter-spacing:3px;color:var(--amber);text-transform:uppercase;font-weight:600}
   .v-rate-limit-timer{font-family:'IBM Plex Mono',monospace;font-size:28px;color:var(--red);letter-spacing:4px;font-weight:700}
 
-  /* ══════ VAULT ══════ */
-  #vaultScreen{display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#050607,#080a0c,#050607)}
-  #vaultScreen::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);pointer-events:none;z-index:2}
-  .vault-container{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;gap:20px}
-  .vault-title{font-family:'Staatliches',cursive;font-size:17px;letter-spacing:2px;color:#b0e8cc;text-transform:uppercase}
-  .vault-subtitle{font-family:'Chakra Petch',sans-serif;font-size:11px;letter-spacing:4px;color:#8a8a8a;font-weight:600;text-transform:uppercase;margin-top:-12px}
+  /* ══════ LOGIN ══════ */
+  #loginScreen{display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#050607,#080a0c,#050607)}
+  #loginScreen::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);pointer-events:none;z-index:2}
+  .login-container{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;gap:20px}
+  .login-title{font-family:'Staatliches',cursive;font-size:17px;letter-spacing:2px;color:#b0e8cc;text-transform:uppercase}
+  .login-subtitle{font-family:'Chakra Petch',sans-serif;font-size:11px;letter-spacing:4px;color:#8a8a8a;font-weight:600;text-transform:uppercase;margin-top:-12px}
+  .login-panel{position:relative;width:420px;border-radius:8px;padding:28px 24px 20px;
+    background:
+      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.007) 1px,rgba(255,255,255,.007) 2px,transparent 2px,transparent 4px),
+      repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(255,255,255,.004) 60px,rgba(255,255,255,.004) 61px),
+      linear-gradient(175deg,#22252c 0%,#1a1c22 20%,#141620 50%,#111318 80%,#0e1014 100%);
+    border:1px solid #3a3d44;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.04),inset 0 -1px 0 rgba(0,0,0,.3),0 2px 0 #0a0a0c,0 4px 0 #151518,0 8px 0 #0a0a0c,0 30px 70px rgba(0,0,0,.9)}
+  .login-field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+  .login-field label{font-family:'Saira',sans-serif;font-size:10px;color:#999;font-weight:700;letter-spacing:3px;text-transform:uppercase}
+  .login-field input{background:#060810;border:1px solid #2a2d35;border-radius:4px;padding:14px 16px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:3px;outline:none;transition:border-color .2s;text-transform:uppercase}
+  .login-field input:focus{border-color:rgba(0,255,136,.25);box-shadow:0 0 12px rgba(0,255,136,.06)}
+  .login-field input::placeholder{color:#333;text-transform:none;letter-spacing:1px;font-size:12px}
+  .login-pw-field input{text-transform:none;color:#ccc;letter-spacing:1px}
+  .login-err{font-family:'Chakra Petch',sans-serif;font-size:11px;color:var(--red);min-height:14px;text-align:center;font-weight:600;margin-bottom:4px}
+  .login-submit{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700}
+  .login-submit:hover{background:rgba(0,255,136,.1);box-shadow:0 0 25px rgba(0,255,136,.12)}
+  .login-status{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.03)}
+
+  /* ══════ VAULT PUZZLE (in-console) ══════ */
+  .vault-puzzle-layout{display:flex;gap:24px;max-width:900px;margin:0 auto;align-items:flex-start}
+  .vault-keypad-section{flex:0 0 420px}
+  .vault-unlock-section{flex:1;min-width:0}
+  .vault-unlock-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(0,255,136,.08)}
+  .vault-unlock-title{font-family:'Saira',sans-serif;font-size:12px;color:#d0e8d8;letter-spacing:3px;font-weight:700;text-transform:uppercase}
+  .vault-unlock-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#888;letter-spacing:1px}
+  .vault-unlock-list{display:flex;flex-direction:column;gap:6px}
+  .vault-unlock-empty{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#555;line-height:1.8;font-weight:500;text-align:center;padding:30px 16px}
+  .vault-unlock-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(0,255,136,.1);border-radius:4px;background:rgba(0,255,136,.02)}
+  .vault-unlock-item.locked{border-color:var(--border);background:rgba(255,255,255,.01);opacity:.5}
+  .vault-unlock-item .vui-icon{font-size:16px;flex-shrink:0}
+  .vault-unlock-item .vui-info{flex:1;min-width:0}
+  .vault-unlock-item .vui-label{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#ccc;font-weight:600;letter-spacing:.5px}
+  .vault-unlock-item .vui-desc{font-family:'Chakra Petch',sans-serif;font-size:9px;color:#888;letter-spacing:.5px;margin-top:2px}
+  .vault-unlock-item .vui-status{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;font-weight:600;flex-shrink:0}
+  .vault-unlock-item .vui-status.unlocked{color:var(--green)}
+  .vault-unlock-item .vui-status.locked{color:#555}
+  @media(max-width:768px){
+    .vault-puzzle-layout{flex-direction:column}
+    .vault-keypad-section{flex:none;width:100%;max-width:420px;margin:0 auto}
+    .vault-unlock-section{width:100%}
+  }
 
   /* Panel — cold zinc/steel with brushed texture */
   .vault-panel{position:relative;width:420px;border-radius:8px;padding:28px 24px 20px;
@@ -368,7 +409,7 @@
   .team-card-stat-lbl{font-family:'Saira',sans-serif;font-size:8px;color:#999;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-top:3px}
 
   /* Console grid */
-  .console-grid{flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;padding:28px;min-height:0;align-content:center;position:relative;z-index:1}
+  .console-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:28px;padding:28px;min-height:0;align-content:center;position:relative;z-index:1}
 
   /* ── CRT Monitor Bezel ── */
   .crt-monitor{position:relative;border-radius:18px;cursor:pointer;transition:all .35s cubic-bezier(.25,.46,.45,.94);
@@ -585,15 +626,12 @@
   .btn-red:hover{background:linear-gradient(180deg,rgba(70,25,25,.5),rgba(50,15,15,.6))}
 
   /* ══════ ADMIN ══════ */
-  .admin-trigger{position:fixed;bottom:10px;right:10px;z-index:400;width:28px;height:28px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;opacity:.6}
-  .admin-trigger:hover{opacity:1;border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.06)}
-  .admin-trigger svg{width:14px;height:14px;fill:none;stroke:#999;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
-  .admin-trigger:hover svg{stroke:var(--cyan)}
-  /* Admin mode: gear becomes amber avatar */
-  body.admin-mode .admin-trigger{opacity:1;width:32px;height:32px;border-radius:50%;background:linear-gradient(180deg,rgba(255,170,51,.15),rgba(255,140,20,.08));border-color:rgba(255,170,51,.4);box-shadow:0 0 10px rgba(255,170,51,.12),0 0 20px rgba(255,170,51,.04)}
-  body.admin-mode .admin-trigger svg{stroke:var(--amber);width:15px;height:15px}
-  body.admin-mode .admin-trigger:hover{border-color:rgba(255,170,51,.6);box-shadow:0 0 14px rgba(255,170,51,.2)}
-  body.admin-mode .admin-trigger::after{content:'';position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px rgba(255,170,51,.6);animation:ledPulse 2s ease-in-out infinite}
+  .admin-trigger{position:fixed;bottom:10px;right:10px;z-index:400;width:32px;height:32px;border-radius:50%;display:none;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;
+    background:linear-gradient(180deg,rgba(255,170,51,.15),rgba(255,140,20,.08));border:1px solid rgba(255,170,51,.4);box-shadow:0 0 10px rgba(255,170,51,.12),0 0 20px rgba(255,170,51,.04)}
+  .admin-trigger svg{width:15px;height:15px;fill:none;stroke:var(--amber);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
+  .admin-trigger:hover{border-color:rgba(255,170,51,.6);box-shadow:0 0 14px rgba(255,170,51,.2)}
+  .admin-trigger::after{content:'';position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px rgba(255,170,51,.6);animation:ledPulse 2s ease-in-out infinite}
+  body.admin-mode .admin-trigger{display:flex}
   body.team-view-mode .admin-trigger{opacity:.3}
   body.team-view-mode .admin-trigger::after{display:none}
 
@@ -1050,7 +1088,7 @@
     .console-team{font-size:9px;letter-spacing:2px}
 
     /* Grid — 2 columns, centered */
-    .console-grid{grid-template-columns:1fr 1fr;gap:16px;padding:16px;align-content:start;padding-top:20px}
+    .console-grid{gap:16px;padding:16px;align-content:start;padding-top:20px}
     .crt-monitor{padding:10px}
     .crt-screen{padding:28px 16px 22px}
     .tile-icon{font-size:38px;margin-bottom:12px}
@@ -1063,10 +1101,10 @@
     .screen-forward{top:12px;right:12px;padding:8px 14px}
     .screen-forward span{font-size:10px;letter-spacing:2px}
 
-    /* Vault — ensure centered properly */
-    .vault-container{gap:14px}
-    .vault-title{font-size:14px}
-    .vault-panel{width:380px;padding:22px 18px 16px}
+    /* Login */
+    .login-container{gap:14px}
+    .login-title{font-size:14px}
+    .login-panel{width:380px;padding:22px 18px 16px}
 
     /* Registration */
     .reg-container{max-width:480px}
@@ -1083,9 +1121,9 @@
 
   /* Mobile */
   @media(max-width:768px){
-    /* Vault */
-    .vault-panel{width:92vw;max-width:420px;padding:20px 16px 14px}
-    .vault-title{font-size:11px;letter-spacing:2px}
+    /* Login */
+    .login-panel{width:92vw;max-width:420px;padding:20px 16px 14px}
+    .login-title{font-size:11px;letter-spacing:2px}
     .vault-subtitle{font-size:8px;letter-spacing:3px}
     .v-display{height:56px}
     #vDisp{font-size:18px;letter-spacing:6px}
@@ -1211,10 +1249,10 @@
 
   /* Small phones */
   @media(max-width:380px){
-    .vault-panel{padding:16px 12px 12px}
+    .login-panel{padding:16px 12px 12px}
     .kb-key{height:34px}
     .kb-key span{font-size:11px}
-    .vault-title{font-size:10px;letter-spacing:4px}
+    .login-title{font-size:10px;letter-spacing:4px}
     .tile-label{font-size:10px}
     .tile-icon{font-size:30px}
     .crt-monitor{padding:8px} .crt-screen{padding:18px 14px 16px}
@@ -1261,8 +1299,6 @@
 
 <div id="logoutModal"><div class="logout-box"><h3>⚠ Confirm Logout</h3><p>You'll need your Team ID to re-enter via the Vault. Are you sure?</p><div style="display:flex;gap:12px;justify-content:center"><button class="btn-standard btn-ghost" onclick="hideLogout()">Cancel</button><button class="btn-standard btn-red" onclick="doLogout()">Logout</button></div></div></div>
 
-<div id="adminLogin"><div class="admin-login-box"><div class="admin-disclaimer">⚠ This is not part of the game. This portal is restricted to authorized event administrators only.</div><h3>◈ System Access</h3><p>Administrator authentication required</p><div class="admin-field"><label>Username</label><input type="text" id="adUser" autocomplete="off" spellcheck="false"></div><div class="admin-field"><label>Password</label><input type="password" id="adPass"></div><div class="admin-err" id="adErr"></div><div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideAdminLogin()">Cancel</button><button class="btn-standard btn-cyan" onclick="adminAuth()">Authenticate</button></div></div></div>
-
 <div id="adminEditModal"><div class="edit-box" id="editBox"></div></div>
 
 <div id="confirmModal"><div class="confirm-box"><div class="confirm-header"><h3>⚠ Confirm Transmission</h3><p>Review your intel before final submission. This action cannot be undone.</p></div><div class="confirm-body" id="confirmBody"></div><div class="confirm-footer"><button class="btn-standard btn-ghost" onclick="hideConfirm()">◂ Go Back</button><button class="btn-standard btn-green" onclick="finalSubmit()">Confirm & Transmit ◈</button></div></div></div>
@@ -1289,10 +1325,10 @@
           <span class="landing-btn-desc" id="landingNewBtnDesc">Register your team and receive your unique access code to begin the mission.</span>
         </div>
       </div>
-      <div class="landing-btn vault-entry" onclick="goToVault()">
+      <div class="landing-btn vault-entry" onclick="goToLogin()">
         <div class="landing-btn-icon vault">🔑</div>
         <div class="landing-btn-text">
-          <span class="landing-btn-title" id="landingVaultTitle">Access the Vault</span>
+          <span class="landing-btn-title" id="landingVaultTitle">Enter Mission</span>
           <span class="landing-btn-desc" id="landingVaultDesc">Already registered? Enter your Team ID to proceed.</span>
         </div>
       </div>
@@ -1346,30 +1382,35 @@
         </div>
         <div class="reg-id-warn">⚠ Save this ID — you'll need it to resume your session</div>
         <div class="reg-id-note">Share this ID with your team members. Any member can access and continue the mission using this code on any device.</div>
-        <button class="reg-proceed" onclick="proceedToVault()">Proceed to Mission ▸</button>
+        <button class="reg-proceed" onclick="proceedToLogin()">Proceed to Mission ▸</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- VAULT -->
-<div class="screen" id="vaultScreen">
+<!-- LOGIN -->
+<div class="screen" id="loginScreen">
   <div class="screen-back" onclick="showScreen('landingScreen')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span>Back</span></div>
   <div class="screen-forward" onclick="goToConsole()"><span>Console</span><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
-  <div class="vault-container">
-    <div style="display:flex;align-items:center;justify-content:center"><div class="vault-title" id="vaultTitle">Operation Dead Drop</div><button class="admin-edit-inline" onclick="event.stopPropagation();editOperationName()">✎</button></div>
-    <div class="vault-subtitle" id="vaultSubtitle">Enter Your Team ID</div>
-    <div class="vault-panel" id="vaultPanel">
-      <div class="v-rate-limit" id="vRateLimit"><span class="v-rate-limit-text">Slow Down</span><span class="v-rate-limit-timer" id="vRateLimitTimer">15</span></div>
+  <div class="login-container">
+    <div style="display:flex;align-items:center;justify-content:center"><div class="login-title" id="loginTitle">Operation Dead Drop</div><button class="admin-edit-inline" onclick="event.stopPropagation();editOperationName()">✎</button></div>
+    <div class="login-subtitle">Enter Your Credentials</div>
+    <div class="login-panel">
       <div class="rv rv-1"></div><div class="rv rv-2"></div><div class="rv rv-3"></div><div class="rv rv-4"></div>
-      <div class="v-display"><span id="vDisp">ENTER ID</span><span id="vCursor"></span></div>
-      <div class="kb-row"><div class="kb-key" onclick="kType('1')"><span>1</span></div><div class="kb-key" onclick="kType('2')"><span>2</span></div><div class="kb-key" onclick="kType('3')"><span>3</span></div><div class="kb-key" onclick="kType('4')"><span>4</span></div><div class="kb-key" onclick="kType('5')"><span>5</span></div><div class="kb-key" onclick="kType('6')"><span>6</span></div><div class="kb-key" onclick="kType('7')"><span>7</span></div><div class="kb-key" onclick="kType('8')"><span>8</span></div><div class="kb-key" onclick="kType('9')"><span>9</span></div><div class="kb-key" onclick="kType('0')"><span>0</span></div></div>
-      <div class="kb-row"><div class="kb-key" onclick="kType('Q')"><span>Q</span></div><div class="kb-key" onclick="kType('W')"><span>W</span></div><div class="kb-key" onclick="kType('E')"><span>E</span></div><div class="kb-key" onclick="kType('R')"><span>R</span></div><div class="kb-key" onclick="kType('T')"><span>T</span></div><div class="kb-key" onclick="kType('Y')"><span>Y</span></div><div class="kb-key" onclick="kType('U')"><span>U</span></div><div class="kb-key" onclick="kType('I')"><span>I</span></div><div class="kb-key" onclick="kType('O')"><span>O</span></div><div class="kb-key" onclick="kType('P')"><span>P</span></div></div>
-      <div class="kb-row"><div class="kb-key" onclick="kType('A')"><span>A</span></div><div class="kb-key" onclick="kType('S')"><span>S</span></div><div class="kb-key" onclick="kType('D')"><span>D</span></div><div class="kb-key" onclick="kType('F')"><span>F</span></div><div class="kb-key" onclick="kType('G')"><span>G</span></div><div class="kb-key" onclick="kType('H')"><span>H</span></div><div class="kb-key" onclick="kType('J')"><span>J</span></div><div class="kb-key" onclick="kType('K')"><span>K</span></div><div class="kb-key" onclick="kType('L')"><span>L</span></div></div>
-      <div class="kb-row" id="kbRow4"><div class="kb-key fn clr-key" onclick="kClear()"><span>CLR</span></div><div class="kb-key" onclick="kType('Z')"><span>Z</span></div><div class="kb-key" onclick="kType('X')"><span>X</span></div><div class="kb-key" onclick="kType('C')"><span>C</span></div><div class="kb-key" onclick="kType('V')"><span>V</span></div><div class="kb-key" onclick="kType('B')"><span>B</span></div><div class="kb-key" onclick="kType('N')"><span>N</span></div><div class="kb-key" onclick="kType('M')"><span>M</span></div><div class="kb-key fn del-key" onclick="kDel()"><span>⌫</span></div></div>
-      <div class="kb-row"><div class="kb-key fn sym-key" onclick="toggleSymbols()"><span id="symLabel">SYM</span></div><div class="kb-key enter-key" style="flex:3" onclick="kSubmit()"><span>ENTER</span></div></div>
-      <div class="v-status"><div class="v-dot" id="vDot"></div><span class="v-lbl" id="vLbl">LOCKED</span></div>
-      <div class="v-tries" id="vTries"></div>
+      <div class="login-field">
+        <label>Team ID or Username</label>
+        <input type="text" id="loginId" placeholder="e.g. ALPHA-1234" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="login-field login-pw-field" id="loginPwField" style="display:none">
+        <label>Password</label>
+        <input type="password" id="loginPw" placeholder="Enter password">
+      </div>
+      <div class="login-err" id="loginErr"></div>
+      <button class="login-submit" id="loginSubmitBtn" onclick="submitLogin()">◈ Enter Mission ◈</button>
+      <div class="login-status">
+        <div class="v-dot" id="loginDot"></div>
+        <span class="v-lbl" id="loginLbl">AWAITING INPUT</span>
+      </div>
     </div>
   </div>
 </div>
@@ -1606,6 +1647,36 @@
   <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon" id="feedPanelIcon">📡</span><span class="exp-title" id="feedPanelTitle">Intelligence Feed</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('list')" id="fvList">☰ List</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><button class="feed-back-grid" onclick="setFeedView('grid')">◂ ALL POSTS</button><div class="feed-single-img" id="singleImg"></div><div class="feed-single-counter" id="singleCounter">1 / 12</div><div class="feed-single-caption" id="singleCap"></div><div class="swipe-hint">← Swipe to navigate →</div><div class="feed-single-nav"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div></div></div>
   <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon" id="mediaPanelIcon">🔊</span><span class="exp-title" id="mediaPanelTitle">Media Lab</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div id="mediaList" class="media-expanded"></div></div></div>
   <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon" id="intelPanelIcon">🎯</span><span class="exp-title" id="intelPanelTitle">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div class="intel-expanded" id="intelForm"></div></div></div>
+  <div class="expanded-panel" id="expVault">
+    <div class="exp-header"><span class="panel-icon" id="vaultPanelIcon">🔐</span><span class="exp-title" id="vaultPanelTitle">The Vault</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div>
+    <div class="exp-body">
+      <div class="vault-puzzle-layout">
+        <div class="vault-keypad-section">
+          <div class="vault-panel" id="vaultPanel">
+            <div class="v-rate-limit" id="vRateLimit"><span class="v-rate-limit-text">Slow Down</span><span class="v-rate-limit-timer" id="vRateLimitTimer">15</span></div>
+            <div class="rv rv-1"></div><div class="rv rv-2"></div><div class="rv rv-3"></div><div class="rv rv-4"></div>
+            <div class="v-display"><span id="vDisp">ENTER CODE</span><span id="vCursor"></span></div>
+            <div class="kb-row"><div class="kb-key" onclick="vkType('1')"><span>1</span></div><div class="kb-key" onclick="vkType('2')"><span>2</span></div><div class="kb-key" onclick="vkType('3')"><span>3</span></div><div class="kb-key" onclick="vkType('4')"><span>4</span></div><div class="kb-key" onclick="vkType('5')"><span>5</span></div><div class="kb-key" onclick="vkType('6')"><span>6</span></div><div class="kb-key" onclick="vkType('7')"><span>7</span></div><div class="kb-key" onclick="vkType('8')"><span>8</span></div><div class="kb-key" onclick="vkType('9')"><span>9</span></div><div class="kb-key" onclick="vkType('0')"><span>0</span></div></div>
+            <div class="kb-row"><div class="kb-key" onclick="vkType('Q')"><span>Q</span></div><div class="kb-key" onclick="vkType('W')"><span>W</span></div><div class="kb-key" onclick="vkType('E')"><span>E</span></div><div class="kb-key" onclick="vkType('R')"><span>R</span></div><div class="kb-key" onclick="vkType('T')"><span>T</span></div><div class="kb-key" onclick="vkType('Y')"><span>Y</span></div><div class="kb-key" onclick="vkType('U')"><span>U</span></div><div class="kb-key" onclick="vkType('I')"><span>I</span></div><div class="kb-key" onclick="vkType('O')"><span>O</span></div><div class="kb-key" onclick="vkType('P')"><span>P</span></div></div>
+            <div class="kb-row"><div class="kb-key" onclick="vkType('A')"><span>A</span></div><div class="kb-key" onclick="vkType('S')"><span>S</span></div><div class="kb-key" onclick="vkType('D')"><span>D</span></div><div class="kb-key" onclick="vkType('F')"><span>F</span></div><div class="kb-key" onclick="vkType('G')"><span>G</span></div><div class="kb-key" onclick="vkType('H')"><span>H</span></div><div class="kb-key" onclick="vkType('J')"><span>J</span></div><div class="kb-key" onclick="vkType('K')"><span>K</span></div><div class="kb-key" onclick="vkType('L')"><span>L</span></div></div>
+            <div class="kb-row"><div class="kb-key fn clr-key" onclick="vkClear()"><span>CLR</span></div><div class="kb-key" onclick="vkType('Z')"><span>Z</span></div><div class="kb-key" onclick="vkType('X')"><span>X</span></div><div class="kb-key" onclick="vkType('C')"><span>C</span></div><div class="kb-key" onclick="vkType('V')"><span>V</span></div><div class="kb-key" onclick="vkType('B')"><span>B</span></div><div class="kb-key" onclick="vkType('N')"><span>N</span></div><div class="kb-key" onclick="vkType('M')"><span>M</span></div><div class="kb-key fn del-key" onclick="vkDel()"><span>⌫</span></div></div>
+            <div class="kb-row"><div class="kb-key fn sym-key" onclick="vkToggleSymbols()"><span id="vkSymLabel">SYM</span></div><div class="kb-key enter-key" style="flex:3" onclick="vkSubmit()"><span>ENTER</span></div></div>
+            <div class="v-status"><div class="v-dot" id="vkDot"></div><span class="v-lbl" id="vkLbl">LOCKED</span></div>
+            <div class="v-tries" id="vkTries"></div>
+          </div>
+        </div>
+        <div class="vault-unlock-section">
+          <div class="vault-unlock-header">
+            <span class="vault-unlock-title">🔓 Unlock Log</span>
+            <span class="vault-unlock-count" id="vaultUnlockCount">0 / 0 codes cracked</span>
+          </div>
+          <div class="vault-unlock-list" id="vaultUnlockList">
+            <div class="vault-unlock-empty">No codes entered yet. Solve puzzles across the Intelligence Feed and Media Lab to discover vault codes.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- MEDIA VIEWER -->
@@ -1796,8 +1867,13 @@ function rebuildMemberSlots(){
   }
   slots.innerHTML=html;
 }
-function proceedToVault(){
-  goToVault();
+function proceedToLogin(){
+  goToLogin();
+  // Pre-fill the Team ID from registration
+  const teamId=document.getElementById('regTeamId')?.textContent;
+  if(teamId&&teamId!=='—'){
+    document.getElementById('loginId').value=teamId;
+  }
 }
 
 // ══════ AUDIO ══════
@@ -1979,72 +2055,97 @@ function dg(t){requestAnimationFrame(dg);if(t-lastGrain<125)return;lastGrain=t;c
 rg();let resizeTimer;addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(rg,200)});requestAnimationFrame(dg);
 for(let i=0;i<5;i++){const p=document.createElement('div');p.className='dust';p.style.left=Math.random()*100+'vw';p.style.animationDuration=(12+Math.random()*16)+'s';p.style.animationDelay=(Math.random()*12)+'s';const s=1+Math.random()*1.5;p.style.width=s+'px';p.style.height=s+'px';document.body.appendChild(p)}
 
-// ══════ VAULT ══════
-let masterAccessKey='';let manualVaultKeys=[];let code='';const vDisp=document.getElementById('vDisp');
-function updDisp(){vDisp.textContent=code.length?code:'ENTER ID';vDisp.style.color='';vDisp.style.fontSize='';vDisp.style.letterSpacing=''}
-function kType(ch){playClick();if(vaultRateLimited)return;if(code.length<20){code+=ch;updDisp();glitchDisp()}}
-function kDel(){playClick();if(vaultRateLimited)return;code=code.slice(0,-1);updDisp();glitchDisp()}
-function kClear(){playClick();if(vaultRateLimited)return;code='';updDisp();glitchDisp()}
-function glitchDisp(){const d=document.querySelector('.v-display');d.classList.remove('glitch');void d.offsetWidth;d.classList.add('glitch');setTimeout(()=>d.classList.remove('glitch'),150)}
-let vaultFailCount=0,vaultRateLimited=false;
-function kSubmit(){
-  if(vaultRateLimited||!code.length)return;
-  const enteredId=code.trim().toUpperCase();
+// ══════ LOGIN SCREEN ══════
+let masterAccessKey='';let manualVaultKeys=[];
+let currentVaultTeam=null;
+
+function submitLogin(){
+  const err=document.getElementById('loginErr');
+  const idVal=document.getElementById('loginId').value.trim().toUpperCase();
+  if(!idVal){err.textContent='Please enter your Team ID or username';return}
+
+  // Check if it's an admin username
+  const adminMatch=adminUsers.find(a=>a.user.toUpperCase()===idVal);
+  const pwField=document.getElementById('loginPwField');
+
+  if(adminMatch){
+    // Admin login — show/check password
+    if(pwField.style.display==='none'){
+      pwField.style.display='block';
+      document.getElementById('loginPw').focus();
+      document.getElementById('loginSubmitBtn').textContent='◈ Authenticate ◈';
+      err.textContent='';
+      return;
+    }
+    const pw=document.getElementById('loginPw').value;
+    if(pw===adminMatch.pass){
+      // Admin authenticated
+      err.textContent='';
+      isAdmin=true;document.body.classList.add('admin-mode');
+      currentVaultTeam={id:'ADMIN',name:'Administrator',type:'admin',members:['Admin'],memberDetails:[]};
+      updateConsoleForTeam(currentVaultTeam);
+      syncAdminDropdownToggles();
+      loginSuccess();
+    }else{
+      err.textContent='Authentication failed';
+      playDenied();
+      document.getElementById('flashR').classList.add('on');
+      setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
+    }
+    return;
+  }
+
+  // Reset password field if visible
+  pwField.style.display='none';
+  document.getElementById('loginSubmitBtn').textContent='◈ Enter Mission ◈';
+
   // Check against registered teams
-  const team=registeredTeams.find(t=>t.id===enteredId);
-  // Check against master access key
-  const isMasterKey=masterAccessKey&&enteredId===masterAccessKey.toUpperCase();
-  // Check against manual vault keys
-  const manualMatch=manualVaultKeys.find(k=>k.key.toUpperCase()===enteredId);
+  const team=registeredTeams.find(t=>t.id===idVal);
+  const isMasterKey=masterAccessKey&&idVal===masterAccessKey.toUpperCase();
+  const manualMatch=manualVaultKeys.find(k=>k.key.toUpperCase()===idVal);
 
   if(team||isMasterKey||manualMatch){
-    // SUCCESS
-    vaultFailCount=0;
+    err.textContent='';
     if(team){
       currentVaultTeam=team;
       team.lastActive=Date.now();
       updateConsoleForTeam(team);
     }else{
-      // Master or manual key — enter as admin/observer
-      currentVaultTeam={id:enteredId,name:isMasterKey?'Master Access':(manualMatch.label||'Manual Key'),type:'team',members:['Admin'],memberDetails:[]};
+      currentVaultTeam={id:idVal,name:isMasterKey?'Master Access':(manualMatch.label||'Manual Key'),type:'team',members:['Admin'],memberDetails:[]};
       updateConsoleForTeam(currentVaultTeam);
     }
-    playSuccess();vDisp.textContent='✓ ACCESS GRANTED';vDisp.style.color='#00ff88';vDisp.style.fontSize='16px';vDisp.style.letterSpacing='4px';
-    document.getElementById('vCursor').style.display='none';document.getElementById('vDot').classList.add('ok');
-    const vl=document.getElementById('vLbl');vl.classList.add('ok');vl.textContent='UNLOCKED';
-    document.getElementById('vTries').textContent='';document.getElementById('flashG').classList.add('on');
-    setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
-    setTimeout(()=>openVault(),1200);
+    loginSuccess();
   }else{
-    // FAIL — not a valid ID or key
-    vaultFailCount++;
-    playDenied();vDisp.textContent='✗ INVALID ID';vDisp.style.color='#ff3333';
-    document.getElementById('flashR').classList.add('on');setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
-    const p=document.getElementById('vaultPanel');p.style.animation='shake .4s ease';
-    setTimeout(()=>{p.style.animation='';code='';updDisp()},1200);
-    // Rate limit after 3 rapid fails
-    if(vaultFailCount>=3){
-      vaultRateLimited=true;
-      const limiter=document.getElementById('vRateLimit');
-      limiter.classList.add('active');
-      let countdown=15;
-      document.getElementById('vRateLimitTimer').textContent=countdown;
-      const interval=setInterval(()=>{
-        countdown--;
-        document.getElementById('vRateLimitTimer').textContent=countdown;
-        if(countdown<=0){
-          clearInterval(interval);
-          limiter.classList.remove('active');
-          vaultRateLimited=false;
-          vaultFailCount=0;
-        }
-      },1000);
-    }
+    err.textContent='Invalid Team ID';
+    playDenied();
+    document.getElementById('flashR').classList.add('on');
+    setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
   }
 }
-let currentVaultTeam=null;
+function loginSuccess(){
+  playSuccess();
+  const dot=document.getElementById('loginDot');
+  const lbl=document.getElementById('loginLbl');
+  dot.classList.add('ok');lbl.classList.add('ok');lbl.textContent='ACCESS GRANTED';
+  document.getElementById('flashG').classList.add('on');
+  setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
+  setTimeout(()=>openVault(),800);
+}
+// Enter key support on login fields
+document.getElementById('loginId')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitLogin()});
+document.getElementById('loginPw')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitLogin()});
+// Detect admin username as user types to show password hint
+document.getElementById('loginId')?.addEventListener('input',function(){
+  const val=this.value.trim().toUpperCase();
+  const isAdminUser=adminUsers.some(a=>a.user.toUpperCase()===val);
+  const pwField=document.getElementById('loginPwField');
+  if(!isAdminUser&&pwField.style.display!=='none'){
+    pwField.style.display='none';
+    document.getElementById('loginSubmitBtn').textContent='◈ Enter Mission ◈';
+  }
+});
+
 function updateConsoleForTeam(team){
-  // Update console topbar team display
   const teamEl=document.querySelector('.console-team');
   if(teamEl){
     const typeIcon=team.type==='individual'?'👤 ':'';
@@ -2054,7 +2155,6 @@ function updateConsoleForTeam(team){
   const cardId=document.querySelector('.team-card-id');
   if(cardName)cardName.textContent=team.name;
   if(cardId)cardId.textContent='ID: '+team.id;
-  // Update member list in card
   const membersHtml=team.members.map((m,i)=>`<div class="team-card-member"><div class="team-card-avatar">${i+1}</div><span class="team-card-mname">${m}</span></div>`).join('');
   const memberSection=document.querySelector('.team-card-section');
   if(memberSection){
@@ -2065,6 +2165,99 @@ function updateConsoleForTeam(team){
   }
 }
 function openVault(){const ov=document.getElementById('vaultOpenOverlay');ov.classList.add('active');setTimeout(()=>document.getElementById('voText').classList.add('show'),300);setTimeout(()=>document.getElementById('voSub').classList.add('show'),300);setTimeout(()=>document.getElementById('voBar').classList.add('show'),300);setTimeout(()=>document.getElementById('voFill').classList.add('go'),1200);setTimeout(()=>{showScreen('consoleScreen');document.getElementById('notepadTrigger').classList.add('visible');startElapsedTimer();ov.classList.remove('active');document.getElementById('voText').classList.remove('show');document.getElementById('voSub').classList.remove('show');document.getElementById('voBar').classList.remove('show');document.getElementById('voFill').classList.remove('go')},3800)}
+
+// ══════ VAULT PUZZLE (in-console keypad) ══════
+let vaultCodes=[
+  {code:'SAMPLE1',label:'Encrypted Dossier',desc:'Unlocks a classified personnel file',unlocked:false,unlockedAt:null},
+  {code:'SAMPLE2',label:'Audio Intercept',desc:'Unlocks a recorded phone conversation',unlocked:false,unlockedAt:null},
+  {code:'SAMPLE3',label:'Location Data',desc:'Unlocks GPS coordinates of the hideout',unlocked:false,unlockedAt:null}
+];
+let vkCode='';let vkFailCount=0;let vkRateLimited=false;
+const vkDisp=document.getElementById('vDisp');
+function vkUpdDisp(){if(vkDisp){vkDisp.textContent=vkCode.length?vkCode:'ENTER CODE';vkDisp.style.color='';vkDisp.style.fontSize='';vkDisp.style.letterSpacing=''}}
+function vkType(ch){playClick();if(vkRateLimited)return;if(vkCode.length<20){vkCode+=ch;vkUpdDisp();vkGlitch()}}
+function vkDel(){playClick();if(vkRateLimited)return;vkCode=vkCode.slice(0,-1);vkUpdDisp();vkGlitch()}
+function vkClear(){playClick();if(vkRateLimited)return;vkCode='';vkUpdDisp();vkGlitch()}
+function vkGlitch(){const d=document.querySelector('#expVault .v-display');if(!d)return;d.classList.remove('glitch');void d.offsetWidth;d.classList.add('glitch');setTimeout(()=>d.classList.remove('glitch'),150)}
+function vkSubmit(){
+  if(vkRateLimited||!vkCode.length)return;
+  const entered=vkCode.trim().toUpperCase();
+  const match=vaultCodes.find(c=>c.code.toUpperCase()===entered&&!c.unlocked);
+  if(match){
+    match.unlocked=true;match.unlockedAt=new Date().toISOString();
+    playSuccess();
+    vkDisp.textContent='✓ '+match.label.toUpperCase();vkDisp.style.color='#00ff88';vkDisp.style.fontSize='13px';vkDisp.style.letterSpacing='2px';
+    document.getElementById('flashG').classList.add('on');
+    setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
+    vkFailCount=0;
+    setTimeout(()=>{vkCode='';vkUpdDisp();renderVaultPanel()},2000);
+    // Update grid badge
+    renderGrid();
+  }else if(vaultCodes.find(c=>c.code.toUpperCase()===entered&&c.unlocked)){
+    // Already unlocked
+    vkDisp.textContent='⚡ ALREADY CRACKED';vkDisp.style.color='var(--amber)';vkDisp.style.fontSize='13px';
+    playClick();
+    setTimeout(()=>{vkCode='';vkUpdDisp()},1500);
+  }else{
+    // Invalid code
+    vkFailCount++;
+    playDenied();vkDisp.textContent='✗ INVALID CODE';vkDisp.style.color='#ff3333';
+    document.getElementById('flashR').classList.add('on');setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
+    setTimeout(()=>{vkCode='';vkUpdDisp()},1200);
+    if(vkFailCount>=3){
+      vkRateLimited=true;
+      const limiter=document.getElementById('vRateLimit');
+      limiter.classList.add('active');
+      let countdown=15;document.getElementById('vRateLimitTimer').textContent=countdown;
+      const interval=setInterval(()=>{
+        countdown--;document.getElementById('vRateLimitTimer').textContent=countdown;
+        if(countdown<=0){clearInterval(interval);limiter.classList.remove('active');vkRateLimited=false;vkFailCount=0}
+      },1000);
+    }
+  }
+}
+function renderVaultPanel(){
+  const list=document.getElementById('vaultUnlockList');
+  const count=document.getElementById('vaultUnlockCount');
+  if(!list)return;
+  const unlocked=vaultCodes.filter(c=>c.unlocked).length;
+  if(count)count.textContent=unlocked+' / '+vaultCodes.length+' codes cracked';
+  // Update dot status
+  const dot=document.getElementById('vkDot');
+  const lbl=document.getElementById('vkLbl');
+  if(dot&&lbl){
+    if(unlocked===vaultCodes.length){dot.classList.add('ok');lbl.classList.add('ok');lbl.textContent='ALL CRACKED'}
+    else if(unlocked>0){dot.className='v-dot';dot.style.background='radial-gradient(circle at 40% 35%,#ffcc44,#cc8811)';dot.style.boxShadow='0 0 6px rgba(255,170,51,.5)';lbl.textContent=unlocked+' UNLOCKED'}
+    else{dot.className='v-dot';dot.style.background='';dot.style.boxShadow='';lbl.textContent='LOCKED'}
+  }
+  if(vaultCodes.length===0){
+    list.innerHTML='<div class="vault-unlock-empty">No vault codes configured yet. The admin can add codes in the Keys & Codes panel.</div>';
+    return;
+  }
+  list.innerHTML=vaultCodes.map((c,i)=>`<div class="vault-unlock-item${c.unlocked?'':' locked'}">
+    <span class="vui-icon">${c.unlocked?'🔓':'🔒'}</span>
+    <div class="vui-info"><div class="vui-label">${c.unlocked?c.label:'???'}</div><div class="vui-desc">${c.unlocked?c.desc:'Enter the correct code to unlock'}</div></div>
+    <span class="vui-status ${c.unlocked?'unlocked':'locked'}">${c.unlocked?'CRACKED':'LOCKED'}</span>
+  </div>`).join('');
+}
+let vkSymMode=false;
+function vkToggleSymbols(){
+  vkSymMode=!vkSymMode;
+  document.getElementById('vkSymLabel').textContent=vkSymMode?'ABC':'SYM';
+  const rows=vkSymMode?symRows:alphaRows;
+  document.querySelectorAll('#expVault .kb-row').forEach((row,ri)=>{
+    if(ri===0)return;
+    if(ri>=1&&ri<=3){
+      const chars=rows[ri-1];if(!chars)return;
+      const keys=row.querySelectorAll('.kb-key:not(.fn)');
+      keys.forEach((key,ki)=>{
+        if(ki<chars.length){key.style.display='';key.querySelector('span').textContent=chars[ki];key.onclick=()=>vkType(chars[ki])}
+        else key.style.display='none';
+      });
+    }
+  });
+  playClick();
+}
 
 // ══════ FONTS ══════
 const availableFonts=[
@@ -2129,7 +2322,8 @@ let vaultSubFont='';
 let gridTiles=[
   {id:'feed',icon:'📡',label:'Intelligence Feed',labelFont:'',sub:'Surveillance imagery & intercepted visuals',subFont:'',badgeId:'feedBadge',dotClass:'live',status:'LIVE'},
   {id:'media',icon:'🔊',label:'Media Lab',labelFont:'',sub:'Audio, maps, documents & video',subFont:'',badgeId:'mediaBadge',dotClass:'live',status:'LIVE'},
-  {id:'intel',icon:'🎯',label:'Intel Submissions',labelFont:'',sub:'Submit decoded intelligence',subFont:'',badgeId:'intelBadge',dotClass:'pending',status:'AWAITING INPUT'}
+  {id:'intel',icon:'🎯',label:'Intel Submissions',labelFont:'',sub:'Submit decoded intelligence',subFont:'',badgeId:'intelBadge',dotClass:'pending',status:'AWAITING INPUT'},
+  {id:'vault',icon:'🔐',label:'The Vault',labelFont:'',sub:'Enter solved codes to unlock items',subFont:'',badgeId:'vaultBadge',dotClass:'pending',status:'LOCKED'}
 ];
 let intelFields=[
   {label:'Seller Codename',emoji:'🕵️',type:'text',font:'',answer:{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}},
@@ -2217,17 +2411,17 @@ function renderMedia(){
 // ══════ PANELS ══════
 const overlay=document.getElementById('panelOverlay');
 let currentFeedView='grid';
-function openPanel(t){playTileClick();['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel'].forEach(id=>{const el=document.getElementById(id);el.classList.remove('active');el.style.cssText=''});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel'}[t]).classList.add('visible');_instantShow(overlay);
+function openPanel(t){playTileClick();['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel'].forEach(id=>{const el=document.getElementById(id);el.classList.remove('active');el.style.cssText=''});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);
   // Sync panel header from grid tile data
   const tile=gridTiles.find(g=>g.id===t);
   if(tile){
-    const panelMap={feed:'feed',media:'media',intel:'intel'};
+    const panelMap={feed:'feed',media:'media',intel:'intel',vault:'vault'};
     const titleEl=document.getElementById(panelMap[t]+'PanelTitle');
     const iconEl=document.getElementById(panelMap[t]+'PanelIcon');
     if(titleEl)titleEl.textContent=tile.label;
     if(iconEl)iconEl.textContent=tile.icon;
   }
-  if(t==='feed'){renderFeed();setFeedView('grid')}if(t==='media')renderMedia();if(t==='intel')renderIntelForm()}
+  if(t==='feed'){renderFeed();setFeedView('grid')}if(t==='media')renderMedia();if(t==='intel')renderIntelForm();if(t==='vault')renderVaultPanel()}
 function closePanel(){overlay.style.cssText='';overlay.classList.remove('active');setTimeout(()=>document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible')),300)}
 
 // Feed view modes
@@ -2801,23 +2995,12 @@ let isAdmin=false;
 let adminUsers=[{user:'admin',pass:'Engage@3050'}];
 let manualTeams=[];
 
-function showAdminLogin(){document.getElementById('adminLogin').classList.add('active');document.getElementById('adUser').focus();document.getElementById('adErr').textContent=''}
-function hideAdminLogin(){document.getElementById('adminLogin').classList.remove('active');document.getElementById('adUser').value='';document.getElementById('adPass').value=''}
-function adminAuth(){
-  const u=document.getElementById('adUser').value,p=document.getElementById('adPass').value;
-  const match=adminUsers.find(a=>a.user===u&&a.pass===p);
-  if(match){
-    isAdmin=true;document.body.classList.add('admin-mode');hideAdminLogin();dismissBanner();renderGrid();renderIntelForm();
-    syncAdminDropdownToggles();
-  }
-  else{document.getElementById('adErr').textContent='Authentication failed';document.getElementById('adPass').value=''}
-}
-function adminGoVault(){document.getElementById('adminChoiceModal').classList.remove('active');goToVault()}
+// Admin auth now handled via login screen (submitLogin)
+function adminGoVault(){document.getElementById('adminChoiceModal').classList.remove('active');goToLogin()}
 function adminGoConsole(){document.getElementById('adminChoiceModal').classList.remove('active');goToConsole()}
 
 // ── Admin dropdown ──
 function handleAdminTrigger(){
-  if(!isAdmin){showAdminLogin();return}
   const dd=document.getElementById('adminDropdown');
   if(dd.classList.contains('open')){closeAdminDropdown()}else{openAdminDropdown()}
 }
@@ -2856,7 +3039,6 @@ function toggleViewAsTeam(){
   syncAdminDropdownToggles();
   closeAdminDropdown();
 }
-document.getElementById('adPass').addEventListener('keydown',e=>{if(e.key==='Enter')adminAuth()});
 // Global keyboard shortcuts
 document.addEventListener('keydown',e=>{
   if(document.getElementById('mediaViewer').classList.contains('active')){
@@ -2896,13 +3078,17 @@ function goToRegistration(){
   buildRegForm();
   showScreen('regScreen');
 }
-function goToVault(){
-  code='';updDisp();
-  document.getElementById('vDot').classList.remove('ok');
-  document.getElementById('vLbl').textContent='LOCKED';document.getElementById('vLbl').classList.remove('ok');
-  document.getElementById('vTries').textContent='';
-  document.getElementById('vCursor').style.display='';
-  showScreen('vaultScreen');
+function goToLogin(){
+  document.getElementById('loginId').value='';
+  document.getElementById('loginPw').value='';
+  document.getElementById('loginPwField').style.display='none';
+  document.getElementById('loginErr').textContent='';
+  document.getElementById('loginSubmitBtn').textContent='◈ Enter Mission ◈';
+  document.getElementById('loginDot').classList.remove('ok');
+  document.getElementById('loginLbl').classList.remove('ok');
+  document.getElementById('loginLbl').textContent='AWAITING INPUT';
+  showScreen('loginScreen');
+  setTimeout(()=>document.getElementById('loginId').focus(),300);
 }
 function goToConsole(){
   showScreen('consoleScreen');document.getElementById('notepadTrigger').classList.add('visible');startElapsedTimer();
@@ -3579,25 +3765,7 @@ const alphaRows=[
   ['A','S','D','F','G','H','J','K','L'],
   ['Z','X','C','V','B','N','M']
 ];
-function toggleSymbols(){
-  symMode=!symMode;
-  document.getElementById('symLabel').textContent=symMode?'ABC':'SYM';
-  const rows=symMode?symRows:alphaRows;
-  // Update rows 2,3,4 (indices 1,2 in kb layout = lines 936,937,938 → ids kbRow2,kbRow3,kbRow4)
-  document.querySelectorAll('.kb-row').forEach((row,ri)=>{
-    if(ri===0)return; // number row stays
-    if(ri>=1&&ri<=3){
-      const chars=rows[ri-1];
-      if(!chars)return;
-      const keys=row.querySelectorAll('.kb-key:not(.fn)');
-      keys.forEach((key,ki)=>{
-        if(ki<chars.length){key.style.display='';key.querySelector('span').textContent=chars[ki];key.onclick=()=>kType(chars[ki])}
-        else key.style.display='none';
-      });
-    }
-  });
-  playClick();
-}
+// Symbol toggle (legacy) — vault puzzle uses vkToggleSymbols
 
 // ══════ ADMIN EDIT MODALS ══════
 function showEditModal(html){document.getElementById('editBox').innerHTML=html;document.getElementById('adminEditModal').classList.add('active')}
@@ -3668,7 +3836,8 @@ function renderGrid(){
   const g=document.getElementById('consoleGrid');
   g.innerHTML=gridTiles.map((t,i)=>{
     const isIntel=t.id==='intel';
-    const badgeCls=isIntel?' amber':'';
+    const isVault=t.id==='vault';
+    const badgeCls=(isIntel||isVault)?' amber':'';
     return `<div class="crt-monitor" onclick="openPanel('${t.id}')">
       ${isA?`<div class="admin-edit-btn" onclick="event.stopPropagation();editGridTile(${i})">✎</div>`:''}
       <div class="crt-screw s1"></div><div class="crt-screw s2"></div><div class="crt-screw s3"></div><div class="crt-screw s4"></div>
@@ -3678,7 +3847,7 @@ function renderGrid(){
         <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:48px;height:48px;object-fit:contain">`:t.icon}</div>
         <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
         <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
-        <div class="tile-badge${badgeCls}" id="${t.badgeId}">${t.id==='feed'?posts.length+' FILES':t.id==='media'?mediaItems.length+' FILES':'0 / '+intelFields.length+' MARKED'}</div>
+        <div class="tile-badge${badgeCls}" id="${t.badgeId}">${t.id==='feed'?posts.length+' FILES':t.id==='media'?mediaItems.length+' FILES':t.id==='vault'?vaultCodes.filter(c=>c.unlocked).length+' / '+vaultCodes.length+' CRACKED':'0 / '+intelFields.length+' MARKED'}</div>
         <div class="tile-status"><div class="tile-dot ${t.dotClass}"></div><span>${t.status}</span></div>
       </div>
     </div>`;
