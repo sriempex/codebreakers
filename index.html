@@ -71,7 +71,6 @@
   .screen-forward span{font-family:'Saira',sans-serif;font-size:12px;color:var(--green);letter-spacing:3px;font-weight:700;text-transform:uppercase}
   .screen-forward svg{width:16px;height:16px;fill:none;stroke:var(--green);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
   body.admin-mode .screen-forward{display:flex}
-  body.team-view-mode .screen-forward{display:none !important}
 
   /* ══════ LANDING PAGE ══════ */
   #landingScreen{display:flex;align-items:center;justify-content:center;
@@ -139,8 +138,7 @@
   /* Banner upload button (admin) */
   .landing-banner-upload{position:absolute;bottom:-8px;right:-8px;width:28px;height:28px;border-radius:50%;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.3);display:none;align-items:center;justify-content:center;cursor:pointer;z-index:10;transition:all .2s;font-size:12px;color:var(--cyan)}
   .landing-banner-upload:hover{background:rgba(0,212,255,.25);border-color:rgba(0,212,255,.5)}
-  body.admin-mode .landing-banner-upload{display:flex}
-  body.team-view-mode .landing-banner-upload{display:none !important}
+  body.edit-mode .landing-banner-upload{display:flex}
   #landingBannerFile{display:none}
 
   /* Admin Choice Modal */
@@ -329,9 +327,9 @@
   /* ══════ VAULT OPEN ══════ */
   #vaultOpenOverlay{position:fixed;inset:0;z-index:9000;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .5s}
   #vaultOpenOverlay.active{opacity:1;pointer-events:all}
-  .vo-text{font-family:'Staatliches',cursive;font-size:30px;color:var(--green);letter-spacing:12px;opacity:0;transform:scale(.9);transition:all .8s}
+  .vo-text{font-family:'Staatliches',cursive;font-size:30px;color:var(--green);letter-spacing:12px;opacity:0;transform:scale(.9);transition:all .8s;text-align:center;padding-left:12px}
   .vo-text.show{opacity:1;transform:scale(1)}
-  .vo-sub{font-size:11px;font-family:'Chakra Petch',sans-serif;letter-spacing:6px;color:#999;margin-top:15px;font-weight:600;opacity:0;transition:opacity .6s ease .5s}
+  .vo-sub{font-size:11px;font-family:'Chakra Petch',sans-serif;letter-spacing:6px;color:#999;margin-top:15px;font-weight:600;opacity:0;transition:opacity .6s ease .5s;text-align:center;padding-left:6px}
   .vo-sub.show{opacity:1}
   .vo-bar{width:300px;height:2px;background:#151515;border-radius:1px;margin-top:30px;overflow:hidden;opacity:0;transition:opacity .4s ease .8s}
   .vo-bar.show{opacity:1}
@@ -632,8 +630,6 @@
   .admin-trigger:hover{border-color:rgba(255,170,51,.6);box-shadow:0 0 14px rgba(255,170,51,.2)}
   .admin-trigger::after{content:'';position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px rgba(255,170,51,.6);animation:ledPulse 2s ease-in-out infinite}
   body.admin-mode .admin-trigger{display:flex}
-  body.team-view-mode .admin-trigger{opacity:.3}
-  body.team-view-mode .admin-trigger::after{display:none}
 
   /* Admin dropdown menu */
   .admin-dropdown{position:fixed;bottom:52px;right:10px;z-index:810;width:220px;border-radius:6px;
@@ -879,22 +875,18 @@
 
   .admin-edit-btn{display:none;position:absolute;top:6px;right:6px;width:24px;height:24px;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);border-radius:3px;color:var(--cyan);font-size:11px;cursor:pointer;align-items:center;justify-content:center;z-index:10;transition:all .2s}
   .admin-edit-btn:hover{background:rgba(0,212,255,.25)}
-  body.admin-mode .admin-edit-btn{display:flex}
+  body.edit-mode .admin-edit-btn{display:flex}
   .admin-edit-inline{display:none;width:18px;height:18px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);border-radius:3px;color:var(--cyan);font-size:9px;cursor:pointer;align-items:center;justify-content:center;margin-left:8px;vertical-align:middle;transition:all .2s;flex-shrink:0}
   .admin-edit-inline:hover{background:rgba(0,212,255,.25)}
-  body.admin-mode .admin-edit-inline{display:inline-flex}
+  body.edit-mode .admin-edit-inline{display:inline-flex}
   .admin-add-btn{display:none;background:var(--bg-surface);border:2px dashed rgba(0,212,255,.15);border-radius:5px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;color:#777;font-size:10px;letter-spacing:2px}
   .admin-add-btn:hover{border-color:var(--cyan);color:var(--cyan)}
-  body.admin-mode .admin-add-btn{display:block}
+  body.edit-mode .admin-add-btn{display:block}
   .admin-row-edit{display:none;width:18px;height:18px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:3px;color:var(--cyan);font-size:8px;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
   .admin-row-edit:hover{background:rgba(0,212,255,.2)}
-  body.admin-mode .admin-row-edit{display:flex}
+  body.edit-mode .admin-row-edit{display:flex}
 
-  /* Team View mode — hides all admin edit affordances */
-  body.team-view-mode .admin-edit-btn{display:none !important}
-  body.team-view-mode .admin-edit-inline{display:none !important}
-  body.team-view-mode .admin-add-btn{display:none !important}
-  body.team-view-mode .admin-row-edit{display:none !important}
+  /* Team View mode — removed, replaced by edit-mode approach */
   .edit-field-row{display:flex;gap:10px}.edit-field-row .edit-field{flex:1}
   .edit-box .edit-field input[type="file"]{padding:8px}
   .edit-font-row{display:flex;gap:10px;align-items:flex-end}
@@ -1289,7 +1281,7 @@
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openKeysCodes()"><span class="adm-icon">🔐</span><span class="adm-label">Keys & Codes</span></div>
     <div class="admin-dropdown-sep"></div>
     <div class="admin-dropdown-toggle" onclick="toggleAllowDownloads()"><span class="adm-icon">⬇</span><span class="adm-label">Allow Downloads</span><span class="adm-toggle off" id="admDlToggle">OFF</span></div>
-    <div class="admin-dropdown-toggle" onclick="toggleViewAsTeam()"><span class="adm-icon">👁</span><span class="adm-label">View as Player</span><span class="adm-toggle off" id="admViewToggle">OFF</span></div>
+    <div class="admin-dropdown-toggle" onclick="toggleEditMode()"><span class="adm-icon">✎</span><span class="adm-label">Edit Mode</span><span class="adm-toggle off" id="admEditToggle">OFF</span></div>
     <div class="admin-dropdown-sep"></div>
     <div class="admin-dropdown-item adm-danger" onclick="closeAdminDropdown();exitAdmin()"><span class="adm-icon">✕</span><span class="adm-label">Exit Admin</span></div>
   </div>
@@ -1953,6 +1945,8 @@ function doLogout(){
   document.getElementById('notepadTrigger').classList.remove('visible');
   if(elapsedInterval){clearInterval(elapsedInterval);elapsedInterval=null}
   elapsedSec=0;currentVaultTeam=null;
+  // Clear admin state on logout
+  if(isAdmin){isAdmin=false;document.body.classList.remove('admin-mode');document.body.classList.remove('edit-mode');closeAdminDropdown()}
   showScreen('landingScreen');
 }
 
@@ -2383,7 +2377,7 @@ let mediaItems=[
 // ══════ RENDER ══════
 
 function renderFeed(){
-  const grid=document.getElementById('feedGridView'),isA=document.body.classList.contains('admin-mode');
+  const grid=document.getElementById('feedGridView'),isA=document.body.classList.contains('edit-mode');
   grid.innerHTML=posts.map((p,i)=>{
     const isVid=p.mediaType==='video'&&p.mediaUrl;
     const isImg=p.mediaType!=='video'&&p.mediaUrl;
@@ -2403,7 +2397,7 @@ function renderFeed(){
   setTimeout(()=>{grid.querySelectorAll('video.feed-card-video').forEach(v=>{v.muted=true;v.play().catch(()=>{})})},50);
 }
 function renderMedia(){
-  const list=document.getElementById('mediaList'),isA=document.body.classList.contains('admin-mode');
+  const list=document.getElementById('mediaList'),isA=document.body.classList.contains('edit-mode');
   list.innerHTML=mediaItems.map((m,i)=>`<div class="media-exp-item" style="${m.type==='locked'&&!m.unlocked?'opacity:.4;':''}" onclick="openMediaViewer(${i})">${isA?`<div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${i})" style="position:absolute;top:8px;right:8px">✎</div>`:''}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(m.nameFont||'')}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(m.descFont||'')}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${m.type}${m.type==='locked'&&m.unlocked?' ✓':''}</span></div>`).join('')+(isA?'<div class="admin-add-btn" onclick="addMediaItem()">+ Add Media</div>':'');
   const badge=document.getElementById('mediaBadge');if(badge)badge.textContent=mediaItems.length+' FILES';
 }
@@ -3012,9 +3006,9 @@ function closeAdminDropdown(){document.getElementById('adminDropdown').classList
 function syncAdminDropdownToggles(){
   const dlEl=document.getElementById('admDlToggle');
   if(dlEl){dlEl.textContent=allowDownloads?'ON':'OFF';dlEl.className='adm-toggle '+(allowDownloads?'on':'off')}
-  const vwEl=document.getElementById('admViewToggle');
-  const isTV=document.body.classList.contains('team-view-mode');
-  if(vwEl){vwEl.textContent=isTV?'ON':'OFF';vwEl.className='adm-toggle '+(isTV?'on':'off')}
+  const edEl=document.getElementById('admEditToggle');
+  const isEdit=document.body.classList.contains('edit-mode');
+  if(edEl){edEl.textContent=isEdit?'ON':'OFF';edEl.className='adm-toggle '+(isEdit?'on':'off')}
 }
 function toggleAllowDownloads(){
   allowDownloads=!allowDownloads;
@@ -3027,15 +3021,14 @@ document.addEventListener('click',e=>{
   if(dd.classList.contains('open')&&!dd.contains(e.target)&&!trigger.contains(e.target)){closeAdminDropdown()}
 });
 
-function toggleViewAsTeam(){
-  const isTeamView=document.body.classList.contains('team-view-mode');
-  if(!isTeamView){
-    document.body.classList.add('team-view-mode');
-    renderGrid();renderFeed();renderMedia();renderIntelForm();
+function toggleEditMode(){
+  const isEdit=document.body.classList.contains('edit-mode');
+  if(!isEdit){
+    document.body.classList.add('edit-mode');
   }else{
-    document.body.classList.remove('team-view-mode');
-    renderGrid();renderFeed();renderMedia();renderIntelForm();
+    document.body.classList.remove('edit-mode');
   }
+  renderGrid();renderFeed();renderMedia();renderIntelForm();
   syncAdminDropdownToggles();
   closeAdminDropdown();
 }
@@ -3052,7 +3045,7 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('contextmenu',e=>{
   if(e.target.closest('.feed-card-img')||e.target.closest('.feed-single-img')||e.target.closest('.mv-body')||e.target.closest('.no-download-shield'))e.preventDefault();
 });
-function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');document.body.classList.remove('team-view-mode');closeAdminDropdown();closeAdminPanel();closeBroadcast();closeLeaderboard();closeKeysCodes();renderGrid();renderIntelForm()}
+function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');document.body.classList.remove('edit-mode');closeAdminDropdown();closeAdminPanel();closeBroadcast();closeLeaderboard();closeKeysCodes();renderGrid();renderIntelForm()}
 
 // ══════ SCREEN NAVIGATION ══════
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',id==='consoleScreen')}
@@ -3832,7 +3825,7 @@ function saveOperationName(){
 
 // ── Grid Tiles ──
 function renderGrid(){
-  const isA=document.body.classList.contains('admin-mode');
+  const isA=document.body.classList.contains('edit-mode');
   const g=document.getElementById('consoleGrid');
   g.innerHTML=gridTiles.map((t,i)=>{
     const isIntel=t.id==='intel';
@@ -3909,7 +3902,7 @@ function saveGridTile(i){
 
 // ── Intel Fields ──
 function renderIntelForm(){
-  const isA=document.body.classList.contains('admin-mode');
+  const isA=document.body.classList.contains('edit-mode');
   const form=document.getElementById('intelForm');
   // Preserve existing input values
   const prevVals={};
