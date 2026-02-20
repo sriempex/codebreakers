@@ -74,6 +74,9 @@
   #landingScreen::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.03) 3px,rgba(0,0,0,.03) 6px);pointer-events:none;z-index:2}
   #landingScreen::after{content:'';position:absolute;top:-2px;left:0;right:0;height:2px;background:rgba(0,255,136,.06);z-index:3;animation:scanDown 8s linear infinite;box-shadow:0 0 15px rgba(0,255,136,.04)}
   @keyframes scanDown{0%{top:-2px}100%{top:100%}}
+  /* Circuit board SVG background */
+  .landing-circuits{position:absolute;inset:0;z-index:1;overflow:hidden;opacity:.35}
+  .landing-circuits svg{position:absolute;width:100%;height:100%}
 
   .landing-container{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;max-width:520px;width:90%;padding:40px 0}
 
@@ -97,33 +100,14 @@
   .landing-subtitle{font-family:'Chakra Petch',sans-serif;font-size:12px;letter-spacing:4px;color:#8a8a8a;font-weight:600;text-transform:uppercase;text-align:center;animation:fadeUp .8s ease .3s both;margin-bottom:40px}
 
   .landing-actions{display:flex;flex-direction:column;gap:14px;width:100%;align-items:center;animation:fadeUp .8s ease .45s both}
-  .landing-register-link{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#888;cursor:pointer;transition:color .2s;padding:8px 0;letter-spacing:.5px}
-  .landing-register-link:hover{color:var(--cyan)}
-  .landing-register-link span:last-child{color:var(--cyan);text-decoration:underline;text-underline-offset:3px}
-  .landing-btn{position:relative;width:100%;padding:24px 28px;border-radius:10px;cursor:pointer;transition:all .35s;overflow:hidden;display:flex;align-items:center;gap:20px;
-    background:
-      linear-gradient(180deg,rgba(22,26,36,.95) 0%,rgba(14,17,24,.98) 100%);
-    border:1px solid rgba(255,255,255,.06);
-    box-shadow:0 2px 4px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.03),inset 0 -1px 0 rgba(0,0,0,.3)}
-  .landing-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 10%,rgba(255,255,255,.06) 50%,transparent 90%)}
-  .landing-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.01) 0%,transparent 50%,rgba(0,0,0,.05) 100%);pointer-events:none;transition:opacity .3s;opacity:1}
-  .landing-btn:hover{transform:translateY(-2px);box-shadow:0 4px 8px rgba(0,0,0,.5),0 12px 35px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.04)}
-  .landing-btn:active{transform:translateY(0);box-shadow:0 1px 3px rgba(0,0,0,.4),0 4px 12px rgba(0,0,0,.3)}
-
-  .landing-btn-icon{width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;position:relative;z-index:2;
-    box-shadow:inset 0 2px 4px rgba(0,0,0,.4),inset 0 -1px 0 rgba(255,255,255,.03),0 2px 6px rgba(0,0,0,.3)}
-  .landing-btn-icon.register{background:linear-gradient(180deg,rgba(0,255,136,.12),rgba(0,255,136,.04));border:1px solid rgba(0,255,136,.2)}
-  .landing-btn-icon.vault{background:linear-gradient(180deg,rgba(0,212,255,.12),rgba(0,212,255,.04));border:1px solid rgba(0,212,255,.2)}
-
-  .landing-btn-text{display:flex;flex-direction:column;gap:4px;position:relative;z-index:2}
-  .landing-btn-title{font-family:'Saira',sans-serif;font-size:14px;letter-spacing:4px;color:var(--green);text-transform:uppercase;font-weight:700}
-  .landing-btn-desc{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#999;letter-spacing:.3px;line-height:1.6;font-weight:500}
-
-  .landing-btn.register-entry:hover{border-color:rgba(0,255,136,.15)}
-  .landing-btn.register-entry:hover .landing-btn-icon{box-shadow:inset 0 2px 4px rgba(0,0,0,.4),0 0 12px rgba(0,255,136,.08);border-color:rgba(0,255,136,.3)}
-  .landing-btn.vault-entry .landing-btn-title{color:var(--cyan)}
-  .landing-btn.vault-entry:hover{border-color:rgba(0,212,255,.15)}
-  .landing-btn.vault-entry:hover .landing-btn-icon{box-shadow:inset 0 2px 4px rgba(0,0,0,.4),0 0 12px rgba(0,212,255,.08);border-color:rgba(0,212,255,.3)}
+  .landing-login-btn{padding:16px 60px;border-radius:6px;cursor:pointer;transition:all .3s;
+    font-family:'Saira',sans-serif;font-size:15px;letter-spacing:6px;color:#d0f0e0;text-transform:uppercase;font-weight:700;text-align:center;
+    background:linear-gradient(180deg,#1a3a2a,#0f2a1a);
+    border:1px solid rgba(0,255,136,.25);
+    box-shadow:0 0 20px rgba(0,255,136,.04),0 4px 15px rgba(0,0,0,.4)}
+  .landing-login-btn:hover{background:linear-gradient(180deg,#1f4a32,#143520);border-color:rgba(0,255,136,.4);
+    box-shadow:0 0 30px rgba(0,255,136,.08),0 6px 20px rgba(0,0,0,.5);transform:translateY(-2px)}
+  .landing-login-btn:active{transform:translateY(0);box-shadow:0 0 15px rgba(0,255,136,.03),0 2px 8px rgba(0,0,0,.4)}
 
   /* Landing footer */
   .landing-footer{position:absolute;bottom:16px;left:0;right:0;text-align:center;z-index:5;animation:fadeUp .8s ease .6s both}
@@ -182,6 +166,9 @@
   .login-submit{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700}
   .login-submit:hover{background:rgba(0,255,136,.1);box-shadow:0 0 25px rgba(0,255,136,.12)}
   .login-status{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.03)}
+  .login-register-link{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#888;cursor:pointer;transition:color .2s;padding:12px 0 0;letter-spacing:.5px;text-align:center}
+  .login-register-link:hover{color:var(--cyan)}
+  .login-register-link span.lrl-action{color:var(--cyan);text-decoration:underline;text-underline-offset:3px}
 
   /* ══════ VAULT PUZZLE (in-console) ══════ */
   .vault-puzzle-layout{display:flex;gap:24px;max-width:850px;margin:0 auto;align-items:flex-start;justify-content:center}
@@ -1301,6 +1288,61 @@
 
 <!-- LANDING PAGE -->
 <div class="screen active" id="landingScreen">
+  <div class="landing-circuits">
+    <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="cGlow" cx="50%" cy="40%" r="50%"><stop offset="0%" stop-color="rgba(0,255,136,.06)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+      </defs>
+      <rect fill="url(#cGlow)" width="1200" height="800"/>
+      <!-- Horizontal traces -->
+      <line x1="0" y1="120" x2="320" y2="120" stroke="rgba(0,255,136,.12)" stroke-width=".8"/>
+      <line x1="380" y1="120" x2="600" y2="120" stroke="rgba(0,255,136,.08)" stroke-width=".5"/>
+      <line x1="0" y1="280" x2="180" y2="280" stroke="rgba(0,212,255,.1)" stroke-width=".8"/>
+      <line x1="240" y1="280" x2="440" y2="280" stroke="rgba(0,212,255,.06)" stroke-width=".5"/>
+      <line x1="700" y1="200" x2="1200" y2="200" stroke="rgba(0,255,136,.1)" stroke-width=".8"/>
+      <line x1="800" y1="350" x2="1200" y2="350" stroke="rgba(0,212,255,.08)" stroke-width=".5"/>
+      <line x1="0" y1="500" x2="250" y2="500" stroke="rgba(0,255,136,.07)" stroke-width=".5"/>
+      <line x1="900" y1="520" x2="1200" y2="520" stroke="rgba(0,255,136,.09)" stroke-width=".8"/>
+      <line x1="0" y1="650" x2="350" y2="650" stroke="rgba(0,212,255,.08)" stroke-width=".5"/>
+      <line x1="750" y1="680" x2="1200" y2="680" stroke="rgba(0,212,255,.06)" stroke-width=".5"/>
+      <!-- Vertical traces -->
+      <line x1="320" y1="0" x2="320" y2="180" stroke="rgba(0,255,136,.1)" stroke-width=".8"/>
+      <line x1="320" y1="120" x2="320" y2="280" stroke="rgba(0,255,136,.06)" stroke-width=".5"/>
+      <line x1="180" y1="280" x2="180" y2="500" stroke="rgba(0,212,255,.08)" stroke-width=".5"/>
+      <line x1="900" y1="0" x2="900" y2="200" stroke="rgba(0,255,136,.08)" stroke-width=".5"/>
+      <line x1="900" y1="200" x2="900" y2="520" stroke="rgba(0,255,136,.05)" stroke-width=".5"/>
+      <line x1="440" y1="280" x2="440" y2="800" stroke="rgba(0,212,255,.05)" stroke-width=".5"/>
+      <line x1="750" y1="350" x2="750" y2="680" stroke="rgba(0,212,255,.06)" stroke-width=".5"/>
+      <line x1="1050" y1="0" x2="1050" y2="350" stroke="rgba(0,255,136,.06)" stroke-width=".5"/>
+      <line x1="120" y1="500" x2="120" y2="800" stroke="rgba(0,255,136,.05)" stroke-width=".5"/>
+      <!-- Angled traces -->
+      <line x1="600" y1="120" x2="700" y2="200" stroke="rgba(0,255,136,.07)" stroke-width=".5"/>
+      <line x1="250" y1="500" x2="350" y2="650" stroke="rgba(0,212,255,.06)" stroke-width=".5"/>
+      <line x1="800" y1="350" x2="750" y2="520" stroke="rgba(0,255,136,.05)" stroke-width=".5"/>
+      <!-- Junction nodes -->
+      <circle cx="320" cy="120" r="3" fill="rgba(0,255,136,.2)"/><circle cx="320" cy="120" r="1.2" fill="rgba(0,255,136,.5)"/>
+      <circle cx="180" cy="280" r="3" fill="rgba(0,212,255,.2)"/><circle cx="180" cy="280" r="1.2" fill="rgba(0,212,255,.5)"/>
+      <circle cx="440" cy="280" r="2.5" fill="rgba(0,212,255,.15)"/><circle cx="440" cy="280" r="1" fill="rgba(0,212,255,.4)"/>
+      <circle cx="900" cy="200" r="3" fill="rgba(0,255,136,.2)"/><circle cx="900" cy="200" r="1.2" fill="rgba(0,255,136,.5)"/>
+      <circle cx="900" cy="520" r="2.5" fill="rgba(0,255,136,.15)"/><circle cx="900" cy="520" r="1" fill="rgba(0,255,136,.4)"/>
+      <circle cx="700" cy="200" r="2.5" fill="rgba(0,255,136,.15)"/><circle cx="700" cy="200" r="1" fill="rgba(0,255,136,.4)"/>
+      <circle cx="600" cy="120" r="2" fill="rgba(0,255,136,.12)"/><circle cx="600" cy="120" r=".8" fill="rgba(0,255,136,.3)"/>
+      <circle cx="250" cy="500" r="2.5" fill="rgba(0,255,136,.15)"/><circle cx="250" cy="500" r="1" fill="rgba(0,255,136,.4)"/>
+      <circle cx="800" cy="350" r="3" fill="rgba(0,212,255,.18)"/><circle cx="800" cy="350" r="1.2" fill="rgba(0,212,255,.45)"/>
+      <circle cx="750" cy="680" r="2.5" fill="rgba(0,212,255,.15)"/><circle cx="750" cy="680" r="1" fill="rgba(0,212,255,.4)"/>
+      <circle cx="350" cy="650" r="2.5" fill="rgba(0,212,255,.15)"/><circle cx="350" cy="650" r="1" fill="rgba(0,212,255,.4)"/>
+      <circle cx="120" cy="500" r="2" fill="rgba(0,255,136,.12)"/><circle cx="120" cy="500" r=".8" fill="rgba(0,255,136,.3)"/>
+      <circle cx="1050" cy="350" r="2.5" fill="rgba(0,255,136,.15)"/><circle cx="1050" cy="350" r="1" fill="rgba(0,255,136,.4)"/>
+      <!-- IC chip shapes -->
+      <rect x="295" y="95" width="50" height="50" rx="3" fill="none" stroke="rgba(0,255,136,.06)" stroke-width=".5"/>
+      <rect x="875" y="175" width="50" height="50" rx="3" fill="none" stroke="rgba(0,255,136,.06)" stroke-width=".5"/>
+      <rect x="775" y="325" width="50" height="50" rx="3" fill="none" stroke="rgba(0,212,255,.06)" stroke-width=".5"/>
+      <!-- Pulsing nodes -->
+      <circle cx="320" cy="120" r="6" fill="none" stroke="rgba(0,255,136,.1)" stroke-width=".3"><animate attributeName="r" values="3;8;3" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values=".3;0;.3" dur="3s" repeatCount="indefinite"/></circle>
+      <circle cx="900" cy="200" r="6" fill="none" stroke="rgba(0,255,136,.1)" stroke-width=".3"><animate attributeName="r" values="3;8;3" dur="4s" repeatCount="indefinite"/><animate attributeName="opacity" values=".3;0;.3" dur="4s" repeatCount="indefinite"/></circle>
+      <circle cx="800" cy="350" r="6" fill="none" stroke="rgba(0,212,255,.1)" stroke-width=".3"><animate attributeName="r" values="3;8;3" dur="3.5s" repeatCount="indefinite"/><animate attributeName="opacity" values=".3;0;.3" dur="3.5s" repeatCount="indefinite"/></circle>
+    </svg>
+  </div>
   <div class="landing-container">
     <div class="landing-banner" id="landingBannerWrap">
       <span class="landing-banner-icon">🔐</span>
@@ -1311,16 +1353,7 @@
     <div class="landing-title" id="landingTitleEl">Code Breakers</div>
     <div class="landing-subtitle" id="landingSubEl">Team Challenge Experience</div>
     <div class="landing-actions">
-      <div class="landing-btn vault-entry" onclick="goToLogin()">
-        <div class="landing-btn-icon vault">🔑</div>
-        <div class="landing-btn-text">
-          <span class="landing-btn-title" id="landingVaultTitle">Login</span>
-          <span class="landing-btn-desc" id="landingVaultDesc">Enter your Team ID to access the console.</span>
-        </div>
-      </div>
-      <div class="landing-register-link" onclick="goToRegistration()">
-        <span id="landingNewBtnTitle">New team?</span> <span id="landingNewBtnDesc">Register here</span>
-      </div>
+      <div class="landing-login-btn" onclick="goToLogin()">LOGIN</div>
     </div>
   </div>
   <div class="landing-footer"><span>© 2026 Sandals Employee Experience. All rights reserved.</span></div>
@@ -1400,6 +1433,7 @@
         <span class="v-lbl" id="loginLbl">AWAITING INPUT</span>
       </div>
     </div>
+    <div class="login-register-link" id="loginRegLink" onclick="goToRegistration()"><span id="loginRegText">Don't have an ID?</span> <span class="lrl-action" id="loginRegAction">Register here</span></div>
   </div>
 </div>
 
@@ -3165,22 +3199,21 @@ function selectRegType(el){
 // ══════ LANDING PAGE ══════
 function updateLandingForMode(){
   const mode=regSettings.participantMode||'team';
-  const newBtn=document.getElementById('landingNewBtnTitle');
-  const newDesc=document.getElementById('landingNewBtnDesc');
-  const vaultDesc=document.getElementById('landingVaultDesc');
-  if(!newBtn)return;
+  const regText=document.getElementById('loginRegText');
+  const regAction=document.getElementById('loginRegAction');
+  const regLink=document.getElementById('loginRegLink');
+  if(!regText)return;
+  // Hide register link if registration is closed
+  if(regLink)regLink.style.display=regSettings.registrationOpen===false?'none':'';
   if(mode==='team'){
-    newBtn.textContent='New team?';
-    newDesc.textContent='Register here';
-    if(vaultDesc)vaultDesc.textContent='Enter your Team ID to access the console.';
+    regText.textContent="Don't have a Team ID?";
+    regAction.textContent='Register your team';
   }else if(mode==='individual'){
-    newBtn.textContent='New here?';
-    newDesc.textContent='Register now';
-    if(vaultDesc)vaultDesc.textContent='Enter your Participant ID to access the console.';
+    regText.textContent="Don't have an ID?";
+    regAction.textContent='Register here';
   }else{
-    newBtn.textContent='New here?';
-    newDesc.textContent='Register your team or yourself';
-    if(vaultDesc)vaultDesc.textContent='Enter your Team or Participant ID to access the console.';
+    regText.textContent="Don't have an ID?";
+    regAction.textContent='Register your team or yourself';
   }
 }
 function updateLandingBanner(){
