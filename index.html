@@ -14,7 +14,7 @@
 
   .screen{position:fixed;inset:0;transition:opacity .3s;opacity:0;pointer-events:none;z-index:1;will-change:opacity;transform:translateZ(0)}
   .screen.active{opacity:1;pointer-events:all;z-index:10}
-  #grainCanvas{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.03}
+  #grainCanvas{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.03;image-rendering:pixelated;image-rendering:crisp-edges}
 
   /* ══════ REGISTRATION ══════ */
   #regScreen{display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 30%,rgba(0,255,136,.02) 0%,transparent 60%),linear-gradient(180deg,#0c0d10,#070809)}
@@ -144,7 +144,7 @@
   #landingBannerFile{display:none}
 
   /* Admin Choice Modal */
-  #adminChoiceModal{position:fixed;inset:0;z-index:8500;background:rgba(0,0,0,.92);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #adminChoiceModal{position:fixed;inset:0;z-index:8500;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #adminChoiceModal.active{opacity:1;pointer-events:all}
   .admin-choice-box{width:380px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:28px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
   .admin-choice-box h3{font-family:'Staatliches',cursive;font-size:14px;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;margin-bottom:8px}
@@ -449,7 +449,7 @@
   .crt-monitor .admin-edit-btn{top:4px;right:4px;z-index:10}
 
   /* ══════ EXPANDED OVERLAY ══════ */
-  #panelOverlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #panelOverlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #panelOverlay.active{opacity:1;pointer-events:all}
   .expanded-panel{width:92vw;height:88vh;border-radius:6px;display:none;flex-direction:column;overflow:hidden;
     background:
@@ -566,7 +566,7 @@
   .intel-submit-btn:disabled{opacity:.25;cursor:not-allowed}
 
   /* ══════ CONFIRM MODAL ══════ */
-  #confirmModal{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #confirmModal{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #confirmModal.active{opacity:1;pointer-events:all}
   .confirm-box{width:600px;max-height:80vh;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 80px rgba(0,0,0,.6)}
   .confirm-header{padding:18px 22px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--bg-surface),var(--bg-panel))}
@@ -605,13 +605,13 @@
   .logout-btn span{font-family:'Saira',sans-serif;font-size:12px;letter-spacing:3px;color:var(--red);font-weight:700;text-transform:uppercase}
 
   /* Logout confirm modal */
-  #logoutModal{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.92);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #logoutModal{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #logoutModal.active{opacity:1;pointer-events:all}
   .logout-box{width:380px;background:var(--bg-panel);border:1px solid rgba(255,50,50,.2);border-radius:8px;padding:28px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
   .logout-box h3{font-family:'Staatliches',cursive;font-size:14px;letter-spacing:4px;color:var(--red);text-transform:uppercase;margin-bottom:10px}
   .logout-box p{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#bbb;line-height:1.7;font-weight:500;margin-bottom:20px}
 
-  #adminLogin{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.94);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #adminLogin{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #adminLogin.active{opacity:1;pointer-events:all}
   .admin-login-box{width:340px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
   .admin-login-box h3{font-family:'Staatliches',cursive;font-size:12px;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;margin-bottom:4px}
@@ -642,7 +642,7 @@
   .admin-bar-btn:hover{border-color:rgba(0,212,255,.2);color:var(--cyan)}
 
   /* Admin Profile Panel */
-  #adminPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #adminPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #adminPanel.active{opacity:1;pointer-events:all}
   .ap-container{width:560px;max-height:85vh;overflow-y:auto;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
@@ -707,7 +707,7 @@
   .ap-lb-empty{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#555;padding:20px 0;text-align:center}
 
   /* ══════ FULL LEADERBOARD MODULE ══════ */
-  #leaderboardModule{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.95);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #leaderboardModule{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.95);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #leaderboardModule.active{opacity:1;pointer-events:all}
   .lb-container{width:680px;max-width:96vw;height:88vh;display:flex;flex-direction:column;border-radius:8px;overflow:hidden;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
@@ -761,7 +761,7 @@
   .lb-field-status.correct{color:var(--green)}.lb-field-status.wrong{color:var(--red)}.lb-field-status.empty{color:#444}.lb-field-status.pending{color:var(--amber)}
 
   /* ══════ KEYS & CODES PANEL ══════ */
-  #keysCodesPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #keysCodesPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #keysCodesPanel.active{opacity:1;pointer-events:all}
   .kc-container{width:520px;max-width:96vw;max-height:85vh;overflow-y:auto;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
@@ -781,7 +781,7 @@
   .kc-empty{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#666;letter-spacing:1px;font-style:italic}
 
   /* Broadcast Panel */
-  #broadcastPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #broadcastPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #broadcastPanel.active{opacity:1;pointer-events:all}
   .bc-container{width:500px;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
@@ -858,7 +858,7 @@
   .edit-font-row .edit-field:last-child{flex:0 0 160px}
   .edit-field select option{padding:4px 8px}
 
-  #adminEditModal{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.92);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #adminEditModal{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #adminEditModal.active{opacity:1;pointer-events:all}
   .edit-box{width:500px;max-width:92vw;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.5);box-sizing:border-box}
   .edit-box h3{font-family:'Saira',sans-serif;font-size:10px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:16px}
@@ -915,7 +915,7 @@
   .overscroll-pull span{font-size:8px;color:#555;letter-spacing:2px;padding-bottom:8px}
 
   /* ══════ MEDIA VIEWER ══════ */
-  #mediaViewer{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #mediaViewer{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #mediaViewer.active{opacity:1;pointer-events:all}
   .mv-container{width:92vw;height:90vh;display:flex;flex-direction:column;border-radius:6px;overflow:hidden;
     background:
@@ -1486,6 +1486,12 @@
 
 <!-- PLAYER BROADCAST BANNER -->
 <div id="playerBanner">
+  <div class="pb-inner">
+    <span class="pb-icon" id="pbIcon">📢</span>
+    <div id="pbContent"></div>
+    <span class="pb-close" onclick="dismissBanner()">✕</span>
+  </div>
+</div>
 
 <!-- FULL LEADERBOARD MODULE -->
 <div id="leaderboardModule">
@@ -1525,12 +1531,6 @@
   <div class="kc-container">
     <div class="kc-header"><h3>🔐 Keys & Codes</h3><button class="mv-close" onclick="closeKeysCodes()">✕ CLOSE</button></div>
     <div class="kc-body" id="kcBody"></div>
-  </div>
-</div>
-  <div class="pb-inner">
-    <span class="pb-icon" id="pbIcon">📢</span>
-    <div id="pbContent"></div>
-    <span class="pb-close" onclick="dismissBanner()">✕</span>
   </div>
 </div>
   <div class="console-topbar">
@@ -1961,11 +1961,12 @@ function playPanelOpen(){
 
 // ══════ GRAIN + DUST ══════
 const gc=document.getElementById('grainCanvas'),gx=gc.getContext('2d');
-function rg(){gc.width=innerWidth;gc.height=innerHeight}
+const GRAIN_SCALE=4; // render at 1/4 resolution
+function rg(){gc.width=Math.ceil(innerWidth/GRAIN_SCALE);gc.height=Math.ceil(innerHeight/GRAIN_SCALE);gc.style.width=innerWidth+'px';gc.style.height=innerHeight+'px';gx.imageSmoothingEnabled=false}
 let lastGrain=0;
 function dg(t){requestAnimationFrame(dg);if(t-lastGrain<125)return;lastGrain=t;const w=gc.width,h=gc.height,id=gx.createImageData(w,h),d=id.data;for(let i=0;i<d.length;i+=4){const v=Math.random()*255;d[i]=d[i+1]=d[i+2]=v;d[i+3]=8}gx.putImageData(id,0,0)}
-rg();addEventListener('resize',rg);requestAnimationFrame(dg);
-for(let i=0;i<10;i++){const p=document.createElement('div');p.className='dust';p.style.left=Math.random()*100+'vw';p.style.animationDuration=(12+Math.random()*16)+'s';p.style.animationDelay=(Math.random()*12)+'s';const s=1+Math.random()*1.5;p.style.width=s+'px';p.style.height=s+'px';document.body.appendChild(p)}
+rg();let resizeTimer;addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(rg,200)});requestAnimationFrame(dg);
+for(let i=0;i<5;i++){const p=document.createElement('div');p.className='dust';p.style.left=Math.random()*100+'vw';p.style.animationDuration=(12+Math.random()*16)+'s';p.style.animationDelay=(Math.random()*12)+'s';const s=1+Math.random()*1.5;p.style.width=s+'px';p.style.height=s+'px';document.body.appendChild(p)}
 
 // ══════ VAULT ══════
 let masterAccessKey='';let manualVaultKeys=[];let code='';const vDisp=document.getElementById('vDisp');
@@ -2795,7 +2796,7 @@ function adminAuth(){
   const u=document.getElementById('adUser').value,p=document.getElementById('adPass').value;
   const match=adminUsers.find(a=>a.user===u&&a.pass===p);
   if(match){
-    isAdmin=true;document.body.classList.add('admin-mode');document.getElementById('adminBar').classList.add('active');document.getElementById('adminDlToggle').checked=allowDownloads;hideAdminLogin();renderGrid();renderIntelForm();
+    isAdmin=true;document.body.classList.add('admin-mode');document.getElementById('adminBar').classList.add('active');document.getElementById('adminDlToggle').checked=allowDownloads;hideAdminLogin();dismissBanner();renderGrid();renderIntelForm();
   }
   else{document.getElementById('adErr').textContent='Authentication failed';document.getElementById('adPass').value=''}
 }
