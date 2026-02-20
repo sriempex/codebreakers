@@ -503,8 +503,8 @@
   .exp-body{flex:1;overflow-y:auto;padding:20px}
 
   /* Panel navigation tabs */
-  .exp-tabs{display:flex;gap:2px;margin-left:auto;margin-right:12px}
-  .exp-tab{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#666;cursor:pointer;padding:5px 12px;border-radius:3px;transition:all .12s;white-space:nowrap;border:1px solid transparent}
+  .exp-tabs{display:flex;gap:3px;margin-left:auto;margin-right:14px}
+  .exp-tab{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#666;cursor:pointer;padding:7px 16px;border-radius:3px;transition:all .12s;white-space:nowrap;border:1px solid transparent}
   .exp-tab:hover{color:#bbb;background:rgba(255,255,255,.04)}
   .exp-tab.active{color:var(--green);border-color:rgba(0,255,136,.12);background:rgba(0,255,136,.04)}
 
@@ -517,7 +517,9 @@
   .feed-view-btn:hover{border-color:rgba(255,255,255,.08);color:#aaa}
 
   .feed-expanded{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;max-width:900px;margin:0 auto}
-  .feed-expanded.list-mode{grid-template-columns:1fr;gap:14px;max-width:560px}
+  .feed-expanded.list-mode{display:flex;flex-direction:column;gap:14px;max-width:560px;margin:0 auto}
+  .feed-expanded.list-mode .feed-card-img{max-height:560px;overflow:hidden}
+  .feed-expanded.list-mode .feed-card-img img{width:100%;height:auto;object-fit:contain}
   .feed-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:3px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative}
   .feed-card:hover{border-color:var(--green-dim);box-shadow:0 6px 20px rgba(0,0,0,.3)}
   .feed-card-img{width:100%;display:flex;align-items:center;justify-content:center;font-size:40px;background-size:cover;background-position:center;position:relative;min-height:120px}
@@ -666,7 +668,7 @@
   .admin-dropdown-toggle .adm-toggle.on{color:var(--green);background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15)}
   .admin-dropdown-toggle .adm-toggle.off{color:#666;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
 
-  .logout-btn{position:fixed;bottom:20px;left:20px;z-index:790;display:none;align-items:center;gap:6px;border-radius:5px;padding:10px 20px;cursor:pointer;transition:all .25s;
+  .logout-btn{position:fixed;bottom:20px;left:20px;z-index:400;display:none;align-items:center;gap:6px;border-radius:5px;padding:10px 20px;cursor:pointer;transition:all .25s;
     background:linear-gradient(180deg,rgba(255,50,50,.1),rgba(255,50,50,.05));border:1px solid rgba(255,50,50,.35);
     box-shadow:0 0 10px rgba(255,50,50,.06)}
   .logout-btn.visible{display:flex}
@@ -694,14 +696,13 @@
   .admin-err{font-family:'Chakra Petch',sans-serif;font-size:10px;color:var(--red);margin-bottom:10px;min-height:14px;font-weight:500}
 
   /* Admin bar — REMOVED, replaced by dropdown menu */
-  /* Admin panel tab bar — navigation between admin panels */
-  .admin-tabs{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:760;display:none;gap:2px;padding:6px 8px;border-radius:0 0 8px 8px;
-    background:linear-gradient(180deg,#1a1d28,#111318);border:1px solid rgba(255,170,51,.12);border-top:none;
-    box-shadow:0 4px 20px rgba(0,0,0,.6)}
-  .admin-tabs.visible{display:flex}
-  .admin-tab{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#888;cursor:pointer;padding:6px 14px;border-radius:3px;transition:all .15s;white-space:nowrap;border:1px solid transparent}
-  .admin-tab:hover{color:#ccc;background:rgba(255,255,255,.04)}
-  .admin-tab.active{color:var(--amber);background:rgba(255,170,51,.08);border-color:rgba(255,170,51,.15)}
+  /* Admin panel tab strip — sits inside each admin panel container */
+  .admin-tab-strip{display:flex;gap:2px;padding:8px 16px;background:linear-gradient(180deg,#111318,#0d0f14);border-bottom:1px solid rgba(255,255,255,.04);flex-wrap:wrap;align-items:center}
+  .admin-tab-strip .atab{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#666;cursor:pointer;padding:7px 14px;border-radius:3px;transition:all .12s;white-space:nowrap;border:1px solid transparent}
+  .admin-tab-strip .atab:hover{color:#ccc;background:rgba(255,255,255,.04)}
+  .admin-tab-strip .atab.active{color:var(--amber);background:rgba(255,170,51,.08);border-color:rgba(255,170,51,.15)}
+  .admin-tab-strip .atab-close{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:#888;cursor:pointer;padding:7px 18px;border-radius:3px;transition:all .15s;border:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg,rgba(40,42,48,.6),rgba(26,28,32,.7))}
+  .admin-tab-strip .atab-close:hover{color:var(--red);border-color:rgba(255,50,50,.2);background:rgba(255,50,50,.06)}
 
   /* Admin Profile Panel */
   #adminPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
@@ -1067,6 +1068,11 @@
   /* Allow scrolling on mobile */
   @media(max-width:768px){
     body{overflow-y:auto;overflow-x:hidden}
+    .exp-tabs{gap:1px;margin-right:8px}
+    .exp-tab{font-size:8px;padding:5px 8px;letter-spacing:1px}
+    .admin-tab-strip{padding:6px 10px}
+    .admin-tab-strip .atab{font-size:9px;padding:5px 10px}
+    .admin-tab-strip .atab-close{font-size:9px;padding:5px 12px}
   }
 
   /* Tablet */
@@ -1167,7 +1173,7 @@
 
     /* Feed — keep 3 column grid on mobile, tight gaps like IG */
     .feed-expanded{grid-template-columns:repeat(3,1fr);gap:2px;max-width:100%}
-    .feed-expanded.list-mode{grid-template-columns:1fr;gap:10px;max-width:560px}
+    .feed-expanded.list-mode{max-width:100%;gap:10px}
     .feed-card-img{font-size:24px}
     .feed-card-cap p{font-size:9px}
     .feed-view-toggle{margin-bottom:10px}
@@ -1294,6 +1300,7 @@
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openBroadcast()"><span class="adm-icon">📢</span><span class="adm-label">Broadcast</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openLeaderboard()"><span class="adm-icon">🏆</span><span class="adm-label">Leaderboard</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openKeysCodes()"><span class="adm-icon">🔐</span><span class="adm-label">Keys & Codes</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openTeamMonitor()"><span class="adm-icon">📡</span><span class="adm-label">Team Monitor</span></div>
     <div class="admin-dropdown-sep"></div>
     <div class="admin-dropdown-toggle" onclick="toggleAllowDownloads()"><span class="adm-icon">⬇</span><span class="adm-label">Allow Downloads</span><span class="adm-toggle off" id="admDlToggle">OFF</span></div>
     <div class="admin-dropdown-toggle" onclick="toggleEditMode()"><span class="adm-icon">✎</span><span class="adm-label">Edit Mode</span><span class="adm-toggle off" id="admEditToggle">OFF</span></div>
@@ -1423,19 +1430,10 @@
 <!-- CONSOLE -->
 <div class="screen" id="consoleScreen">
 
-<!-- ADMIN TAB BAR -->
-<div class="admin-tabs" id="adminTabs">
-  <div class="admin-tab" data-panel="adminPanel" onclick="switchAdminTab('adminPanel')">⚙ Settings</div>
-  <div class="admin-tab" data-panel="broadcastPanel" onclick="switchAdminTab('broadcastPanel')">📢 Broadcast</div>
-  <div class="admin-tab" data-panel="leaderboardModule" onclick="switchAdminTab('leaderboardModule')">🏆 Leaderboard</div>
-  <div class="admin-tab" data-panel="keysCodesPanel" onclick="switchAdminTab('keysCodesPanel')">🔐 Keys</div>
-  <div class="admin-tab" data-panel="teamMonitorPanel" onclick="switchAdminTab('teamMonitorPanel')">📡 Monitor</div>
-</div>
-
 <!-- ADMIN PROFILE PANEL -->
 <div id="adminPanel">
   <div class="ap-container">
-    <div class="ap-header"><h3>⚙ Admin Panel</h3><button class="mv-close" onclick="closeAdminPanel()">✕ CLOSE</button></div>
+    <div class="admin-tab-strip" id="ats_adminPanel"></div>
     <div class="ap-section"><h4>🔐 Change Password</h4>
       <div class="ap-field"><label>Current Password</label><input type="password" id="apCurPw"></div>
       <div class="ap-field"><label>New Password</label><input type="password" id="apNewPw"></div>
@@ -1522,7 +1520,7 @@
 <!-- TEAM MONITOR PANEL -->
 <div id="teamMonitorPanel">
   <div class="ap-container" style="width:640px">
-    <div class="ap-header"><h3>📡 Team Monitor</h3><button class="mv-close" onclick="closeTeamMonitor()">✕ CLOSE</button></div>
+    <div class="admin-tab-strip" id="ats_teamMonitorPanel"></div>
     <div class="ap-section">
       <p>Real-time view of all registered teams and their activity status. Teams inactive for 5+ minutes are flagged.</p>
       <div style="display:flex;gap:8px;margin-bottom:12px">
@@ -1538,7 +1536,7 @@
 <!-- BROADCAST PANEL -->
 <div id="broadcastPanel">
   <div class="bc-container">
-    <div class="bc-header"><h3>📢 Broadcast</h3><button class="mv-close" onclick="closeBroadcast()">✕ CLOSE</button></div>
+    <div class="admin-tab-strip" id="ats_broadcastPanel"></div>
     <div class="bc-body">
       <div class="bc-tabs">
         <div class="bc-tab active" onclick="switchBcTab(this,'text')">💬 Text Message</div>
@@ -1576,14 +1574,9 @@
 <!-- FULL LEADERBOARD MODULE -->
 <div id="leaderboardModule">
   <div class="lb-container">
-    <div class="lb-header">
-      <h3 class="lb-title">🏆 Live Leaderboard</h3>
-      <div class="lb-header-right">
-        <span class="lb-team-count" id="lbTeamCount">0 teams</span>
-        <button class="mv-close" onclick="closeLeaderboard()">✕ CLOSE</button>
-      </div>
-    </div>
+    <div class="admin-tab-strip" id="ats_leaderboardModule"></div>
     <div class="lb-toolbar">
+      <span class="lb-team-count" id="lbTeamCount" style="margin-right:auto">0 teams</span>
       <input class="lb-search" id="lbSearch" placeholder="Search teams..." oninput="renderFullLeaderboard()">
       <div class="lb-filters">
         <button class="lb-filter active" data-f="all" onclick="setLbFilter(this,'all')">All</button>
@@ -1609,7 +1602,7 @@
 <!-- KEYS & CODES PANEL -->
 <div id="keysCodesPanel">
   <div class="kc-container">
-    <div class="kc-header"><h3>🔐 Keys & Codes</h3><button class="mv-close" onclick="closeKeysCodes()">✕ CLOSE</button></div>
+    <div class="admin-tab-strip" id="ats_keysCodesPanel"></div>
     <div class="kc-body" id="kcBody"></div>
   </div>
 </div>
@@ -3310,13 +3303,29 @@ function closeAllAdminPanels(){
   hideAdminTabs();
 }
 function showAdminTabs(activeId){
-  const tabs=document.getElementById('adminTabs');
-  tabs.classList.add('visible');
-  tabs.querySelectorAll('.admin-tab').forEach(t=>{
-    t.classList.toggle('active',t.dataset.panel===activeId);
+  const tabDefs=[
+    {id:'adminPanel',icon:'⚙',label:'Settings'},
+    {id:'broadcastPanel',icon:'📢',label:'Broadcast'},
+    {id:'leaderboardModule',icon:'🏆',label:'Leaderboard'},
+    {id:'keysCodesPanel',icon:'🔐',label:'Keys'},
+    {id:'teamMonitorPanel',icon:'📡',label:'Monitor'}
+  ];
+  const tabsHtml=tabDefs.map(t=>{
+    const cls=t.id===activeId?'atab active':'atab';
+    return `<div class="${cls}" onclick="switchAdminTab('${t.id}')">${t.icon} ${t.label}</div>`;
+  }).join('')+`<div class="atab-close" onclick="closeAllAdminPanels()">✕ CLOSE</div>`;
+  // Render into all tab strip containers (only active one is visible)
+  adminPanelIds.forEach(id=>{
+    const strip=document.getElementById('ats_'+id);
+    if(strip)strip.innerHTML=tabsHtml;
   });
 }
-function hideAdminTabs(){document.getElementById('adminTabs').classList.remove('visible')}
+function hideAdminTabs(){
+  adminPanelIds.forEach(id=>{
+    const strip=document.getElementById('ats_'+id);
+    if(strip)strip.innerHTML='';
+  });
+}
 function switchAdminTab(panelId){
   // Close current, open new — without closing tab bar
   adminPanelIds.forEach(id=>{
@@ -3330,7 +3339,7 @@ function switchAdminTab(panelId){
   if(panelId==='adminPanel'){renderAdminList();renderTeamList();syncAdminPanelSettings()}
   if(panelId==='leaderboardModule'){renderFullLeaderboard()}
   if(panelId==='teamMonitorPanel'){renderTeamMonitor();startTeamMonitor()}
-  if(panelId==='keysCodesPanel'){renderKeysPanel()}
+  if(panelId==='keysCodesPanel'){renderKeysCodes()}
 }
 function syncAdminPanelSettings(){
   const minEl=document.getElementById('apMinSize');
