@@ -171,9 +171,9 @@
   .login-register-link span.lrl-action{color:var(--cyan);text-decoration:underline;text-underline-offset:3px}
 
   /* ══════ VAULT PUZZLE (in-console) ══════ */
-  .vault-puzzle-layout{display:flex;gap:24px;max-width:850px;margin:0 auto;align-items:flex-start;justify-content:center}
-  .vault-keypad-section{flex:0 0 400px}
-  .vault-unlock-section{flex:0 1 360px;min-width:0}
+  .vault-puzzle-layout{display:flex;flex-direction:column;align-items:center;gap:20px;max-width:500px;margin:0 auto}
+  .vault-keypad-section{width:100%;max-width:460px}
+  .vault-unlock-section{width:100%;max-width:460px}
   .vault-unlock-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(0,255,136,.08)}
   .vault-unlock-title{font-family:'Saira',sans-serif;font-size:12px;color:#d0e8d8;letter-spacing:3px;font-weight:700;text-transform:uppercase}
   .vault-unlock-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#888;letter-spacing:1px}
@@ -310,12 +310,14 @@
   #vaultOpenOverlay.active{opacity:1;pointer-events:all}
   .vo-text{font-family:'Staatliches',cursive;font-size:30px;color:var(--green);letter-spacing:12px;opacity:0;transform:scale(.9);transition:all .8s;text-align:center;padding-left:12px}
   .vo-text.show{opacity:1;transform:scale(1)}
-  .vo-sub{font-size:11px;font-family:'Chakra Petch',sans-serif;letter-spacing:6px;color:#999;margin-top:15px;font-weight:600;opacity:0;transition:opacity .6s ease .5s;text-align:center;padding-left:6px}
+  .vo-sub{font-size:14px;font-family:'Saira',sans-serif;letter-spacing:4px;color:#ccc;margin-top:15px;font-weight:600;opacity:0;transition:opacity .6s ease .5s;text-align:center;text-shadow:0 0 10px rgba(255,255,255,.1)}
   .vo-sub.show{opacity:1}
-  .vo-bar{width:300px;height:2px;background:#151515;border-radius:1px;margin-top:30px;overflow:hidden;opacity:0;transition:opacity .4s ease .8s}
+  .vo-bar{width:300px;height:4px;background:#151515;border-radius:2px;margin-top:30px;overflow:hidden;opacity:0;transition:opacity .4s ease .8s;position:relative}
   .vo-bar.show{opacity:1}
   .vo-fill{width:0;height:100%;background:var(--green);box-shadow:0 0 8px var(--green);transition:width 2s ease}
   .vo-fill.go{width:100%}
+  .vo-pct{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--green);letter-spacing:3px;margin-top:12px;opacity:0;transition:opacity .4s ease .8s}
+  .vo-pct.show{opacity:1}
 
   /* ══════ CONSOLE ══════ */
   #consoleScreen{display:flex;flex-direction:column;position:relative;height:100vh;
@@ -530,6 +532,9 @@
   .feed-single-img.zoomed{cursor:zoom-out;overflow:auto}
   .feed-single-img.zoomed img{width:200%;max-width:none;cursor:grab;object-fit:initial}
   .feed-single-img.zoomed img.dragging{cursor:grabbing}
+  .feed-single-edit{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.7);border:1px solid rgba(0,212,255,.3);color:var(--cyan);font-size:16px;cursor:pointer;z-index:5;transition:all .2s;backdrop-filter:blur(4px)}
+  .feed-single-edit:hover{background:rgba(0,212,255,.15);border-color:rgba(0,212,255,.5);box-shadow:0 0 12px rgba(0,212,255,.15)}
   .feed-single-controls{width:100%;position:sticky;top:0;z-index:5;padding:8px 0}
   .feed-single-nav-row{display:flex;align-items:center;justify-content:center;gap:20px}
   .feed-single-counter{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#999;font-weight:600;letter-spacing:2px;min-width:60px;text-align:center}
@@ -648,12 +653,37 @@
   .admin-dropdown-toggle .adm-toggle.off{color:#666;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
 
   .logout-btn{position:fixed;bottom:20px;left:20px;z-index:400;display:none;align-items:center;gap:6px;border-radius:5px;padding:10px 20px;cursor:pointer;transition:all .25s;
-    background:linear-gradient(180deg,rgba(255,50,50,.1),rgba(255,50,50,.05));border:1px solid rgba(255,50,50,.35);
-    box-shadow:0 0 10px rgba(255,50,50,.06)}
+    background:linear-gradient(180deg,rgba(40,42,48,.6),rgba(26,28,32,.7));border:1px solid rgba(255,50,50,.25);
+    box-shadow:0 2px 6px rgba(0,0,0,.3);border-bottom:2px solid #0a0a0e}
   .logout-btn.visible{display:flex}
-  .logout-btn:hover{background:linear-gradient(180deg,rgba(255,50,50,.18),rgba(255,50,50,.1));border-color:rgba(255,50,50,.5);box-shadow:0 0 18px rgba(255,50,50,.12)}
+  .logout-btn:hover{border-color:rgba(255,50,50,.45);color:var(--red);background:rgba(255,50,50,.08);box-shadow:0 0 18px rgba(255,50,50,.1);transform:translateY(-1px)}
+  .logout-btn:active{transform:translateY(0)}
   .logout-btn svg{width:16px;height:16px;fill:none;stroke:var(--red);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
   .logout-btn span{font-family:'Saira',sans-serif;font-size:12px;letter-spacing:3px;color:var(--red);font-weight:700;text-transform:uppercase}
+
+  /* Notification bell */
+  .notif-bell{position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:4px;transition:all .2s;margin-left:8px}
+  .notif-bell:hover{background:rgba(255,255,255,.04)}
+  .notif-bell svg{width:18px;height:18px;fill:none;stroke:#888;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s}
+  .notif-bell:hover svg{stroke:#ccc}
+  .notif-badge{position:absolute;top:2px;right:2px;min-width:14px;height:14px;border-radius:7px;background:var(--red);font-family:'IBM Plex Mono',monospace;font-size:8px;color:#fff;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 3px;box-shadow:0 0 6px rgba(255,50,50,.4);animation:badgePulse 2s ease infinite}
+  .notif-badge.has-notifs{display:flex}
+  @keyframes badgePulse{0%,100%{box-shadow:0 0 6px rgba(255,50,50,.4)}50%{box-shadow:0 0 12px rgba(255,50,50,.6)}}
+
+  .notif-dropdown{position:absolute;top:calc(100% + 8px);right:0;width:320px;max-height:360px;overflow-y:auto;border-radius:6px;z-index:600;opacity:0;pointer-events:none;transform:translateY(-6px);transition:all .2s;
+    background:linear-gradient(180deg,#1a1d24,#12141a);border:1px solid rgba(255,255,255,.06);box-shadow:0 10px 40px rgba(0,0,0,.6)}
+  .notif-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0)}
+  .notif-dropdown-header{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between}
+  .notif-dropdown-title{font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;color:#aaa;text-transform:uppercase;font-weight:700}
+  .notif-dropdown-clear{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#666;cursor:pointer;letter-spacing:1px;transition:color .2s}
+  .notif-dropdown-clear:hover{color:var(--cyan)}
+  .notif-item{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.02);transition:background .15s}
+  .notif-item:hover{background:rgba(255,255,255,.02)}
+  .notif-item:last-child{border-bottom:none}
+  .notif-item-time{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#555;letter-spacing:1px;margin-bottom:4px}
+  .notif-item-msg{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#ccc;line-height:1.5;font-weight:500}
+  .notif-item-voice{font-family:'Chakra Petch',sans-serif;font-size:11px;color:var(--amber);font-weight:600}
+  .notif-empty{padding:24px 14px;text-align:center;font-family:'Chakra Petch',sans-serif;font-size:11px;color:#555}
 
   /* Logout confirm modal */
   #logoutModal{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
@@ -842,20 +872,21 @@
   .bc-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
 
   /* Player broadcast banner */
-  #playerBanner{position:fixed;top:-60px;left:0;right:0;z-index:900;transition:top .5s cubic-bezier(.25,.46,.45,.94);pointer-events:none;visibility:hidden;opacity:0}
+  #playerBanner{position:fixed;top:-80px;left:0;right:0;z-index:900;transition:top .5s cubic-bezier(.25,.46,.45,.94);pointer-events:none;visibility:hidden;opacity:0}
   #playerBanner.show{top:0;pointer-events:all;visibility:visible;opacity:1}
-  .pb-inner{display:flex;align-items:center;gap:12px;padding:12px 20px;
-    background:linear-gradient(180deg,rgba(255,170,51,.12),rgba(255,140,20,.06));
-    border-bottom:1px solid rgba(255,170,51,.2);box-shadow:0 4px 20px rgba(0,0,0,.4);backdrop-filter:blur(4px)}
-  .pb-icon{font-size:16px;flex-shrink:0}
-  .pb-text{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#e8d4b0;font-weight:500;line-height:1.5;flex:1}
-  .pb-audio{flex:1;display:flex;align-items:center;gap:10px}
+  .pb-inner{display:flex;align-items:center;justify-content:center;gap:14px;padding:16px 24px;position:relative;
+    background:linear-gradient(180deg,rgba(255,170,51,.15),rgba(255,140,20,.08));
+    border-bottom:1px solid rgba(255,170,51,.25);box-shadow:0 4px 20px rgba(0,0,0,.4);backdrop-filter:blur(8px)}
+  .pb-icon{font-size:20px;flex-shrink:0}
+  .pb-text{font-family:'Saira',sans-serif;font-size:15px;color:#fff;font-weight:600;line-height:1.5;text-align:center;letter-spacing:.5px;text-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .pb-audio{display:flex;align-items:center;gap:10px;justify-content:center}
   .pb-audio-play{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;
     background:rgba(255,170,51,.1);border:1px solid rgba(255,170,51,.2);color:var(--amber);flex-shrink:0;transition:all .2s}
   .pb-audio-play:hover{background:rgba(255,170,51,.2)}
-  .pb-audio-label{font-family:'Chakra Petch',sans-serif;font-size:10px;color:var(--amber);letter-spacing:1px;font-weight:600}
-  .pb-close{font-size:16px;cursor:pointer;color:#999;flex-shrink:0;padding:4px;transition:color .2s}
-  .pb-close:hover{color:#fff}
+  .pb-audio-label{font-family:'Saira',sans-serif;font-size:12px;color:var(--amber);letter-spacing:1px;font-weight:600}
+  .pb-close{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:16px;cursor:pointer;color:#999;flex-shrink:0;padding:4px 8px;transition:color .2s;border-radius:3px}
+  .pb-close:hover{color:#fff;background:rgba(255,255,255,.05)}
+  .pb-progress{position:absolute;bottom:0;left:0;height:2px;background:var(--amber);transition:width .1s linear;box-shadow:0 0 6px rgba(255,170,51,.3)}
   /* Admin mode — no content offset (dropdown-based) */
 
   /* Admin timer controls — now in admin panel */
@@ -1437,7 +1468,7 @@
   </div>
 </div>
 
-<div id="vaultOpenOverlay"><div class="vo-text" id="voText">ACCESS GRANTED</div><div class="vo-sub" id="voSub">Initializing operations console...</div><div class="vo-bar" id="voBar"><div class="vo-fill" id="voFill"></div></div></div>
+<div id="vaultOpenOverlay"><div class="vo-text" id="voText">ACCESS GRANTED</div><div class="vo-sub" id="voSub">Initializing operations console...</div><div class="vo-bar" id="voBar"><div class="vo-fill" id="voFill"></div></div><div class="vo-pct" id="voPct">0%</div></div>
 
 <!-- ADMIN BAR (fixed, body-level) -->
 <!-- CONSOLE -->
@@ -1464,14 +1495,17 @@
       <div class="ap-msg" id="apAdminMsg"></div>
       <div id="apAdminList"></div>
     </div>
-    <div class="ap-section"><h4>🏷️ Manual Team Creation</h4>
-      <p>Manually create teams with custom or auto-generated IDs.</p>
+    <div class="ap-section"><h4>🏷️ Manual Entry Creation</h4>
+      <p id="apManualDesc">Manually create teams with custom or auto-generated IDs.</p>
+      <div class="ap-row" id="apManualTypeRow" style="display:none;margin-bottom:10px">
+        <div class="ap-field"><label>Entry Type</label><select id="apManualType" onchange="onManualTypeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%;outline:none"><option value="team">Team</option><option value="individual">Individual</option></select></div>
+      </div>
       <div class="ap-row">
-        <div class="ap-field"><label>Team Name</label><input id="apTeamName" placeholder="e.g. Alpha Squad"></div>
-        <div class="ap-field"><label>Team ID (leave blank to auto-generate)</label><input id="apTeamId" placeholder="Auto-generated"></div>
+        <div class="ap-field"><label id="apManualNameLabel">Team Name</label><input id="apTeamName" placeholder="e.g. Alpha Squad"></div>
+        <div class="ap-field"><label id="apManualIdLabel">Team ID (leave blank to auto-generate)</label><input id="apTeamId" placeholder="Auto-generated"></div>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <button class="ap-btn ap-btn-green" onclick="createManualTeam()">Create Team</button>
+        <button class="ap-btn ap-btn-green" id="apManualCreateBtn" onclick="createManualTeam()">Create Team</button>
         <button class="ap-btn ap-btn-cyan" onclick="autoGenTeamId()" style="font-size:8px">🎲 Generate ID</button>
       </div>
       <div class="ap-msg" id="apTeamMsg"></div>
@@ -1486,7 +1520,7 @@
           <input class="admin-timer-input" id="timerInput" placeholder="HH:MM:SS" maxlength="8">
           <button class="admin-timer-btn" onclick="setNewTime()">SET</button>
           <button class="admin-timer-btn" onclick="resetTimer()">RESET</button>
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#888;letter-spacing:1px;margin-left:4px" id="apTimerDisplay">—</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:16px;color:var(--red);letter-spacing:3px;margin-left:8px;font-weight:700;text-shadow:0 0 8px rgba(255,50,50,.3)" id="apTimerDisplay">—</span>
         </div>
       </div>
       <div class="edit-field-row" style="gap:12px;margin-bottom:12px">
@@ -1581,6 +1615,7 @@
     <span class="pb-icon" id="pbIcon">📢</span>
     <div id="pbContent"></div>
     <span class="pb-close" onclick="dismissBanner()">✕</span>
+    <div class="pb-progress" id="pbProgress"></div>
   </div>
 </div>
 
@@ -1649,6 +1684,17 @@
         </div>
       </div>
     </span>
+    <div class="notif-bell" id="notifBell" onclick="toggleNotifDropdown(event)">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="notif-badge" id="notifBadge">0</div>
+      <div class="notif-dropdown" id="notifDropdown">
+        <div class="notif-dropdown-header">
+          <span class="notif-dropdown-title">Notifications</span>
+          <span class="notif-dropdown-clear" onclick="event.stopPropagation();clearNotifications()">Clear all</span>
+        </div>
+        <div id="notifList"><div class="notif-empty">No notifications yet</div></div>
+      </div>
+    </div>
   </div>
   <div class="console-grid" id="consoleGrid"></div>
   <div class="console-worldmap"></div>
@@ -2200,7 +2246,7 @@ function updateConsoleForTeam(team){
     memberSection.insertAdjacentHTML('beforeend',membersHtml);
   }
 }
-function openVault(){const ov=document.getElementById('vaultOpenOverlay');ov.classList.add('active');setTimeout(()=>document.getElementById('voText').classList.add('show'),300);setTimeout(()=>document.getElementById('voSub').classList.add('show'),300);setTimeout(()=>document.getElementById('voBar').classList.add('show'),300);setTimeout(()=>document.getElementById('voFill').classList.add('go'),1200);setTimeout(()=>{showScreen('consoleScreen');document.getElementById('notepadTrigger').classList.add('visible');startElapsedTimer();ov.classList.remove('active');document.getElementById('voText').classList.remove('show');document.getElementById('voSub').classList.remove('show');document.getElementById('voBar').classList.remove('show');document.getElementById('voFill').classList.remove('go')},3800)}
+function openVault(){const ov=document.getElementById('vaultOpenOverlay');ov.classList.add('active');setTimeout(()=>document.getElementById('voText').classList.add('show'),300);setTimeout(()=>document.getElementById('voSub').classList.add('show'),300);setTimeout(()=>{document.getElementById('voBar').classList.add('show');document.getElementById('voPct').classList.add('show')},300);setTimeout(()=>{document.getElementById('voFill').classList.add('go');let pct=0;const pctEl=document.getElementById('voPct');const pctInt=setInterval(()=>{pct=Math.min(100,pct+Math.ceil(Math.random()*4+1));pctEl.textContent=pct+'%';if(pct>=100)clearInterval(pctInt)},50)},1200);setTimeout(()=>{showScreen('consoleScreen');document.getElementById('notepadTrigger').classList.add('visible');startElapsedTimer();ov.classList.remove('active');document.getElementById('voText').classList.remove('show');document.getElementById('voSub').classList.remove('show');document.getElementById('voBar').classList.remove('show');document.getElementById('voFill').classList.remove('go');document.getElementById('voPct').classList.remove('show');document.getElementById('voPct').textContent='0%'},3800)}
 
 // ══════ VAULT PUZZLE (in-console keypad) ══════
 let vaultCodes=[
@@ -2473,16 +2519,17 @@ function openPost(i){currentPost=i;setFeedView('single')}
 function renderSinglePost(){
   const p=posts[currentPost],img=document.getElementById('singleImg');
   const isVid=p.mediaType==='video'&&p.mediaUrl;
+  const editBtn=document.body.classList.contains('edit-mode')?`<div class="feed-single-edit" onclick="event.stopPropagation();editFeedPost(${currentPost})" title="Edit this post">✎</div>`:'';
 
   if(isVid){
     img.style.background='#000';img.style.backgroundSize='';img.textContent='';
-    img.innerHTML=`<video class="feed-single-video" id="feedSingleVid" src="${p.mediaUrl}" loop playsinline preload="auto" ${feedMuted?'muted':''} controls></video><div class="feed-mute-btn" onclick="event.stopPropagation();toggleFeedMute()">${feedMuted?'🔇':'🔊'}</div>`;
+    img.innerHTML=`<video class="feed-single-video" id="feedSingleVid" src="${p.mediaUrl}" loop playsinline preload="auto" ${feedMuted?'muted':''} controls></video><div class="feed-mute-btn" onclick="event.stopPropagation();toggleFeedMute()">${feedMuted?'🔇':'🔊'}</div>${editBtn}`;
     setTimeout(()=>{const v=document.getElementById('feedSingleVid');if(v){v.muted=feedMuted;v.play().catch(()=>{})}},50);
   } else if(p.mediaUrl){
     img.style.background='';img.style.backgroundSize='';
-    img.innerHTML=`<div class="no-download-shield" oncontextmenu="return false"></div><img src="${p.mediaUrl}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;-webkit-user-drag:none" draggable="false">`;
+    img.innerHTML=`<div class="no-download-shield" oncontextmenu="return false"></div><img src="${p.mediaUrl}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;-webkit-user-drag:none" draggable="false">${editBtn}`;
   } else {
-    img.style.background=p.bg;img.style.backgroundSize='';img.textContent=p.emoji;img.innerHTML=p.emoji;
+    img.style.background=p.bg;img.style.backgroundSize='';img.textContent=p.emoji;img.innerHTML=p.emoji+editBtn;
   }
   const capEl=document.getElementById('singleCap');
   capEl.textContent=p.cap;
@@ -3021,10 +3068,17 @@ function fullscreenVideo(){
 }
 
 // ── Document / Map / PDF Viewer ──
+function isOfficeDoc(url){return/\.(docx?|xlsx?|pptx?|csv)(\?|$)/i.test(url)}
 function renderDocViewer(body,m,url,eu){
   // Images
   if(isImageUrl(url)||m.type==='map'&&isImageUrl(url)){
     body.innerHTML=`<img class="mv-image-viewer" src="${eu.direct}" alt="${m.name}" onclick="this.classList.toggle('zoomed')">`;
+    return;
+  }
+  // Office docs — use Microsoft Office Online viewer
+  if(isOfficeDoc(url)){
+    const officeUrl='https://view.officeapps.live.com/op/embed.aspx?src='+encodeURIComponent(url);
+    body.innerHTML=`<iframe class="mv-pdf-frame" src="${officeUrl}" allowfullscreen></iframe>`;
     return;
   }
   // PDFs and everything else — use iframe embed
@@ -3308,21 +3362,27 @@ function syncAdminPanelSettings(){
   if(status){status.textContent=regSettings.registrationOpen?'● OPEN':'● CLOSED';status.style.color=regSettings.registrationOpen?'var(--green)':'var(--red)'}
   const apTimer=document.getElementById('apTimerDisplay');
   if(apTimer)apTimer.textContent=document.getElementById('cTimer').textContent;
+  syncManualCreationUI();
 }
 function _instantShow(el){
   el.style.cssText='opacity:1;pointer-events:all;transition:none';
   el.classList.add('active');
 }
+let apTimerInterval=null;
 function openAdminPanel(){
   closeAllAdminPanels();
   _instantShow(document.getElementById('adminPanel'));
   showAdminTabs('adminPanel');
   renderAdminList();renderTeamList();
   syncAdminPanelSettings();
+  // Start live timer sync
+  if(apTimerInterval)clearInterval(apTimerInterval);
+  apTimerInterval=setInterval(()=>{const el=document.getElementById('apTimerDisplay');if(el)el.textContent=document.getElementById('cTimer').textContent},250);
 }
 function closeAdminPanel(){
   const el=document.getElementById('adminPanel');
   el.style.cssText='';el.classList.remove('active');hideAdminTabs();
+  if(apTimerInterval){clearInterval(apTimerInterval);apTimerInterval=null}
 }
 function openTeamMonitor(){
   closeAllAdminPanels();
@@ -3372,15 +3432,43 @@ function renderAdminList(){
 }
 
 function createManualTeam(){
+  const mode=regSettings.participantMode||'team';
+  const effectiveType=mode==='hybrid'?(document.getElementById('apManualType')?.value||'team'):mode;
   const name=document.getElementById('apTeamName').value.trim();
-  const id=document.getElementById('apTeamId').value.trim()||generateTeamId();
+  const id=document.getElementById('apTeamId').value.trim()||generateTeamId(effectiveType==='individual'?(name||'SOLO'):(name||'TEAM'));
   const msg=document.getElementById('apTeamMsg');
-  if(!name){msg.className='ap-msg err';msg.textContent='✗ Team name required';return}
-  if(manualTeams.find(t=>t.id===id)){msg.className='ap-msg err';msg.textContent='✗ Team ID already exists';return}
-  manualTeams.push({name:name,id:id});
-  msg.className='ap-msg ok';msg.textContent='✓ Team "'+name+'" created with ID: '+id;
+  const label=effectiveType==='individual'?'participant':'team';
+  if(!name){msg.className='ap-msg err';msg.textContent='✗ Name required';return}
+  if(manualTeams.find(t=>t.id===id)){msg.className='ap-msg err';msg.textContent='✗ ID already exists';return}
+  manualTeams.push({name:name,id:id,type:effectiveType});
+  msg.className='ap-msg ok';msg.textContent=`✓ ${effectiveType==='individual'?'Participant':'Team'} "${name}" created with ID: ${id}`;
   document.getElementById('apTeamName').value='';document.getElementById('apTeamId').value='';
   renderTeamList();
+}
+function onManualTypeChange(){
+  const t=document.getElementById('apManualType')?.value||'team';
+  const isInd=t==='individual';
+  document.getElementById('apManualNameLabel').textContent=isInd?'Participant Name':'Team Name';
+  document.getElementById('apManualIdLabel').textContent=isInd?'Participant ID (leave blank to auto-generate)':'Team ID (leave blank to auto-generate)';
+  document.getElementById('apTeamName').placeholder=isInd?'e.g. Jane Doe':'e.g. Alpha Squad';
+  document.getElementById('apManualCreateBtn').textContent=isInd?'Create Participant':'Create Team';
+}
+function syncManualCreationUI(){
+  const mode=regSettings.participantMode||'team';
+  const typeRow=document.getElementById('apManualTypeRow');
+  const desc=document.getElementById('apManualDesc');
+  if(mode==='hybrid'){
+    if(typeRow)typeRow.style.display='';
+    if(desc)desc.textContent='Manually create teams or individual participants.';
+  }else{
+    if(typeRow)typeRow.style.display='none';
+    const isInd=mode==='individual';
+    if(desc)desc.textContent=isInd?'Manually create individual participants.':'Manually create teams with custom or auto-generated IDs.';
+    document.getElementById('apManualNameLabel').textContent=isInd?'Participant Name':'Team Name';
+    document.getElementById('apManualIdLabel').textContent=isInd?'Participant ID (leave blank to auto-generate)':'Team ID (leave blank to auto-generate)';
+    document.getElementById('apTeamName').placeholder=isInd?'e.g. Jane Doe':'e.g. Alpha Squad';
+    document.getElementById('apManualCreateBtn').textContent=isInd?'Create Participant':'Create Team';
+  }
 }
 function autoGenTeamId(){const name=document.getElementById('apTeamName').value.trim()||'TEAM';document.getElementById('apTeamId').value=generateTeamId(name)}
 function removeTeam(i){manualTeams.splice(i,1);renderTeamList()}
@@ -3811,11 +3899,21 @@ function sendBroadcast(){
   }
 }
 
+let bannerDismissTimer=null;
+let bannerProgressInterval=null;
+let notifications=[];
+
 function showPlayerBanner(type,content){
   const banner=document.getElementById('playerBanner');
   const icon=document.getElementById('pbIcon');
   const body=document.getElementById('pbContent');
+  const progress=document.getElementById('pbProgress');
   playNotification();
+
+  // Store notification
+  notifications.unshift({type,content,time:new Date().toLocaleTimeString(),read:false});
+  updateNotificationBadge();
+
   if(type==='text'){
     icon.textContent='📢';
     body.innerHTML=`<span class="pb-text">${content}</span>`;
@@ -3825,6 +3923,21 @@ function showPlayerBanner(type,content){
     bcBannerAudio=new Audio(content);
     bcBannerAudio.addEventListener('ended',()=>{document.getElementById('pbAudioPlay').textContent='▶'});
   }
+
+  // Auto-dismiss after 10 seconds with progress bar
+  if(bannerDismissTimer)clearTimeout(bannerDismissTimer);
+  if(bannerProgressInterval)clearInterval(bannerProgressInterval);
+  if(progress)progress.style.width='100%';
+  const duration=10000;
+  const start=Date.now();
+  bannerProgressInterval=setInterval(()=>{
+    const elapsed=Date.now()-start;
+    const remaining=Math.max(0,1-elapsed/duration);
+    if(progress)progress.style.width=(remaining*100)+'%';
+    if(remaining<=0)clearInterval(bannerProgressInterval);
+  },50);
+  bannerDismissTimer=setTimeout(()=>dismissBanner(),duration);
+
   banner.classList.add('show');
 }
 function toggleBannerAudio(){
@@ -3836,6 +3949,9 @@ function toggleBannerAudio(){
 function dismissBanner(){
   document.getElementById('playerBanner').classList.remove('show');
   if(bcBannerAudio){bcBannerAudio.pause();bcBannerAudio=null}
+  if(bannerDismissTimer){clearTimeout(bannerDismissTimer);bannerDismissTimer=null}
+  if(bannerProgressInterval){clearInterval(bannerProgressInterval);bannerProgressInterval=null}
+  const progress=document.getElementById('pbProgress');if(progress)progress.style.width='0';
 }
 function playNotification(){
   const c=getAudio();if(!c)return;
@@ -3847,6 +3963,42 @@ function playNotification(){
     o.connect(g);g.connect(c.destination);o.start(t+off);o.stop(t+off+.15);
   });
 }
+
+function updateNotificationBadge(){
+  const badge=document.getElementById('notifBadge');
+  const unread=notifications.filter(n=>!n.read).length;
+  if(badge){
+    badge.textContent=unread;
+    badge.classList.toggle('has-notifs',unread>0);
+  }
+}
+function toggleNotifDropdown(e){
+  e.stopPropagation();
+  const dd=document.getElementById('notifDropdown');
+  const isOpen=dd.classList.contains('open');
+  dd.classList.toggle('open');
+  if(!isOpen){
+    // Mark all as read
+    notifications.forEach(n=>n.read=true);
+    updateNotificationBadge();
+    renderNotifications();
+  }
+}
+function renderNotifications(){
+  const list=document.getElementById('notifList');
+  if(!notifications.length){list.innerHTML='<div class="notif-empty">No notifications yet</div>';return}
+  list.innerHTML=notifications.map(n=>`<div class="notif-item"><div class="notif-item-time">${n.time}</div>${n.type==='text'?`<div class="notif-item-msg">${n.content}</div>`:`<div class="notif-item-voice">🎙️ Voice message from Administrator</div>`}</div>`).join('');
+}
+function clearNotifications(){
+  notifications=[];
+  updateNotificationBadge();
+  renderNotifications();
+}
+// Close dropdown on outside click
+document.addEventListener('click',e=>{
+  const dd=document.getElementById('notifDropdown');
+  if(dd&&dd.classList.contains('open')&&!e.target.closest('.notif-bell'))dd.classList.remove('open');
+});
 
 // ── Vault Keypad Symbol Toggle ──
 let symMode=false;
