@@ -4,14 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Operation Dead Drop — Console</title>
-<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Russo+One&family=Saira:wght@400;500;600;700&family=Exo+2:wght@400;500;600;700&family=Oxanium:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Teko:wght@400;500;600;700&family=Chakra+Petch:wght@400;500;600;700&family=Play:wght@400;700&family=Audiowide&family=Press+Start+2P&family=VT323&family=Silkscreen&family=Major+Mono+Display&family=Nova+Mono&family=Aldrich&family=Electrolize&family=Michroma&family=Quantico:wght@400;700&family=Staatliches&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Staatliches&family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Saira:wght@400;500;600;700&family=Oxanium:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Share+Tech+Mono&family=Russo+One&family=Exo+2:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Teko:wght@400;500;600;700&family=Play:wght@400;700&family=Audiowide&family=Press+Start+2P&family=VT323&family=Silkscreen&family=Major+Mono+Display&family=Nova+Mono&family=Aldrich&family=Electrolize&family=Michroma&family=Quantico:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
   :root{--green:#00ff88;--green-dim:rgba(0,255,136,.4);--green-glow:rgba(0,255,136,.12);--red:#ff3333;--amber:#ffaa33;--cyan:#00d4ff;--steel-light:#4a4e54;--steel-dark:#22252a;--bg-deep:#08090b;--bg-panel:#10121a;--bg-surface:#171a24;--border:#252830}
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--bg-deep);overflow:hidden;width:100vw;height:100vh;font-family:'Chakra Petch',sans-serif;font-weight:500;color:#ccc;user-select:none}
+  body{background:var(--bg-deep);overflow:hidden;width:100vw;height:100vh;font-family:'Chakra Petch',sans-serif;font-weight:500;color:#ccc;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#2a2d35;border-radius:2px}
 
-  .screen{position:fixed;inset:0;transition:opacity .8s;opacity:0;pointer-events:none;z-index:1}
+  .screen{position:fixed;inset:0;transition:opacity .3s;opacity:0;pointer-events:none;z-index:1;will-change:opacity;transform:translateZ(0)}
   .screen.active{opacity:1;pointer-events:all;z-index:10}
   #grainCanvas{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.03}
 
@@ -143,7 +144,7 @@
   #landingBannerFile{display:none}
 
   /* Admin Choice Modal */
-  #adminChoiceModal{position:fixed;inset:0;z-index:8500;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #adminChoiceModal{position:fixed;inset:0;z-index:8500;background:rgba(0,0,0,.92);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #adminChoiceModal.active{opacity:1;pointer-events:all}
   .admin-choice-box{width:380px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:28px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
   .admin-choice-box h3{font-family:'Staatliches',cursive;font-size:14px;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;margin-bottom:8px}
@@ -247,7 +248,6 @@
     border-bottom:3px solid #0a0a0e;
     border-right:2px solid #101014;
     box-shadow:0 3px 6px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);
-    backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
     transition:all .05s ease}
   /* Glass edge highlight */
   .kb-key::before{content:'';position:absolute;inset:1px;border-radius:3px;border:1px solid rgba(0,255,136,.04);pointer-events:none}
@@ -449,7 +449,7 @@
   .crt-monitor .admin-edit-btn{top:4px;right:4px;z-index:10}
 
   /* ══════ EXPANDED OVERLAY ══════ */
-  #panelOverlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #panelOverlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #panelOverlay.active{opacity:1;pointer-events:all}
   .expanded-panel{width:92vw;height:88vh;border-radius:6px;display:none;flex-direction:column;overflow:hidden;
     background:
@@ -566,7 +566,7 @@
   .intel-submit-btn:disabled{opacity:.25;cursor:not-allowed}
 
   /* ══════ CONFIRM MODAL ══════ */
-  #confirmModal{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #confirmModal{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #confirmModal.active{opacity:1;pointer-events:all}
   .confirm-box{width:600px;max-height:80vh;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 80px rgba(0,0,0,.6)}
   .confirm-header{padding:18px 22px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--bg-surface),var(--bg-panel))}
@@ -605,13 +605,13 @@
   .logout-btn span{font-family:'Saira',sans-serif;font-size:12px;letter-spacing:3px;color:var(--red);font-weight:700;text-transform:uppercase}
 
   /* Logout confirm modal */
-  #logoutModal{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #logoutModal{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.92);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #logoutModal.active{opacity:1;pointer-events:all}
   .logout-box{width:380px;background:var(--bg-panel);border:1px solid rgba(255,50,50,.2);border-radius:8px;padding:28px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
   .logout-box h3{font-family:'Staatliches',cursive;font-size:14px;letter-spacing:4px;color:var(--red);text-transform:uppercase;margin-bottom:10px}
   .logout-box p{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#bbb;line-height:1.7;font-weight:500;margin-bottom:20px}
 
-  #adminLogin{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.94);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #adminLogin{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.94);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #adminLogin.active{opacity:1;pointer-events:all}
   .admin-login-box{width:340px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
   .admin-login-box h3{font-family:'Staatliches',cursive;font-size:12px;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;margin-bottom:4px}
@@ -642,7 +642,7 @@
   .admin-bar-btn:hover{border-color:rgba(0,212,255,.2);color:var(--cyan)}
 
   /* Admin Profile Panel */
-  #adminPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #adminPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #adminPanel.active{opacity:1;pointer-events:all}
   .ap-container{width:560px;max-height:85vh;overflow-y:auto;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
@@ -707,7 +707,7 @@
   .ap-lb-empty{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#555;padding:20px 0;text-align:center}
 
   /* ══════ FULL LEADERBOARD MODULE ══════ */
-  #leaderboardModule{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.95);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #leaderboardModule{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.95);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #leaderboardModule.active{opacity:1;pointer-events:all}
   .lb-container{width:680px;max-width:96vw;height:88vh;display:flex;flex-direction:column;border-radius:8px;overflow:hidden;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
@@ -761,7 +761,7 @@
   .lb-field-status.correct{color:var(--green)}.lb-field-status.wrong{color:var(--red)}.lb-field-status.empty{color:#444}.lb-field-status.pending{color:var(--amber)}
 
   /* ══════ KEYS & CODES PANEL ══════ */
-  #keysCodesPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #keysCodesPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #keysCodesPanel.active{opacity:1;pointer-events:all}
   .kc-container{width:520px;max-width:96vw;max-height:85vh;overflow-y:auto;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
@@ -781,7 +781,7 @@
   .kc-empty{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#666;letter-spacing:1px;font-style:italic}
 
   /* Broadcast Panel */
-  #broadcastPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #broadcastPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #broadcastPanel.active{opacity:1;pointer-events:all}
   .bc-container{width:500px;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
@@ -810,7 +810,7 @@
   body.admin-mode #playerBanner.show{top:44px}
   .pb-inner{display:flex;align-items:center;gap:12px;padding:12px 20px;
     background:linear-gradient(180deg,rgba(255,170,51,.12),rgba(255,140,20,.06));
-    border-bottom:1px solid rgba(255,170,51,.2);box-shadow:0 4px 20px rgba(0,0,0,.4);backdrop-filter:blur(10px)}
+    border-bottom:1px solid rgba(255,170,51,.2);box-shadow:0 4px 20px rgba(0,0,0,.4);backdrop-filter:blur(4px)}
   .pb-icon{font-size:16px;flex-shrink:0}
   .pb-text{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#e8d4b0;font-weight:500;line-height:1.5;flex:1}
   .pb-audio{flex:1;display:flex;align-items:center;gap:10px}
@@ -858,7 +858,7 @@
   .edit-font-row .edit-field:last-child{flex:0 0 160px}
   .edit-field select option{padding:4px 8px}
 
-  #adminEditModal{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.92);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #adminEditModal{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.92);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #adminEditModal.active{opacity:1;pointer-events:all}
   .edit-box{width:500px;max-width:92vw;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.5);box-sizing:border-box}
   .edit-box h3{font-family:'Saira',sans-serif;font-size:10px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:16px}
@@ -915,7 +915,7 @@
   .overscroll-pull span{font-size:8px;color:#555;letter-spacing:2px;padding-bottom:8px}
 
   /* ══════ MEDIA VIEWER ══════ */
-  #mediaViewer{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #mediaViewer{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #mediaViewer.active{opacity:1;pointer-events:all}
   .mv-container{width:92vw;height:90vh;display:flex;flex-direction:column;border-radius:6px;overflow:hidden;
     background:
@@ -1905,8 +1905,9 @@ function playPanelOpen(){
 // ══════ GRAIN + DUST ══════
 const gc=document.getElementById('grainCanvas'),gx=gc.getContext('2d');
 function rg(){gc.width=innerWidth;gc.height=innerHeight}
-function dg(){const w=gc.width,h=gc.height,id=gx.createImageData(w,h),d=id.data;for(let i=0;i<d.length;i+=4){const v=Math.random()*255;d[i]=d[i+1]=d[i+2]=v;d[i+3]=8}gx.putImageData(id,0,0);requestAnimationFrame(dg)}
-rg();addEventListener('resize',rg);dg();
+let lastGrain=0;
+function dg(t){requestAnimationFrame(dg);if(t-lastGrain<125)return;lastGrain=t;const w=gc.width,h=gc.height,id=gx.createImageData(w,h),d=id.data;for(let i=0;i<d.length;i+=4){const v=Math.random()*255;d[i]=d[i+1]=d[i+2]=v;d[i+3]=8}gx.putImageData(id,0,0)}
+rg();addEventListener('resize',rg);requestAnimationFrame(dg);
 for(let i=0;i<10;i++){const p=document.createElement('div');p.className='dust';p.style.left=Math.random()*100+'vw';p.style.animationDuration=(12+Math.random()*16)+'s';p.style.animationDelay=(Math.random()*12)+'s';const s=1+Math.random()*1.5;p.style.width=s+'px';p.style.height=s+'px';document.body.appendChild(p)}
 
 // ══════ VAULT ══════
