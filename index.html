@@ -1034,26 +1034,59 @@
 
   /* Half-screen desktop / narrow window */
   @media(max-width:1100px){
-    /* Admin bar — wrap and shrink */
-    .admin-bar{height:auto;min-height:44px;flex-wrap:wrap;padding:6px 16px;gap:8px}
-    .admin-bar-label{font-size:9px;letter-spacing:2px}
-    .admin-bar-exit{position:relative;right:auto;font-size:9px;padding:5px 12px}
-    .admin-bar-btn{font-size:9px;padding:5px 10px;margin-left:2px}
-    .admin-bar-viewteam{font-size:9px;padding:5px 10px}
-    body.admin-mode .screen{top:auto;padding-top:50px}
-    body.admin-mode #consoleScreen{top:auto;padding-top:50px}
+    /* Admin bar — single row, compact */
+    .admin-bar{height:38px;padding:0 12px;gap:6px}
+    .admin-bar-label{font-size:7px;letter-spacing:1px}
+    .admin-bar-dot{width:5px;height:5px}
+    .admin-bar-exit{font-size:8px;padding:4px 10px;right:8px}
+    .admin-bar label span{font-size:0 !important}
+    .admin-bar label{margin-left:4px !important}
+    .admin-bar-btn{font-size:10px;padding:4px 8px;margin-left:2px;overflow:hidden;max-width:30px;white-space:nowrap;text-overflow:clip}
+    .admin-bar-viewteam{font-size:10px;padding:4px 8px;overflow:hidden;max-width:30px;white-space:nowrap;text-overflow:clip}
+    body.admin-mode .screen{top:38px}
+    body.admin-mode #consoleScreen{top:38px}
 
-    /* Topbar — stack timer below title */
-    .console-topbar{height:auto;min-height:50px;flex-wrap:wrap;padding:8px 16px;gap:4px}
-    .console-title{font-size:13px;letter-spacing:2px;width:100%;text-align:center;order:1}
-    .timer-block{position:relative;left:auto;transform:none;order:2;width:100%;display:flex;flex-direction:column;align-items:center}
+    /* Topbar — keep horizontal, just tighter */
+    .console-topbar{height:auto;min-height:48px;padding:8px 14px}
+    .console-title{font-size:12px;letter-spacing:2px}
+    .timer-block{position:relative;left:auto;transform:none}
     .timer-digits{font-size:18px;letter-spacing:3px}
-    .timer-label{font-size:8px}
-    .console-team{font-size:10px;order:3;width:100%;text-align:center;padding-bottom:4px}
-    .admin-timer-ctrl{margin-left:0;margin-top:2px}
+    .timer-label{font-size:7px;letter-spacing:2px}
+    .console-team{font-size:9px;letter-spacing:2px}
+    .admin-timer-ctrl{margin-left:4px;gap:4px}
+    .admin-timer-btn{font-size:7px;padding:2px 6px}
+    .admin-timer-input{width:55px;font-size:8px;padding:2px 4px}
 
-    /* Grid — 2 columns instead of 3 */
-    .console-grid{grid-template-columns:1fr 1fr;gap:16px;padding:16px}
+    /* Grid — 2 columns, centered */
+    .console-grid{grid-template-columns:1fr 1fr;gap:16px;padding:16px;align-content:start;padding-top:20px}
+    .crt-monitor{padding:10px}
+    .crt-screen{padding:28px 16px 22px}
+    .tile-icon{font-size:38px;margin-bottom:12px}
+    .tile-label{font-size:12px;letter-spacing:3px}
+    .tile-sub{font-size:9px}
+
+    /* Back/Forward nav buttons — tighter to edges */
+    .screen-back{top:12px;left:12px;padding:8px 14px}
+    .screen-back span{font-size:10px;letter-spacing:2px}
+    .screen-forward{top:12px;right:12px;padding:8px 14px}
+    .screen-forward span{font-size:10px;letter-spacing:2px}
+
+    /* Vault — ensure centered properly */
+    .vault-container{gap:14px}
+    .vault-title{font-size:14px}
+    .vault-panel{width:380px;padding:22px 18px 16px}
+
+    /* Registration */
+    .reg-container{max-width:480px}
+    .reg-panel{padding:22px 20px 18px}
+
+    /* Landing */
+    .landing-container{max-width:440px}
+
+    /* Panels */
+    .expanded-panel{width:96vw;height:92vh}
+    .confirm-box{width:90vw;max-width:500px}
+    .edit-box{width:90vw;max-width:460px}
   }
 
   /* Mobile */
