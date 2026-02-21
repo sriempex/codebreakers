@@ -6317,36 +6317,51 @@ function restoreSession(){
 // Auto-restore on page load
 restoreSession();
 
-// ── Build stamp & cache check ──
-// Injected at parse time — if Cloudflare serves a cached file this value won't change.
-// Admin can see the stamp in the console topbar to confirm the live version.
-const _BUILD_TIME = new Date().toISOString(); // This updates every time the file is freshly parsed
+// ── Build stamp & cache staleness check (admin only) ──
+// BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
+// file, this value won't change even after you push a new version.
+const _BUILD_ID = '20260221-2230';
 (function(){
-  // Show build stamp to admin only
-  function showBuildStamp(){
+  function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
     const el=document.getElementById('buildStamp');
-    if(el){el.style.display='block';el.textContent='BUILD '+_BUILD_TIME.replace('T',' ').slice(0,19)+' UTC';}
+    if(!el)return;
+    el.style.display='block';
+    el.textContent='BUILD '+_BUILD_ID+' · '+status;
+    el.style.color=status.startsWith('✓')?'#2a6a3a':status.startsWith('⚠')?'#8a6a10':'#333';
+    if(hint)el.title=hint;
   }
-  // Check for cache staleness by fetching this page with a cache-busting query param
-  // and comparing the response's Last-Modified or ETag header
-  function checkCacheFreshness(){
+
+  function checkCache(){
     if(!document.body.classList.contains('admin-mode'))return;
-    fetch(window.location.pathname+'?_cb='+Date.now(),{method:'HEAD',cache:'no-store'})
+    // Fetch the page HEAD with cache-bypass to get current server ETag
+    fetch(window.location.pathname+'?_v='+Date.now(),{method:'HEAD',cache:'no-store'})
       .then(r=>{
-        const lm=r.headers.get('last-modified')||r.headers.get('etag')||'';
-        const el=document.getElementById('buildStamp');
-        if(el&&lm){
-          const fresh=el.textContent+' · server: '+lm.slice(0,25);
-          el.textContent=fresh;
-          el.title='If server date differs from BUILD time, Cloudflare may be serving a cached version. Go to Cloudflare Pages → your project → Purge Cache.';
+        const etag=r.headers.get('etag')||r.headers.get('cf-cache-status')||'';
+        const lastEtag=localStorage.getItem('cb_last_etag');
+        if(!lastEtag){
+          // First visit — store it
+          localStorage.setItem('cb_last_etag',etag);
+          showBuildStamp('✓ Cache OK','ETag stored. Future refreshes will detect stale cache.');
+        } else if(etag && etag!==lastEtag){
+          // ETag changed — new file on server, update stored value
+          localStorage.setItem('cb_last_etag',etag);
+          showBuildStamp('✓ Fresh deploy detected','Server returned a new ETag. You are running the latest version.');
+        } else {
+          // ETag unchanged — either truly fresh or Cloudflare cached
+          const cfStatus=r.headers.get('cf-cache-status')||'';
+          if(cfStatus==='HIT'){
+            showBuildStamp('⚠ Cloudflare cache HIT','Cloudflare is serving a cached version. Go to Cloudflare Pages → your project → Purge Cache, then hard-refresh.');
+          } else {
+            showBuildStamp('✓ Cache OK'+(cfStatus?' · CF: '+cfStatus:''),'File appears current.');
+          }
         }
-      }).catch(()=>{});
+      })
+      .catch(()=>showBuildStamp('· '+_BUILD_ID,'Could not verify cache status.'));
   }
-  // Run after admin state is confirmed
-  setTimeout(()=>{showBuildStamp();checkCacheFreshness();},1000);
-  // Also show when admin logs in mid-session
-  document.addEventListener('adminReady',()=>{showBuildStamp();checkCacheFreshness();});
+
+  setTimeout(()=>checkCache(),1200);
+  document.addEventListener('adminReady',()=>setTimeout(checkCache,800));
 })();
 
 // Apply stored fonts
