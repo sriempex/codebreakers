@@ -183,18 +183,18 @@
   .vault-unlock-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
   .vault-unlock-empty{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#555;line-height:1.8;font-weight:500;text-align:center;padding:20px 16px}
   .vault-unlock-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(0,255,136,.1);border-radius:4px;background:rgba(0,255,136,.02)}
-  .vault-unlock-item.locked{border-color:var(--border);background:rgba(255,255,255,.01);opacity:.7}
+  .vault-unlock-item.locked{border-color:var(--border);background:rgba(255,255,255,.01);opacity:.85}
   .vault-unlock-item .vui-icon{font-size:16px;flex-shrink:0}
   .vault-unlock-item .vui-info{flex:1;min-width:0}
-  .vault-unlock-item .vui-label{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#ccc;font-weight:600;letter-spacing:.5px}
-  .vault-unlock-item .vui-desc{font-family:'Chakra Petch',sans-serif;font-size:9px;color:#888;letter-spacing:.5px;margin-top:2px}
+  .vault-unlock-item .vui-label{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#ddd;font-weight:600;letter-spacing:.5px}
+  .vault-unlock-item .vui-desc{font-family:'Chakra Petch',sans-serif;font-size:9px;color:#999;letter-spacing:.5px;margin-top:2px}
   .vault-unlock-item .vui-status{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;font-weight:600;flex-shrink:0}
   .vault-unlock-item .vui-status.unlocked{color:var(--green)}
-  .vault-unlock-item .vui-status.locked{color:#777}
+  .vault-unlock-item .vui-status.locked{color:#999}
   .vui-media-link{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--cyan);letter-spacing:1px;cursor:pointer;margin-top:4px;transition:color .2s}
   .vui-media-link:hover{color:#fff;text-decoration:underline}
-  .vui-classified{font-family:'IBM Plex Mono',monospace!important;letter-spacing:2px!important;color:#999!important;font-size:11px!important}
-  .vui-classified-sub{font-family:'IBM Plex Mono',monospace!important;letter-spacing:1px!important;color:#666!important;font-size:9px!important}
+  .vui-classified{font-family:'IBM Plex Mono',monospace!important;letter-spacing:2px!important;color:#bbb!important;font-size:11px!important}
+  .vui-classified-sub{font-family:'IBM Plex Mono',monospace!important;letter-spacing:1px!important;color:#888!important;font-size:9px!important}
   .vui-admin-hint{font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(255,170,51,.5);letter-spacing:1px;margin-top:3px}
   @media(max-width:768px){
     .vault-keypad-section{width:100%;max-width:420px}
@@ -604,6 +604,8 @@
   .intel-exp-input:focus{border-color:var(--green-dim);box-shadow:0 0 8px rgba(0,255,136,.06)}
   .intel-exp-input::placeholder{color:#3a3a3a}
   .intel-exp-input:disabled{opacity:.4;cursor:not-allowed}
+  .intel-exp-clear{width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#333;font-size:12px;border-radius:50%;transition:all .2s;flex-shrink:0;font-family:'IBM Plex Mono',monospace}
+  .intel-exp-clear:hover{color:var(--red);background:rgba(255,50,50,.08)}
   .intel-exp-check{width:20px;height:20px;border-radius:50%;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;font-size:10px;color:#2a2a2a;flex-shrink:0}
   .intel-exp-check.submitted{color:var(--green);border-color:var(--green);background:rgba(0,255,136,.06)}
   .intel-prefix-wrap{flex:1;display:flex;align-items:center;background:#080a10;border:1px solid var(--border);border-radius:3px;overflow:hidden;transition:border-color .2s}
@@ -1760,7 +1762,7 @@
             <div class="kb-row"><div class="kb-key" onclick="vkType('A')"><span>A</span></div><div class="kb-key" onclick="vkType('S')"><span>S</span></div><div class="kb-key" onclick="vkType('D')"><span>D</span></div><div class="kb-key" onclick="vkType('F')"><span>F</span></div><div class="kb-key" onclick="vkType('G')"><span>G</span></div><div class="kb-key" onclick="vkType('H')"><span>H</span></div><div class="kb-key" onclick="vkType('J')"><span>J</span></div><div class="kb-key" onclick="vkType('K')"><span>K</span></div><div class="kb-key" onclick="vkType('L')"><span>L</span></div></div>
             <div class="kb-row"><div class="kb-key fn clr-key" onclick="vkClear()"><span>CLR</span></div><div class="kb-key" onclick="vkType('Z')"><span>Z</span></div><div class="kb-key" onclick="vkType('X')"><span>X</span></div><div class="kb-key" onclick="vkType('C')"><span>C</span></div><div class="kb-key" onclick="vkType('V')"><span>V</span></div><div class="kb-key" onclick="vkType('B')"><span>B</span></div><div class="kb-key" onclick="vkType('N')"><span>N</span></div><div class="kb-key" onclick="vkType('M')"><span>M</span></div><div class="kb-key fn del-key" onclick="vkDel()"><span>⌫</span></div></div>
             <div class="kb-row"><div class="kb-key fn sym-key" onclick="vkToggleSymbols()"><span id="vkSymLabel">SYM</span></div><div class="kb-key enter-key" style="flex:3" onclick="vkSubmit()"><span>ENTER</span></div></div>
-            <div class="v-status"><div class="v-dot" id="vkDot"></div><span class="v-lbl" id="vkLbl">LOCKED</span></div>
+            <div class="v-status"><div class="v-dot" id="vkDot"></div><span class="v-lbl" id="vkLbl">AWAITING INPUT</span></div>
             <div class="v-tries" id="vkTries"></div>
           </div>
         </div>
@@ -2288,7 +2290,6 @@ function vkSubmit(){
   const match=vaultCodes.find(c=>c.code.toUpperCase()===entered&&!c.unlocked);
   if(match){
     match.unlocked=true;match.unlockedAt=new Date().toISOString();
-    // Unlock linked media item if configured
     if(match.linkedMediaIdx!==null&&match.linkedMediaIdx!==undefined&&mediaItems[match.linkedMediaIdx]){
       mediaItems[match.linkedMediaIdx].vaultLocked=false;
     }
@@ -2296,7 +2297,7 @@ function vkSubmit(){
     vkDisp.textContent='✓ '+match.label.toUpperCase();vkDisp.style.color='#00ff88';vkDisp.style.fontSize='13px';vkDisp.style.letterSpacing='2px';
     document.getElementById('flashG').classList.add('on');
     setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
-    vkFailCount=0; // Reset consecutive fails on success
+    vkFailCount=0;vkTotalFails=0;
     setTimeout(()=>{vkCode='';vkUpdDisp();renderVaultPanel()},2000);
     renderGrid();
   }else if(vaultCodes.find(c=>c.code.toUpperCase()===entered&&c.unlocked)){
@@ -2304,26 +2305,25 @@ function vkSubmit(){
     playClick();
     setTimeout(()=>{vkCode='';vkUpdDisp()},1500);
   }else{
-    // Invalid code — progressive lockout
     vkFailCount++;vkTotalFails++;
     playDenied();vkDisp.textContent='✗ INVALID CODE';vkDisp.style.color='#ff3333';
     document.getElementById('flashR').classList.add('on');setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
-    // Show remaining attempts before lockout
-    const nextThreshold=vkTotalFails<5?5:vkTotalFails<10?10:15;
-    const remaining=nextThreshold-vkTotalFails;
-    if(remaining>0&&remaining<=3){
-      setTimeout(()=>{vkDisp.textContent=remaining+' ATTEMPT'+(remaining>1?'S':'')+' REMAINING';vkDisp.style.color='var(--amber)';vkDisp.style.fontSize='11px'},1200);
-      setTimeout(()=>{vkCode='';vkUpdDisp()},3000);
-    }else{
+    const maxAttempts=regSettings.vaultMaxAttempts||5;
+    const cooldown=regSettings.vaultCooldownSec||30;
+    const unlimited=regSettings.vaultUnlimitedAttempts;
+    if(unlimited){
+      // No lockout, just show fail message
       setTimeout(()=>{vkCode='';vkUpdDisp()},1200);
-    }
-    // Trigger lockout at thresholds
-    if(vkTotalFails>=15){
-      triggerVaultLockout(300,'CRITICAL LOCKOUT','Maximum attempts exceeded');
-    }else if(vkTotalFails>=10){
-      triggerVaultLockout(120,'SECURITY LOCKOUT','Too many failed attempts');
-    }else if(vkTotalFails>=5){
-      triggerVaultLockout(30,'SECURITY LOCKOUT','Too many failed attempts');
+    }else{
+      const remaining=maxAttempts-vkTotalFails;
+      if(remaining>0&&remaining<=3){
+        setTimeout(()=>{vkDisp.textContent=remaining+' ATTEMPT'+(remaining>1?'S':'')+' REMAINING';vkDisp.style.color='var(--amber)';vkDisp.style.fontSize='11px'},1200);
+        setTimeout(()=>{vkCode='';vkUpdDisp()},3000);
+      }else if(remaining<=0){
+        triggerVaultLockout(cooldown,'SECURITY LOCKOUT','Maximum attempts reached · '+cooldown+'s cooldown');
+      }else{
+        setTimeout(()=>{vkCode='';vkUpdDisp()},1200);
+      }
     }
   }
 }
@@ -2368,7 +2368,7 @@ function renderVaultPanel(){
   if(dot&&lbl){
     if(unlocked===vaultCodes.length&&vaultCodes.length>0){dot.classList.add('ok');lbl.classList.add('ok');lbl.textContent='ALL CRACKED'}
     else if(unlocked>0){dot.className='v-dot';dot.style.background='radial-gradient(circle at 40% 35%,#ffcc44,#cc8811)';dot.style.boxShadow='0 0 6px rgba(255,170,51,.5)';lbl.textContent=unlocked+' UNLOCKED'}
-    else{dot.className='v-dot';dot.style.background='';dot.style.boxShadow='';lbl.textContent='LOCKED'}
+    else{dot.className='v-dot';dot.style.background='';dot.style.boxShadow='';lbl.textContent='AWAITING INPUT'}
   }
   if(vaultCodes.length===0){
     list.innerHTML='<div class="vault-unlock-empty">No vault codes configured yet. The admin can add codes in the Keys & Codes panel.</div>';
@@ -2534,7 +2534,10 @@ let regSettings={
   leaderboardStyle:'mixed',
   landingBannerUrl:'',
   landingTitle:'Code Breakers',
-  landingSubtitle:'Rise to The Challenge'
+  landingSubtitle:'Rise to The Challenge',
+  vaultMaxAttempts:5,
+  vaultCooldownSec:30,
+  vaultUnlimitedAttempts:false
 };
 let currentRegType='team'; // for hybrid mode tracking
 let posts=[
@@ -3894,6 +3897,15 @@ function renderKeysCodes(){
     html+=`<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:4px 0">No vault codes created yet</div>`;
   }
   html+=`<div style="margin-top:8px"><button class="ap-btn ap-btn-green" onclick="addVaultCode()" style="font-size:9px;padding:5px 12px">+ Add Vault Code</button></div>`;
+  // Vault attempt settings
+  html+=`<div style="margin-top:12px;padding:10px 14px;border:1px solid var(--border);border-radius:4px;background:rgba(255,255,255,.01)">
+    <div style="font-family:Saira,sans-serif;font-size:9px;color:#888;letter-spacing:2px;font-weight:600;text-transform:uppercase;margin-bottom:8px">Vault Security Settings</div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="kcVaultUnlimited" ${regSettings.vaultUnlimitedAttempts?'checked':''} onchange="regSettings.vaultUnlimitedAttempts=this.checked"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa">Unlimited attempts</span></label>
+      <div style="display:flex;align-items:center;gap:6px"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#888">Max tries:</span><input type="number" id="kcVaultMaxAttempts" value="${regSettings.vaultMaxAttempts}" min="1" max="50" style="width:50px;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:4px 8px;color:var(--green);font-family:IBM Plex Mono,monospace;font-size:11px;text-align:center;outline:none" onchange="regSettings.vaultMaxAttempts=parseInt(this.value)||5"></div>
+      <div style="display:flex;align-items:center;gap:6px"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#888">Cooldown:</span><input type="number" id="kcVaultCooldown" value="${regSettings.vaultCooldownSec}" min="5" max="600" style="width:60px;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:4px 8px;color:var(--green);font-family:IBM Plex Mono,monospace;font-size:11px;text-align:center;outline:none" onchange="regSettings.vaultCooldownSec=parseInt(this.value)||30"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#555">sec</span></div>
+    </div>
+  </div>`;
   html+=`</div>`;
 
   // Locked Media Keys
@@ -4336,14 +4348,16 @@ function renderIntelForm(){
     const num=String(i+1).padStart(2,'0');
     const editBtn=isA?`<div class="admin-row-edit" onclick="event.stopPropagation();editIntelField(${i})">✎</div>`:'';
     const lStyle=f.font?` style="${fontStyle(f.font)}"`:'';
+    const clearBtn=`<div class="intel-exp-clear" onclick="clearIntelSlot(this)" title="Clear">✕</div>`;
+    const keyHandler='onkeydown="if(event.key===\'Enter\'){this.blur()}"';
     if(f.type==='money'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="border:none;background:transparent;box-shadow:none" placeholder="···" data-idx="${i}"></div><div class="intel-exp-check">—</div></div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="border:none;background:transparent;box-shadow:none" placeholder="···" data-idx="${i}" ${keyHandler}></div><div class="intel-exp-check">—</div>${clearBtn}</div>`;
     }else if(f.type==='phone'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="(XXX) XXX-XXXX" data-idx="${i}" oninput="formatPhone(this)"><div class="intel-exp-check">—</div></div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="(XXX) XXX-XXXX" data-idx="${i}" oninput="formatPhone(this)" ${keyHandler}><div class="intel-exp-check">—</div>${clearBtn}</div>`;
     }else if(f.type==='dual'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-dual-wrap"><input class="intel-exp-input" placeholder="Value 1" data-idx="${i}"><span class="intel-dual-sep">&</span><input class="intel-exp-input" placeholder="Value 2" data-idx="${i}b"></div><div class="intel-exp-check">—</div></div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-dual-wrap"><input class="intel-exp-input" placeholder="Value 1" data-idx="${i}" ${keyHandler}><span class="intel-dual-sep">&</span><input class="intel-exp-input" placeholder="Value 2" data-idx="${i}b" ${keyHandler}></div><div class="intel-exp-check">—</div>${clearBtn}</div>`;
     }else{
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="···" data-idx="${i}"><div class="intel-exp-check">—</div></div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="···" data-idx="${i}" ${keyHandler}><div class="intel-exp-check">—</div>${clearBtn}</div>`;
     }
   });
   if(isA)html+=`<div class="admin-add-btn" style="margin-top:10px;padding:14px" onclick="addIntelField()">+ Add Intel Field</div>`;
@@ -4363,6 +4377,11 @@ function syncIntelLabels(){
   });
   while(intelLabels.length)intelLabels.pop();
   labels.forEach(l=>intelLabels.push(l));
+}
+function clearIntelSlot(btn){
+  const row=btn.closest('.intel-exp-row');
+  if(!row)return;
+  row.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.value='';inp.focus()});
 }
 function editIntelField(i){
   const f=intelFields[i];
