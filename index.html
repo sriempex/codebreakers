@@ -3598,15 +3598,25 @@ let manualTeams=[];
 
 async function apiCall(action,data={}){
   try{
-    const payload=Object.assign({action},data);
-    if(adminSession)payload.adminToken=adminSession.adminToken;
-    const resp=await fetch(API_URL,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain'}, // Apps Script requires text/plain for CORS
-      body:JSON.stringify(payload)
+    const params=new URLSearchParams({action});
+    if(adminSession)params.set('adminToken',adminSession.adminToken);
+    // For complex data (arrays/objects), encode as JSON in a 'payload' param
+    const simpleKeys=['username','password','currentPassword','newPassword',
+      'newUsername','newPassword','targetUsername','teamId','teamName','type',
+      'code','recoveryKey'];
+    let hasComplex=false;
+    Object.entries(data).forEach(([k,v])=>{
+      if(typeof v==='object'){hasComplex=true}
+      else if(simpleKeys.includes(k)){params.set(k,String(v))}
+      else{hasComplex=true}
     });
-    const json=await resp.json();
-    return json;
+    if(hasComplex){
+      params.set('payload',JSON.stringify(data));
+    }
+    const resp=await fetch(API_URL+'?'+params.toString());
+    const text=await resp.text();
+    try{return JSON.parse(text)}
+    catch(e){console.error('Parse error:',text.substring(0,200));return {ok:false,error:'Invalid response from server'}}
   }catch(err){
     console.error('API error:',err);
     return {ok:false,error:'Network error — check connection'};
