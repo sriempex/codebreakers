@@ -23,8 +23,8 @@
   .reg-title{font-family:'Staatliches',cursive;font-size:18px;letter-spacing:2px;color:#e0f0e8;text-transform:uppercase}
   .reg-subtitle{font-family:'Chakra Petch',sans-serif;font-size:12px;letter-spacing:4px;color:#999;font-weight:600;text-transform:uppercase;margin-top:-8px}
   .reg-panel{position:relative;width:100%;background:linear-gradient(175deg,#262930,#1c1e24 40%,#141620);border:1px solid #3a3d44;border-radius:10px;padding:28px 28px 24px;box-shadow:0 0 0 1px rgba(255,255,255,.015),0 2px 0 #0a0a0a,0 4px 0 #1a1a1a,0 25px 60px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.03);max-height:80vh;overflow-y:auto}
-  .reg-section{margin-bottom:20px}
-  .reg-section-title{font-family:'Saira',sans-serif;font-size:12px;font-weight:700;letter-spacing:4px;color:#d0e8d8;text-transform:uppercase;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(0,255,136,.12)}
+  .reg-section{margin-bottom:22px}
+  .reg-section-title{font-family:'Saira',sans-serif;font-size:11px;font-weight:700;letter-spacing:4px;color:var(--green);text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(0,255,136,.15);text-shadow:0 0 12px rgba(0,255,136,.15)}
   .reg-row{display:flex;gap:12px;margin-bottom:10px}
   .reg-field{flex:1;display:flex;flex-direction:column;gap:4px}
   .reg-field.full{flex:none;width:100%}
@@ -35,8 +35,16 @@
   .reg-field select:focus{border-color:var(--green-dim)}
   .reg-field input::placeholder{color:#444}
   .reg-member-block{background:rgba(0,255,136,.02);border:1px solid rgba(0,255,136,.08);border-radius:6px;padding:16px;margin-bottom:12px}
-  .reg-member-label{font-family:'Saira',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;color:#b0d8c0;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-  .reg-member-num{width:20px;height:20px;border-radius:50%;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15);display:flex;align-items:center;justify-content:center;font-family:'Oxanium',sans-serif;font-weight:700;font-size:9px;color:var(--green)}
+  .reg-member-label{font-family:'Saira',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px;padding-bottom:8px;border-bottom:1px solid rgba(0,212,255,.08)}
+  .reg-member-num{width:24px;height:24px;border-radius:50%;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);display:flex;align-items:center;justify-content:center;font-family:'Oxanium',sans-serif;font-weight:700;font-size:10px;color:var(--cyan)}
+
+  /* Back / Cancel links — integrated into panels */
+  .login-back-link{text-align:center;margin-top:16px;cursor:pointer;transition:opacity .2s}
+  .login-back-link span{font-family:'Saira',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:#666;text-transform:uppercase;transition:color .2s}
+  .login-back-link:hover span{color:#aaa}
+  .reg-cancel-link{text-align:center;margin-top:16px;cursor:pointer;transition:opacity .2s}
+  .reg-cancel-link span{font-family:'Saira',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:#666;text-transform:uppercase;transition:color .2s}
+  .reg-cancel-link:hover span{color:#aaa}
   .reg-submit{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700;margin-top:8px;position:relative;min-height:48px}
   .reg-submit.loading{color:transparent;pointer-events:none}
   .reg-submit.loading::after{content:'';position:absolute;inset:0;margin:auto;width:20px;height:20px;border:2px solid rgba(0,255,136,.2);border-top-color:var(--green);border-radius:50%;animation:btnSpin .6s linear infinite}
@@ -1480,7 +1488,6 @@
 
 <!-- REGISTRATION -->
 <div class="screen" id="regScreen">
-  <button class="mv-close" onclick="showScreen('landingScreen')" style="position:absolute;top:20px;right:20px;z-index:20">✕ CLOSE</button>
   <div class="reg-container">
     <div class="reg-title" id="regScreenTitle">Operation Dead Drop</div>
     <div class="reg-subtitle" id="regScreenSubtitle">Team Registration Portal</div>
@@ -1513,6 +1520,7 @@
 
         <div class="reg-err" id="regErr"></div>
         <button class="reg-submit" id="regSubmitBtn" onclick="submitRegistration()">◈ Register Team ◈</button>
+        <div class="reg-cancel-link" onclick="showScreen('landingScreen')"><span>← Cancel</span></div>
       </div>
 
       <div id="regSuccess">
@@ -1531,7 +1539,6 @@
 
 <!-- LOGIN -->
 <div class="screen" id="loginScreen">
-  <button class="mv-close" onclick="showScreen('landingScreen')" style="position:absolute;top:20px;right:20px;z-index:20">✕ CLOSE</button>
   <div class="login-container">
     <div style="display:flex;align-items:center;justify-content:center"><div class="login-title" id="loginTitle">Operation Dead Drop</div><button class="admin-edit-inline" onclick="event.stopPropagation();editOperationName()">✎</button></div>
     <div class="login-subtitle">Enter Your Credentials</div>
@@ -1552,6 +1559,7 @@
         <span class="v-lbl" id="loginLbl">AWAITING INPUT</span>
       </div>
     </div>
+    <div class="login-back-link" onclick="showScreen('landingScreen')"><span>← Back</span></div>
     <div class="login-register-link" id="loginRegLink" onclick="goToRegistration()"><span id="loginRegText">Don't have an ID?</span> <span class="lrl-action" id="loginRegAction">Register here</span></div>
   </div>
 </div>
@@ -2375,6 +2383,7 @@ function submitLogin(){
       updateConsoleForTeam(currentVaultTeam);
       saveSession();
       loginSuccess();
+      startBroadcastPolling();
       // Load event timer for players
       apiCall('getEventConfig').then(cfg=>{
         if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
@@ -2804,7 +2813,7 @@ function renderMedia(){
 // ══════ PANELS ══════
 const overlay=document.getElementById('panelOverlay');
 let currentFeedView='grid';
-function openPanel(t){playTileClick();recordTileAccess(t);['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel','portalUsersPanel'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);
+function openPanel(t){playTileClick();recordTileAccess(t);['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel','portalUsersPanel'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);saveSession();
   if(t==='feed'){renderFeed();setFeedView('grid')}if(t==='media')renderMedia();if(t==='intel')renderIntelForm();if(t==='vault')renderVaultPanel()}
 function closePanel(){overlay.style.cssText='';overlay.classList.remove('active');setTimeout(()=>document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible')),300)}
 
@@ -3956,7 +3965,8 @@ document.addEventListener('contextmenu',e=>{
 function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');document.body.classList.remove('edit-mode');closeAdminDropdown();closeAdminPanel();closeBroadcast();closeLeaderboard();closeKeysCodes();renderGrid();renderIntelForm()}
 
 // ══════ SCREEN NAVIGATION ══════
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',id==='consoleScreen')}
+let _currentScreen='landingScreen';
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',id==='consoleScreen')}
 function goToRegistration(){
   const mode=regSettings.participantMode||'team';
   // Update registration screen text based on mode
@@ -5043,18 +5053,56 @@ function sendBroadcast(){
   if(bcMode==='text'){
     const msg=document.getElementById('bcMessage').value.trim();
     if(!msg)return;
-    showPlayerBanner('text',msg);
-    document.getElementById('bcMessage').value='';
-    closeBroadcast();
+    // Send to backend
+    apiCall('sendBroadcast',{message:msg,type:'text'}).then(r=>{
+      if(r.ok){
+        showPlayerBanner('text',msg);
+        document.getElementById('bcMessage').value='';
+        closeBroadcast();
+      }
+    });
   } else {
     if(!bcRecordedBlob){return}
-    const url=URL.createObjectURL(bcRecordedBlob);
-    showPlayerBanner('voice',url);
-    bcRecordedBlob=null;
-    document.getElementById('bcPreview').style.display='none';
-    document.getElementById('bcRecLabel').textContent='Tap to record';
-    closeBroadcast();
+    // Voice notes: upload to R2 first, then broadcast the URL
+    uploadFileToDrive(new File([bcRecordedBlob],'broadcast_'+Date.now()+'.webm',{type:bcRecordedBlob.type}),'broadcasts').then(result=>{
+      apiCall('sendBroadcast',{message:result.directUrl,type:'voice'}).then(r=>{
+        if(r.ok){
+          showPlayerBanner('voice',result.directUrl);
+          bcRecordedBlob=null;
+          document.getElementById('bcPreview').style.display='none';
+          document.getElementById('bcRecLabel').textContent='Tap to record';
+          closeBroadcast();
+        }
+      });
+    }).catch(err=>{
+      // Fallback to local-only if upload fails
+      const url=URL.createObjectURL(bcRecordedBlob);
+      showPlayerBanner('voice',url);
+      bcRecordedBlob=null;
+      document.getElementById('bcPreview').style.display='none';
+      closeBroadcast();
+    });
   }
+}
+
+// ── Broadcast Polling (players check for new messages) ──
+let _lastBroadcastTime='';
+let _broadcastPollInterval=null;
+
+function startBroadcastPolling(){
+  if(_broadcastPollInterval)clearInterval(_broadcastPollInterval);
+  if(isAdmin)return; // Admins don't need to poll — they send
+  _lastBroadcastTime=new Date().toISOString();
+  _broadcastPollInterval=setInterval(async()=>{
+    if(!currentVaultTeam)return;
+    const r=await apiCall('getBroadcasts',{since:_lastBroadcastTime});
+    if(r.ok&&r.broadcasts&&r.broadcasts.length>0){
+      r.broadcasts.forEach(b=>{
+        showPlayerBanner(b.type,b.message);
+        _lastBroadcastTime=b.sentAt;
+      });
+    }
+  },8000); // Poll every 8 seconds
 }
 
 let bannerDismissTimer=null;
@@ -5948,8 +5996,11 @@ updateLandingForMode();
 
 function saveSession(){
   try{
-    const data={type:isAdmin?'admin':'team',team:currentVaultTeam};
+    const data={type:isAdmin?'admin':'team',team:currentVaultTeam,screen:_currentScreen};
     if(isAdmin)data.adminSession=adminSession;
+    // Track which panel is open
+    const openPanel=document.querySelector('.expanded-panel.visible');
+    if(openPanel)data.panel=openPanel.id;
     localStorage.setItem('cb_session',JSON.stringify(data));
   }catch(e){}
 }
@@ -5966,32 +6017,41 @@ function restoreSession(){
     if(!data||!data.team)return false;
     
     if(data.type==='admin'&&data.adminSession){
-      // Restore admin session — verify token is still valid
       adminSession=data.adminSession;
       isAdmin=true;
       document.body.classList.add('admin-mode');
       currentVaultTeam=data.team;
       updateConsoleForTeam(currentVaultTeam);
       syncAdminDropdownToggles();
-      showScreen('consoleScreen');
+      showScreen(data.screen||'consoleScreen');
       document.getElementById('notepadTrigger').classList.add('visible');
       startElapsedTimer();
-      loadEventData();
+      loadEventData().then(()=>{
+        // Restore open panel after data loads
+        if(data.panel){
+          const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
+          if(panelMap[data.panel])openPanel(panelMap[data.panel]);
+        }
+      });
       return true;
     }else if(data.type==='team'&&data.team.id){
-      // Restore team session
       currentVaultTeam=data.team;
       if(!registeredTeams.find(r=>r.id===data.team.id)){
         registeredTeams.push(currentVaultTeam);
       }
       updateConsoleForTeam(currentVaultTeam);
-      showScreen('consoleScreen');
+      showScreen(data.screen||'consoleScreen');
       document.getElementById('notepadTrigger').classList.add('visible');
       startElapsedTimer();
-      // Load event config for timer
       apiCall('getEventConfig').then(cfg=>{
         if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
       });
+      startBroadcastPolling();
+      // Restore open panel
+      if(data.panel){
+        const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
+        if(panelMap[data.panel])setTimeout(()=>openPanel(panelMap[data.panel]),300);
+      }
       return true;
     }
   }catch(e){}
