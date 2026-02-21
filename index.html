@@ -1996,6 +1996,7 @@ function updateRegSettings(){
   }
   // Rebuild registration form with new member count
   buildRegForm();
+  saveEventConfigToBackend();
 }
 
 function buildRegForm(){
@@ -2264,64 +2265,77 @@ let currentVaultTeam=null;
 
 function submitLogin(){
   const err=document.getElementById('loginErr');
-  const idVal=document.getElementById('loginId').value.trim().toUpperCase();
+  const idVal=document.getElementById('loginId').value.trim();
   if(!idVal){err.textContent='Please enter your Team ID or username';return}
 
-  // Check if it's an admin username
-  const adminMatch=adminUsers.find(a=>a.user.toUpperCase()===idVal);
   const pwField=document.getElementById('loginPwField');
 
-  if(adminMatch){
-    // Admin login — show/check password
-    if(pwField.style.display==='none'){
-      pwField.style.display='block';
-      document.getElementById('loginPw').focus();
-      document.getElementById('loginSubmitBtn').textContent='AUTHENTICATE';
-      err.textContent='';
-      return;
-    }
+  // If password field is visible, we're in admin or team auth flow
+  if(pwField.style.display!=='none'){
     const pw=document.getElementById('loginPw').value;
-    if(pw===adminMatch.pass){
-      // Admin authenticated
-      err.textContent='';
-      isAdmin=true;document.body.classList.add('admin-mode');
-      currentVaultTeam={id:'ADMIN',name:'Administrator',type:'admin',members:['Admin'],memberDetails:[]};
-      updateConsoleForTeam(currentVaultTeam);
-      syncAdminDropdownToggles();
-      loginSuccess();
-    }else{
-      err.textContent='Authentication failed';
-      playDenied();
-      document.getElementById('flashR').classList.add('on');
-      setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
-    }
+    if(!pw){err.textContent='Please enter password';return}
+    // Try admin login via API
+    err.textContent='Authenticating...';
+    apiCall('login',{username:idVal,password:pw}).then(result=>{
+      if(result.ok){
+        // Admin authenticated
+        adminSession={username:result.username,role:result.role,adminToken:result.adminToken};
+        err.textContent='';
+        isAdmin=true;document.body.classList.add('admin-mode');
+        currentVaultTeam={id:'ADMIN',name:'Administrator',type:'admin',members:['Admin'],memberDetails:[]};
+        updateConsoleForTeam(currentVaultTeam);
+        syncAdminDropdownToggles();
+        loginSuccess();
+        // Load event data in background
+        loadEventData();
+      }else{
+        // Admin login failed — try as team ID with password
+        const teamId=idVal.toUpperCase();
+        const team=registeredTeams.find(t=>t.id===teamId);
+        if(team){
+          err.textContent='';
+          currentVaultTeam=team;
+          team.lastActive=Date.now();
+          updateConsoleForTeam(team);
+          loginSuccess();
+        }else{
+          err.textContent='Authentication failed';
+          playDenied();
+          document.getElementById('flashR').classList.add('on');
+          setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
+        }
+      }
+    });
     return;
   }
 
-  // Reset password field if visible
-  pwField.style.display='none';
-  document.getElementById('loginSubmitBtn').textContent='ENTER';
+  // First entry — check if we should show password field
+  // Always show password field (admin needs it, teams might need it later)
+  pwField.style.display='block';
+  document.getElementById('loginPw').focus();
+  document.getElementById('loginSubmitBtn').textContent='AUTHENTICATE';
+  err.textContent='';
 
-  // Check against registered teams
-  const team=registeredTeams.find(t=>t.id===idVal);
-  const manualMatch=manualVaultKeys.find(k=>k.key.toUpperCase()===idVal);
+  // Also try as team ID (no password needed for teams)
+  const teamId=idVal.toUpperCase();
+  const team=registeredTeams.find(t=>t.id===teamId);
+  const manualMatch=manualVaultKeys.find(k=>k.key.toUpperCase()===teamId);
 
   if(team||manualMatch){
+    // Team/manual entry found — log in directly without password
     err.textContent='';
+    pwField.style.display='none';
+    document.getElementById('loginSubmitBtn').textContent='ENTER';
     if(team){
       currentVaultTeam=team;
       team.lastActive=Date.now();
       updateConsoleForTeam(team);
     }else{
-      currentVaultTeam={id:idVal,name:manualMatch.label||'Manual Key',type:'team',members:['Admin'],memberDetails:[]};
+      currentVaultTeam={id:teamId,name:manualMatch.label||'Manual Key',type:'team',members:['Admin'],memberDetails:[]};
       updateConsoleForTeam(currentVaultTeam);
     }
     loginSuccess();
-  }else{
-    err.textContent='Invalid Team ID';
-    playDenied();
-    document.getElementById('flashR').classList.add('on');
-    setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
+    return;
   }
 }
 function loginSuccess(){
@@ -2336,12 +2350,10 @@ function loginSuccess(){
 // Enter key support on login fields
 document.getElementById('loginId')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitLogin()});
 document.getElementById('loginPw')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitLogin()});
-// Detect admin username as user types to show password hint
+// Detect input changes to reset password field
 document.getElementById('loginId')?.addEventListener('input',function(){
-  const val=this.value.trim().toUpperCase();
-  const isAdminUser=adminUsers.some(a=>a.user.toUpperCase()===val);
   const pwField=document.getElementById('loginPwField');
-  if(!isAdminUser&&pwField.style.display!=='none'){
+  if(pwField.style.display!=='none'){
     pwField.style.display='none';
     document.getElementById('loginSubmitBtn').textContent='ENTER';
   }
@@ -3578,8 +3590,73 @@ function tryUnlock(i){
 
 // ══════ ADMIN ══════
 let isAdmin=false;
-let adminUsers=[{user:'admin',pass:'Engage@3050'}];
+// ═══════ BACKEND API ═══════
+const API_URL='https://script.google.com/macros/s/AKfycbxRjOpiRs1jMpIt8obpexJBZDRtoOI1KPLhyFe0dd7SFx_YbWOjTa0DyjLBssRaEJbK/exec';
+let adminSession=null; // {username, role, adminToken}
+let adminUsers=[]; // populated from backend on admin list fetch
 let manualTeams=[];
+
+async function apiCall(action,data={}){
+  try{
+    const payload=Object.assign({action},data);
+    if(adminSession)payload.adminToken=adminSession.adminToken;
+    const resp=await fetch(API_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'}, // Apps Script requires text/plain for CORS
+      body:JSON.stringify(payload)
+    });
+    const json=await resp.json();
+    return json;
+  }catch(err){
+    console.error('API error:',err);
+    return {ok:false,error:'Network error — check connection'};
+  }
+}
+
+async function loadEventData(){
+  // Load admin list
+  refreshAdminList();
+  // Load event config
+  const config=await apiCall('getEventConfig');
+  if(config.ok&&config.config){
+    applyEventConfig(config.config);
+  }
+  // Load feed posts from backend (if any saved)
+  const feedResult=await apiCall('getFeedPosts');
+  if(feedResult.ok&&feedResult.posts&&feedResult.posts.length>0){
+    posts.length=0;
+    feedResult.posts.forEach(p=>posts.push(p));
+    renderFeed();renderGrid();
+  }
+  // Load teams
+  const teamsResult=await apiCall('getTeams');
+  if(teamsResult.ok&&teamsResult.teams){
+    registeredTeams.length=0;
+    manualTeams.length=0;
+    teamsResult.teams.forEach(t=>{
+      const team={id:t.teamId,name:t.teamName,type:t.type,members:t.members.map(m=>typeof m==='string'?m:m.name),memberDetails:t.members,lastActive:new Date(t.lastActive).getTime(),fieldsCompleted:0,submitTime:null,registeredAt:t.registeredAt,submissionResults:null};
+      if(t.manual){manualTeams.push(team)}
+      registeredTeams.push(team);
+    });
+    renderPortalUsersList();
+  }
+  console.log('✓ Event data loaded from backend');
+}
+
+function applyEventConfig(cfg){
+  if(cfg.operationName){operationName=cfg.operationName;const ct=document.getElementById('consoleTitle');if(ct)ct.textContent='◈ '+operationName;document.title=operationName+' — Console'}
+  if(cfg.operationFont)operationFont=cfg.operationFont;
+  if(cfg.participantMode){regSettings.participantMode=cfg.participantMode;const sel=document.getElementById('apParticipantMode');if(sel)sel.value=cfg.participantMode}
+  if(cfg.leaderboardStyle){regSettings.leaderboardStyle=cfg.leaderboardStyle;const sel=document.getElementById('apLeaderboardStyle');if(sel)sel.value=cfg.leaderboardStyle}
+  if(cfg.landingTitle){regSettings.landingTitle=cfg.landingTitle;const el=document.getElementById('landingTitleEl');if(el)el.textContent=cfg.landingTitle;const inp=document.getElementById('apLandingTitle');if(inp)inp.value=cfg.landingTitle}
+  if(cfg.landingSubtitle){regSettings.landingSubtitle=cfg.landingSubtitle;const el=document.getElementById('landingSubEl');if(el)el.textContent=cfg.landingSubtitle;const inp=document.getElementById('apLandingSubtitle');if(inp)inp.value=cfg.landingSubtitle}
+  if(cfg.teamSizeMin)regSettings.teamSizeMin=parseInt(cfg.teamSizeMin);
+  if(cfg.teamSizeMax)regSettings.teamSizeMax=parseInt(cfg.teamSizeMax);
+  if(cfg.maxTeams)regSettings.maxTeams=parseInt(cfg.maxTeams);
+  if(cfg.bannerFallback)regSettings.bannerFallback=cfg.bannerFallback;
+  if(cfg.activeToIdle)activityThresholds.activeToIdle=parseInt(cfg.activeToIdle);
+  if(cfg.idleToSilent)activityThresholds.idleToSilent=parseInt(cfg.idleToSilent);
+}
 
 // Admin auth now handled via login screen (submitLogin)
 function adminGoVault(){document.getElementById('adminChoiceModal').classList.remove('active');goToLogin()}
@@ -3805,6 +3882,7 @@ function updateBannerFallback(){
   const icon=document.querySelector('.landing-banner-icon');
   if(icon)icon.textContent=val;
   syncBannerPreview();
+  saveEventConfigToBackend();
 }
 function handleBannerUpload(input){
   if(!input.files||!input.files[0])return;
@@ -3826,11 +3904,13 @@ function updateLandingTitle(){
   regSettings.landingTitle=document.getElementById('apLandingTitle')?.value||'Code Breakers';
   document.getElementById('landingTitleEl').textContent=regSettings.landingTitle;
   showSaveBlip('blipLandingTitle');
+  saveEventConfigToBackend();
 }
 function updateLandingSubtitle(){
   regSettings.landingSubtitle=document.getElementById('apLandingSubtitle')?.value||'Operations Console';
   document.getElementById('landingSubEl').textContent=regSettings.landingSubtitle;
   showSaveBlip('blipLandingSub');
+  saveEventConfigToBackend();
 }
 
 // ══════ SAVE BLIP MICRO-FEEDBACK ══════
@@ -3846,16 +3926,62 @@ function updateThresholds(){
   activityThresholds.idleToSilent=parseInt(document.getElementById('apThresholdSilent')?.value)||300;
   updateTileStates();
   showSaveBlip('blipThresholds');
+  saveEventConfigToBackend();
+}
+
+// ══════ BACKEND SAVE (debounced) ══════
+let _saveConfigTimer=null;
+function saveEventConfigToBackend(){
+  if(!adminSession)return;
+  clearTimeout(_saveConfigTimer);
+  _saveConfigTimer=setTimeout(()=>{
+    apiCall('saveEventConfig',{config:{
+      operationName,operationFont,
+      participantMode:regSettings.participantMode,
+      leaderboardStyle:regSettings.leaderboardStyle,
+      landingTitle:regSettings.landingTitle,
+      landingSubtitle:regSettings.landingSubtitle,
+      landingBannerUrl:regSettings.landingBannerUrl,
+      bannerFallback:regSettings.bannerFallback,
+      teamSizeMin:regSettings.teamSizeMin,
+      teamSizeMax:regSettings.teamSizeMax,
+      maxTeams:regSettings.maxTeams,
+      requireEmail:regSettings.requireEmail,
+      requirePhone:regSettings.requirePhone,
+      requireDept:regSettings.requireDept,
+      registrationOpen:regSettings.registrationOpen,
+      activeToIdle:activityThresholds.activeToIdle,
+      idleToSilent:activityThresholds.idleToSilent,
+      vaultMaxAttempts:regSettings.vaultMaxAttempts,
+      vaultCooldownSec:regSettings.vaultCooldownSec,
+      vaultUnlimitedAttempts:regSettings.vaultUnlimitedAttempts
+    }}).then(r=>{if(!r.ok)console.warn('Config save failed:',r.error)});
+  },1000); // 1 second debounce
+}
+
+let _saveFeedTimer=null;
+function saveFeedPostsToBackend(){
+  if(!adminSession)return;
+  clearTimeout(_saveFeedTimer);
+  _saveFeedTimer=setTimeout(()=>{
+    apiCall('saveFeedPosts',{posts:posts.map(p=>({
+      emoji:p.emoji,bg:p.bg,cap:p.cap,capFont:p.capFont,
+      mediaUrl:p.mediaUrl,mediaType:p.mediaType,
+      focalX:p.focalX||50,focalY:p.focalY||50
+    }))}).then(r=>{if(!r.ok)console.warn('Feed save failed:',r.error)});
+  },1500);
 }
 function onParticipantModeChange(){
   regSettings.participantMode=document.getElementById('apParticipantMode')?.value||'team';
   updateLandingForMode();
   buildRegForm();
   showSaveBlip('blipEventSettings');
+  saveEventConfigToBackend();
 }
 function onLeaderboardStyleChange(){
   regSettings.leaderboardStyle=document.getElementById('apLeaderboardStyle')?.value||'mixed';
   showSaveBlip('blipEventSettings');
+  saveEventConfigToBackend();
 }
 
 // ── Admin Panel ──
@@ -3939,7 +4065,7 @@ function openPortalUsers(){
   closeAllAdminPanels();
   _instantShow(document.getElementById('portalUsersPanel'));
   showAdminTabs('portalUsersPanel');
-  renderPortalUsersList();
+  refreshAdminList(); // fetch fresh from backend
   onManualTypeChange();
 }
 function closePortalUsers(){
@@ -3951,12 +4077,15 @@ function renderPortalUsersList(){
   if(!el)return;
   let html='';
   // Admins first
-  adminUsers.forEach((a,i)=>{
+  adminUsers.forEach((a)=>{
+    const isSelf=adminSession&&a.user.toLowerCase()===adminSession.username.toLowerCase();
+    const isSuperAdmin=a.role==='superadmin';
+    const roleBadge=isSuperAdmin?'SUPER ADMIN':'ADMIN';
     html+=`<div class="ap-team-row">
-      <span style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;padding:2px 8px;border-radius:2px;color:var(--amber);background:rgba(255,170,51,.08);border:1px solid rgba(255,170,51,.15);margin-right:8px;font-weight:600">ADMIN</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;padding:2px 8px;border-radius:2px;color:var(--amber);background:rgba(255,170,51,.08);border:1px solid rgba(255,170,51,.15);margin-right:8px;font-weight:600">${roleBadge}</span>
       <span class="ap-team-id">${a.user}</span>
-      <span class="ap-team-name" style="color:#555">••••••••</span>
-      ${adminUsers.length>1?`<span class="ap-team-del" onclick="removeAdmin(${i})">✕</span>`:''}
+      <span class="ap-team-name" style="color:#555">${isSelf?'(you)':'••••••••'}</span>
+      ${!isSuperAdmin&&adminUsers.length>1?`<span class="ap-team-del" onclick="removeAdmin('${a.user}')">✕</span>`:''}
     </div>`;
   });
   // Manual entries
@@ -4012,14 +4141,18 @@ function changeAdminPw(){
   const nw=document.getElementById('apNewPw').value;
   const conf=document.getElementById('apConfPw').value;
   const msg=document.getElementById('apPwMsg');
-  // Find current admin by matching current password
-  const match=adminUsers.find(a=>a.pass===cur);
-  if(!match){msg.className='ap-msg err';msg.textContent='✗ Current password incorrect';return}
-  if(nw.length<6){msg.className='ap-msg err';msg.textContent='✗ New password must be at least 6 characters';return}
+  if(!cur){msg.className='ap-msg err';msg.textContent='✗ Enter current password';return}
+  if(nw.length<4){msg.className='ap-msg err';msg.textContent='✗ New password must be at least 4 characters';return}
   if(nw!==conf){msg.className='ap-msg err';msg.textContent='✗ Passwords do not match';return}
-  match.pass=nw;
-  msg.className='ap-msg ok';msg.textContent='✓ Password updated successfully';
-  document.getElementById('apCurPw').value='';document.getElementById('apNewPw').value='';document.getElementById('apConfPw').value='';
+  msg.className='ap-msg';msg.textContent='Updating...';
+  apiCall('changePassword',{username:adminSession.username,currentPassword:cur,newPassword:nw}).then(r=>{
+    if(r.ok){
+      msg.className='ap-msg ok';msg.textContent='✓ Password updated successfully';
+      document.getElementById('apCurPw').value='';document.getElementById('apNewPw').value='';document.getElementById('apConfPw').value='';
+    }else{
+      msg.className='ap-msg err';msg.textContent='✗ '+r.error;
+    }
+  });
 }
 
 function addAdmin(){
@@ -4027,15 +4160,31 @@ function addAdmin(){
   const p=document.getElementById('apAddPw').value.trim();
   const msg=document.getElementById('apAdminMsg');
   if(!u||!p){msg.className='ap-msg err';msg.textContent='✗ Username and password required';return}
-  if(adminUsers.find(a=>a.user===u)){msg.className='ap-msg err';msg.textContent='✗ Username already exists';return}
-  adminUsers.push({user:u,pass:p});
-  msg.className='ap-msg ok';msg.textContent='✓ Admin "'+u+'" added';
-  document.getElementById('apAddUser').value='';document.getElementById('apAddPw').value='';
-  renderPortalUsersList();
+  msg.className='ap-msg';msg.textContent='Adding...';
+  apiCall('addAdmin',{newUsername:u,newPassword:p}).then(r=>{
+    if(r.ok){
+      msg.className='ap-msg ok';msg.textContent='✓ Admin "'+u+'" added';
+      document.getElementById('apAddUser').value='';document.getElementById('apAddPw').value='';
+      refreshAdminList();
+    }else{
+      msg.className='ap-msg err';msg.textContent='✗ '+r.error;
+    }
+  });
 }
-function removeAdmin(i){
-  if(adminUsers.length<=1)return;
-  adminUsers.splice(i,1);renderPortalUsersList();
+function removeAdmin(username){
+  if(!confirm('Remove admin "'+username+'"?'))return;
+  apiCall('removeAdmin',{targetUsername:username}).then(r=>{
+    if(r.ok)refreshAdminList();
+    else alert(r.error);
+  });
+}
+function refreshAdminList(){
+  apiCall('listAdmins').then(r=>{
+    if(r.ok){
+      adminUsers=r.admins.map(a=>({user:a.username,role:a.role,createdAt:a.createdAt}));
+      renderPortalUsersList();
+    }
+  });
 }
 function renderAdminList(){renderPortalUsersList()} // backward compat
 
@@ -4824,6 +4973,7 @@ function saveOperationName(){
   const loginTitle=document.getElementById('loginTitle');
   if(loginTitle)loginTitle.textContent=operationName;
   hideEditModal();
+  saveEventConfigToBackend();
 }
 
 // ── Grid Tiles ──
@@ -5182,9 +5332,11 @@ function saveFeedPost(i){
   if(document.getElementById('ef_font_all').checked)posts.forEach(p=>p.capFont=cf);
   pendingFeedUpload='';pendingFeedUploadType='';hideEditModal();renderFeed();renderGrid();
   if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
+  saveFeedPostsToBackend();
 }
 function deleteFeedPost(i){posts.splice(i,1);if(currentPost>=posts.length)currentPost=Math.max(0,posts.length-1);hideEditModal();renderFeed();renderGrid();
   if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
+  saveFeedPostsToBackend();
 }
 function addFeedPost(){pendingFeedUpload='';pendingFeedUploadType='';showEditModal(`<h3>Add New Feed Post</h3>
     <div class="edit-field"><label>📷 Media (upload)</label>
@@ -5210,6 +5362,7 @@ function saveNewFeedPost(){
   }
   posts.push(p);pendingFeedUpload='';hideEditModal();renderFeed();renderGrid();
   if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
+  saveFeedPostsToBackend();
 }
 
 // ── Media Items (enhanced with file upload + auto-detect) ──
