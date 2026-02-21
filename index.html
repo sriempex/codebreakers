@@ -476,6 +476,8 @@
   .tile-sub{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#777;letter-spacing:1px;font-weight:500;text-align:center;margin-bottom:22px;z-index:2}
   .tile-badge{font-family:'Saira',sans-serif;font-size:10px;letter-spacing:3px;font-weight:700;color:#e0e0e0;border:1px solid rgba(255,255,255,.1);padding:6px 18px;border-radius:3px;margin-bottom:16px;z-index:2;background:rgba(255,255,255,.04)}
   .tile-badge.amber{color:#f0c878;border-color:rgba(255,170,51,.2);background:rgba(255,170,51,.05)}
+  .tile-badge.crimson{color:#e8667a;border-color:rgba(204,68,85,.25);background:rgba(204,68,85,.06)}
+  .tile-badge.violet{color:#b088ee;border-color:rgba(153,119,221,.25);background:rgba(153,119,221,.06)}
   .tile-status{display:flex;align-items:center;gap:7px;z-index:2}
   .tile-status span{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:3px;color:#777;font-weight:500;text-transform:uppercase}
   /* LED dots */
@@ -4217,7 +4219,7 @@ function renderGrid(){
   g.innerHTML=gridTiles.map((t,i)=>{
     const isIntel=t.id==='intel';
     const isVault=t.id==='vault';
-    const badgeCls=(isIntel||isVault)?' amber':'';
+    const badgeCls=isVault?' crimson':isIntel?' violet':'';
     return `<div class="crt-monitor" onclick="openPanel('${t.id}')">
       ${isA?`<div class="admin-edit-btn" onclick="event.stopPropagation();editGridTile(${i})">✎</div>`:''}
       <div class="crt-screw s1"></div><div class="crt-screw s2"></div><div class="crt-screw s3"></div><div class="crt-screw s4"></div>
