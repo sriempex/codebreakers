@@ -2777,6 +2777,8 @@ const tileActivity={feed:0,media:0,vault:0,intel:0};
     const saved=localStorage.getItem('cb_tile_activity');
     if(saved){const d=JSON.parse(saved);Object.keys(tileActivity).forEach(k=>{if(d[k])tileActivity[k]=d[k];});}
   }catch(e){}
+  // Update dotClass immediately so renderGrid() below picks up correct states
+  updateTileStates();
 })();
 const activityThresholds={activeToIdle:60,idleToSilent:300}; // seconds, admin-configurable
 function recordTileAccess(id){
@@ -5419,6 +5421,7 @@ function saveOperationName(){
 
 // ── Grid Tiles ──
 function renderGrid(){
+  updateTileStates(); // Always recalculate orb states before rendering
   const isA=document.body.classList.contains('edit-mode');
   const g=document.getElementById('consoleGrid');
   g.innerHTML=gridTiles.map((t,i)=>{
