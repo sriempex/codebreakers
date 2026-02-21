@@ -1950,7 +1950,7 @@
 <!-- EXPANDED -->
 <div id="panelOverlay">
   <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter">1 / 12</span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-caption" id="singleCap"></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
-  <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🔊</span><span class="exp-title">Media Lab</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div id="mediaList" class="media-expanded"></div></div></div>
+  <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🔊</span><span class="exp-title">Media Lab</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
   <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div class="intel-expanded" id="intelForm"></div></div></div>
   <div class="expanded-panel" id="expVault">
     <div class="exp-header"><span class="panel-icon">🔐</span><span class="exp-title">The Vault</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div>
@@ -2525,11 +2525,29 @@ function updateConsoleForTeam(team){
 function openVault(){const ov=document.getElementById('vaultOpenOverlay');ov.classList.add('active');setTimeout(()=>document.getElementById('voText').classList.add('show'),300);setTimeout(()=>document.getElementById('voSub').classList.add('show'),300);setTimeout(()=>{document.getElementById('voBar').classList.add('show');document.getElementById('voPct').classList.add('show')},300);setTimeout(()=>{document.getElementById('voFill').classList.add('go');let pct=0;const pctEl=document.getElementById('voPct');const pctInt=setInterval(()=>{pct=Math.min(100,pct+Math.ceil(Math.random()*4+1));pctEl.textContent=pct+'%';if(pct>=100)clearInterval(pctInt)},50)},1200);setTimeout(()=>{showScreen('consoleScreen');document.getElementById('notepadTrigger').classList.add('visible');startElapsedTimer();ov.classList.remove('active');document.getElementById('voText').classList.remove('show');document.getElementById('voSub').classList.remove('show');document.getElementById('voBar').classList.remove('show');document.getElementById('voFill').classList.remove('go');document.getElementById('voPct').classList.remove('show');document.getElementById('voPct').textContent='0%'},3800)}
 
 // ══════ VAULT PUZZLE (in-console keypad) ══════
-let vaultCodes=[
-  {code:'SAMPLE1',label:'Encrypted Dossier',desc:'A classified personnel file',codename:'FILE-001',unlocked:false,unlockedAt:null,linkedMediaIdx:null},
-  {code:'SAMPLE2',label:'Audio Intercept',desc:'A recorded phone conversation',codename:'FILE-002',unlocked:false,unlockedAt:null,linkedMediaIdx:null},
-  {code:'SAMPLE3',label:'Location Data',desc:'GPS coordinates of the hideout',codename:'FILE-003',unlocked:false,unlockedAt:null,linkedMediaIdx:null}
-];
+let vaultCodes=[];
+// vaultCodes is now synced FROM media items that have vaultLocked:true + vaultCode set.
+// Call syncVaultCodesFromMedia() after any media change.
+function syncVaultCodesFromMedia(){
+  // Preserve unlock state by code
+  const unlockedMap={};
+  vaultCodes.forEach(c=>{if(c.unlocked)unlockedMap[c.code.toUpperCase()]=c.unlockedAt});
+  vaultCodes.length=0;
+  mediaItems.forEach((m,i)=>{
+    if(m.vaultLocked&&m.vaultCode&&m.vaultCode.trim()){
+      const codeUp=m.vaultCode.trim().toUpperCase();
+      vaultCodes.push({
+        code:codeUp,
+        label:m.name||'Locked Item',
+        desc:m.desc||'',
+        codename:m.vaultCodename||m.name||'FILE-'+String(i+1).padStart(3,'0'),
+        unlocked:unlockedMap[codeUp]?true:false,
+        unlockedAt:unlockedMap[codeUp]||null,
+        linkedMediaIdx:i
+      });
+    }
+  });
+}
 let vkCode='';let vkFailCount=0;let vkTotalFails=0;let vkRateLimited=false;
 const vkDisp=document.getElementById('vDisp');
 function vkUpdDisp(){if(vkDisp){vkDisp.textContent=vkCode.length?vkCode:'ENTER CODE';vkDisp.style.color='';vkDisp.style.fontSize='';vkDisp.style.letterSpacing=''}const triesEl=document.getElementById('vkTries');if(triesEl)triesEl.style.visibility=vkCode.length?'hidden':'visible'}
@@ -2823,17 +2841,7 @@ let posts=[
   {emoji:'👔',bg:'#1a1a1a',cap:'"Have no FeAr" — printed right there on his shirt.',mediaUrl:'',mediaType:'image'},
   {emoji:'🐘',bg:'#202520',cap:'Gentle giant. Sacred. Unmistakable.',mediaUrl:'',mediaType:'image'},
 ];
-let mediaItems=[
-  {icon:'🎵',name:'INTCPT_AUDIO_001.wav',desc:'Intercepted transmission — background anomalies',type:'audio',fileUrl:''},
-  {icon:'🎵',name:'CLUB_TRACK_FRAGMENT.mp3',desc:'Recovered audio — directional lyrics',type:'audio',fileUrl:''},
-  {icon:'🗺️',name:'REGION_MAP_CARIBBEAN.pdf',desc:'Island cluster map with coordinate grid',type:'map',fileUrl:''},
-  {icon:'🗺️',name:'HIGHWAY_NETWORK_MAP.pdf',desc:'Regional highway system',type:'map',fileUrl:''},
-  {icon:'📄',name:'CARWASH_LEDGER_30D.xlsx',desc:'30-day transaction records',type:'doc',fileUrl:''},
-  {icon:'📄',name:'HARDWARE_INVENTORY.pdf',desc:'Component list with weights',type:'doc',fileUrl:''},
-  {icon:'📄',name:'POLICE_REPORT_0847.pdf',desc:'Highway pursuit timeline',type:'doc',fileUrl:''},
-  {icon:'🎬',name:'SURVEIL_CLIP_07.mp4',desc:'Surveillance footage — billboard visible',type:'video',fileUrl:''},
-  {icon:'🔒',name:'LOCKED_ARCHIVE.enc',desc:'Encrypted — requires box key',type:'locked',fileUrl:''},
-];
+let mediaItems=[];
 
 // ══════ RENDER ══════
 
@@ -2863,6 +2871,13 @@ function renderFeed(){
   // Force-play all grid videos after DOM insertion
   setTimeout(()=>{grid.querySelectorAll('video.feed-card-video').forEach(v=>{v.muted=true;v.play().catch(()=>{})})},50);
 }
+let _mediaSelectMode=false;
+let _mediaSelected=new Set();
+function enterMediaSelectMode(){_mediaSelectMode=true;_mediaSelected.clear();renderMedia();const bar=document.getElementById('mediaSelectBar');if(bar){bar.style.display='flex'}}
+function exitMediaSelectMode(){_mediaSelectMode=false;_mediaSelected.clear();renderMedia();const bar=document.getElementById('mediaSelectBar');if(bar){bar.style.display='none'}}
+function toggleMediaSelect(i){if(_mediaSelected.has(i))_mediaSelected.delete(i);else _mediaSelected.add(i);document.getElementById('mediaSelectCount').textContent=_mediaSelected.size+' selected';renderMedia()}
+function selectAllMedia(){const isEdit=document.body.classList.contains('admin-mode');const showAll=isEdit;const visible=showAll?mediaItems:mediaItems.filter(m=>!m.vaultLocked);visible.forEach(m=>{const ri=mediaItems.indexOf(m);_mediaSelected.add(ri)});document.getElementById('mediaSelectCount').textContent=_mediaSelected.size+' selected';renderMedia()}
+function deleteSelectedMedia(){if(!_mediaSelected.size)return;if(!confirm('Delete '+_mediaSelected.size+' selected item(s)?'))return;const idxs=Array.from(_mediaSelected).sort((a,b)=>b-a);idxs.forEach(i=>{const m=mediaItems[i];if(m&&m.fileUrl)deleteFromR2(m.fileUrl);mediaItems.splice(i,1)});exitMediaSelectMode();renderMedia();renderGrid();saveMediaItemsToBackend()}
 function renderMedia(){
   const list=document.getElementById('mediaList');
   const isEdit=document.body.classList.contains('edit-mode');
@@ -2871,15 +2886,21 @@ function renderMedia(){
   // Players and preview: hide vault-locked. Admin (edit or not): show all
   const showAll=isAdmin&&!isPreview;
   const visibleItems=showAll?mediaItems:mediaItems.filter(m=>!m.vaultLocked);
-  list.innerHTML=visibleItems.map((m,i)=>{
+  // Select button in edit mode header area
+  const selectBtnHtml=isEdit&&!_mediaSelectMode?`<div style="text-align:right;margin-bottom:8px"><button onclick="enterMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 12px;color:#666;cursor:pointer">☑ SELECT</button></div>`:'';
+  list.innerHTML=selectBtnHtml+visibleItems.map((m,i)=>{
     const realIdx=mediaItems.indexOf(m);
     const isVL=m.vaultLocked&&showAll;
     const vlStyle=isVL?'position:relative;border-color:rgba(255,170,51,.2);':'';
     const lockedStyle=m.type==='locked'&&!m.unlocked?'opacity:.4;':'';
     const crosshatch=isVL?'<div class="media-vault-hatch"></div>':'';
     const badge=isVL?'🔐 vault-locked':m.type+(m.type==='locked'&&m.unlocked?' ✓':'');
-    return `<div class="media-exp-item" style="${lockedStyle}${vlStyle}" onclick="openMediaViewer(${realIdx})">${isEdit?`<div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${realIdx})" style="position:absolute;top:8px;right:8px">✎</div>`:''}${crosshatch}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(m.nameFont||'')}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(m.descFont||'')}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${badge}</span></div>`;
-  }).join('')+(isEdit?'<div class="admin-add-btn" onclick="addMediaItem()">+ Add Media</div>':'');
+    const isSelected=_mediaSelected.has(realIdx);
+    const selStyle=_mediaSelectMode?(isSelected?'border-color:var(--red);background:rgba(255,51,51,.06);':''):'';
+    const checkHtml=_mediaSelectMode?`<div onclick="event.stopPropagation();toggleMediaSelect(${realIdx})" style="position:absolute;top:8px;left:8px;width:18px;height:18px;border:2px solid ${isSelected?'var(--red)':'#444'};border-radius:3px;background:${isSelected?'rgba(255,51,51,.3)':'transparent'};display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;font-size:11px">${isSelected?'✓':''}</div>`:'';
+    const clickHandler=_mediaSelectMode?`onclick="toggleMediaSelect(${realIdx})"`:(`onclick="openMediaViewer(${realIdx})"`);
+    return `<div class="media-exp-item" style="${lockedStyle}${vlStyle}${selStyle}" ${clickHandler}>${isEdit&&!_mediaSelectMode?`<div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${realIdx})" style="position:absolute;top:8px;right:8px">✎</div>`:''}${checkHtml}${crosshatch}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(m.nameFont||'')}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(m.descFont||'')}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${badge}</span></div>`;
+  }).join('')+(isEdit&&!_mediaSelectMode?'<div class="admin-add-btn" onclick="addMediaItem()">+ Add Media</div>':'');
   const badge=document.getElementById('mediaBadge');if(badge)badge.textContent=visibleItems.length+' FILES';
 }
 
@@ -3276,6 +3297,13 @@ function formatPhone(el){
   else if(v.length>0)v='('+v;
   el.value=v;
 }
+function formatMoney(el){
+  // Preserve cursor intent: strip everything non-digit
+  const raw=el.value.replace(/[^0-9]/g,'');
+  if(!raw){el.value='';return;}
+  // Format with commas
+  el.value=parseInt(raw,10).toLocaleString('en-US');
+}
 
 // ── Levenshtein Distance (fuzzy matching) ──
 function levenshtein(a,b){
@@ -3301,6 +3329,8 @@ function normalizeAnswer(str,caseSensitive){
   let s=str.trim();
   // Strip common noise: extra spaces, trailing periods
   s=s.replace(/\s+/g,' ').replace(/\.$/,'');
+  // Strip currency symbols and commas so $2,000,000 == 2000000
+  s=s.replace(/[$,]/g,'');
   if(!caseSensitive)s=s.toLowerCase();
   return s;
 }
@@ -3850,8 +3880,14 @@ async function loadEventData(){
     mediaResult.items.forEach(m=>mediaItems.push({
       icon:m.filename||'📄',name:m.title||'',nameFont:m.titleFont||'',
       desc:m.desc||'',descFont:m.descFont||'',
-      type:m.type||'doc',fileUrl:m.url||''
+      type:m.type||'doc',fileUrl:m.url||'',
+      vaultLocked:m.vaultLocked||false,
+      unlockKey:m.unlockKey||'',
+      unlocked:m.unlocked||false,
+      vaultCode:m.vaultCode||'',
+      vaultCodename:m.vaultCodename||''
     }));
+    syncVaultCodesFromMedia();
     renderMedia();renderGrid();
   }
   // Load intel fields (with answer keys for admin)
@@ -3877,16 +3913,10 @@ async function loadEventData(){
     renderPortalUsersList();
   }
   // Load vault codes
-  const vaultResult=await apiCall('getVaultCodes');
-  if(vaultResult.ok&&vaultResult.codes&&vaultResult.codes.length>0){
-    vaultCodes.length=0;
-    vaultResult.codes.forEach(c=>vaultCodes.push({
-      code:c.code||'',label:c.label||'',desc:c.desc||'',
-      codename:c.codename||'',unlocked:false,unlockedAt:null,
-      linkedMediaIdx:c.linkedMediaIdx!==undefined?c.linkedMediaIdx:null
-    }));
-    renderVaultPanel();renderKeysCodes();
-  }
+  // vaultCodes are now derived from mediaItems (vaultLocked + vaultCode properties).
+  // syncVaultCodesFromMedia() was already called after loading media above.
+  // The old getVaultCodes backend call is no longer used.
+  renderVaultPanel();renderKeysCodes();
   // Load submissions
   const subResult=await apiCall('getSubmissions');
   if(subResult.ok&&subResult.submissions){
@@ -4277,7 +4307,12 @@ function saveMediaItemsToBackend(){
       const url=(m.fileUrl&&(m.fileUrl.startsWith('data:')||m.fileUrl.startsWith('blob:')))?'':m.fileUrl||'';
       return{type:m.type||'',title:m.name||'',titleFont:m.nameFont||'',
         desc:m.desc||'',descFont:m.descFont||'',
-        url:url,filename:m.icon||''};
+        url:url,filename:m.icon||'',
+        vaultLocked:m.vaultLocked||false,
+        unlockKey:m.unlockKey||'',
+        unlocked:m.unlocked||false,
+        vaultCode:m.vaultCode||'',
+        vaultCodename:m.vaultCodename||''};
     })}).then(r=>{if(!r.ok)console.warn('Media save failed:',r.error)});
   },1500);
 }
@@ -4294,17 +4329,9 @@ function saveIntelFieldsToBackend(){
   },1500);
 }
 
-let _saveVaultTimer=null;
-function saveVaultCodesToBackend(){
-  if(!adminSession)return;
-  clearTimeout(_saveVaultTimer);
-  _saveVaultTimer=setTimeout(()=>{
-    apiCall('saveVaultCodes',{codes:vaultCodes.map(c=>({
-      code:c.code||'',label:c.label||'',desc:c.desc||'',
-      codename:c.codename||'',linkedMediaIdx:c.linkedMediaIdx
-    }))}).then(r=>{});
-  },1500);
-}
+// saveVaultCodesToBackend is deprecated — vault codes are now properties of media items
+// and persist via saveMediaItemsToBackend(). syncVaultCodesFromMedia() rebuilds the
+// runtime vaultCodes array from mediaItems on load and after any edit.
 
 function onParticipantModeChange(){
   regSettings.participantMode=document.getElementById('apParticipantMode')?.value||'team';
@@ -4948,25 +4975,28 @@ function renderKeysCodes(){
   const body=document.getElementById('kcBody');
   let html='';
 
-  // Vault Puzzle Codes (managed via vaultCodes array)
+  // Vault Locked Items (driven by media items with vaultLocked + vaultCode)
+  const vaultLockedMedia=mediaItems.filter(m=>m.vaultLocked);
   html+=`<div class="kc-section">
-    <div class="kc-section-title">🔐 Vault Puzzle Codes (${vaultCodes.length})</div>
-    <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#666;margin-bottom:8px">Codes that players discover by solving clues in the Intelligence Feed and Media Lab. Entering a correct code on The Vault keypad unlocks the linked media item in the Media Lab.</div>`;
-  if(vaultCodes.length){
-    vaultCodes.forEach((c,i)=>{
-      const linked=c.linkedMediaIdx!==null&&c.linkedMediaIdx!==undefined&&mediaItems[c.linkedMediaIdx]?mediaItems[c.linkedMediaIdx].name:'None';
-      const codename=c.codename||'FILE-'+String(i+1).padStart(3,'0');
-      html+=`<div class="kc-row">
-        <span class="kc-icon">${c.unlocked?'🔓':'🔒'}</span>
-        <span class="kc-label">${c.label}<br><span style="font-size:8px;color:#555">Codename: ${codename} · Code: ${c.code} · Linked: ${linked}${c.unlocked?' · ✓ CRACKED':''}</span></span>
-        <span class="kc-value">${c.code}</span>
-        <span class="kc-edit" onclick="editVaultCode(${i})">✎</span>
+    <div class="kc-section-title">🔐 Vault Locked Items (${vaultLockedMedia.length})</div>
+    <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#666;margin-bottom:8px">Items marked as Vault-Locked in the Media Lab. Edit any item there to set or change its Vault Code — changes sync here automatically.</div>`;
+  if(vaultLockedMedia.length){
+    vaultLockedMedia.forEach(m=>{
+      const idx=mediaItems.indexOf(m);
+      const vaultEntry=vaultCodes.find(c=>c.linkedMediaIdx===idx);
+      html+=`<div class="kc-row" style="border-color:${m.vaultCode?'rgba(255,170,51,.15)':'rgba(255,51,51,.1)'}">
+        <span class="kc-icon">${m.icon}</span>
+        <span class="kc-label">${m.name}<br><span style="font-size:8px;color:#555">${m.desc||''}</span></span>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+          <input value="${m.vaultCode||''}" placeholder="Set vault code…" style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;background:#080a10;border:1px solid ${m.vaultCode?'rgba(255,170,51,.3)':'var(--border)'};border-radius:3px;padding:4px 10px;color:var(--amber);width:140px;outline:none;text-align:center" oninput="this.value=this.value.toUpperCase()" onchange="updateMediaVaultCode(${idx},this.value)">
+          <span style="font-family:'Chakra Petch',sans-serif;font-size:8px;color:#555">${vaultEntry&&vaultEntry.unlocked?'✓ CRACKED':m.vaultCode?'Active':'No code set'}</span>
+        </div>
+        <span class="kc-edit" onclick="editMediaItem(${idx})">✎</span>
       </div>`;
     });
   }else{
-    html+=`<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:4px 0">No vault codes created yet</div>`;
+    html+=`<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:4px 0">No vault-locked items. Edit a Media Lab item and enable the Vault-Locked toggle to add one.</div>`;
   }
-  html+=`<div style="margin-top:8px"><button class="ap-btn ap-btn-green" onclick="addVaultCode()" style="font-size:9px;padding:5px 12px">+ Add Vault Code</button></div>`;
   // Vault attempt settings
   html+=`<div style="margin-top:12px;padding:10px 14px;border:1px solid var(--border);border-radius:4px;background:rgba(255,255,255,.01)">
     <div style="font-family:Saira,sans-serif;font-size:9px;color:#888;letter-spacing:2px;font-weight:600;text-transform:uppercase;margin-bottom:8px">Vault Security Settings</div>
@@ -5017,77 +5047,18 @@ function renderKeysCodes(){
   body.innerHTML=html;
 }
 
-function buildMediaOptions(selectedIdx){
-  let opts='<option value="">— No linked media —</option>';
-  mediaItems.forEach((m,i)=>{
-    const sel=(i===selectedIdx)?'selected':'';
-    opts+=`<option value="${i}" ${sel}>${m.icon} ${m.name} (${m.type})</option>`;
-  });
-  return opts;
+// Update vault code directly from the Keys & Codes panel inline input
+function updateMediaVaultCode(mediaIdx,newCode){
+  if(!mediaItems[mediaIdx])return;
+  mediaItems[mediaIdx].vaultCode=newCode.trim().toUpperCase();
+  syncVaultCodesFromMedia();
+  renderVaultPanel();
+  saveMediaItemsToBackend();
 }
-function addVaultCode(){
-  const nextNum=vaultCodes.length+1;
-  showEditModal(`<h3>Add Vault Puzzle Code</h3>
-    <div class="edit-field-row">
-      <div class="edit-field"><label>Codename (shown to players when locked)</label><input id="ek_vc_codename" value="FILE-${String(nextNum).padStart(3,'0')}" placeholder="e.g. FILE-001, DEAD DROP ALPHA" style="letter-spacing:2px;text-transform:uppercase"></div>
-      <div class="edit-field"><label>Code (what players enter)</label><input id="ek_vc_code" placeholder="e.g. SHADOW42" style="font-size:14px;letter-spacing:3px;text-transform:uppercase"></div>
-    </div>
-    <div class="edit-field"><label>Label (revealed when cracked)</label><input id="ek_vc_label" placeholder="e.g. Classified Dossier, Surveillance Recording"></div>
-    <div class="edit-field"><label>Description (revealed when cracked)</label><input id="ek_vc_desc" placeholder="e.g. Personnel file for the suspect"></div>
-    <div class="edit-field"><label>Linked Media Item (unlocked when code is cracked)</label><select id="ek_vc_media" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;width:100%;outline:none">${buildMediaOptions(null)}</select></div>
-    <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#888;margin-top:4px">Linked media items will be hidden from players until this code is cracked.</div>
-    <div style="display:flex;gap:10px;margin-top:12px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-green" onclick="saveNewVaultCode()">Add Code</button></div>`);
-}
-function saveNewVaultCode(){
-  const label=document.getElementById('ek_vc_label').value.trim();
-  const desc=document.getElementById('ek_vc_desc').value.trim();
-  const code=document.getElementById('ek_vc_code').value.trim().toUpperCase();
-  const codename=document.getElementById('ek_vc_codename').value.trim().toUpperCase()||'FILE-'+String(vaultCodes.length+1).padStart(3,'0');
-  const mediaVal=document.getElementById('ek_vc_media').value;
-  const linkedIdx=mediaVal!==''?parseInt(mediaVal):null;
-  if(!code)return;
-  vaultCodes.push({code,label:label||'Unnamed',desc:desc||'',codename,unlocked:false,unlockedAt:null,linkedMediaIdx:linkedIdx});
-  if(linkedIdx!==null&&mediaItems[linkedIdx])mediaItems[linkedIdx].vaultLocked=true;
-  hideEditModal();
-  renderKeysCodes();renderVaultPanel();renderGrid();saveVaultCodesToBackend();
-}
-function editVaultCode(i){
-  const c=vaultCodes[i];
-  showEditModal(`<h3>Edit Vault Puzzle Code</h3>
-    <div class="edit-field-row">
-      <div class="edit-field"><label>Codename (shown when locked)</label><input id="ek_vc_codename" value="${c.codename||''}" style="letter-spacing:2px;text-transform:uppercase"></div>
-      <div class="edit-field"><label>Code</label><input id="ek_vc_code" value="${c.code}" style="font-size:14px;letter-spacing:3px;text-transform:uppercase"></div>
-    </div>
-    <div class="edit-field"><label>Label (revealed when cracked)</label><input id="ek_vc_label" value="${c.label||''}"></div>
-    <div class="edit-field"><label>Description (revealed when cracked)</label><input id="ek_vc_desc" value="${c.desc||''}"></div>
-    <div class="edit-field"><label>Linked Media Item</label><select id="ek_vc_media" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;width:100%;outline:none">${buildMediaOptions(c.linkedMediaIdx)}</select></div>
-    ${c.unlocked?'<div style="font-family:IBM Plex Mono,monospace;font-size:9px;color:var(--green);letter-spacing:1px;margin-top:4px">✓ CRACKED at '+new Date(c.unlockedAt).toLocaleTimeString()+'</div>':''}
-    <div style="display:flex;gap:10px;margin-top:12px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-red" onclick="deleteVaultCode(${i})">Delete</button><button class="btn-standard btn-cyan" onclick="saveVaultCode(${i})">Save</button></div>`);
-}
-function saveVaultCode(i){
-  const code=document.getElementById('ek_vc_code').value.trim().toUpperCase();
-  if(!code)return;
-  const oldIdx=vaultCodes[i].linkedMediaIdx;
-  if(oldIdx!==null&&oldIdx!==undefined&&mediaItems[oldIdx])mediaItems[oldIdx].vaultLocked=false;
-  vaultCodes[i].label=document.getElementById('ek_vc_label').value.trim()||'Unnamed';
-  vaultCodes[i].desc=document.getElementById('ek_vc_desc').value.trim();
-  vaultCodes[i].code=code;
-  vaultCodes[i].codename=document.getElementById('ek_vc_codename').value.trim().toUpperCase()||vaultCodes[i].codename;
-  const mediaVal=document.getElementById('ek_vc_media').value;
-  vaultCodes[i].linkedMediaIdx=mediaVal!==''?parseInt(mediaVal):null;
-  const newIdx=vaultCodes[i].linkedMediaIdx;
-  if(newIdx!==null&&mediaItems[newIdx]&&!vaultCodes[i].unlocked)mediaItems[newIdx].vaultLocked=true;
-  hideEditModal();
-  renderKeysCodes();renderVaultPanel();saveVaultCodesToBackend();
-}
-function deleteVaultCode(i){
-  // Unmark linked media
-  const idx=vaultCodes[i].linkedMediaIdx;
-  if(idx!==null&&idx!==undefined&&mediaItems[idx])mediaItems[idx].vaultLocked=false;
-  vaultCodes.splice(i,1);
-  hideEditModal();
-  renderKeysCodes();renderVaultPanel();renderGrid();saveVaultCodesToBackend();
-}
+
+// Vault code management functions (addVaultCode, editVaultCode, etc.) removed.
+// Vault codes are now set directly on media items via editMediaItem() and
+// syncVaultCodesFromMedia() rebuilds the runtime vaultCodes lookup array.
 
 // ── Broadcast System ──
 let bcMode='text';
@@ -5513,7 +5484,7 @@ function renderIntelForm(){
     const keyHandler='onkeydown="if(event.key===\'Enter\'){this.blur()}"';
     const ph=f.placeholder||'···';
     if(f.type==='money'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="border:none;background:transparent;box-shadow:none" placeholder="${ph}" data-idx="${i}" ${keyHandler}></div>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="border:none;background:transparent;box-shadow:none" placeholder="${ph}" data-idx="${i}" oninput="formatMoney(this)" ${keyHandler}></div>${clearBtn}</div>`;
     }else if(f.type==='phone'){
       html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${f.placeholder||'(XXX) XXX-XXXX'}" data-idx="${i}" oninput="formatPhone(this)" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='dual'){
@@ -5854,7 +5825,6 @@ function editMediaItem(i){
   pendingMediaFileUrl='';
   const m=mediaItems[i];
   const typeOpts=['audio','doc','map','video','locked'].map(t=>`<option${m.type===t?' selected':''}>${t}</option>`).join('');
-  const isVaultLinked=vaultCodes.some(c=>c.linkedMediaIdx===i);
   showEditModal(`<h3>Edit Media Item #${i+1}</h3>
     <div class="edit-field"><label>Upload File (optional — auto-sets type)</label><input type="file" id="em_file" onchange="handleMediaUpload(this)"></div>
     <div class="edit-field"><label>File URL</label><input id="em_url" value="${m.fileUrl||''}" placeholder="/media/lab/filename.pdf"></div>
@@ -5869,14 +5839,37 @@ function editMediaItem(i){
       <div class="edit-field"><label>Category</label><select id="em_type">${typeOpts}</select></div>
       <div class="edit-field"><label>Unlock Key (locked files only)</label><input id="em_key" value="${m.unlockKey||''}" placeholder="Leave blank = any key works"></div>
     </div>
-    <div style="margin:10px 0;padding:10px 14px;border:1px solid ${m.vaultLocked?'rgba(255,170,51,.2)':'var(--border)'};border-radius:5px;background:${m.vaultLocked?'rgba(255,170,51,.03)':'rgba(255,255,255,.01)'}">
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="em_vaultlock" ${m.vaultLocked?'checked':''}><span style="font-family:'Saira',sans-serif;font-size:11px;color:${m.vaultLocked?'var(--amber)':'#888'};letter-spacing:1px;font-weight:600">🔐 Vault-Locked</span></label>
-      <div style="font-family:'Chakra Petch',sans-serif;font-size:9px;color:#555;margin-top:4px;padding-left:24px">${isVaultLinked?'Linked to a vault code in Keys & Codes':'Hidden from players until unlocked via The Vault keypad. Link a vault code in Keys & Codes.'}</div>
+    <div style="margin:10px 0;padding:12px 14px;border:1px solid ${m.vaultLocked?'rgba(255,170,51,.25)':'var(--border)'};border-radius:5px;background:${m.vaultLocked?'rgba(255,170,51,.04)':'rgba(255,255,255,.01)'}" id="em_vault_box">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="em_vaultlock" ${m.vaultLocked?'checked':''} onchange="toggleVaultLockUI()"><span style="font-family:'Saira',sans-serif;font-size:11px;color:${m.vaultLocked?'var(--amber)':'#888'};letter-spacing:1px;font-weight:600">🔐 Vault-Locked</span></label>
+      <div id="em_vault_fields" style="margin-top:10px;${m.vaultLocked?'':'display:none'}">
+        <div class="edit-field-row" style="margin-top:4px">
+          <div class="edit-field"><label>Vault Code <span style="color:#666;font-weight:400">(players enter this on the Vault keypad)</span></label><input id="em_vaultcode" value="${m.vaultCode||''}" placeholder="e.g. SHADOW42" style="font-size:13px;letter-spacing:3px;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="edit-field" style="flex:.6"><label>Codename <span style="color:#666;font-weight:400">(shown when locked)</span></label><input id="em_vaultcodename" value="${m.vaultCodename||''}" placeholder="e.g. FILE-001" style="letter-spacing:2px;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"></div>
+        </div>
+        <div style="font-family:'Chakra Petch',sans-serif;font-size:9px;color:#666;margin-top:4px">This item will be hidden from players until they crack this code on the Vault keypad. The code syncs automatically to the Vault Locked Items panel.</div>
+      </div>
     </div>
     <div style="display:flex;gap:10px;margin-top:6px"><button class="btn-standard btn-red" onclick="confirmDelete(this,()=>deleteMediaItem(${i}))">Delete</button><span style="flex:1"></span><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveMediaItem(${i})">Save</button></div>`);
 }
-function saveMediaItem(i){mediaItems[i].icon=document.getElementById('em_ico').value.trim();mediaItems[i].name=document.getElementById('em_name').value.trim();mediaItems[i].desc=document.getElementById('em_desc').value.trim();mediaItems[i].type=document.getElementById('em_type').value;const urlVal=document.getElementById('em_url').value.trim();mediaItems[i].fileUrl=pendingMediaFileUrl||(urlVal==='[uploaded file]'?mediaItems[i].fileUrl:urlVal);mediaItems[i].unlockKey=document.getElementById('em_key').value.trim();const vl=document.getElementById('em_vaultlock');if(vl)mediaItems[i].vaultLocked=vl.checked;const nf=document.getElementById('em_font').value;const df=document.getElementById('em_dfont').value;mediaItems[i].nameFont=nf;mediaItems[i].descFont=df;if(document.getElementById('em_font_all').checked)mediaItems.forEach(m=>{m.nameFont=nf;m.descFont=df});pendingMediaFileUrl='';hideEditModal();renderMedia();renderGrid();saveMediaItemsToBackend()}
-function deleteMediaItem(i){const delMedia=mediaItems[i];if(delMedia&&delMedia.fileUrl)deleteFromR2(delMedia.fileUrl);mediaItems.splice(i,1);hideEditModal();renderMedia();renderGrid();saveMediaItemsToBackend()}
+function toggleVaultLockUI(){
+  const cb=document.getElementById('em_vaultlock');
+  const fields=document.getElementById('em_vault_fields');
+  const box=document.getElementById('em_vault_box');
+  const lbl=box.querySelector('span[style]');
+  if(cb.checked){
+    fields.style.display='';
+    box.style.borderColor='rgba(255,170,51,.25)';
+    box.style.background='rgba(255,170,51,.04)';
+    if(lbl)lbl.style.color='var(--amber)';
+  }else{
+    fields.style.display='none';
+    box.style.borderColor='var(--border)';
+    box.style.background='rgba(255,255,255,.01)';
+    if(lbl)lbl.style.color='#888';
+  }
+}
+function saveMediaItem(i){mediaItems[i].icon=document.getElementById('em_ico').value.trim();mediaItems[i].name=document.getElementById('em_name').value.trim();mediaItems[i].desc=document.getElementById('em_desc').value.trim();mediaItems[i].type=document.getElementById('em_type').value;const urlVal=document.getElementById('em_url').value.trim();mediaItems[i].fileUrl=pendingMediaFileUrl||(urlVal==='[uploaded file]'?mediaItems[i].fileUrl:urlVal);mediaItems[i].unlockKey=document.getElementById('em_key').value.trim();const vl=document.getElementById('em_vaultlock');if(vl){mediaItems[i].vaultLocked=vl.checked;if(vl.checked){mediaItems[i].vaultCode=(document.getElementById('em_vaultcode')?.value.trim().toUpperCase()||'');mediaItems[i].vaultCodename=(document.getElementById('em_vaultcodename')?.value.trim().toUpperCase()||'')}else{mediaItems[i].vaultCode='';mediaItems[i].vaultCodename=''}}const nf=document.getElementById('em_font').value;const df=document.getElementById('em_dfont').value;mediaItems[i].nameFont=nf;mediaItems[i].descFont=df;if(document.getElementById('em_font_all').checked)mediaItems.forEach(m=>{m.nameFont=nf;m.descFont=df});pendingMediaFileUrl='';hideEditModal();syncVaultCodesFromMedia();renderMedia();renderGrid();renderKeysCodes();renderVaultPanel();saveMediaItemsToBackend()}
+function deleteMediaItem(i){const delMedia=mediaItems[i];if(delMedia&&delMedia.fileUrl)deleteFromR2(delMedia.fileUrl);mediaItems.splice(i,1);hideEditModal();syncVaultCodesFromMedia();renderMedia();renderGrid();renderVaultPanel();renderKeysCodes();saveMediaItemsToBackend()}
 function addMediaItem(){
   pendingMediaFileUrl='';
   showEditModal(`<h3>Add New Media Item</h3>
@@ -5894,7 +5887,7 @@ function addMediaItem(){
     </div>
     <div style="display:flex;gap:10px;margin-top:6px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveNewMediaItem()">Add Item</button></div>`);
 }
-function saveNewMediaItem(){const urlVal=document.getElementById('em_url').value.trim();mediaItems.push({icon:document.getElementById('em_ico').value.trim()||'📄',name:document.getElementById('em_name').value.trim(),desc:document.getElementById('em_desc').value.trim(),type:document.getElementById('em_type').value,fileUrl:pendingMediaFileUrl||(urlVal==='[uploaded file]'?'':urlVal),unlockKey:document.getElementById('em_key').value.trim(),nameFont:document.getElementById('em_font').value,descFont:document.getElementById('em_dfont').value});pendingMediaFileUrl='';hideEditModal();renderMedia();renderGrid();saveMediaItemsToBackend()}
+function saveNewMediaItem(){const urlVal=document.getElementById('em_url').value.trim();mediaItems.push({icon:document.getElementById('em_ico').value.trim()||'📄',name:document.getElementById('em_name').value.trim(),desc:document.getElementById('em_desc').value.trim(),type:document.getElementById('em_type').value,fileUrl:pendingMediaFileUrl||(urlVal==='[uploaded file]'?'':urlVal),unlockKey:document.getElementById('em_key').value.trim(),nameFont:document.getElementById('em_font').value,descFont:document.getElementById('em_dfont').value,vaultLocked:false,vaultCode:'',vaultCodename:''});pendingMediaFileUrl='';hideEditModal();syncVaultCodesFromMedia();renderMedia();renderGrid();saveMediaItemsToBackend()}
 
 // ══════ TIMER ══════
 let timerSec=5325,timerPaused=false,timerOriginal=5325;
@@ -6244,13 +6237,14 @@ updateLandingForMode();
 
 function saveSession(){
   try{
-    // Only save session when on consoleScreen — no point saving login/reg/landing
+    // Only save when user is authenticated (on console or a panel over it)
     if(_currentScreen!=='consoleScreen')return;
+    if(!currentVaultTeam)return;
     const data={type:isAdmin?'admin':'team',team:currentVaultTeam,screen:'consoleScreen'};
     if(isAdmin)data.adminSession=adminSession;
     // Track which panel is open
-    const openPanel=document.querySelector('.expanded-panel.visible');
-    if(openPanel)data.panel=openPanel.id;
+    const openPanelEl=document.querySelector('.expanded-panel.visible');
+    if(openPanelEl)data.panel=openPanelEl.id;
     localStorage.setItem('cb_session',JSON.stringify(data));
   }catch(e){}
 }
