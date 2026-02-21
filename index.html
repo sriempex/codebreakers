@@ -37,7 +37,9 @@
   .reg-member-block{background:rgba(0,255,136,.02);border:1px solid rgba(0,255,136,.08);border-radius:6px;padding:16px;margin-bottom:12px}
   .reg-member-label{font-family:'Saira',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;color:#b0d8c0;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
   .reg-member-num{width:20px;height:20px;border-radius:50%;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15);display:flex;align-items:center;justify-content:center;font-family:'Oxanium',sans-serif;font-weight:700;font-size:9px;color:var(--green)}
-  .reg-submit{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700;margin-top:8px}
+  .reg-submit{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700;margin-top:8px;position:relative;min-height:48px}
+  .reg-submit.loading{color:transparent;pointer-events:none}
+  .reg-submit.loading::after{content:'';position:absolute;inset:0;margin:auto;width:20px;height:20px;border:2px solid rgba(0,255,136,.2);border-top-color:var(--green);border-radius:50%;animation:btnSpin .6s linear infinite}
   .reg-submit:hover{background:rgba(0,255,136,.1);box-shadow:0 0 25px rgba(0,255,136,.12)}
   .reg-err{font-family:'Chakra Petch',sans-serif;font-size:11px;color:var(--red);min-height:14px;margin-top:4px;text-align:center;font-weight:600}
 
@@ -1476,7 +1478,7 @@
         </div>
 
         <div class="reg-err" id="regErr"></div>
-        <button class="reg-submit" onclick="submitRegistration()">◈ Register Team ◈</button>
+        <button class="reg-submit" id="regSubmitBtn" onclick="submitRegistration()">◈ Register Team ◈</button>
       </div>
 
       <div id="regSuccess">
@@ -1933,9 +1935,8 @@ function submitRegistration(){
   let effectiveType=mode==='individual'?'individual':(mode==='team'?'team':currentRegType);
 
   if(!regSettings.registrationOpen){err.textContent='Registration is currently closed';return}
-  if(registeredTeams.length>=regSettings.maxTeams){err.textContent='Maximum number of registrations reached';return}
 
-  let entityName='', members=[];
+  let entityName='', members=[], email='', phone='', dept='';
 
   if(effectiveType==='team'){
     entityName=document.getElementById('regTeamName')?.value.trim()||'';
@@ -1943,22 +1944,22 @@ function submitRegistration(){
     const memberCount=parseInt(document.getElementById('regMemberCount')?.value||regSettings.teamSizeMax);
     for(let m=1;m<=memberCount;m++){
       const name=document.getElementById('reg'+m+'Name')?.value.trim();
-      const dept=document.getElementById('reg'+m+'Dept')?.value.trim()||'';
-      const email=document.getElementById('reg'+m+'Email')?.value.trim()||'';
-      const phone=document.getElementById('reg'+m+'Phone')?.value.trim()||'';
+      const mdept=document.getElementById('reg'+m+'Dept')?.value.trim()||'';
+      const memail=document.getElementById('reg'+m+'Email')?.value.trim()||'';
+      const mphone=document.getElementById('reg'+m+'Phone')?.value.trim()||'';
       if(!name){err.textContent='Please enter name for Team Member '+m;return}
-      if(regSettings.requireEmail&&!email){err.textContent='Please enter email for Team Member '+m;return}
-      if(regSettings.requirePhone&&!phone){err.textContent='Please enter phone for Team Member '+m;return}
-      if(regSettings.requireDept&&!dept){err.textContent='Please enter department for Team Member '+m;return}
-      members.push({name,dept,email,phone});
+      if(regSettings.requireEmail&&!memail){err.textContent='Please enter email for Team Member '+m;return}
+      if(regSettings.requirePhone&&!mphone){err.textContent='Please enter phone for Team Member '+m;return}
+      if(regSettings.requireDept&&!mdept){err.textContent='Please enter department for Team Member '+m;return}
+      members.push({name,dept:mdept,email:memail,phone:mphone});
     }
+    email=members[0]?.email||'';phone=members[0]?.phone||'';dept=members[0]?.dept||'';
   }else{
-    // Individual mode
     entityName=document.getElementById('regIndividualName')?.value.trim()||'';
     if(!entityName){err.textContent='Please enter your name';return}
-    const dept=document.getElementById('regIndDept')?.value.trim()||'';
-    const email=document.getElementById('regIndEmail')?.value.trim()||'';
-    const phone=document.getElementById('regIndPhone')?.value.trim()||'';
+    dept=document.getElementById('regIndDept')?.value.trim()||'';
+    email=document.getElementById('regIndEmail')?.value.trim()||'';
+    phone=document.getElementById('regIndPhone')?.value.trim()||'';
     if(regSettings.requireEmail&&!email){err.textContent='Please enter your email';return}
     if(regSettings.requirePhone&&!phone){err.textContent='Please enter your phone number';return}
     if(regSettings.requireDept&&!dept){err.textContent='Please enter your department';return}
@@ -1966,19 +1967,38 @@ function submitRegistration(){
   }
 
   err.textContent='';
-  const teamId=generateTeamId(entityName);
-  document.getElementById('regTeamId').textContent=teamId;
+  const btn=document.getElementById('regSubmitBtn');
+  btn.classList.add('loading');
 
-  registeredTeams.push({
-    id:teamId,name:entityName,type:effectiveType,members:members.map(m=>m.name),memberDetails:members,
-    lastActive:Date.now(),fieldsCompleted:0,submitTime:null,registeredAt:new Date().toISOString(),submissionResults:null
+  apiCall('registerTeam',{
+    teamName:entityName,
+    type:effectiveType,
+    members:members,
+    email:email,
+    phone:phone,
+    dept:dept
+  }).then(result=>{
+    btn.classList.remove('loading');
+    if(result.ok){
+      const teamId=result.teamId;
+      document.getElementById('regTeamId').textContent=teamId;
+
+      registeredTeams.push({
+        id:teamId,name:entityName,type:effectiveType,
+        members:members.map(m=>m.name),memberDetails:members,
+        lastActive:Date.now(),fieldsCompleted:0,submitTime:null,
+        registeredAt:new Date().toISOString(),submissionResults:null
+      });
+
+      document.getElementById('regForm').classList.add('hidden');
+      document.getElementById('regSuccess').classList.add('active');
+      playSuccess();
+      document.getElementById('flashG').classList.add('on');
+      setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
+    }else{
+      err.textContent=result.error||'Registration failed';
+    }
   });
-
-  document.getElementById('regForm').classList.add('hidden');
-  document.getElementById('regSuccess').classList.add('active');
-  playSuccess();
-  document.getElementById('flashG').classList.add('on');
-  setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
 }
 
 function updateRegSettings(){
@@ -2272,19 +2292,17 @@ function submitLogin(){
   if(!idVal){err.textContent='Please enter your Team ID or username';return}
 
   const pwField=document.getElementById('loginPwField');
+  const btn=document.getElementById('loginSubmitBtn');
 
-  // If password field is visible, we're in admin or team auth flow
+  // If password field is visible, this is an admin auth attempt
   if(pwField.style.display!=='none'){
     const pw=document.getElementById('loginPw').value;
     if(!pw){err.textContent='Please enter password';return}
-    // Try admin login via API
     err.textContent='';
-    const btn=document.getElementById('loginSubmitBtn');
     btn.classList.add('loading');
     apiCall('login',{username:idVal,password:pw}).then(result=>{
       btn.classList.remove('loading');
       if(result.ok){
-        // Admin authenticated
         adminSession={username:result.username,role:result.role,adminToken:result.adminToken};
         err.textContent='';
         isAdmin=true;document.body.classList.add('admin-mode');
@@ -2292,57 +2310,43 @@ function submitLogin(){
         updateConsoleForTeam(currentVaultTeam);
         syncAdminDropdownToggles();
         loginSuccess();
-        // Load event data in background
         loadEventData();
       }else{
-        // Admin login failed — try as team ID with password
-        const teamId=idVal.toUpperCase();
-        const team=registeredTeams.find(t=>t.id===teamId);
-        if(team){
-          err.textContent='';
-          currentVaultTeam=team;
-          team.lastActive=Date.now();
-          updateConsoleForTeam(team);
-          loginSuccess();
-        }else{
-          err.textContent='Authentication failed';
-          playDenied();
-          document.getElementById('flashR').classList.add('on');
-          setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
-        }
+        err.textContent='Authentication failed';
+        playDenied();
+        document.getElementById('flashR').classList.add('on');
+        setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
       }
     });
     return;
   }
 
-  // First entry — check if we should show password field
-  // Always show password field (admin needs it, teams might need it later)
-  pwField.style.display='block';
-  document.getElementById('loginPw').focus();
-  document.getElementById('loginSubmitBtn').textContent='AUTHENTICATE';
+  // First entry — try as team ID via backend
   err.textContent='';
-
-  // Also try as team ID (no password needed for teams)
-  const teamId=idVal.toUpperCase();
-  const team=registeredTeams.find(t=>t.id===teamId);
-  const manualMatch=manualVaultKeys.find(k=>k.key.toUpperCase()===teamId);
-
-  if(team||manualMatch){
-    // Team/manual entry found — log in directly without password
-    err.textContent='';
-    pwField.style.display='none';
-    document.getElementById('loginSubmitBtn').textContent='ENTER';
-    if(team){
-      currentVaultTeam=team;
-      team.lastActive=Date.now();
-      updateConsoleForTeam(team);
-    }else{
-      currentVaultTeam={id:teamId,name:manualMatch.label||'Manual Key',type:'team',members:['Admin'],memberDetails:[]};
+  btn.classList.add('loading');
+  apiCall('loginTeam',{teamId:idVal}).then(result=>{
+    btn.classList.remove('loading');
+    if(result.ok){
+      // Team found — log in directly
+      const t=result;
+      currentVaultTeam={id:t.teamId,name:t.teamName,type:t.type,
+        members:(t.members||[]).map(m=>typeof m==='string'?m:m.name),
+        memberDetails:t.members||[],lastActive:Date.now(),fieldsCompleted:0,
+        submitTime:null,registeredAt:t.registeredAt,submissionResults:null};
+      // Add to local cache if not already there
+      if(!registeredTeams.find(r=>r.id===t.teamId)){
+        registeredTeams.push(currentVaultTeam);
+      }
       updateConsoleForTeam(currentVaultTeam);
+      loginSuccess();
+    }else{
+      // Not a team ID — show password field for admin login attempt
+      pwField.style.display='block';
+      document.getElementById('loginPw').focus();
+      btn.textContent='AUTHENTICATE';
+      err.textContent='';
     }
-    loginSuccess();
-    return;
-  }
+  });
 }
 function loginSuccess(){
   playSuccess();
@@ -4207,15 +4211,23 @@ function renderAdminList(){renderPortalUsersList()} // backward compat
 function createManualTeam(){
   const effectiveType=document.getElementById('apManualType')?.value||'team';
   const name=document.getElementById('apTeamName').value.trim();
-  const id=document.getElementById('apTeamId').value.trim()||generateTeamId(effectiveType==='individual'?(name||'SOLO'):(name||'TEAM'));
+  const id=document.getElementById('apTeamId').value.trim()||'';
   const msg=document.getElementById('apTeamMsg');
-  const label=effectiveType==='individual'?'participant':'team';
   if(!name){msg.className='ap-msg err';msg.textContent='✗ Name required';return}
-  if(manualTeams.find(t=>t.id===id)){msg.className='ap-msg err';msg.textContent='✗ ID already exists';return}
-  manualTeams.push({name:name,id:id,type:effectiveType});
-  msg.className='ap-msg ok';msg.textContent=`✓ ${effectiveType==='individual'?'Participant':'Team'} "${name}" created with ID: ${id}`;
-  document.getElementById('apTeamName').value='';document.getElementById('apTeamId').value='';
-  renderPortalUsersList();
+  msg.className='ap-msg';msg.textContent='Creating...';
+  apiCall('createManualTeam',{teamName:name,teamId:id,type:effectiveType}).then(r=>{
+    if(r.ok){
+      msg.className='ap-msg ok';msg.textContent=`✓ ${effectiveType==='individual'?'Participant':'Team'} "${name}" created with ID: ${r.teamId}`;
+      document.getElementById('apTeamName').value='';document.getElementById('apTeamId').value='';
+      // Add to local cache
+      const team={id:r.teamId,name:r.teamName||name,type:effectiveType,members:[],memberDetails:[],lastActive:Date.now(),fieldsCompleted:0,submitTime:null,registeredAt:new Date().toISOString(),submissionResults:null};
+      manualTeams.push(team);
+      registeredTeams.push(team);
+      renderPortalUsersList();
+    }else{
+      msg.className='ap-msg err';msg.textContent='✗ '+r.error;
+    }
+  });
 }
 function onManualTypeChange(){
   const t=document.getElementById('apManualType')?.value||'team';
@@ -4230,7 +4242,21 @@ function syncManualCreationUI(){
   onManualTypeChange();
 }
 function autoGenTeamId(){const name=document.getElementById('apTeamName').value.trim()||'TEAM';document.getElementById('apTeamId').value=generateTeamId(name)}
-function removeTeam(i){manualTeams.splice(i,1);renderPortalUsersList()}
+function removeTeam(i){
+  const team=manualTeams[i];
+  if(!team)return;
+  if(!confirm('Remove "'+team.name+'" ('+team.id+')?'))return;
+  apiCall('removeTeam',{teamId:team.id}).then(r=>{
+    if(r.ok){
+      manualTeams.splice(i,1);
+      const ri=registeredTeams.findIndex(t=>t.id===team.id);
+      if(ri>=0)registeredTeams.splice(ri,1);
+      renderPortalUsersList();
+    }else{
+      alert(r.error||'Failed to remove team');
+    }
+  });
+}
 function renderTeamList(){renderPortalUsersList()} // backward compat
 
 // ── Team Monitor (Activity Tracking) ──
@@ -4239,14 +4265,11 @@ let registeredTeams=[]; // Will be populated from backend; for now demo data
 let teamMonitorInterval=null;
 
 function initDemoTeams(){
-  const now=Date.now();
-  registeredTeams=[
-    {id:'SHAD-7924',name:'Shadow Ops',type:'team',members:['Alex Turner','Jordan Blake','Sam Chen'],memberDetails:[{name:'Alex Turner',dept:'IT',email:'alex.t@sri.com',phone:''},{name:'Jordan Blake',dept:'Marketing',email:'jordan.b@sri.com',phone:''},{name:'Sam Chen',dept:'IT',email:'sam.c@sri.com',phone:''}],lastActive:now-30000,fieldsCompleted:7,submitTime:null,registeredAt:new Date(now-3600000).toISOString(),submissionResults:null},
-    {id:'CIPH-3815',name:'Cipher Squad',type:'team',members:['Taylor Morgan','Morgan Hayes','Casey Diaz'],memberDetails:[{name:'Taylor Morgan',dept:'Finance',email:'taylor.m@sri.com',phone:''},{name:'Morgan Hayes',dept:'Finance',email:'morgan.h@sri.com',phone:''},{name:'Casey Diaz',dept:'Operations',email:'casey.d@sri.com',phone:''}],lastActive:now-120000,fieldsCompleted:5,submitTime:null,registeredAt:new Date(now-3200000).toISOString(),submissionResults:null},
-    {id:'GHOS-6241',name:'Ghost Protocol',type:'team',members:['Riley Shaw','Quinn West','Blake Ford'],memberDetails:[{name:'Riley Shaw',dept:'HR',email:'riley.s@sri.com',phone:''},{name:'Quinn West',dept:'HR',email:'quinn.w@sri.com',phone:''},{name:'Blake Ford',dept:'Legal',email:'blake.f@sri.com',phone:''}],lastActive:now-400000,fieldsCompleted:9,submitTime:'00:42:18',registeredAt:new Date(now-3500000).toISOString(),submissionResults:null},
-    {id:'REDC-8103',name:'Red Cell',type:'team',members:['Drew Patel','Avery Kim','Reese Grant'],memberDetails:[{name:'Drew Patel',dept:'Sales',email:'drew.p@sri.com',phone:''},{name:'Avery Kim',dept:'Sales',email:'avery.k@sri.com',phone:''},{name:'Reese Grant',dept:'Marketing',email:'reese.g@sri.com',phone:''}],lastActive:now-180000,fieldsCompleted:3,submitTime:null,registeredAt:new Date(now-2800000).toISOString(),submissionResults:null},
-    {id:'BLAC-5497',name:'Black Site',type:'team',members:['Jamie Cruz','Chris Okafor','Pat Nguyen'],memberDetails:[{name:'Jamie Cruz',dept:'Operations',email:'jamie.c@sri.com',phone:''},{name:'Chris Okafor',dept:'IT',email:'chris.o@sri.com',phone:''},{name:'Pat Nguyen',dept:'Operations',email:'pat.n@sri.com',phone:''}],lastActive:now-600000,fieldsCompleted:1,submitTime:null,registeredAt:new Date(now-2400000).toISOString(),submissionResults:null},
-  ];
+  // Teams now loaded from backend via loadEventData()
+  // This function kept for backward compatibility
+  if(registeredTeams.length===0){
+    registeredTeams=[];
+  }
 }
 initDemoTeams();
 
