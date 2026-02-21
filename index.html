@@ -544,6 +544,7 @@
   .feed-card-img,.feed-single-img,.mv-image-viewer{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;pointer-events:auto}
   .feed-card-img img,.feed-single-img img{pointer-events:none;-webkit-user-drag:none;user-select:none}
   .no-download-shield{position:absolute;inset:0;z-index:2;-webkit-user-select:none;user-select:none}
+  .feed-single-img .no-download-shield{pointer-events:none}
   /* Feed video in grid */
   .feed-card-video{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
   /* Feed video in single view */
@@ -560,10 +561,10 @@
 
   .feed-single{display:none;flex-direction:column;align-items:center;gap:16px;max-width:600px;margin:0 auto;width:100%}
   .feed-single.visible{display:flex}
-  .feed-single-img{width:100%;aspect-ratio:1;background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:72px;background-size:cover;background-position:center;touch-action:pan-y;position:relative;overflow:hidden;cursor:zoom-in}
-  .feed-single-img.zoomed{cursor:zoom-out;overflow:auto}
-  .feed-single-img.zoomed img{width:200%;max-width:none;cursor:grab;object-fit:initial}
-  .feed-single-img.zoomed img.dragging{cursor:grabbing}
+  .feed-single-img{width:100%;aspect-ratio:1;background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:72px;background-size:cover;background-position:center;touch-action:none;position:relative;overflow:hidden;cursor:zoom-in}
+  .feed-single-img.zoomed{cursor:grab}
+  .feed-single-img.zoomed.dragging{cursor:grabbing}
+  .feed-single-img .feed-zoom-img{width:100%;height:100%;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none;transform-origin:0 0;transition:none;will-change:transform}
   .feed-single-edit{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
     background:rgba(0,0,0,.7);border:1px solid rgba(0,212,255,.3);color:var(--cyan);font-size:16px;cursor:pointer;z-index:5;transition:all .2s;backdrop-filter:blur(4px)}
   .feed-single-edit:hover{background:rgba(0,212,255,.15);border-color:rgba(0,212,255,.5);box-shadow:0 0 12px rgba(0,212,255,.15)}
@@ -2731,7 +2732,7 @@ function renderSinglePost(){
   }else if(p.mediaUrl){
     // Image
     img.style.background='';img.style.backgroundSize='';
-    img.innerHTML=`<div class="no-download-shield" oncontextmenu="return false"></div><img src="${p.mediaUrl}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;-webkit-user-drag:none" draggable="false">${editBtn}`;
+    img.innerHTML=`<div class="no-download-shield" oncontextmenu="return false" style="pointer-events:none"></div><img class="feed-zoom-img" src="${p.mediaUrl}" draggable="false">${editBtn}`;
   }else{
     // Emoji placeholder
     img.style.background=p.bg;img.style.backgroundSize='';img.textContent=p.emoji;img.innerHTML=p.emoji+editBtn;
@@ -2816,57 +2817,155 @@ function toggleFeedMute(){
 }
 function navPost(d){currentPost=(currentPost+d+posts.length)%posts.length;resetFeedZoom();renderSinglePost()}
 
-// ══════ FEED ZOOM ══════
-function toggleFeedZoom(){
-  const container=document.getElementById('singleImg');
-  if(!container)return;
-  const isZoomed=container.classList.contains('zoomed');
-  if(isZoomed){
-    resetFeedZoom();
-  }else{
-    container.classList.add('zoomed');
-    // Center scroll
-    const img=container.querySelector('img');
-    if(img){
-      setTimeout(()=>{
-        container.scrollLeft=(container.scrollWidth-container.clientWidth)/2;
-        container.scrollTop=(container.scrollHeight-container.clientHeight)/2;
-      },50);
-    }
+// ══════ FEED ZOOM ENGINE (transform-based) ══════
+const feedZoom={scale:1,x:0,y:0,minScale:1,maxScale:5,dragging:false,startX:0,startY:0,startPanX:0,startPanY:0,pinching:false,pinchDist0:0,pinchScale0:1};
+
+function getFeedZoomImg(){return document.querySelector('#singleImg .feed-zoom-img')}
+function getFeedZoomContainer(){return document.getElementById('singleImg')}
+
+function applyFeedZoom(){
+  const img=getFeedZoomImg();if(!img)return;
+  img.style.transform=`translate(${feedZoom.x}px,${feedZoom.y}px) scale(${feedZoom.scale})`;
+  const c=getFeedZoomContainer();
+  if(c){
+    if(feedZoom.scale>1){c.classList.add('zoomed');c.style.cursor=feedZoom.dragging?'grabbing':'grab'}
+    else{c.classList.remove('zoomed');c.style.cursor='zoom-in'}
   }
 }
-function resetFeedZoom(){
-  const container=document.getElementById('singleImg');
-  if(container)container.classList.remove('zoomed');
+
+function clampFeedPan(){
+  const c=getFeedZoomContainer(),img=getFeedZoomImg();if(!c||!img)return;
+  const cw=c.clientWidth,ch=c.clientHeight;
+  const iw=cw*feedZoom.scale,ih=ch*feedZoom.scale;
+  if(iw<=cw){feedZoom.x=(cw-iw)/2}else{feedZoom.x=Math.min(0,Math.max(cw-iw,feedZoom.x))}
+  if(ih<=ch){feedZoom.y=(ch-ih)/2}else{feedZoom.y=Math.min(0,Math.max(ch-ih,feedZoom.y))}
 }
+
+function feedZoomAt(cx,cy,newScale){
+  const c=getFeedZoomContainer();if(!c)return;
+  const rect=c.getBoundingClientRect();
+  const px=cx-rect.left,py=cy-rect.top;
+  const oldScale=feedZoom.scale;
+  feedZoom.scale=Math.min(feedZoom.maxScale,Math.max(feedZoom.minScale,newScale));
+  // Zoom toward pointer
+  feedZoom.x=px-(px-feedZoom.x)*(feedZoom.scale/oldScale);
+  feedZoom.y=py-(py-feedZoom.y)*(feedZoom.scale/oldScale);
+  clampFeedPan();applyFeedZoom();
+}
+
+function resetFeedZoom(){
+  feedZoom.scale=1;feedZoom.x=0;feedZoom.y=0;feedZoom.dragging=false;feedZoom.pinching=false;
+  const c=getFeedZoomContainer();if(c){c.classList.remove('zoomed','dragging');c.style.cursor='zoom-in'}
+  const img=getFeedZoomImg();if(img)img.style.transform='';
+}
+
+function toggleFeedZoom(e){
+  if(feedZoom.scale>1){resetFeedZoom();return}
+  // Zoom to 2.5x centered on click point
+  const cx=e?e.clientX:0,cy=e?e.clientY:0;
+  if(e){feedZoomAt(cx,cy,2.5)}else{feedZoom.scale=2.5;clampFeedPan();applyFeedZoom()}
+}
+
 // Click-to-zoom on focus image
 document.getElementById('singleImg')?.addEventListener('click',function(e){
-  // Don't zoom on video, mute btn, edit btn, or iframe clicks
   if(e.target.closest('.feed-mute-btn')||e.target.closest('.feed-single-edit')||e.target.tagName==='VIDEO'||e.target.tagName==='IFRAME')return;
-  toggleFeedZoom();
+  if(feedZoom.dragging)return; // was a drag, not a click
+  if(!getFeedZoomImg())return; // only zoom on actual images
+  toggleFeedZoom(e);
 });
+
+// Scroll wheel zoom
+document.getElementById('singleImg')?.addEventListener('wheel',function(e){
+  if(!getFeedZoomImg())return;
+  e.preventDefault();
+  const delta=e.deltaY>0?0.85:1.18;
+  feedZoomAt(e.clientX,e.clientY,feedZoom.scale*delta);
+},{passive:false});
+
 // Drag to pan when zoomed
 (function(){
   const container=document.getElementById('singleImg');
   if(!container)return;
-  let dragging=false,startX,startY,scrollL,scrollT;
+  let moved=false;
   container.addEventListener('mousedown',function(e){
-    if(!container.classList.contains('zoomed'))return;
-    dragging=true;startX=e.pageX;startY=e.pageY;
-    scrollL=container.scrollLeft;scrollT=container.scrollTop;
-    const img=container.querySelector('img');
-    if(img)img.classList.add('dragging');
+    if(feedZoom.scale<=1)return;
+    feedZoom.dragging=true;moved=false;
+    feedZoom.startX=e.clientX;feedZoom.startY=e.clientY;
+    feedZoom.startPanX=feedZoom.x;feedZoom.startPanY=feedZoom.y;
+    container.classList.add('dragging');
     e.preventDefault();
   });
   window.addEventListener('mousemove',function(e){
-    if(!dragging)return;
-    container.scrollLeft=scrollL-(e.pageX-startX);
-    container.scrollTop=scrollT-(e.pageY-startY);
+    if(!feedZoom.dragging)return;
+    const dx=e.clientX-feedZoom.startX,dy=e.clientY-feedZoom.startY;
+    if(Math.abs(dx)>3||Math.abs(dy)>3)moved=true;
+    feedZoom.x=feedZoom.startPanX+dx;
+    feedZoom.y=feedZoom.startPanY+dy;
+    clampFeedPan();applyFeedZoom();
   });
   window.addEventListener('mouseup',function(){
-    if(!dragging)return;dragging=false;
-    const img=container.querySelector('img');
-    if(img)img.classList.remove('dragging');
+    if(!feedZoom.dragging)return;
+    feedZoom.dragging=false;
+    container.classList.remove('dragging');
+    // If barely moved, let click handler fire
+    if(!moved)feedZoom.dragging=false;
+  });
+
+  // Touch: pinch-to-zoom + drag-to-pan
+  let touchStartDist=0,touchStartScale=1,touchStartX=0,touchStartY=0,touchStartPanX=0,touchStartPanY=0,touchMoved=false;
+
+  function getTouchDist(t){return Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)}
+  function getTouchMid(t){return{x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2}}
+
+  container.addEventListener('touchstart',function(e){
+    if(!getFeedZoomImg())return;
+    touchMoved=false;
+    if(e.touches.length===2){
+      feedZoom.pinching=true;
+      touchStartDist=getTouchDist(e.touches);
+      touchStartScale=feedZoom.scale;
+      const mid=getTouchMid(e.touches);
+      touchStartX=mid.x;touchStartY=mid.y;
+      touchStartPanX=feedZoom.x;touchStartPanY=feedZoom.y;
+      e.preventDefault();
+    }else if(e.touches.length===1&&feedZoom.scale>1){
+      feedZoom.dragging=true;
+      touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;
+      touchStartPanX=feedZoom.x;touchStartPanY=feedZoom.y;
+      e.preventDefault();
+    }
+  },{passive:false});
+
+  container.addEventListener('touchmove',function(e){
+    if(!getFeedZoomImg())return;
+    if(feedZoom.pinching&&e.touches.length===2){
+      e.preventDefault();touchMoved=true;
+      const dist=getTouchDist(e.touches);
+      const newScale=touchStartScale*(dist/touchStartDist);
+      const mid=getTouchMid(e.touches);
+      feedZoomAt(mid.x,mid.y,newScale);
+      // Also pan with pinch movement
+      feedZoom.x+=(mid.x-touchStartX)*0.5;
+      feedZoom.y+=(mid.y-touchStartY)*0.5;
+      touchStartX=mid.x;touchStartY=mid.y;
+      clampFeedPan();applyFeedZoom();
+    }else if(feedZoom.dragging&&e.touches.length===1){
+      e.preventDefault();touchMoved=true;
+      feedZoom.x=touchStartPanX+(e.touches[0].clientX-touchStartX);
+      feedZoom.y=touchStartPanY+(e.touches[0].clientY-touchStartY);
+      clampFeedPan();applyFeedZoom();
+    }
+  },{passive:false});
+
+  container.addEventListener('touchend',function(e){
+    if(feedZoom.pinching&&e.touches.length<2){
+      feedZoom.pinching=false;
+      if(feedZoom.scale<1.05){resetFeedZoom()}
+    }
+    if(e.touches.length===0){
+      feedZoom.dragging=false;
+      // Double-tap to zoom on mobile
+    }
   });
 })();
 
@@ -2874,9 +2973,9 @@ document.getElementById('singleImg')?.addEventListener('click',function(e){
 (function(){
   const img=document.getElementById('singleImg');
   let sx=0,sy=0,dx=0,swiping=false;
-  img.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;swiping=true},{passive:true});
+  img.addEventListener('touchstart',e=>{if(feedZoom.scale>1||e.touches.length>1)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;swiping=true},{passive:true});
   img.addEventListener('touchmove',e=>{
-    if(!swiping)return;
+    if(!swiping||feedZoom.scale>1)return;
     dx=e.touches[0].clientX-sx;
     const dy=Math.abs(e.touches[0].clientY-sy);
     if(dy>Math.abs(dx)){swiping=false;return}
@@ -2904,16 +3003,17 @@ document.getElementById('singleImg')?.addEventListener('click',function(e){
     }
     setTimeout(()=>{img.style.transition=''},450);
   });
-  // Mouse drag for desktop
+  // Mouse drag swipe for desktop (only when not zoomed)
   let mx=0,mdx=0,mdrag=false;
-  img.addEventListener('mousedown',e=>{mx=e.clientX;mdx=0;mdrag=true;e.preventDefault()});
+  img.addEventListener('mousedown',e=>{if(feedZoom.scale>1)return;mx=e.clientX;mdx=0;mdrag=true;e.preventDefault()});
   window.addEventListener('mousemove',e=>{
-    if(!mdrag)return;mdx=e.clientX-mx;
+    if(!mdrag||feedZoom.scale>1)return;mdx=e.clientX-mx;
     img.style.transform=`translateX(${mdx*.4}px)`;
     img.style.opacity=1-Math.abs(mdx)/600;
   });
   window.addEventListener('mouseup',()=>{
     if(!mdrag)return;mdrag=false;
+    if(feedZoom.scale>1){img.style.transform='';img.style.opacity='';return}
     if(Math.abs(mdx)>50){
       const dir=mdx>0?-1:1;
       img.style.transition='transform .2s,opacity .2s';
