@@ -359,7 +359,7 @@
   }
 
   /* Topbar — steel header strip */
-  .console-topbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;position:relative;z-index:1;
+  .console-topbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;position:relative;z-index:50;
     background:
       repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.004) 1px,rgba(255,255,255,.004) 2px,transparent 2px,transparent 3px),
       linear-gradient(180deg,#0c0e12,#060810);
@@ -370,7 +370,8 @@
   .timer-digits{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:22px;color:#ff6655;letter-spacing:4px}
   .timer-digits.paused{color:var(--amber);animation:ledPulse 1s infinite}
   .timer-label{font-family:'Saira',sans-serif;font-size:9px;color:#888;letter-spacing:3px;font-weight:600;text-transform:uppercase;margin-top:3px}
-  .console-team{font-family:'Saira',sans-serif;font-size:11px;color:#888;letter-spacing:2px;font-weight:600;cursor:pointer;transition:color .2s;position:relative}
+  .topbar-identity{position:relative;cursor:pointer;display:flex;align-items:center}
+  .console-team{font-family:'Saira',sans-serif;font-size:11px;color:#888;letter-spacing:2px;font-weight:600;transition:color .2s}
   .console-team:hover{color:#b0e8cc}
   body.admin-mode .console-team{display:none}
   .team-notif-badge{position:absolute;top:-6px;right:-8px;min-width:16px;height:16px;border-radius:8px;background:var(--red);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 0 8px rgba(255,50,50,.4);animation:ledPulse 2s ease-in-out infinite;z-index:5}
@@ -1675,7 +1676,9 @@
     <div style="display:flex;align-items:center">
       <div class="timer-block"><div class="timer-digits" id="cTimer">01:28:45</div><div class="timer-label">Time Remaining</div></div>
     </div>
-    <span class="console-team" onclick="toggleTeamCard(event)">—
+    <div class="topbar-identity" onclick="toggleTeamCard(event)">
+      <span class="console-team">—</span>
+      <span class="admin-topbar-label">Administrator</span>
       <span class="team-notif-badge" id="teamNotifBadge"></span>
       <div class="team-card" id="teamCard">
         <div class="team-card-header">
@@ -1699,8 +1702,7 @@
           </div>
         </div>
       </div>
-    </span>
-    <span class="admin-topbar-label">Administrator</span>
+    </div>
   </div>
   <div class="console-grid" id="consoleGrid"></div>
   <div class="console-worldmap"></div>
@@ -1966,8 +1968,6 @@ function proceedToLogin(){
 let teamCardOpen=false,elapsedSec=0,elapsedInterval=null;
 function toggleTeamCard(e){
   e.stopPropagation();
-  // Don't show team card for admin (unless in player preview)
-  if(isAdmin&&!document.body.classList.contains('player-preview'))return;
   teamCardOpen=!teamCardOpen;
   document.getElementById('teamCard').classList.toggle('open',teamCardOpen);
   if(teamCardOpen){
