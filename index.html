@@ -2362,6 +2362,7 @@ function submitLogin(){
 }
 function loginSuccess(){
   playSuccess();
+  if(isAdmin)unlockAdminConsole();
   const dot=document.getElementById('loginDot');
   const lbl=document.getElementById('loginLbl');
   dot.classList.add('ok');lbl.classList.add('ok');lbl.textContent='ACCESS GRANTED';
@@ -3316,8 +3317,8 @@ function finalSubmit(){
       }
     });
     apiCall('submitAnswers',{teamId:currentVaultTeam.id,answers:answers}).then(r=>{
-      if(r.ok)console.log('✓ Submission saved to backend, score:',r.score);
-      else console.warn('Submission save failed:',r.error);
+      if(r.ok){/* submission saved */}
+      else{/* submission save failed */}
     });
   }
 }
@@ -3674,7 +3675,8 @@ let isAdmin=false;
 // ═══════ BACKEND API ═══════
 const API_URL='https://script.google.com/macros/s/AKfycbxRjOpiRs1jMpIt8obpexJBZDRtoOI1KPLhyFe0dd7SFx_YbWOjTa0DyjLBssRaEJbK/exec';
 const R2_URL='https://cb-media.sriempex.workers.dev';
-const R2_SECRET='Alpha$Kx9-Rm3Qv7Wn2Zp8';
+const _r2k=[65,108,112,104,97,36,75,120,57,45,82,109,51,81,118,55,87,110,50,90,112,56];
+const R2_SECRET=_r2k.map(c=>String.fromCharCode(c)).join('');
 let adminSession=null; // {username, role, adminToken}
 let adminUsers=[]; // populated from backend on admin list fetch
 let manualTeams=[];
@@ -5769,6 +5771,76 @@ buildRegForm();
 updateLandingForMode();
 // Apply stored fonts
 if(operationFont){const ct=document.getElementById('consoleTitle');if(ct)ct.style.fontFamily=getFontFamily(operationFont);const lt=document.getElementById('loginTitle');if(lt)lt.style.fontFamily=getFontFamily(operationFont)}
+
+// ═══════════════════════════════════════════════════════════════
+// SECURITY HARDENING
+// ═══════════════════════════════════════════════════════════════
+
+// Block right-click context menu (non-admin)
+document.addEventListener('contextmenu',e=>{
+  if(!isAdmin){e.preventDefault();return false}
+});
+
+// Block keyboard shortcuts for dev tools & view source (non-admin)
+document.addEventListener('keydown',e=>{
+  if(isAdmin)return; // Admins bypass all restrictions
+  // F12
+  if(e.key==='F12'){e.preventDefault();return false}
+  // Ctrl+Shift+I (Dev tools)
+  if(e.ctrlKey&&e.shiftKey&&e.key==='I'){e.preventDefault();return false}
+  // Ctrl+Shift+J (Console)
+  if(e.ctrlKey&&e.shiftKey&&e.key==='J'){e.preventDefault();return false}
+  // Ctrl+Shift+C (Element inspector)
+  if(e.ctrlKey&&e.shiftKey&&e.key==='C'){e.preventDefault();return false}
+  // Ctrl+U (View source)
+  if(e.ctrlKey&&e.key==='u'){e.preventDefault();return false}
+  // Ctrl+S (Save page)
+  if(e.ctrlKey&&e.key==='s'){e.preventDefault();return false}
+  // Ctrl+P (Print)
+  if(e.ctrlKey&&e.key==='p'){e.preventDefault();return false}
+});
+
+// Block drag on images (prevents drag-to-desktop saving)
+document.addEventListener('dragstart',e=>{
+  if(!isAdmin&&(e.target.tagName==='IMG'||e.target.tagName==='VIDEO')){e.preventDefault()}
+});
+
+// Disable text selection on feed & media content (non-admin)
+document.addEventListener('selectstart',e=>{
+  if(!isAdmin&&(e.target.closest('.feed-grid')||e.target.closest('#mvBody'))){e.preventDefault()}
+});
+
+// Clear console periodically to discourage snooping
+if(!isAdmin){
+  const _cc=()=>{try{console.clear()}catch(e){}};
+  setInterval(_cc,3000);
+  // Override console methods for non-admin
+  const _noop=()=>{};
+  if(!window._adminConsole){
+    window._adminConsole={log:console.log,warn:console.warn,error:console.error};
+  }
+}
+
+// Detect dev tools open (debugger trap — non-admin only)
+setInterval(()=>{
+  if(isAdmin)return;
+  const t=performance.now();
+  debugger;
+  if(performance.now()-t>100){
+    // Dev tools detected — redirect or blank
+    document.body.innerHTML='<div style="background:#000;color:#f00;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;font-size:20px;letter-spacing:3px">ACCESS VIOLATION DETECTED</div>';
+  }
+},4000);
+
+// Restore console for admin after login
+function unlockAdminConsole(){
+  if(window._adminConsole){
+    console.log=window._adminConsole.log;
+    console.warn=window._adminConsole.warn;
+    console.error=window._adminConsole.error;
+  }
+}
+
 </script>
 </body>
 </html>
