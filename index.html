@@ -629,6 +629,17 @@
   .admin-trigger:hover{border-color:rgba(255,170,51,.6);box-shadow:0 0 14px rgba(255,170,51,.2)}
   .admin-trigger::after{content:'';position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(0,255,136,.6);animation:ledPulse 2s ease-in-out infinite;display:none}
   body.edit-mode .admin-trigger::after{display:block}
+  body.player-preview .admin-trigger::after{display:block;background:var(--cyan)!important;box-shadow:0 0 6px rgba(0,212,255,.6)!important}
+  body.player-preview .admin-topbar-label{display:none!important}
+  body.player-preview .admin-dropdown-item,
+  body.player-preview .admin-dropdown-toggle:not(.pp-toggle){opacity:.3;pointer-events:none}
+  body.player-preview .console-team{display:inline!important;cursor:pointer!important;color:#888!important}
+  body.player-preview .console-team:hover{color:#b0e8cc!important}
+  body.player-preview .notif-bell{display:flex!important}
+  body.player-preview .notepad-trigger{display:flex!important}
+  body.player-preview .admin-edit-btn{display:none!important}
+  body.player-preview .feed-single-edit{display:none!important}
+  body.player-preview .vui-admin-hint{display:none!important}
   body.admin-mode .admin-trigger{display:flex}
 
   /* Admin dropdown menu */
@@ -1311,6 +1322,7 @@
     <div class="admin-dropdown-sep"></div>
     <div class="admin-dropdown-toggle" onclick="toggleAllowDownloads()"><span class="adm-icon">⬇</span><span class="adm-label">Allow Downloads</span><span class="adm-toggle off" id="admDlToggle">OFF</span></div>
     <div class="admin-dropdown-toggle" onclick="toggleEditMode()"><span class="adm-icon">✎</span><span class="adm-label">Edit Mode</span><span class="adm-toggle off" id="admEditToggle">OFF</span></div>
+    <div class="admin-dropdown-toggle pp-toggle" onclick="togglePlayerPreview()"><span class="adm-icon">👁</span><span class="adm-label">View as Player</span><span class="adm-toggle off" id="admPreviewToggle">OFF</span></div>
   </div>
 </div>
 
@@ -3213,6 +3225,9 @@ function syncAdminDropdownToggles(){
   const edEl=document.getElementById('admEditToggle');
   const isEdit=document.body.classList.contains('edit-mode');
   if(edEl){edEl.textContent=isEdit?'ON':'OFF';edEl.className='adm-toggle '+(isEdit?'on':'off')}
+  const ppEl=document.getElementById('admPreviewToggle');
+  const isPreview=document.body.classList.contains('player-preview');
+  if(ppEl){ppEl.textContent=isPreview?'ON':'OFF';ppEl.className='adm-toggle '+(isPreview?'on':'off')}
 }
 function toggleAllowDownloads(){
   allowDownloads=!allowDownloads;
@@ -3228,11 +3243,32 @@ document.addEventListener('click',e=>{
 function toggleEditMode(){
   const isEdit=document.body.classList.contains('edit-mode');
   if(!isEdit){
+    // Disable player preview if active
+    document.body.classList.remove('player-preview');
     document.body.classList.add('edit-mode');
   }else{
     document.body.classList.remove('edit-mode');
   }
   renderGrid();renderFeed();renderMedia();renderIntelForm();
+  syncAdminDropdownToggles();
+  closeAdminDropdown();
+}
+function togglePlayerPreview(){
+  const isPreview=document.body.classList.contains('player-preview');
+  if(!isPreview){
+    // Disable edit mode if active
+    document.body.classList.remove('edit-mode');
+    document.body.classList.add('player-preview');
+    // Set a placeholder team name for preview
+    const teamEl=document.querySelector('.console-team');
+    if(teamEl&&teamEl.childNodes[0])teamEl.childNodes[0].textContent='TEAM PREVIEW ';
+  }else{
+    document.body.classList.remove('player-preview');
+    // Restore admin display
+    const teamEl=document.querySelector('.console-team');
+    if(teamEl&&teamEl.childNodes[0])teamEl.childNodes[0].textContent='ADMINISTRATOR ';
+  }
+  renderGrid();renderFeed();renderMedia();renderIntelForm();renderVaultPanel();
   syncAdminDropdownToggles();
   closeAdminDropdown();
 }
