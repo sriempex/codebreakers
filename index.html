@@ -1441,11 +1441,11 @@
 
 <!-- REGISTRATION -->
 <div class="screen" id="regScreen">
+  <button class="mv-close" onclick="showScreen('landingScreen')" style="position:absolute;top:20px;right:20px;z-index:20">✕ CLOSE</button>
   <div class="reg-container">
     <div class="reg-title" id="regScreenTitle">Operation Dead Drop</div>
     <div class="reg-subtitle" id="regScreenSubtitle">Team Registration Portal</div>
     <div class="reg-panel">
-      <button class="mv-close" onclick="showScreen('landingScreen')" style="position:absolute;top:12px;right:12px;z-index:5">✕ CLOSE</button>
       <div id="regForm">
         <!-- Hybrid mode type choice (hidden unless hybrid) -->
         <div class="reg-type-choice" id="regTypeChoice" style="display:none">
@@ -1492,11 +1492,11 @@
 
 <!-- LOGIN -->
 <div class="screen" id="loginScreen">
+  <button class="mv-close" onclick="showScreen('landingScreen')" style="position:absolute;top:20px;right:20px;z-index:20">✕ CLOSE</button>
   <div class="login-container">
     <div style="display:flex;align-items:center;justify-content:center"><div class="login-title" id="loginTitle">Operation Dead Drop</div><button class="admin-edit-inline" onclick="event.stopPropagation();editOperationName()">✎</button></div>
     <div class="login-subtitle">Enter Your Credentials</div>
     <div class="login-panel">
-      <button class="mv-close" onclick="showScreen('landingScreen')" style="position:absolute;top:12px;right:12px;z-index:5">✕ CLOSE</button>
       <div class="rv rv-1"></div><div class="rv rv-2"></div><div class="rv rv-3"></div><div class="rv rv-4"></div>
       <div class="login-field">
         <label id="loginIdLabel">Team ID</label>
