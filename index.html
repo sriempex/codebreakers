@@ -438,6 +438,9 @@
   .team-card-notif-list{max-height:120px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
   .team-card-notif-item{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#aaa;padding:5px 8px;background:rgba(255,255,255,.02);border-radius:3px;border-left:2px solid var(--amber)}
   .team-card-notif-item .notif-time{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#555;margin-right:6px}
+  .notif-voice-row{display:inline-flex;align-items:center;gap:8px}
+  .notif-play-btn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);color:var(--cyan);font-size:9px;cursor:pointer;transition:all .2s}
+  .notif-play-btn:hover{background:rgba(0,212,255,.2);border-color:rgba(0,212,255,.4)}
   .notif-clear-link{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#555;cursor:pointer;letter-spacing:.5px;transition:color .2s}
   .notif-clear-link:hover{color:var(--red)}
 
@@ -654,7 +657,7 @@
   .intel-exp-row{display:flex;align-items:center;gap:10px;background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;padding:12px 16px;overflow:hidden}
   .intel-exp-num{font-family:'Saira',sans-serif;font-size:12px;color:#aab;font-weight:700;min-width:24px;flex-shrink:0}
   .intel-exp-label{font-family:'Staatliches',cursive;font-size:14px;color:#d0d0d0;letter-spacing:2px;min-width:140px;max-width:180px;font-weight:400;flex-shrink:0}
-  .intel-exp-input{flex:1;min-width:0;border-radius:3px;padding:10px 14px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;letter-spacing:2px;outline:none;transition:border-color .2s;
+  .intel-exp-input{flex:1;min-width:0;max-width:280px;border-radius:3px;padding:10px 14px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;letter-spacing:2px;outline:none;transition:border-color .2s;
     background:
       repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.1) 1px,rgba(0,0,0,.1) 2px),
       linear-gradient(180deg,#020604,#040a06,#030805);
@@ -669,7 +672,7 @@
   .intel-exp-clear:hover{color:var(--red);background:rgba(255,50,50,.1)}
   .intel-exp-check{width:20px;height:20px;border-radius:50%;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;font-size:10px;color:#2a2a2a;flex-shrink:0}
   .intel-exp-check.submitted{color:var(--green);border-color:var(--green);background:rgba(0,255,136,.06)}
-  .intel-prefix-wrap{flex:1;min-width:0;display:flex;align-items:center;border-radius:3px;overflow:hidden;transition:border-color .2s;
+  .intel-prefix-wrap{flex:1;min-width:0;max-width:280px;display:flex;align-items:center;border-radius:3px;overflow:hidden;transition:border-color .2s;
     background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.1) 1px,rgba(0,0,0,.1) 2px),linear-gradient(180deg,#020604,#040a06,#030805);
     border:1px solid #1a2a1e;
     box-shadow:inset 0 0 12px rgba(0,0,0,.6),inset 0 0 25px rgba(0,20,8,.2),0 1px 0 rgba(255,255,255,.02),0 0 1px rgba(0,255,136,.1)}
@@ -677,15 +680,51 @@
   .intel-prefix{color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;padding:10px 2px 10px 12px;letter-spacing:2px;flex-shrink:0;opacity:.6;text-shadow:0 0 6px rgba(0,255,136,.35)}
   .intel-prefix-wrap input{flex:1;min-width:0;background:transparent;border:none;padding:10px 14px 10px 4px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;letter-spacing:2px;outline:none;text-shadow:0 0 6px rgba(0,255,136,.35)}
   .intel-prefix-wrap input::placeholder{color:rgba(0,255,136,.12);text-shadow:none}
-  .intel-dual-wrap{flex:1;min-width:0;display:flex;gap:8px;align-items:center}
+  .intel-dual-wrap{flex:1;min-width:0;max-width:280px;display:flex;gap:8px;align-items:center}
   .intel-dual-wrap input{flex:1;min-width:0}
   .intel-dual-sep{color:#777;font-size:10px;letter-spacing:1px;flex-shrink:0}
-  .intel-submit-btn{margin-top:15px;align-self:center;width:100%;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700;
-    background:linear-gradient(180deg,#1a3a2a,#0f2a1a);
-    border:1px solid rgba(0,255,136,.3);color:#d0f0d8}
-  .intel-submit-btn:hover{background:rgba(0,255,136,.1);box-shadow:0 0 25px rgba(0,255,136,.12)}
-  .intel-submit-btn:active{transform:translateY(1px)}
-  .intel-submit-btn:disabled{opacity:.25;cursor:not-allowed}
+  /* Console push button — transmit */
+  .intel-submit-wrap{margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:10px}
+  .intel-submit-btn{width:82px;height:82px;border-radius:50%;cursor:pointer;position:relative;transition:all .15s;
+    /* Outer bezel ring */
+    border:3px solid #1a1a1a;
+    /* Convex glossy surface */
+    background:radial-gradient(ellipse at 38% 32%,rgba(0,255,136,.45),rgba(0,180,100,.3) 40%,#0a3a20 75%,#062a15 100%);
+    box-shadow:
+      0 0 0 4px #0d0d0d,
+      0 0 0 5px #2a2a2a,
+      inset 0 2px 4px rgba(255,255,255,.08),
+      inset 0 -3px 6px rgba(0,0,0,.5),
+      0 4px 12px rgba(0,0,0,.6),
+      0 0 20px rgba(0,255,136,.08);
+    color:transparent;font-size:0;
+  }
+  .intel-submit-btn::after{content:'';position:absolute;top:12%;left:18%;width:40%;height:30%;border-radius:50%;
+    background:radial-gradient(ellipse,rgba(255,255,255,.12),transparent);pointer-events:none}
+  .intel-submit-btn:hover{
+    background:radial-gradient(ellipse at 38% 32%,rgba(0,255,136,.55),rgba(0,200,110,.4) 40%,#0d4a28 75%,#083a1a 100%);
+    box-shadow:
+      0 0 0 4px #0d0d0d,
+      0 0 0 5px #2a2a2a,
+      inset 0 2px 4px rgba(255,255,255,.1),
+      inset 0 -3px 6px rgba(0,0,0,.5),
+      0 4px 12px rgba(0,0,0,.6),
+      0 0 30px rgba(0,255,136,.15);
+  }
+  .intel-submit-btn:active{
+    transform:translateY(2px);
+    background:radial-gradient(ellipse at 38% 38%,rgba(0,255,136,.3),rgba(0,140,80,.25) 40%,#072a18 75%,#051a10 100%);
+    box-shadow:
+      0 0 0 4px #0d0d0d,
+      0 0 0 5px #2a2a2a,
+      inset 0 3px 8px rgba(0,0,0,.6),
+      inset 0 -1px 2px rgba(255,255,255,.03),
+      0 1px 4px rgba(0,0,0,.6),
+      0 0 15px rgba(0,255,136,.06);
+  }
+  .intel-submit-btn:disabled{opacity:.2;cursor:not-allowed;transform:none}
+  .intel-submit-label{font-family:'Saira',sans-serif;font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#556;transition:color .2s}
+  .intel-submit-wrap:hover .intel-submit-label{color:#8a8}
 
   /* ══════ CONFIRM MODAL ══════ */
   #confirmModal{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
@@ -1293,10 +1332,11 @@
     .intel-exp-row{flex-wrap:wrap;padding:12px;gap:8px}
     .intel-exp-num{min-width:24px;font-size:10px}
     .intel-exp-label{min-width:100%;font-size:10px;margin-bottom:2px}
-    .intel-exp-input{font-size:16px;padding:8px 10px}
+    .intel-exp-input{font-size:16px;padding:8px 10px;max-width:none}
     .intel-dual-wrap{flex-direction:column;gap:6px}
     .intel-dual-sep{display:none}
-    .intel-submit-btn{font-size:10px;letter-spacing:3px;padding:12px 30px}
+    .intel-submit-btn{width:70px;height:70px}
+    .intel-submit-label{font-size:8px;letter-spacing:3px}
     .intel-exp-check{width:18px;height:18px;font-size:9px;position:absolute;right:12px;top:12px}
     .intel-exp-row{position:relative}
 
@@ -1443,7 +1483,7 @@
 
 <div class="notepad-trigger" id="notepadTrigger" onclick="toggleNotepad()"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg><span>Field Notes</span><div class="notepad-dot" id="notepadDot"></div></div>
 
-<div id="logoutModal"><div class="logout-box"><h3>⚠ Confirm Logout</h3><p>You'll need your Team ID to re-enter via the Vault. Are you sure?</p><div style="display:flex;gap:12px;justify-content:center"><button class="btn-standard btn-ghost" onclick="hideLogout()">Cancel</button><button class="btn-standard btn-red" onclick="doLogout()">Logout</button></div></div></div>
+<div id="logoutModal"><div class="logout-box" id="logoutBoxContent"></div></div>
 
 <div id="adminEditModal"><div class="edit-box" id="editBox"></div></div>
 
@@ -2257,7 +2297,19 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(localStorage.getItem('dd_notes'))document.getElementById('notepadDot').classList.add('has-notes');
 });
 
-function showLogout(){playConfirmPrompt();document.getElementById('logoutModal').classList.add('active')}
+function showLogout(){
+  playConfirmPrompt();
+  const box=document.getElementById('logoutBoxContent');
+  if(isAdmin){
+    box.innerHTML=`<h3>⚠ Confirm Logout</h3><p>You will be logged out of the admin console. Continue?</p><div style="display:flex;gap:12px;justify-content:center"><button class="btn-standard btn-ghost" onclick="hideLogout()">Cancel</button><button class="btn-standard btn-red" onclick="doLogout()">Logout</button></div>`;
+  }else{
+    const mode=regSettings.participantMode;
+    const idLabel=mode==='individual'?'your ID':'your Team ID';
+    const idValue=currentVaultTeam?currentVaultTeam.id:'';
+    box.innerHTML=`<h3>⚠ Confirm Logout</h3><p>You'll need ${idLabel} to re-enter. Make sure you have it saved.</p>${idValue?`<div style="text-align:center;margin:12px 0;padding:10px;background:rgba(0,255,136,.04);border:1px solid rgba(0,255,136,.12);border-radius:4px"><div style="font-family:Saira,sans-serif;font-size:8px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">${idLabel}</div><div style="font-family:Oxanium,sans-serif;font-size:18px;font-weight:700;color:var(--green);letter-spacing:3px">${idValue}</div></div>`:''}<div style="display:flex;gap:12px;justify-content:center"><button class="btn-standard btn-ghost" onclick="hideLogout()">Cancel</button><button class="btn-standard btn-red" onclick="doLogout()">Logout</button></div>`;
+  }
+  document.getElementById('logoutModal').classList.add('active');
+}
 function hideLogout(){document.getElementById('logoutModal').classList.remove('active')}
 function doLogout(){
   hideLogout();
@@ -3389,7 +3441,7 @@ function finalSubmit(){
   document.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});
   // Show neutral checkmarks — NO indication of right/wrong
     document.getElementById('intelSubmitBtn').disabled=true;
-  document.getElementById('intelSubmitBtn').textContent='◈ TRANSMITTED ◈';
+  const _sl=document.getElementById('intelSubmitLabel');if(_sl)_sl.textContent='◈ TRANSMITTED ◈';
   document.getElementById('intelBadge').textContent='SUBMITTED';
   document.getElementById('intelBadge').classList.remove('amber');
   playSuccess();
@@ -5099,21 +5151,17 @@ function sendBroadcast(){
   if(bcMode==='text'){
     const msg=document.getElementById('bcMessage').value.trim();
     if(!msg)return;
-    // Send to backend
     apiCall('sendBroadcast',{message:msg,type:'text'}).then(r=>{
       if(r.ok){
-        showPlayerBanner('text',msg);
         document.getElementById('bcMessage').value='';
         closeBroadcast();
       }
     });
   } else {
     if(!bcRecordedBlob){return}
-    // Voice notes: upload to R2 first, then broadcast the URL
     uploadFileToDrive(new File([bcRecordedBlob],'broadcast_'+Date.now()+'.webm',{type:bcRecordedBlob.type}),'broadcasts').then(result=>{
       apiCall('sendBroadcast',{message:result.directUrl,type:'voice'}).then(r=>{
         if(r.ok){
-          showPlayerBanner('voice',result.directUrl);
           bcRecordedBlob=null;
           document.getElementById('bcPreview').style.display='none';
           document.getElementById('bcRecLabel').textContent='Tap to record';
@@ -5121,9 +5169,6 @@ function sendBroadcast(){
         }
       });
     }).catch(err=>{
-      // Fallback to local-only if upload fails
-      const url=URL.createObjectURL(bcRecordedBlob);
-      showPlayerBanner('voice',url);
       bcRecordedBlob=null;
       document.getElementById('bcPreview').style.display='none';
       closeBroadcast();
@@ -5162,9 +5207,11 @@ function showPlayerBanner(type,content){
   const progress=document.getElementById('pbProgress');
   playNotification();
 
-  // Store notification
-  notifications.unshift({type,content,time:new Date().toLocaleTimeString(),read:false});
-  updateNotificationBadge();
+  // Store notification and update badge (players only)
+  if(!isAdmin){
+    notifications.unshift({type,content,time:new Date().toLocaleTimeString(),read:false});
+    updateNotificationBadge();
+  }
 
   if(type==='text'){
     icon.textContent='📢';
@@ -5228,7 +5275,30 @@ function renderNotifications(){
   const list=document.getElementById('teamNotifList');
   if(!list)return;
   if(!notifications.length){list.innerHTML='<div class="notif-empty">No notifications yet</div>';return}
-  list.innerHTML=notifications.map(n=>`<div class="team-card-notif-item"><span class="notif-time">${n.time}</span>${n.type==='text'?n.content:'🎙️ Voice message'}</div>`).join('');
+  list.innerHTML=notifications.map((n,i)=>{
+    if(n.type==='voice'){
+      return `<div class="team-card-notif-item"><span class="notif-time">${n.time}</span><span class="notif-voice-row">🎙️ Voice message <span class="notif-play-btn" onclick="event.stopPropagation();playNotifAudio(${i})" id="notifPlay${i}">▶</span></span></div>`;
+    }
+    return `<div class="team-card-notif-item"><span class="notif-time">${n.time}</span>${n.content}</div>`;
+  }).join('');
+}
+
+let _notifAudio=null;
+function playNotifAudio(idx){
+  const n=notifications[idx];
+  if(!n||n.type!=='voice')return;
+  const btn=document.getElementById('notifPlay'+idx);
+  if(_notifAudio){
+    _notifAudio.pause();
+    // Reset all play buttons
+    document.querySelectorAll('.notif-play-btn').forEach(b=>b.textContent='▶');
+    if(_notifAudio._notifIdx===idx){_notifAudio=null;return}
+  }
+  _notifAudio=new Audio(n.content);
+  _notifAudio._notifIdx=idx;
+  _notifAudio.play();
+  if(btn)btn.textContent='⏸';
+  _notifAudio.addEventListener('ended',()=>{if(btn)btn.textContent='▶';_notifAudio=null});
 }
 function clearNotifications(){
   notifications=[];
@@ -5458,11 +5528,11 @@ function renderIntelForm(){
     }
   });
   if(isA)html+=`<div class="admin-add-btn" style="margin-top:10px;padding:14px" onclick="addIntelField()">+ Add Intel Field</div>`;
-  html+=`<button class="intel-submit-btn" id="intelSubmitBtn" onclick="showConfirm()">◈ Transmit Intel ◈</button>`;
+  html+=`<div class="intel-submit-wrap"><button class="intel-submit-btn" id="intelSubmitBtn" onclick="showConfirm()"></button><div class="intel-submit-label" id="intelSubmitLabel">◈ Transmit Intel ◈</div></div>`;
   form.innerHTML=html;
   // Restore values
   form.querySelectorAll('.intel-exp-input').forEach(inp=>{if(prevVals[inp.dataset.idx])inp.value=prevVals[inp.dataset.idx]});
-  if(isSubmitted){form.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});document.getElementById('intelSubmitBtn').disabled=true;document.getElementById('intelSubmitBtn').textContent='◈ TRANSMITTED ◈'}
+  if(isSubmitted){form.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});document.getElementById('intelSubmitBtn').disabled=true;const lbl=document.getElementById('intelSubmitLabel');if(lbl)lbl.textContent='◈ TRANSMITTED ◈'}
   // Sync intelLabels array
   syncIntelLabels();
 }
