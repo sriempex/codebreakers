@@ -1653,6 +1653,12 @@
             <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="eventShowLeaderboard" checked onchange="eventSettings.showLeaderboardOnExpiry=this.checked"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa">Reveal leaderboard on expiry</span></label>
           </div>
           <div id="eventStatusMsg" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#666;letter-spacing:1px;margin-top:8px"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05)">
+            <button class="ap-btn ap-btn-amber" id="eventPauseBtn" onclick="toggleEventPause()" style="font-size:9px;padding:5px 12px">⏸ Pause Timer</button>
+            <button class="ap-btn ap-btn-red" onclick="forceEndEvent()" style="font-size:9px;padding:5px 12px">⛔ Force End</button>
+            <button class="ap-btn ap-btn-cyan" onclick="exportResults()" style="font-size:9px;padding:5px 12px">📊 Export Results</button>
+            <button class="ap-btn ap-btn-red" onclick="clearAllData()" style="font-size:9px;padding:5px 12px;opacity:.7">🗑 Clear All Data</button>
+          </div>
         </div>
       </div>
       <div class="edit-field-row" style="gap:12px;margin-bottom:12px">
@@ -4809,6 +4815,8 @@ function desubmitTeam(teamId){
   team.submitTime=null;
   team.submissionResults=null;
   team.isSubmitted=false;
+  // Clear on backend
+  apiCall('desubmitTeam',{teamId:teamId}).then(r=>{});
   // Notification
   if(!window.teamMessages)window.teamMessages={};
   if(!window.teamMessages[teamId])window.teamMessages[teamId]=[];
@@ -5692,7 +5700,20 @@ function saveFeedPost(i){
   if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
   saveFeedPostsToBackend();
 }
-function deleteFeedPost(i){posts.splice(i,1);if(currentPost>=posts.length)currentPost=Math.max(0,posts.length-1);hideEditModal();renderFeed();renderGrid();
+
+// ── R2 Cleanup — delete file from R2 when removed from portal ──
+function deleteFromR2(url){
+  if(!url||!url.includes('.workers.dev/file/'))return;
+  const key=url.split('/file/')[1];
+  if(!key)return;
+  fetch(R2_URL+'/delete',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','X-Upload-Secret':R2_SECRET},
+    body:JSON.stringify({key:key})
+  }).catch(e=>{});
+}
+
+function deleteFeedPost(i){const delPost=posts[i];if(delPost&&delPost.imageUrl)deleteFromR2(delPost.imageUrl);posts.splice(i,1);if(currentPost>=posts.length)currentPost=Math.max(0,posts.length-1);hideEditModal();renderFeed();renderGrid();
   if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
   saveFeedPostsToBackend();
 }
@@ -5750,7 +5771,7 @@ function editMediaItem(i){
     <div style="display:flex;gap:10px;margin-top:6px"><button class="btn-standard btn-red" onclick="confirmDelete(this,()=>deleteMediaItem(${i}))">Delete</button><span style="flex:1"></span><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveMediaItem(${i})">Save</button></div>`);
 }
 function saveMediaItem(i){mediaItems[i].icon=document.getElementById('em_ico').value.trim();mediaItems[i].name=document.getElementById('em_name').value.trim();mediaItems[i].desc=document.getElementById('em_desc').value.trim();mediaItems[i].type=document.getElementById('em_type').value;const urlVal=document.getElementById('em_url').value.trim();mediaItems[i].fileUrl=pendingMediaFileUrl||(urlVal==='[uploaded file]'?mediaItems[i].fileUrl:urlVal);mediaItems[i].unlockKey=document.getElementById('em_key').value.trim();const vl=document.getElementById('em_vaultlock');if(vl)mediaItems[i].vaultLocked=vl.checked;const nf=document.getElementById('em_font').value;const df=document.getElementById('em_dfont').value;mediaItems[i].nameFont=nf;mediaItems[i].descFont=df;if(document.getElementById('em_font_all').checked)mediaItems.forEach(m=>{m.nameFont=nf;m.descFont=df});pendingMediaFileUrl='';hideEditModal();renderMedia();renderGrid();saveMediaItemsToBackend()}
-function deleteMediaItem(i){mediaItems.splice(i,1);hideEditModal();renderMedia();renderGrid();saveMediaItemsToBackend()}
+function deleteMediaItem(i){const delMedia=mediaItems[i];if(delMedia&&delMedia.fileUrl)deleteFromR2(delMedia.fileUrl);mediaItems.splice(i,1);hideEditModal();renderMedia();renderGrid();saveMediaItemsToBackend()}
 function addMediaItem(){
   pendingMediaFileUrl='';
   showEditModal(`<h3>Add New Media Item</h3>
@@ -5804,30 +5825,41 @@ function startGlobalEventTimer(){
   if(!eventSettings.startTime||!eventSettings.endTime)return;
   
   _globalTimerInterval=setInterval(()=>{
+    const timerEl=document.getElementById('cTimer');
+    
+    // Paused — show frozen time
+    if(eventPaused&&_pausedTimeRemaining!==null){
+      const diff=_pausedTimeRemaining;
+      const h=Math.floor(diff/3600000);
+      const m=Math.floor((diff%3600000)/60000);
+      const s=Math.floor((diff%60000)/1000);
+      if(timerEl){
+        timerEl.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+        timerEl.style.color='var(--amber)';
+      }
+      return;
+    }
+    
     const now=Date.now();
     const start=new Date(eventSettings.startTime).getTime();
     const end=new Date(eventSettings.endTime).getTime();
-    const timerEl=document.getElementById('cTimer');
     
     if(now<start){
-      // Event hasn't started — show time until start
       const diff=start-now;
       const h=Math.floor(diff/3600000);
       const m=Math.floor((diff%3600000)/60000);
       const s=Math.floor((diff%60000)/1000);
       if(timerEl)timerEl.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
     }else if(now>=start&&now<end){
-      // Event is live — show remaining time
       const diff=end-now;
       const h=Math.floor(diff/3600000);
       const m=Math.floor((diff%3600000)/60000);
       const s=Math.floor((diff%60000)/1000);
       if(timerEl){
         timerEl.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-        timerEl.style.color=(diff<300000)?'var(--red)':''; // Red in last 5 minutes
+        timerEl.style.color=(diff<300000)?'var(--red)':'';
       }
     }else if(!eventSettings.expired){
-      // Event just ended
       eventSettings.expired=true;
       if(timerEl){timerEl.textContent='00:00:00';timerEl.style.color='var(--red)'}
       handleEventExpiry();
@@ -5895,12 +5927,123 @@ function showPublicLeaderboard(){
   overlay.innerHTML=html;
   document.body.appendChild(overlay);
 }
+
+// ═══════════════════════════════════════════════════════════════
+// ADMIN EVENT ACTIONS
+// ═══════════════════════════════════════════════════════════════
+
+let eventPaused=false;
+let _pausedTimeRemaining=null;
+
+function toggleEventPause(){
+  if(!eventSettings.startTime||!eventSettings.endTime)return;
+  const btn=document.getElementById('eventPauseBtn');
+  if(!eventPaused){
+    // Pause — save remaining time, stop countdown
+    const now=Date.now();
+    const end=new Date(eventSettings.endTime).getTime();
+    _pausedTimeRemaining=Math.max(0,end-now);
+    eventPaused=true;
+    if(btn)btn.innerHTML='▶ Resume Timer';
+    // Broadcast pause to players
+    apiCall('sendBroadcast',{message:'⏸ Event timer has been paused by the administrator.',type:'text'});
+  }else{
+    // Resume — set new end time based on remaining time
+    const newEnd=new Date(Date.now()+_pausedTimeRemaining);
+    eventSettings.endTime=newEnd.toISOString();
+    const inp=document.getElementById('eventEndInput');
+    if(inp)inp.value=eventSettings.endTime.substring(0,16);
+    eventSettings.expired=false;
+    eventPaused=false;
+    _pausedTimeRemaining=null;
+    if(btn)btn.innerHTML='⏸ Pause Timer';
+    startGlobalEventTimer();
+    saveEventConfigToBackend();
+    apiCall('sendBroadcast',{message:'▶ Event timer has been resumed.',type:'text'});
+  }
+}
+
+function forceEndEvent(){
+  if(!confirm('Force end the event NOW? This will lock all players and reveal the leaderboard immediately.'))return;
+  // Set end time to now
+  eventSettings.endTime=new Date().toISOString();
+  eventSettings.expired=false;
+  const inp=document.getElementById('eventEndInput');
+  if(inp)inp.value=eventSettings.endTime.substring(0,16);
+  eventPaused=false;
+  _pausedTimeRemaining=null;
+  startGlobalEventTimer();
+  saveEventConfigToBackend();
+  apiCall('sendBroadcast',{message:'⛔ The event has been ended by the administrator.',type:'text'});
+}
+
+function exportResults(){
+  apiCall('exportResults',{}).then(r=>{
+    if(!r.ok)return;
+    // Build CSV
+    const fields=r.fields||[];
+    const headers=['Rank','Team ID','Team Name','Type','Members','Score','Correct','Total Fields','Submitted At'];
+    
+    // Sort teams by score
+    const teams=(r.teams||[]).map(t=>{
+      const sub=r.submissions[t.teamId]||{};
+      return {...t,score:sub.score||0,correct:sub.correct||0,total:sub.total||0,submittedAt:sub.submittedAt||''};
+    }).sort((a,b)=>b.score-a.score);
+    
+    let csv=headers.join(',')+'\n';
+    teams.forEach((t,i)=>{
+      const members=(t.members||[]).map(m=>typeof m==='string'?m:m.name).join('; ');
+      csv+=[
+        i+1,
+        '"'+t.teamId+'"',
+        '"'+(t.teamName||'').replace(/"/g,'""')+'"',
+        t.type||'team',
+        '"'+members.replace(/"/g,'""')+'"',
+        t.score,
+        t.correct,
+        t.total,
+        '"'+(t.submittedAt||'')+'"'
+      ].join(',')+'\n';
+    });
+    
+    // Download CSV
+    const blob=new Blob([csv],{type:'text/csv'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='codebreakers_results_'+new Date().toISOString().split('T')[0]+'.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+}
+
+function clearAllData(){
+  if(!confirm('⚠ NUCLEAR RESET\n\nThis will permanently delete:\n• All registered teams\n• All submissions & scores\n• All broadcast messages\n\nFeed posts, media items, intel fields, and vault codes will NOT be affected.\n\nThis cannot be undone. Continue?'))return;
+  if(!confirm('Are you absolutely sure? Type thinking...'))return;
+  
+  apiCall('clearAllData',{scope:'all'}).then(r=>{
+    if(r.ok){
+      // Clear local state
+      registeredTeams.length=0;
+      manualTeams.length=0;
+      eventSettings.expired=false;
+      renderLeaderboard();
+      renderFullLeaderboard();
+      renderTeamMonitor();
+      showPlayerBanner('text','All event data has been cleared.');
+    }
+  });
+}
+
 function updateEventStatus(){
   const msg=document.getElementById('eventStatusMsg');
   if(!msg)return;
   if(!eventSettings.startTime||!eventSettings.endTime){
     msg.textContent='Set both start and end times to activate event timer';msg.style.color='#666';return;
   }
+  if(eventPaused){msg.textContent='⏸ Event is PAUSED';msg.style.color='var(--amber)';return}
   const now=Date.now();
   const start=new Date(eventSettings.startTime).getTime();
   const end=new Date(eventSettings.endTime).getTime();
