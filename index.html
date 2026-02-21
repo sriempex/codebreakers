@@ -2321,30 +2321,41 @@ function submitLogin(){
     return;
   }
 
-  // First entry — try as team ID via backend
+  // First entry — try as Team ID via backend
   err.textContent='';
   btn.classList.add('loading');
   apiCall('loginTeam',{teamId:idVal}).then(result=>{
-    btn.classList.remove('loading');
     if(result.ok){
       // Team found — log in directly
+      btn.classList.remove('loading');
       const t=result;
       currentVaultTeam={id:t.teamId,name:t.teamName,type:t.type,
         members:(t.members||[]).map(m=>typeof m==='string'?m:m.name),
         memberDetails:t.members||[],lastActive:Date.now(),fieldsCompleted:0,
         submitTime:null,registeredAt:t.registeredAt,submissionResults:null};
-      // Add to local cache if not already there
       if(!registeredTeams.find(r=>r.id===t.teamId)){
         registeredTeams.push(currentVaultTeam);
       }
       updateConsoleForTeam(currentVaultTeam);
       loginSuccess();
     }else{
-      // Not a team ID — show password field for admin login attempt
-      pwField.style.display='block';
-      document.getElementById('loginPw').focus();
-      btn.textContent='AUTHENTICATE';
-      err.textContent='';
+      // Not a team — check if it's an admin username
+      apiCall('validateUsername',{username:idVal}).then(vResult=>{
+        btn.classList.remove('loading');
+        if(vResult.ok&&vResult.found){
+          // Valid admin username — show password field
+          pwField.style.display='block';
+          document.getElementById('loginPw').focus();
+          btn.textContent='AUTHENTICATE';
+          err.textContent='';
+        }else{
+          // Nothing found
+          err.textContent='Invalid Team ID or username';
+          playDenied();
+          document.getElementById('flashR').classList.add('on');
+          setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
+        }
+      });
     }
   });
 }
