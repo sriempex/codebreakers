@@ -683,48 +683,24 @@
   .intel-dual-wrap{flex:1;min-width:0;max-width:280px;display:flex;gap:8px;align-items:center}
   .intel-dual-wrap input{flex:1;min-width:0}
   .intel-dual-sep{color:#777;font-size:10px;letter-spacing:1px;flex-shrink:0}
-  /* Console push button — transmit */
-  .intel-submit-wrap{margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:10px}
-  .intel-submit-btn{width:82px;height:82px;border-radius:50%;cursor:pointer;position:relative;transition:all .15s;
-    /* Outer bezel ring */
-    border:3px solid #1a1a1a;
-    /* Convex glossy surface */
-    background:radial-gradient(ellipse at 38% 32%,rgba(0,255,136,.45),rgba(0,180,100,.3) 40%,#0a3a20 75%,#062a15 100%);
-    box-shadow:
-      0 0 0 4px #0d0d0d,
-      0 0 0 5px #2a2a2a,
-      inset 0 2px 4px rgba(255,255,255,.08),
-      inset 0 -3px 6px rgba(0,0,0,.5),
-      0 4px 12px rgba(0,0,0,.6),
-      0 0 20px rgba(0,255,136,.08);
-    color:transparent;font-size:0;
+  /* Transmit button — illuminating console bar */
+  .intel-submit-wrap{margin-top:24px;display:flex;justify-content:center}
+  .intel-submit-btn{width:220px;padding:14px 32px;cursor:pointer;position:relative;transition:all .3s;font-family:'Saira',sans-serif;font-size:12px;font-weight:700;letter-spacing:5px;text-transform:uppercase;border-radius:4px;
+    background:linear-gradient(180deg,#0f1a14,#0a1410,#060e0a);
+    border:1px solid rgba(0,255,136,.2);
+    color:rgba(0,255,136,.5);
+    box-shadow:0 0 0 1px rgba(0,0,0,.4),0 2px 8px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.02);
+    text-shadow:0 0 4px rgba(0,255,136,.1);
   }
-  .intel-submit-btn::after{content:'';position:absolute;top:12%;left:18%;width:40%;height:30%;border-radius:50%;
-    background:radial-gradient(ellipse,rgba(255,255,255,.12),transparent);pointer-events:none}
   .intel-submit-btn:hover{
-    background:radial-gradient(ellipse at 38% 32%,rgba(0,255,136,.55),rgba(0,200,110,.4) 40%,#0d4a28 75%,#083a1a 100%);
-    box-shadow:
-      0 0 0 4px #0d0d0d,
-      0 0 0 5px #2a2a2a,
-      inset 0 2px 4px rgba(255,255,255,.1),
-      inset 0 -3px 6px rgba(0,0,0,.5),
-      0 4px 12px rgba(0,0,0,.6),
-      0 0 30px rgba(0,255,136,.15);
+    background:linear-gradient(180deg,#142a1e,#0f2418,#0a1a12);
+    border-color:rgba(0,255,136,.5);
+    color:rgba(0,255,136,.9);
+    box-shadow:0 0 0 1px rgba(0,255,136,.1),0 0 20px rgba(0,255,136,.12),0 0 40px rgba(0,255,136,.06),0 2px 8px rgba(0,0,0,.4),inset 0 1px 0 rgba(0,255,136,.04);
+    text-shadow:0 0 8px rgba(0,255,136,.4),0 0 20px rgba(0,255,136,.15);
   }
-  .intel-submit-btn:active{
-    transform:translateY(2px);
-    background:radial-gradient(ellipse at 38% 38%,rgba(0,255,136,.3),rgba(0,140,80,.25) 40%,#072a18 75%,#051a10 100%);
-    box-shadow:
-      0 0 0 4px #0d0d0d,
-      0 0 0 5px #2a2a2a,
-      inset 0 3px 8px rgba(0,0,0,.6),
-      inset 0 -1px 2px rgba(255,255,255,.03),
-      0 1px 4px rgba(0,0,0,.6),
-      0 0 15px rgba(0,255,136,.06);
-  }
+  .intel-submit-btn:active{transform:translateY(1px);box-shadow:0 0 0 1px rgba(0,255,136,.15),0 0 12px rgba(0,255,136,.08),inset 0 2px 4px rgba(0,0,0,.3)}
   .intel-submit-btn:disabled{opacity:.2;cursor:not-allowed;transform:none}
-  .intel-submit-label{font-family:'Saira',sans-serif;font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#556;transition:color .2s}
-  .intel-submit-wrap:hover .intel-submit-label{color:#8a8}
 
   /* ══════ CONFIRM MODAL ══════ */
   #confirmModal{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
@@ -1335,8 +1311,7 @@
     .intel-exp-input{font-size:16px;padding:8px 10px;max-width:none}
     .intel-dual-wrap{flex-direction:column;gap:6px}
     .intel-dual-sep{display:none}
-    .intel-submit-btn{width:70px;height:70px}
-    .intel-submit-label{font-size:8px;letter-spacing:3px}
+    .intel-submit-btn{width:180px;font-size:10px;letter-spacing:3px;padding:12px 24px}
     .intel-exp-check{width:18px;height:18px;font-size:9px;position:absolute;right:12px;top:12px}
     .intel-exp-row{position:relative}
 
@@ -3441,7 +3416,7 @@ function finalSubmit(){
   document.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});
   // Show neutral checkmarks — NO indication of right/wrong
     document.getElementById('intelSubmitBtn').disabled=true;
-  const _sl=document.getElementById('intelSubmitLabel');if(_sl)_sl.textContent='◈ TRANSMITTED ◈';
+  const _sl=document.getElementById('intelSubmitBtn');if(_sl)_sl.textContent='◈ TRANSMITTED ◈';
   document.getElementById('intelBadge').textContent='SUBMITTED';
   document.getElementById('intelBadge').classList.remove('amber');
   playSuccess();
@@ -5528,11 +5503,11 @@ function renderIntelForm(){
     }
   });
   if(isA)html+=`<div class="admin-add-btn" style="margin-top:10px;padding:14px" onclick="addIntelField()">+ Add Intel Field</div>`;
-  html+=`<div class="intel-submit-wrap"><button class="intel-submit-btn" id="intelSubmitBtn" onclick="showConfirm()"></button><div class="intel-submit-label" id="intelSubmitLabel">◈ Transmit Intel ◈</div></div>`;
+  html+=`<div class="intel-submit-wrap"><button class="intel-submit-btn" id="intelSubmitBtn" onclick="showConfirm()">◈ TRANSMIT ◈</button></div>`;
   form.innerHTML=html;
   // Restore values
   form.querySelectorAll('.intel-exp-input').forEach(inp=>{if(prevVals[inp.dataset.idx])inp.value=prevVals[inp.dataset.idx]});
-  if(isSubmitted){form.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});document.getElementById('intelSubmitBtn').disabled=true;const lbl=document.getElementById('intelSubmitLabel');if(lbl)lbl.textContent='◈ TRANSMITTED ◈'}
+  if(isSubmitted){form.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});document.getElementById('intelSubmitBtn').disabled=true;document.getElementById('intelSubmitBtn').textContent='◈ TRANSMITTED ◈'}
   // Sync intelLabels array
   syncIntelLabels();
 }
