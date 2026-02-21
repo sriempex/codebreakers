@@ -6267,6 +6267,28 @@ function restoreSession(){
     const targetScreen='consoleScreen';
     const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
 
+    function applyScreenAndPanel(){
+      // Set up screen first (hidden — opacity:0 via .screen default)
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+      document.getElementById(targetScreen).classList.add('active');
+      _currentScreen=targetScreen;
+      const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',true);
+      document.getElementById('notepadTrigger').classList.add('visible');
+
+      // Open panel SYNCHRONOUSLY before any paint if one was saved
+      // This prevents the flash of the console grid before the panel appears
+      if(data.panel&&panelMap[data.panel]){
+        const panelEl=document.getElementById(data.panel);
+        if(panelEl){
+          document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));
+          panelEl.classList.add('visible');
+          // Show overlay immediately, no transition
+          overlay.style.cssText='opacity:1;pointer-events:all;transition:none';
+          overlay.classList.add('active');
+        }
+      }
+    }
+
     if(data.type==='admin'&&data.adminSession){
       adminSession=data.adminSession;
       isAdmin=true;
@@ -6274,43 +6296,40 @@ function restoreSession(){
       currentVaultTeam=data.team;
       updateConsoleForTeam(currentVaultTeam);
       syncAdminDropdownToggles();
-      _currentScreen=targetScreen;
-      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-      document.getElementById(targetScreen).classList.add('active');
-      const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',true);
-      document.getElementById('notepadTrigger').classList.add('visible');
+      applyScreenAndPanel();
       startElapsedTimer();
-      // Load data first, then reopen panel — avoids race condition where panel
-      // renders before content is loaded from backend
+      // Load data and re-render the panel content after
       loadEventData().then(()=>{
         if(data.panel&&panelMap[data.panel]){
-          setTimeout(()=>openPanel(panelMap[data.panel]),150);
+          const t=panelMap[data.panel];
+          if(t==='feed'){renderFeed();setFeedView('grid')}
+          if(t==='media')renderMedia();
+          if(t==='intel')renderIntelForm();
+          if(t==='vault')renderVaultPanel();
         }
       });
       return true;
     }else if(data.type==='team'&&data.team.id){
       currentVaultTeam=data.team;
-      if(!registeredTeams.find(r=>r.id===data.team.id)){
-        registeredTeams.push(currentVaultTeam);
-      }
+      if(!registeredTeams.find(r=>r.id===data.team.id))registeredTeams.push(currentVaultTeam);
       updateConsoleForTeam(currentVaultTeam);
-      _currentScreen=targetScreen;
-      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-      document.getElementById(targetScreen).classList.add('active');
-      const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',true);
-      document.getElementById('notepadTrigger').classList.add('visible');
+      applyScreenAndPanel();
       startElapsedTimer();
-      // Load config first, then reopen panel
+      // Load config, then re-render panel content
       apiCall('getEventConfig').then(cfg=>{
         if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
         if(data.panel&&panelMap[data.panel]){
-          setTimeout(()=>openPanel(panelMap[data.panel]),150);
+          const t=panelMap[data.panel];
+          if(t==='feed'){renderFeed();setFeedView('grid')}
+          if(t==='media')renderMedia();
+          if(t==='intel')renderIntelForm();
+          if(t==='vault')renderVaultPanel();
         }
       });
       startBroadcastPolling();
       return true;
     }
-  }catch(e){}
+  }catch(e){console.error('restoreSession error:',e);}
   return false;
 }
 
