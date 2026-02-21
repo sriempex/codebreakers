@@ -5107,15 +5107,18 @@ async function uploadFileToDrive(file,subfolder){
       const dataUrl=e.target.result;
       const base64=dataUrl.split(',')[1];
       
-      // Check file size — Apps Script has ~50MB execution limit but practical limit ~10MB for base64
       if(base64.length>10*1024*1024){
         reject(new Error('File too large (max ~7.5MB). Compress or use a smaller file.'));
         return;
       }
       
+      // Generate a unique upload ID to track this upload
+      const uploadId='UP'+Date.now()+'_'+Math.random().toString(36).substr(2,6);
+      
       try{
         const payload={
           action:'uploadFile',
+          uploadId:uploadId,
           fileData:base64,
           mimeType:file.type||'application/octet-stream',
           fileName:file.name||'upload_'+Date.now(),
@@ -5123,26 +5126,34 @@ async function uploadFileToDrive(file,subfolder){
         };
         if(adminSession)payload.adminToken=adminSession.adminToken;
         
-        // POST with text/plain Content-Type avoids CORS preflight
-        // Apps Script handles the redirect transparently
-        const resp=await fetch(API_URL,{
+        // Step 1: POST the file data with no-cors (guaranteed to deliver the payload)
+        await fetch(API_URL,{
           method:'POST',
+          mode:'no-cors',
           headers:{'Content-Type':'text/plain;charset=utf-8'},
-          body:JSON.stringify(payload),
-          redirect:'follow'
+          body:JSON.stringify(payload)
         });
         
-        const text=await resp.text();
-        let result;
-        try{result=JSON.parse(text)}catch(e){
-          // Response might be HTML if something went wrong
-          console.error('Upload response:',text.substring(0,500));
-          reject(new Error('Upload failed — server error'));
-          return;
-        }
-        
-        if(result.ok)resolve(result);
-        else reject(new Error(result.error||'Upload failed'));
+        // Step 2: Poll for the result using GET (the script stores result keyed by uploadId)
+        let attempts=0;
+        const maxAttempts=30; // 30 seconds max
+        const poll=async()=>{
+          attempts++;
+          const result=await apiCall('getUploadResult',{uploadId:uploadId});
+          if(result.ok&&result.status==='complete'){
+            resolve(result);
+          }else if(result.ok&&result.status==='pending'&&attempts<maxAttempts){
+            setTimeout(poll,1000);
+          }else if(attempts>=maxAttempts){
+            reject(new Error('Upload timed out'));
+          }else if(result.error){
+            reject(new Error(result.error));
+          }else{
+            setTimeout(poll,1000);
+          }
+        };
+        // Wait 2 seconds before first poll (give script time to process)
+        setTimeout(poll,2000);
       }catch(err){
         console.error('Upload error:',err);
         reject(err);
