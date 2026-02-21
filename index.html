@@ -2208,6 +2208,7 @@ function showLogout(){playConfirmPrompt();document.getElementById('logoutModal')
 function hideLogout(){document.getElementById('logoutModal').classList.remove('active')}
 function doLogout(){
   hideLogout();
+  clearSession();
   notepadOpen=false;document.getElementById('notepadPanel').classList.remove('open');
   document.getElementById('notepadTrigger').classList.remove('visible');
   if(elapsedInterval){clearInterval(elapsedInterval);elapsedInterval=null}
@@ -2343,6 +2344,7 @@ function submitLogin(){
         currentVaultTeam={id:'ADMIN',name:'Administrator',type:'admin',members:['Admin'],memberDetails:[]};
         updateConsoleForTeam(currentVaultTeam);
         syncAdminDropdownToggles();
+        saveSession();
         loginSuccess();
         loadEventData();
       }else{
@@ -2371,6 +2373,7 @@ function submitLogin(){
         registeredTeams.push(currentVaultTeam);
       }
       updateConsoleForTeam(currentVaultTeam);
+      saveSession();
       loginSuccess();
       // Load event timer for players
       apiCall('getEventConfig').then(cfg=>{
@@ -5938,6 +5941,66 @@ renderGrid();
 renderIntelForm();
 buildRegForm();
 updateLandingForMode();
+
+// ═══════════════════════════════════════════════════════════════
+// SESSION PERSISTENCE
+// ═══════════════════════════════════════════════════════════════
+
+function saveSession(){
+  try{
+    const data={type:isAdmin?'admin':'team',team:currentVaultTeam};
+    if(isAdmin)data.adminSession=adminSession;
+    localStorage.setItem('cb_session',JSON.stringify(data));
+  }catch(e){}
+}
+
+function clearSession(){
+  try{localStorage.removeItem('cb_session')}catch(e){}
+}
+
+function restoreSession(){
+  try{
+    const raw=localStorage.getItem('cb_session');
+    if(!raw)return false;
+    const data=JSON.parse(raw);
+    if(!data||!data.team)return false;
+    
+    if(data.type==='admin'&&data.adminSession){
+      // Restore admin session — verify token is still valid
+      adminSession=data.adminSession;
+      isAdmin=true;
+      document.body.classList.add('admin-mode');
+      currentVaultTeam=data.team;
+      updateConsoleForTeam(currentVaultTeam);
+      syncAdminDropdownToggles();
+      showScreen('consoleScreen');
+      document.getElementById('notepadTrigger').classList.add('visible');
+      startElapsedTimer();
+      loadEventData();
+      return true;
+    }else if(data.type==='team'&&data.team.id){
+      // Restore team session
+      currentVaultTeam=data.team;
+      if(!registeredTeams.find(r=>r.id===data.team.id)){
+        registeredTeams.push(currentVaultTeam);
+      }
+      updateConsoleForTeam(currentVaultTeam);
+      showScreen('consoleScreen');
+      document.getElementById('notepadTrigger').classList.add('visible');
+      startElapsedTimer();
+      // Load event config for timer
+      apiCall('getEventConfig').then(cfg=>{
+        if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
+      });
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+
+// Auto-restore on page load
+restoreSession();
+
 // Apply stored fonts
 if(operationFont){const ct=document.getElementById('consoleTitle');if(ct)ct.style.fontFamily=getFontFamily(operationFont);const lt=document.getElementById('loginTitle');if(lt)lt.style.fontFamily=getFontFamily(operationFont)}
 
