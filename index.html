@@ -3863,25 +3863,31 @@ async function apiCall(action,data={}){
 }
 
 async function loadEventData(){
-  // Load admin list
-  refreshAdminList();
-  // Load event config
-  const config=await apiCall('getEventConfig');
+  // Fire all requests in parallel — don't wait for each one sequentially
+  const [config, feedResult, mediaResult, intelResult, teamsResult, subResult] = await Promise.all([
+    apiCall('getEventConfig'),
+    apiCall('getFeedPosts'),
+    apiCall('getMediaItems'),
+    apiCall('getIntelFields'),
+    apiCall('getTeams'),
+    apiCall('getSubmissions')
+  ]);
+
+  // Apply each result — swap arrays atomically so UI never flashes empty
+
   if(config.ok&&config.config){
     applyEventConfig(config.config);
   }
-  // Load feed posts from backend (if any saved)
-  const feedResult=await apiCall('getFeedPosts');
+
   if(feedResult.ok&&feedResult.posts&&feedResult.posts.length>0){
+    const newPosts=feedResult.posts;
     posts.length=0;
-    feedResult.posts.forEach(p=>posts.push(p));
+    newPosts.forEach(p=>posts.push(p));
     renderFeed();renderGrid();
   }
-  // Load media items
-  const mediaResult=await apiCall('getMediaItems');
+
   if(mediaResult.ok&&mediaResult.items&&mediaResult.items.length>0){
-    mediaItems.length=0;
-    mediaResult.items.forEach(m=>mediaItems.push({
+    const newItems=mediaResult.items.map(m=>({
       icon:m.filename||'📄',name:m.title||'',nameFont:m.titleFont||'',
       desc:m.desc||'',descFont:m.descFont||'',
       type:m.type||'doc',fileUrl:m.url||'',
@@ -3891,38 +3897,37 @@ async function loadEventData(){
       vaultCode:m.vaultCode||'',
       vaultCodename:m.vaultCodename||''
     }));
+    mediaItems.length=0;
+    newItems.forEach(m=>mediaItems.push(m));
     syncVaultCodesFromMedia();
     renderMedia();renderGrid();
   }
-  // Load intel fields (with answer keys for admin)
-  const intelResult=await apiCall('getIntelFields');
+
   if(intelResult.ok&&intelResult.fields&&intelResult.fields.length>0){
-    intelFields.length=0;
-    intelResult.fields.forEach(f=>intelFields.push({
+    const newFields=intelResult.fields.map(f=>({
       label:f.label||'',emoji:f.emoji||'',type:f.fieldType||'text',
       font:f.font||'',answer:f.answer||{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}
     }));
+    intelFields.length=0;
+    newFields.forEach(f=>intelFields.push(f));
     renderIntelForm();renderGrid();
   }
-  // Load teams
-  const teamsResult=await apiCall('getTeams');
+
   if(teamsResult.ok&&teamsResult.teams){
-    registeredTeams.length=0;
-    manualTeams.length=0;
+    const newTeams=[];const newManual=[];
     teamsResult.teams.forEach(t=>{
       const team={id:t.teamId,name:t.teamName,type:t.type,members:t.members.map(m=>typeof m==='string'?m:m.name),memberDetails:t.members,lastActive:new Date(t.lastActive).getTime(),fieldsCompleted:0,submitTime:null,registeredAt:t.registeredAt,submissionResults:null};
-      if(t.manual){manualTeams.push(team)}
-      registeredTeams.push(team);
+      if(t.manual)newManual.push(team);
+      newTeams.push(team);
     });
+    registeredTeams.length=0;manualTeams.length=0;
+    newTeams.forEach(t=>registeredTeams.push(t));
+    newManual.forEach(t=>manualTeams.push(t));
     renderPortalUsersList();
   }
-  // Load vault codes
-  // vaultCodes are now derived from mediaItems (vaultLocked + vaultCode properties).
-  // syncVaultCodesFromMedia() was already called after loading media above.
-  // The old getVaultCodes backend call is no longer used.
+
   renderVaultPanel();renderKeysCodes();
-  // Load submissions
-  const subResult=await apiCall('getSubmissions');
+
   if(subResult.ok&&subResult.submissions){
     subResult.submissions.forEach(s=>{
       const team=registeredTeams.find(t=>t.id===s.teamId);
@@ -3932,7 +3937,8 @@ async function loadEventData(){
       }
     });
   }
-  // Start global timer if event times are set
+
+  refreshAdminList();
   startGlobalEventTimer();
 }
 
@@ -6285,6 +6291,13 @@ function restoreSession(){
           // Show overlay immediately, no transition
           overlay.style.cssText='opacity:1;pointer-events:all;transition:none';
           overlay.classList.add('active');
+          // Render panel content immediately with whatever is in memory
+          // Backend refresh will update it in the background
+          const t=panelMap[data.panel];
+          if(t==='feed'){renderFeed();setFeedView('grid')}
+          if(t==='media')renderMedia();
+          if(t==='intel')renderIntelForm();
+          if(t==='vault')renderVaultPanel();
         }
       }
     }
@@ -6298,16 +6311,8 @@ function restoreSession(){
       syncAdminDropdownToggles();
       applyScreenAndPanel();
       startElapsedTimer();
-      // Load data and re-render the panel content after
-      loadEventData().then(()=>{
-        if(data.panel&&panelMap[data.panel]){
-          const t=panelMap[data.panel];
-          if(t==='feed'){renderFeed();setFeedView('grid')}
-          if(t==='media')renderMedia();
-          if(t==='intel')renderIntelForm();
-          if(t==='vault')renderVaultPanel();
-        }
-      });
+      // Load fresh data from backend in background — UI already showing
+      loadEventData();
       return true;
     }else if(data.type==='team'&&data.team.id){
       currentVaultTeam=data.team;
@@ -6315,9 +6320,10 @@ function restoreSession(){
       updateConsoleForTeam(currentVaultTeam);
       applyScreenAndPanel();
       startElapsedTimer();
-      // Load config, then re-render panel content
+      // Load config and fresh content in background — UI already showing
       apiCall('getEventConfig').then(cfg=>{
         if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
+        // Re-render panel with fresh backend data once it arrives
         if(data.panel&&panelMap[data.panel]){
           const t=panelMap[data.panel];
           if(t==='feed'){renderFeed();setFeedView('grid')}
