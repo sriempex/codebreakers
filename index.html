@@ -178,6 +178,7 @@
   .login-submit.loading{color:transparent;pointer-events:none}
   .login-submit.loading::after{content:'';position:absolute;inset:0;margin:auto;width:20px;height:20px;border:2px solid rgba(0,255,136,.2);border-top-color:var(--green);border-radius:50%;animation:btnSpin .6s linear infinite}
   @keyframes btnSpin{to{transform:rotate(360deg)}}
+  .upload-spinner{width:24px;height:24px;border:2px solid rgba(255,170,51,.2);border-top-color:var(--amber);border-radius:50%;animation:btnSpin .6s linear infinite;margin:0 auto}
   .login-submit:hover{background:rgba(0,255,136,.1);box-shadow:0 0 25px rgba(0,255,136,.12)}
   .login-status{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.03)}
   .login-register-link{font-family:'Chakra Petch',sans-serif;font-size:13px;color:#aaa;cursor:pointer;transition:color .2s;padding:16px 0 0;letter-spacing:.5px;text-align:center}
@@ -973,7 +974,7 @@
 
   #adminEditModal{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #adminEditModal.active{opacity:1;pointer-events:all}
-  .edit-box{width:500px;max-width:92vw;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.5);box-sizing:border-box}
+  .edit-box{width:500px;max-width:92vw;max-height:85vh;overflow-y:auto;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.5);box-sizing:border-box}
   .edit-box h3{font-family:'Saira',sans-serif;font-size:10px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:16px}
   .edit-field{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
   .edit-field label{font-size:9px;color:#888;letter-spacing:2px;text-transform:uppercase}
@@ -3385,12 +3386,23 @@ function renderMediaContent(m){
     return;
   }
 
+  // Base64 or blob URLs can't be embedded in iframes — offer download/open
+  if(url.startsWith('data:')||url.startsWith('blob:')){
+    const isImage=url.startsWith('data:image')||isImageUrl(url);
+    if(isImage){
+      body.innerHTML=`<img class="mv-image-viewer" src="${url}" alt="${m.name}" onclick="this.classList.toggle('zoomed')">`;
+    }else{
+      body.innerHTML=`<div class="mv-no-file"><div class="mv-no-file-icon">${m.icon}</div><div class="mv-no-file-text">File uploaded locally — cannot preview in viewer.<br><br><a href="${url}" download="${m.name||'file'}" style="color:var(--cyan);text-decoration:underline;font-size:11px;letter-spacing:1px">⬇ DOWNLOAD FILE</a><br><br><span style="font-size:9px;color:#555">For persistent hosting, upload to Google Drive and paste the share link.</span></div></div>`;
+    }
+    return;
+  }
+
   // Google Drive URL conversion for embedding
   const embedUrl=convertDriveUrl(url);
 
   switch(m.type){
     case 'audio':
-      renderAudioPlayer(body,m,url);break;
+      renderAudioPlayer(body,m,embedUrl.direct||url);break;
     case 'video':
       renderVideoPlayer(body,m,embedUrl);break;
     case 'doc':
@@ -3406,11 +3418,29 @@ function renderMediaContent(m){
 
 // Resolve file URL — all media hosted on Netlify, pass through directly
 function convertDriveUrl(url){
-  // Simple pass-through — no external service conversion needed
-  return{preview:url,direct:url,id:null};
+  if(!url)return{preview:url,direct:url,id:null};
+  // Extract Google Drive file ID from any Drive URL format
+  let id=null;
+  const patterns=[
+    /\/file\/d\/([a-zA-Z0-9_-]+)/,
+    /[?&]id=([a-zA-Z0-9_-]+)/,
+    /\/d\/([a-zA-Z0-9_-]+)/,
+    /drive\.google\.com\/uc\?.*id=([a-zA-Z0-9_-]+)/,
+    /drive\.google\.com\/thumbnail\?.*id=([a-zA-Z0-9_-]+)/
+  ];
+  for(const p of patterns){const m=url.match(p);if(m){id=m[1];break}}
+  if(!id)return{preview:url,direct:url,id:null};
+  return{
+    id:id,
+    direct:'https://drive.google.com/uc?export=view&id='+id,
+    preview:'https://drive.google.com/file/d/'+id+'/preview',
+    thumbnail:'https://drive.google.com/thumbnail?id='+id+'&sz=w400',
+    download:'https://drive.google.com/uc?export=download&id='+id
+  };
 }
 
-function isImageUrl(url){return/\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?|$)/i.test(url)}
+function isDriveUrl(url){return url&&/drive\.google\.com/i.test(url)}
+function isImageUrl(url){return/\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?|$)/i.test(url)||/drive\.google\.com\/(uc|thumbnail)/i.test(url)}
 function isPdfUrl(url){return/\.pdf(\?|$)/i.test(url)||url.includes('/preview')}
 
 // ── Audio Player ──
@@ -3573,26 +3603,33 @@ function fullscreenVideo(){
 // ── Document / Map / PDF Viewer ──
 function isOfficeDoc(url){return/\.(docx?|xlsx?|pptx?|csv)(\?|$)/i.test(url)}
 function renderDocViewer(body,m,url,eu){
+  const isDrive=!!eu.id;
   // Images
-  if(isImageUrl(url)||m.type==='map'&&isImageUrl(url)){
-    body.innerHTML=`<img class="mv-image-viewer" src="${eu.direct}" alt="${m.name}" onclick="this.classList.toggle('zoomed')">`;
+  if(isImageUrl(url)||(m.type==='map'&&(isImageUrl(url)||isDrive))){
+    const src=isDrive?eu.direct:url;
+    body.innerHTML=`<img class="mv-image-viewer" src="${src}" alt="${m.name}" onclick="this.classList.toggle('zoomed')" onerror="this.onerror=null;this.src='${isDrive?eu.thumbnail:url}'">`;
     return;
   }
-  // Office docs — use Microsoft Office Online viewer
+  // Google Drive files: use /preview (handles PDFs, docs, sheets, slides natively)
+  if(isDrive){
+    body.innerHTML=`<iframe class="mv-pdf-frame" src="${eu.preview}" allow="autoplay" allowfullscreen></iframe><div style="text-align:center;margin-top:8px"><a href="${eu.download}" target="_blank" style="color:var(--cyan);font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1.5px;text-decoration:none;opacity:.7">DOWNLOAD ORIGINAL</a></div>`;
+    return;
+  }
+  // Office docs (non-Drive)
   if(isOfficeDoc(url)){
     const officeUrl='https://view.officeapps.live.com/op/embed.aspx?src='+encodeURIComponent(url);
     body.innerHTML=`<iframe class="mv-pdf-frame" src="${officeUrl}" allowfullscreen></iframe>`;
     return;
   }
-  // PDFs and everything else — use iframe embed
-  // For Google Drive, use the /preview URL which embeds natively
-  const frameUrl=eu.id?eu.preview:
-    // For non-Drive URLs, try Google Docs viewer
-    'https://docs.google.com/gview?url='+encodeURIComponent(url)+'&embedded=true';
-  body.innerHTML=`<iframe class="mv-pdf-frame" src="${frameUrl}" allowfullscreen></iframe>`;
+  // PDFs (non-Drive)
+  if(isPdfUrl(url)){
+    body.innerHTML=`<iframe class="mv-pdf-frame" src="https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true" allowfullscreen></iframe>`;
+    return;
+  }
+  // Fallback
+  body.innerHTML=`<iframe class="mv-pdf-frame" src="${url}" allowfullscreen></iframe><div style="text-align:center;margin-top:8px"><a href="${url}" target="_blank" style="color:var(--cyan);font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1.5px;text-decoration:none;opacity:.7">OPEN IN NEW TAB</a></div>`;
 }
 
-// ── Locked File ──
 function renderLockedView(i){
   const m=mediaItems[i];
   const body=document.getElementById('mvBody');
@@ -4043,11 +4080,13 @@ function saveFeedPostsToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveFeedTimer);
   _saveFeedTimer=setTimeout(()=>{
-    apiCall('saveFeedPosts',{posts:posts.map(p=>({
-      emoji:p.emoji,bg:p.bg,cap:p.cap,capFont:p.capFont,
-      mediaUrl:p.mediaUrl,mediaType:p.mediaType,
-      focalX:p.focalX||50,focalY:p.focalY||50
-    }))}).then(r=>{if(!r.ok)console.warn('Feed save failed:',r.error)});
+    apiCall('saveFeedPosts',{posts:posts.map(p=>{
+      // Only save real URLs, skip base64/blob (shouldn't happen with Drive pipeline but safety check)
+      const url=(p.mediaUrl&&(p.mediaUrl.startsWith('data:')||p.mediaUrl.startsWith('blob:')))?'':p.mediaUrl||'';
+      return{emoji:p.emoji,bg:p.bg,cap:p.cap,capFont:p.capFont,
+        mediaUrl:url,mediaType:p.mediaType,
+        focalX:p.focalX||50,focalY:p.focalY||50};
+    })}).then(r=>{if(!r.ok)console.warn('Feed save failed:',r.error)});
   },1500);
 }
 
@@ -4056,11 +4095,12 @@ function saveMediaItemsToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveMediaTimer);
   _saveMediaTimer=setTimeout(()=>{
-    apiCall('saveMediaItems',{items:mediaItems.map(m=>({
-      type:m.type||'',title:m.name||'',titleFont:m.nameFont||'',
-      desc:m.desc||'',descFont:m.descFont||'',
-      url:m.fileUrl||'',filename:m.icon||''
-    }))}).then(r=>{if(!r.ok)console.warn('Media save failed:',r.error)});
+    apiCall('saveMediaItems',{items:mediaItems.map(m=>{
+      const url=(m.fileUrl&&(m.fileUrl.startsWith('data:')||m.fileUrl.startsWith('blob:')))?'':m.fileUrl||'';
+      return{type:m.type||'',title:m.name||'',titleFont:m.nameFont||'',
+        desc:m.desc||'',descFont:m.descFont||'',
+        url:url,filename:m.icon||''};
+    })}).then(r=>{if(!r.ok)console.warn('Media save failed:',r.error)});
   },1500);
 }
 
@@ -5058,6 +5098,36 @@ function handleUpload(input){
   reader.readAsDataURL(file);
 }
 let pendingMediaFileUrl='';
+let _uploadingIndicator=null;
+
+async function uploadFileToDrive(file,subfolder){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=async e=>{
+      // Strip the data:xxx;base64, prefix to get raw base64
+      const dataUrl=e.target.result;
+      const base64=dataUrl.split(',')[1];
+      const result=await apiCall('uploadFile',{
+        fileData:base64,
+        mimeType:file.type||'application/octet-stream',
+        fileName:file.name||'upload_'+Date.now(),
+        subfolder:subfolder||''
+      });
+      if(result.ok){
+        resolve(result);
+      }else{
+        reject(new Error(result.error||'Upload failed'));
+      }
+    };
+    reader.onerror=()=>reject(new Error('File read failed'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function showUploadProgress(zone,msg){
+  if(zone)zone.innerHTML=`<div style="text-align:center;padding:10px"><div class="upload-spinner"></div><div style="font-size:9px;color:var(--amber);margin-top:6px;letter-spacing:1px">${msg||'UPLOADING TO DRIVE...'}</div></div>`;
+}
+
 function handleMediaUpload(input){
   const file=input.files[0];if(!file)return;
   const nameEl=document.getElementById('em_name');
@@ -5068,13 +5138,21 @@ function handleMediaUpload(input){
   const t=detectType(file.name);
   typeEl.value=t;
   iconEl.value=detectIcon(t);
-  // Read file as data URL for immediate use
-  const reader=new FileReader();
-  reader.onload=e=>{
-    pendingMediaFileUrl=e.target.result;
-    if(urlEl)urlEl.value='[uploaded file]';
-  };
-  reader.readAsDataURL(file);
+  
+  if(urlEl)urlEl.value='Uploading to Drive...';
+  
+  uploadFileToDrive(file,'media').then(result=>{
+    pendingMediaFileUrl=result.directUrl;
+    if(urlEl)urlEl.value=result.directUrl;
+    // Store file ID for potential cleanup
+    if(urlEl)urlEl.dataset.driveId=result.fileId;
+  }).catch(err=>{
+    console.error('Upload error:',err);
+    // Fallback to local data URL
+    const reader=new FileReader();
+    reader.onload=e=>{pendingMediaFileUrl=e.target.result;if(urlEl)urlEl.value='[local - Drive upload failed]'};
+    reader.readAsDataURL(file);
+  });
 }
 function switchTab(btn,tab){btn.parentElement.querySelectorAll('.edit-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');btn.parentElement.parentElement.querySelectorAll('.edit-tab-content').forEach(c=>c.classList.remove('active'));document.getElementById('tab-'+tab).classList.add('active')}
 
@@ -5346,28 +5424,50 @@ let pendingFeedUploadType='';
 function handleFeedUpload(input){
   const file=input.files[0];if(!file)return;
   const zone=document.getElementById('feedUploadZone');
-  if(file.type.startsWith('video/')){
-    const blobUrl=URL.createObjectURL(file);
-    pendingFeedUpload=blobUrl;
-    pendingFeedUploadType='video';
-    zone.innerHTML=`<video src="${blobUrl}" style="max-width:100%;max-height:120px;border-radius:4px" muted autoplay loop playsinline></video><br><span style="font-size:9px;color:var(--green)">✓ ${file.name}</span>`;
-    zone.classList.add('has-file');
+  const isVideo=file.type.startsWith('video/');
+  
+  showUploadProgress(zone,'UPLOADING '+(isVideo?'VIDEO':'IMAGE')+' TO DRIVE...');
+  
+  uploadFileToDrive(file,'feed').then(result=>{
+    if(isVideo){
+      pendingFeedUpload=result.directUrl;
+      pendingFeedUploadType='video';
+      zone.innerHTML=`<div style="text-align:center"><div style="font-size:24px;margin-bottom:4px">🎬</div><span style="font-size:9px;color:var(--green)">✓ ${file.name} uploaded to Drive</span></div>`;
+      zone.classList.add('has-file');
+      showFocalPointForUpload(null);
+    }else{
+      pendingFeedUpload=result.directUrl;
+      pendingFeedUploadType='image';
+      zone.innerHTML=`<img src="${result.directUrl}" class="upload-preview"><br><span style="font-size:9px;color:var(--green)">✓ ${file.name} uploaded to Drive</span>`;
+      zone.classList.add('has-file');
+      showFocalPointForUpload(result.directUrl);
+    }
     const vidField=document.getElementById('ef_video');
     if(vidField)vidField.value='';
-    showFocalPointForUpload(null); // hide focal point for videos
-  } else {
-    const reader=new FileReader();
-    reader.onload=e=>{
-      pendingFeedUpload=e.target.result;
-      pendingFeedUploadType='image';
-      zone.innerHTML=`<img src="${pendingFeedUpload}" class="upload-preview"><br><span style="font-size:9px;color:var(--green)">✓ ${file.name}</span>`;
+  }).catch(err=>{
+    console.error('Feed upload error:',err);
+    // Fallback to local
+    if(isVideo){
+      const blobUrl=URL.createObjectURL(file);
+      pendingFeedUpload=blobUrl;
+      pendingFeedUploadType='video';
+      zone.innerHTML=`<video src="${blobUrl}" style="max-width:100%;max-height:120px;border-radius:4px" muted autoplay loop playsinline></video><br><span style="font-size:9px;color:var(--amber)">⚠ ${file.name} (local only - Drive failed)</span>`;
       zone.classList.add('has-file');
-      const vidField=document.getElementById('ef_video');
-      if(vidField)vidField.value='';
-      showFocalPointForUpload(pendingFeedUpload); // show focal point for images
-    };
-    reader.readAsDataURL(file);
-  }
+      showFocalPointForUpload(null);
+    }else{
+      const reader=new FileReader();
+      reader.onload=e=>{
+        pendingFeedUpload=e.target.result;
+        pendingFeedUploadType='image';
+        zone.innerHTML=`<img src="${pendingFeedUpload}" class="upload-preview"><br><span style="font-size:9px;color:var(--amber)">⚠ ${file.name} (local only - Drive failed)</span>`;
+        zone.classList.add('has-file');
+        showFocalPointForUpload(pendingFeedUpload);
+      };
+      reader.readAsDataURL(file);
+    }
+    const vidField=document.getElementById('ef_video');
+    if(vidField)vidField.value='';
+  });
 }
 function editFeedPost(i){
   const p=posts[i];pendingFeedUpload='';pendingFeedUploadType='';
