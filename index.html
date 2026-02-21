@@ -3604,32 +3604,37 @@ function fullscreenVideo(){
 function isOfficeDoc(url){return/\.(docx?|xlsx?|pptx?|csv)(\?|$)/i.test(url)}
 function renderDocViewer(body,m,url,eu){
   const isDrive=!!eu.id;
+  const isR2=url.includes('.workers.dev/file/');
   // Images
   if(isImageUrl(url)||(m.type==='map'&&(isImageUrl(url)||isDrive))){
     const src=isDrive?eu.direct:url;
     body.innerHTML=`<img class="mv-image-viewer" src="${src}" alt="${m.name}" onclick="this.classList.toggle('zoomed')" onerror="this.onerror=null;this.src='${isDrive?eu.thumbnail:url}'">`;
     return;
   }
-  // Google Drive files: use /preview (handles PDFs, docs, sheets, slides natively)
+  // Google Drive files: use /preview
   if(isDrive){
     body.innerHTML=`<iframe class="mv-pdf-frame" src="${eu.preview}" allow="autoplay" allowfullscreen></iframe>${allowDownloads?`<div style="text-align:center;margin-top:8px"><a href="${eu.download}" target="_blank" style="color:var(--cyan);font-family:\'Saira\',sans-serif;font-size:10px;letter-spacing:1.5px;text-decoration:none;opacity:.7">DOWNLOAD ORIGINAL</a></div>`:''}`;
     return;
   }
-  // Office docs (non-Drive)
+  // R2 files: serve directly in iframe (PDFs render natively, images via img)
+  if(isR2){
+    body.innerHTML=`<iframe class="mv-pdf-frame" src="${url}" allowfullscreen></iframe>${allowDownloads?`<div style="text-align:center;margin-top:8px"><a href="${url}" download target="_blank" style="color:var(--cyan);font-family:\'Saira\',sans-serif;font-size:10px;letter-spacing:1.5px;text-decoration:none;opacity:.7">DOWNLOAD ORIGINAL</a></div>`:''}`;
+    return;
+  }
+  // Office docs (non-Drive, non-R2)
   if(isOfficeDoc(url)){
     const officeUrl='https://view.officeapps.live.com/op/embed.aspx?src='+encodeURIComponent(url);
     body.innerHTML=`<iframe class="mv-pdf-frame" src="${officeUrl}" allowfullscreen></iframe>`;
     return;
   }
-  // PDFs (non-Drive)
+  // PDFs (non-Drive, non-R2)
   if(isPdfUrl(url)){
-    body.innerHTML=`<iframe class="mv-pdf-frame" src="https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true" allowfullscreen></iframe>`;
+    body.innerHTML=`<iframe class="mv-pdf-frame" src="${url}" allowfullscreen></iframe>`;
     return;
   }
   // Fallback
   body.innerHTML=`<iframe class="mv-pdf-frame" src="${url}" allowfullscreen></iframe>${allowDownloads?`<div style="text-align:center;margin-top:8px"><a href="${url}" target="_blank" style="color:var(--cyan);font-family:\'Saira\',sans-serif;font-size:10px;letter-spacing:1.5px;text-decoration:none;opacity:.7">OPEN IN NEW TAB</a></div>`:''}`;
 }
-
 function renderLockedView(i){
   const m=mediaItems[i];
   const body=document.getElementById('mvBody');
@@ -3666,6 +3671,8 @@ function tryUnlock(i){
 let isAdmin=false;
 // ═══════ BACKEND API ═══════
 const API_URL='https://script.google.com/macros/s/AKfycbxRjOpiRs1jMpIt8obpexJBZDRtoOI1KPLhyFe0dd7SFx_YbWOjTa0DyjLBssRaEJbK/exec';
+const R2_URL='https://cb-media.sriempex.workers.dev';
+const R2_SECRET='Alpha$Kx9-Rm3Qv7Wn2Zp8';
 let adminSession=null; // {username, role, adminToken}
 let adminUsers=[]; // populated from backend on admin list fetch
 let manualTeams=[];
@@ -5101,67 +5108,31 @@ let pendingMediaFileUrl='';
 let _uploadingIndicator=null;
 
 async function uploadFileToDrive(file,subfolder){
-  return new Promise((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onload=async e=>{
-      const dataUrl=e.target.result;
-      const base64=dataUrl.split(',')[1];
-      
-      if(base64.length>10*1024*1024){
-        reject(new Error('File too large (max ~7.5MB). Compress or use a smaller file.'));
-        return;
-      }
-      
-      // Generate a unique upload ID to track this upload
-      const uploadId='UP'+Date.now()+'_'+Math.random().toString(36).substr(2,6);
-      
-      try{
-        const payload={
-          action:'uploadFile',
-          uploadId:uploadId,
-          fileData:base64,
-          mimeType:file.type||'application/octet-stream',
-          fileName:file.name||'upload_'+Date.now(),
-          subfolder:subfolder||''
-        };
-        if(adminSession)payload.adminToken=adminSession.adminToken;
-        
-        // Step 1: POST the file data with no-cors (guaranteed to deliver the payload)
-        await fetch(API_URL,{
-          method:'POST',
-          mode:'no-cors',
-          headers:{'Content-Type':'text/plain;charset=utf-8'},
-          body:JSON.stringify(payload)
-        });
-        
-        // Step 2: Poll for the result using GET (the script stores result keyed by uploadId)
-        let attempts=0;
-        const maxAttempts=30; // 30 seconds max
-        const poll=async()=>{
-          attempts++;
-          const result=await apiCall('getUploadResult',{uploadId:uploadId});
-          if(result.ok&&result.status==='complete'){
-            resolve(result);
-          }else if(result.ok&&result.status==='pending'&&attempts<maxAttempts){
-            setTimeout(poll,1000);
-          }else if(attempts>=maxAttempts){
-            reject(new Error('Upload timed out'));
-          }else if(result.error){
-            reject(new Error(result.error));
-          }else{
-            setTimeout(poll,1000);
-          }
-        };
-        // Wait 2 seconds before first poll (give script time to process)
-        setTimeout(poll,2000);
-      }catch(err){
-        console.error('Upload error:',err);
-        reject(err);
-      }
-    };
-    reader.onerror=()=>reject(new Error('File read failed'));
-    reader.readAsDataURL(file);
+  // Upload file to Cloudflare R2 via Worker
+  const formData=new FormData();
+  formData.append('file',file);
+  formData.append('fileName',file.name||'upload_'+Date.now());
+  formData.append('mimeType',file.type||'application/octet-stream');
+  formData.append('subfolder',subfolder||'');
+  
+  const resp=await fetch(R2_URL+'/upload',{
+    method:'POST',
+    headers:{'X-Upload-Secret':R2_SECRET},
+    body:formData
   });
+  
+  const result=await resp.json();
+  if(!result.ok)throw new Error(result.error||'Upload failed');
+  
+  // Return in same format the rest of the code expects
+  return{
+    ok:true,
+    directUrl:result.url,
+    previewUrl:result.url,
+    fileId:result.key,
+    fileName:result.fileName,
+    mimeType:result.mimeType
+  };
 }
 
 function showUploadProgress(zone,msg){
