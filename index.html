@@ -654,7 +654,7 @@
   .intel-exp-row{display:flex;align-items:center;gap:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;padding:12px 16px}
   .intel-exp-num{font-family:'Saira',sans-serif;font-size:12px;color:#aab;font-weight:700;min-width:28px}
   .intel-exp-label{font-family:'Staatliches',cursive;font-size:14px;color:#d0d0d0;letter-spacing:2px;min-width:200px;font-weight:400}
-  .intel-exp-input{flex:1;border-radius:3px;padding:10px 14px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;letter-spacing:2px;outline:none;transition:border-color .2s;
+  .intel-exp-input{flex:1;border-radius:3px;padding:10px 28px 10px 14px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;letter-spacing:2px;outline:none;transition:border-color .2s;
     background:
       repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.1) 1px,rgba(0,0,0,.1) 2px),
       linear-gradient(180deg,#020604,#040a06,#030805);
@@ -665,8 +665,8 @@
   .intel-exp-input:focus{border-color:rgba(0,255,136,.3);box-shadow:inset 0 0 12px rgba(0,0,0,.6),inset 0 0 25px rgba(0,20,8,.2),0 0 6px rgba(0,255,136,.12)}
   .intel-exp-input::placeholder{color:rgba(0,255,136,.12);text-shadow:none}
   .intel-exp-input:disabled{opacity:.4;cursor:not-allowed}
-  .intel-exp-clear{width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#333;font-size:12px;border-radius:50%;transition:all .2s;flex-shrink:0;font-family:'IBM Plex Mono',monospace}
-  .intel-exp-clear:hover{color:var(--red);background:rgba(255,50,50,.08)}
+  .intel-exp-clear{width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#333;font-size:10px;border-radius:50%;transition:all .2s;flex-shrink:0;font-family:'IBM Plex Mono',monospace;margin-left:-26px;position:relative;z-index:5}
+  .intel-exp-clear:hover{color:var(--red);background:rgba(255,50,50,.1)}
   .intel-exp-check{width:20px;height:20px;border-radius:50%;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;font-size:10px;color:#2a2a2a;flex-shrink:0}
   .intel-exp-check.submitted{color:var(--green);border-color:var(--green);background:rgba(0,255,136,.06)}
   .intel-prefix-wrap{flex:1;display:flex;align-items:center;background:#080a10;border:1px solid var(--border);border-radius:3px;overflow:hidden;transition:border-color .2s}
@@ -3385,8 +3385,7 @@ function finalSubmit(){
   document.getElementById('confirmModal').classList.remove('active');
   document.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});
   // Show neutral checkmarks — NO indication of right/wrong
-  document.querySelectorAll('.intel-exp-check').forEach(chk=>{chk.classList.add('submitted');chk.textContent='✓'});
-  document.getElementById('intelSubmitBtn').disabled=true;
+    document.getElementById('intelSubmitBtn').disabled=true;
   document.getElementById('intelSubmitBtn').textContent='◈ TRANSMITTED ◈';
   document.getElementById('intelBadge').textContent='SUBMITTED';
   document.getElementById('intelBadge').classList.remove('amber');
@@ -5444,15 +5443,15 @@ function renderIntelForm(){
     const keyHandler='onkeydown="if(event.key===\'Enter\'){this.blur()}"';
     const ph=f.placeholder||'···';
     if(f.type==='money'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="border:none;background:transparent;box-shadow:none" placeholder="${ph}" data-idx="${i}" ${keyHandler}></div><div class="intel-exp-check">—</div>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="border:none;background:transparent;box-shadow:none" placeholder="${ph}" data-idx="${i}" ${keyHandler}></div>${clearBtn}</div>`;
     }else if(f.type==='phone'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${f.placeholder||'(XXX) XXX-XXXX'}" data-idx="${i}" oninput="formatPhone(this)" ${keyHandler}><div class="intel-exp-check">—</div>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${f.placeholder||'(XXX) XXX-XXXX'}" data-idx="${i}" oninput="formatPhone(this)" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='dual'){
       const ph1=f.placeholder1||'Value 1';
       const ph2=f.placeholder2||'Value 2';
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-dual-wrap"><input class="intel-exp-input" placeholder="${ph1}" data-idx="${i}" ${keyHandler}><span class="intel-dual-sep">&</span><input class="intel-exp-input" placeholder="${ph2}" data-idx="${i}b" ${keyHandler}></div><div class="intel-exp-check">—</div>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-dual-wrap"><input class="intel-exp-input" placeholder="${ph1}" data-idx="${i}" ${keyHandler}><span class="intel-dual-sep">&</span><input class="intel-exp-input" placeholder="${ph2}" data-idx="${i}b" ${keyHandler}></div>${clearBtn}</div>`;
     }else{
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${ph}" data-idx="${i}" ${keyHandler}><div class="intel-exp-check">—</div>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${ph}" data-idx="${i}" ${keyHandler}>${clearBtn}</div>`;
     }
   });
   if(isA)html+=`<div class="admin-add-btn" style="margin-top:10px;padding:14px" onclick="addIntelField()">+ Add Intel Field</div>`;
@@ -5460,7 +5459,7 @@ function renderIntelForm(){
   form.innerHTML=html;
   // Restore values
   form.querySelectorAll('.intel-exp-input').forEach(inp=>{if(prevVals[inp.dataset.idx])inp.value=prevVals[inp.dataset.idx]});
-  if(isSubmitted){form.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});form.querySelectorAll('.intel-exp-check').forEach(chk=>{chk.classList.add('submitted');chk.textContent='✓'});document.getElementById('intelSubmitBtn').disabled=true;document.getElementById('intelSubmitBtn').textContent='◈ TRANSMITTED ◈'}
+  if(isSubmitted){form.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});document.getElementById('intelSubmitBtn').disabled=true;document.getElementById('intelSubmitBtn').textContent='◈ TRANSMITTED ◈'}
   // Sync intelLabels array
   syncIntelLabels();
 }
