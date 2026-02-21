@@ -3878,6 +3878,28 @@ async function apiCall(action,data={}){
   }
 }
 
+// ── Local content cache — instant restore on refresh ──
+// Saves posts/media/intel to localStorage so page refreshes don't wait for backend
+function _cacheContent(key,data){
+  try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}
+}
+function _restoreContentCache(){
+  let restored=false;
+  try{
+    const cp=localStorage.getItem('cb_posts');
+    if(cp){const arr=JSON.parse(cp);if(arr.length){posts.length=0;arr.forEach(p=>posts.push(p));restored=true;}}
+  }catch(e){}
+  try{
+    const cm=localStorage.getItem('cb_media');
+    if(cm){const arr=JSON.parse(cm);if(arr.length){mediaItems.length=0;arr.forEach(m=>mediaItems.push(m));syncVaultCodesFromMedia();restored=true;}}
+  }catch(e){}
+  try{
+    const ci=localStorage.getItem('cb_intel');
+    if(ci){const arr=JSON.parse(ci);if(arr.length){intelFields.length=0;arr.forEach(f=>intelFields.push(f));restored=true;}}
+  }catch(e){}
+  return restored;
+}
+
 async function loadEventData(){
   // Sequential calls — Google Apps Script has concurrency limits that break
   // login/auth when too many parallel requests hit it simultaneously
@@ -3888,6 +3910,7 @@ async function loadEventData(){
   if(feedResult.ok&&feedResult.posts&&feedResult.posts.length>0){
     posts.length=0;
     feedResult.posts.forEach(p=>posts.push(p));
+    _cacheContent('cb_posts',posts);
     renderFeed();renderGrid();
     // If user was in focus mode, re-render the single post with fresh data
     if(currentFeedView==='single')renderSinglePost();
@@ -3907,6 +3930,7 @@ async function loadEventData(){
       vaultCodename:m.vaultCodename||''
     }));
     syncVaultCodesFromMedia();
+    _cacheContent('cb_media',mediaItems);
     renderMedia();renderGrid();
   }
 
@@ -3917,6 +3941,7 @@ async function loadEventData(){
       label:f.label||'',emoji:f.emoji||'',type:f.fieldType||'text',
       font:f.font||'',answer:f.answer||{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}
     }));
+    _cacheContent('cb_intel',intelFields);
     renderIntelForm();renderGrid();
   }
 
@@ -4311,6 +4336,7 @@ function saveFeedPostsToBackend(){
         mediaUrl:url,mediaType:p.mediaType,
         focalX:p.focalX||50,focalY:p.focalY||50};
     })}).then(r=>{if(!r.ok)console.warn('Feed save failed:',r.error)});
+    _cacheContent('cb_posts',posts);
   },1500);
 }
 
@@ -4330,6 +4356,7 @@ function saveMediaItemsToBackend(){
         vaultCode:m.vaultCode||'',
         vaultCodename:m.vaultCodename||''};
     })}).then(r=>{if(!r.ok)console.warn('Media save failed:',r.error)});
+    _cacheContent('cb_media',mediaItems);
   },1500);
 }
 
@@ -4342,6 +4369,7 @@ function saveIntelFieldsToBackend(){
       label:f.label||'',emoji:f.emoji||'',fieldType:f.type||'text',
       font:f.font||'',answer:f.answer||{}
     }))}).then(r=>{});
+    _cacheContent('cb_intel',intelFields);
   },1500);
 }
 
@@ -6270,7 +6298,12 @@ function saveSession(){
 }
 
 function clearSession(){
-  try{localStorage.removeItem('cb_session')}catch(e){}
+  try{
+    localStorage.removeItem('cb_session');
+    localStorage.removeItem('cb_posts');
+    localStorage.removeItem('cb_media');
+    localStorage.removeItem('cb_intel');
+  }catch(e){}
 }
 
 function restoreSession(){
@@ -6282,6 +6315,10 @@ function restoreSession(){
 
     const targetScreen='consoleScreen';
     const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
+
+    // Restore cached content (posts/media/intel) from localStorage BEFORE rendering
+    // This makes images appear instantly instead of waiting 3-5s for backend API
+    _restoreContentCache();
 
     function applyScreenAndPanel(){
       // Set up screen first (hidden — opacity:0 via .screen default)
@@ -6373,7 +6410,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-0145';
+const _BUILD_ID = '20260222-0200';
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
