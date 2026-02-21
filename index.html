@@ -122,6 +122,14 @@
   .banner-preview{width:100%;max-width:200px;aspect-ratio:1;border-radius:50%;overflow:hidden;border:1px solid var(--border);background:#080a10;display:flex;align-items:center;justify-content:center;margin:10px 0}
   .banner-preview img{width:100%;height:100%;object-fit:cover;border-radius:50%}
   .banner-preview .bp-emoji{font-size:48px}
+  .focal-point-container{position:relative;width:100%;max-width:280px;aspect-ratio:1;overflow:hidden;border:1px solid var(--border);border-radius:4px;background:#080a10;cursor:crosshair;margin:8px 0}
+  .focal-point-container img{width:100%;height:100%;object-fit:cover}
+  .focal-point-marker{position:absolute;width:24px;height:24px;border:2px solid #fff;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 0 1px rgba(0,0,0,.5),0 0 8px rgba(0,0,0,.5),inset 0 0 0 1px rgba(0,0,0,.3)}
+  .focal-point-marker::before{content:'';position:absolute;inset:9px;background:#fff;border-radius:50%;box-shadow:0 0 4px rgba(255,255,255,.8)}
+  .focal-point-crosshair{position:absolute;inset:0;pointer-events:none}
+  .focal-point-crosshair::before,.focal-point-crosshair::after{content:'';position:absolute;background:rgba(255,255,255,.2)}
+  .focal-point-crosshair::before{width:1px;height:100%;left:50%;top:0}
+  .focal-point-crosshair::after{height:1px;width:100%;top:50%;left:0}
   #landingBannerFile{display:none}
 
   /* Admin Choice Modal */
@@ -2695,7 +2703,8 @@ function renderFeed(){
     const isImg=!resolved&&p.mediaUrl;
     let media='';
     if(isImg){
-      media=`<div class="no-download-shield" oncontextmenu="return false"></div><img src="${p.mediaUrl}" style="width:100%;height:100%;object-fit:cover;pointer-events:none;-webkit-user-drag:none" draggable="false">`;
+      const fp=`${p.focalX||50}% ${p.focalY||50}%`;
+      media=`<div class="no-download-shield" oncontextmenu="return false"></div><img src="${p.mediaUrl}" style="width:100%;height:100%;object-fit:cover;object-position:${fp};pointer-events:none;-webkit-user-drag:none" draggable="false">`;
     } else if(isEmbeddable||isExternal){
       media=buildVideoThumbnail(resolved);
     } else if(isVid){
@@ -3629,6 +3638,8 @@ function toggleEditMode(){
     document.body.classList.remove('edit-mode');
   }
   renderGrid();renderFeed();renderMedia();renderIntelForm();
+  // Re-render focus view if currently visible
+  if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
   syncAdminDropdownToggles();
   closeAdminDropdown();
 }
@@ -3648,6 +3659,8 @@ function togglePlayerPreview(){
     if(teamEl&&teamEl.childNodes[0])teamEl.childNodes[0].textContent='ADMINISTRATOR ';
   }
   renderGrid();renderFeed();renderMedia();renderIntelForm();renderVaultPanel();
+  // Re-render focus view if currently visible
+  if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
   syncAdminDropdownToggles();
   closeAdminDropdown();
 }
@@ -5089,27 +5102,47 @@ let pendingFeedUploadType='';
 function handleFeedUpload(input){
   const file=input.files[0];if(!file)return;
   const zone=document.getElementById('feedUploadZone');
-  const reader=new FileReader();
-  reader.onload=e=>{
-    pendingFeedUpload=e.target.result;
-    pendingFeedUploadType='image';
-    zone.innerHTML=`<img src="${pendingFeedUpload}" class="upload-preview"><br><span style="font-size:9px;color:var(--green)">✓ ${file.name}</span>`;
+  if(file.type.startsWith('video/')){
+    const blobUrl=URL.createObjectURL(file);
+    pendingFeedUpload=blobUrl;
+    pendingFeedUploadType='video';
+    zone.innerHTML=`<video src="${blobUrl}" style="max-width:100%;max-height:120px;border-radius:4px" muted autoplay loop playsinline></video><br><span style="font-size:9px;color:var(--green)">✓ ${file.name}</span>`;
     zone.classList.add('has-file');
-    // Clear video URL field if image was uploaded
     const vidField=document.getElementById('ef_video');
     if(vidField)vidField.value='';
-  };
-  reader.readAsDataURL(file);
+    showFocalPointForUpload(null); // hide focal point for videos
+  } else {
+    const reader=new FileReader();
+    reader.onload=e=>{
+      pendingFeedUpload=e.target.result;
+      pendingFeedUploadType='image';
+      zone.innerHTML=`<img src="${pendingFeedUpload}" class="upload-preview"><br><span style="font-size:9px;color:var(--green)">✓ ${file.name}</span>`;
+      zone.classList.add('has-file');
+      const vidField=document.getElementById('ef_video');
+      if(vidField)vidField.value='';
+      showFocalPointForUpload(pendingFeedUpload); // show focal point for images
+    };
+    reader.readAsDataURL(file);
+  }
 }
 function editFeedPost(i){
   const p=posts[i];pendingFeedUpload='';pendingFeedUploadType='';
+  pendingFocalX=p.focalX||50;pendingFocalY=p.focalY||50;
   const hasMedia=!!p.mediaUrl;
   const isVid=hasMedia&&(p.mediaType==='video'||isVideoUrl(p.mediaUrl));
-  const previewHtml=hasMedia?(isVid?`<div style="font-size:9px;color:var(--amber);letter-spacing:1px;padding:10px 0">🎬 Video attached</div>`:`<img src="${p.mediaUrl}" class="upload-preview"><br><span style="font-size:9px;color:var(--green)">✓ Current image</span>`):'Click to upload an image';
+  const previewHtml=hasMedia?(isVid?`<video src="${p.mediaUrl}" style="max-width:100%;max-height:120px;border-radius:4px" muted autoplay loop playsinline></video><br><span style="font-size:9px;color:var(--green)">✓ Current video</span>`:`<img src="${p.mediaUrl}" class="upload-preview"><br><span style="font-size:9px;color:var(--green)">✓ Current image</span>`):'Click to upload image or video';
   showEditModal(`<h3>Edit Feed Post #${i+1}</h3>
-    <div class="edit-field"><label>📷 Image (upload)</label>
-      <div class="upload-zone ${hasMedia&&!isVid?'has-file':''}" id="feedUploadZone" onclick="document.getElementById('feedFileInput').click()">${hasMedia&&!isVid?previewHtml:'Click to upload an image'}</div>
-      <input type="file" id="feedFileInput" accept="image/*" style="display:none" onchange="handleFeedUpload(this)">
+    <div class="edit-field"><label>📷 Media (upload)</label>
+      <div class="upload-zone ${hasMedia?'has-file':''}" id="feedUploadZone" onclick="document.getElementById('feedFileInput').click()">${hasMedia?previewHtml:'Click to upload image or video'}</div>
+      <input type="file" id="feedFileInput" accept="image/*,video/*" style="display:none" onchange="handleFeedUpload(this)">
+    </div>
+    <div class="edit-field" id="focalPointField" style="${hasMedia&&!isVid?'':'display:none'}"><label>📌 Grid Crop Position <span style="font-size:8px;color:#555">Click to set focal point</span></label>
+      <div class="focal-point-container" id="focalPointContainer" onmousedown="startFocalDrag(event)" ontouchstart="startFocalDrag(event)">
+        <img src="${hasMedia&&!isVid?p.mediaUrl:''}" id="focalImg">
+        <div class="focal-point-crosshair"></div>
+        <div class="focal-point-marker" id="focalMarker" style="left:${p.focalX||50}%;top:${p.focalY||50}%"></div>
+      </div>
+      <div style="font-size:8px;color:#555;letter-spacing:.5px;margin-top:4px">Position: <span id="focalDisplay">${p.focalX||50}%, ${p.focalY||50}%</span></div>
     </div>
     <div class="edit-field"><label>🎬 Video URL <span style="font-size:8px;color:#555">(YouTube, Vimeo, Drive, etc.)</span></label>
       <input id="ef_video" value="${isVid?p.mediaUrl:''}" placeholder="Paste video URL...">
@@ -5120,6 +5153,38 @@ function editFeedPost(i){
     <label style="display:flex;align-items:center;gap:6px;margin:-8px 0 10px;cursor:pointer"><input type="checkbox" id="ef_font_all"><span style="font-size:9px;color:#888;letter-spacing:1px">Apply font to all post captions</span></label>
     <div style="display:flex;gap:10px;margin-top:6px"><button class="btn-standard btn-red" onclick="confirmDelete(this,()=>deleteFeedPost(${i}))">Delete</button><span style="flex:1"></span><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveFeedPost(${i})">Save</button></div>`);
 }
+// ── Focal Point Selector ──
+let pendingFocalX=50,pendingFocalY=50,focalDragging=false;
+function startFocalDrag(e){
+  e.preventDefault();focalDragging=true;
+  updateFocalFromEvent(e);
+  const onMove=ev=>{if(focalDragging)updateFocalFromEvent(ev)};
+  const onEnd=()=>{focalDragging=false;window.removeEventListener('mousemove',onMove);window.removeEventListener('mouseup',onEnd);window.removeEventListener('touchmove',onMove);window.removeEventListener('touchend',onEnd)};
+  window.addEventListener('mousemove',onMove);window.addEventListener('mouseup',onEnd);
+  window.addEventListener('touchmove',onMove,{passive:false});window.addEventListener('touchend',onEnd);
+}
+function updateFocalFromEvent(e){
+  const c=document.getElementById('focalPointContainer');if(!c)return;
+  const rect=c.getBoundingClientRect();
+  const clientX=e.touches?e.touches[0].clientX:e.clientX;
+  const clientY=e.touches?e.touches[0].clientY:e.clientY;
+  const x=Math.max(0,Math.min(100,((clientX-rect.left)/rect.width)*100));
+  const y=Math.max(0,Math.min(100,((clientY-rect.top)/rect.height)*100));
+  pendingFocalX=Math.round(x);pendingFocalY=Math.round(y);
+  const marker=document.getElementById('focalMarker');
+  if(marker){marker.style.left=pendingFocalX+'%';marker.style.top=pendingFocalY+'%'}
+  const display=document.getElementById('focalDisplay');
+  if(display)display.textContent=pendingFocalX+'%, '+pendingFocalY+'%';
+}
+function showFocalPointForUpload(imgSrc){
+  const field=document.getElementById('focalPointField');
+  const img=document.getElementById('focalImg');
+  if(field&&img&&imgSrc){field.style.display='';img.src=imgSrc;pendingFocalX=50;pendingFocalY=50;
+    const marker=document.getElementById('focalMarker');if(marker){marker.style.left='50%';marker.style.top='50%'}
+    const display=document.getElementById('focalDisplay');if(display)display.textContent='50%, 50%';
+  } else if(field){field.style.display='none'}
+}
+
 function isVideoUrl(url){
   if(!url)return false;
   return /youtube|youtu\.be|vimeo|drive\.google|dailymotion|streamable|loom\.com/i.test(url)||/\.(mp4|webm|mov|ogg)(\?|$)/i.test(url);
@@ -5139,16 +5204,21 @@ function saveFeedPost(i){
   }
   posts[i].emoji=document.getElementById('ef_emo').value.trim();
   posts[i].bg=document.getElementById('ef_bg').value.trim();
+  posts[i].focalX=pendingFocalX;
+  posts[i].focalY=pendingFocalY;
   posts[i].cap=document.getElementById('ef_cap').value.trim();
   const cf=document.getElementById('ef_font').value;posts[i].capFont=cf;
   if(document.getElementById('ef_font_all').checked)posts.forEach(p=>p.capFont=cf);
   pendingFeedUpload='';pendingFeedUploadType='';hideEditModal();renderFeed();renderGrid();
+  if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
 }
-function deleteFeedPost(i){posts.splice(i,1);hideEditModal();renderFeed();renderGrid()}
+function deleteFeedPost(i){posts.splice(i,1);if(currentPost>=posts.length)currentPost=Math.max(0,posts.length-1);hideEditModal();renderFeed();renderGrid();
+  if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
+}
 function addFeedPost(){pendingFeedUpload='';pendingFeedUploadType='';showEditModal(`<h3>Add New Feed Post</h3>
-    <div class="edit-field"><label>📷 Image (upload)</label>
-      <div class="upload-zone" id="feedUploadZone" onclick="document.getElementById('feedFileInput').click()">Click to upload an image</div>
-      <input type="file" id="feedFileInput" accept="image/*" style="display:none" onchange="handleFeedUpload(this)">
+    <div class="edit-field"><label>📷 Media (upload)</label>
+      <div class="upload-zone" id="feedUploadZone" onclick="document.getElementById('feedFileInput').click()">Click to upload image or video</div>
+      <input type="file" id="feedFileInput" accept="image/*,video/*" style="display:none" onchange="handleFeedUpload(this)">
     </div>
     <div class="edit-field"><label>🎬 Video URL <span style="font-size:8px;color:#555">(YouTube, Vimeo, Drive, etc.)</span></label>
       <input id="ef_video" value="" placeholder="Paste video URL...">
@@ -5168,6 +5238,7 @@ function saveNewFeedPost(){
     p.mediaType='video';
   }
   posts.push(p);pendingFeedUpload='';hideEditModal();renderFeed();renderGrid();
+  if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
 }
 
 // ── Media Items (enhanced with file upload + auto-detect) ──
