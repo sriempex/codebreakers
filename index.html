@@ -177,9 +177,38 @@
     box-shadow:inset 0 1px 0 rgba(255,255,255,.04),inset 0 -1px 0 rgba(0,0,0,.3),0 2px 0 #0a0a0c,0 4px 0 #151518,0 8px 0 #0a0a0c,0 30px 70px rgba(0,0,0,.9)}
   .login-field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
   .login-field label{font-family:'Saira',sans-serif;font-size:10px;color:#999;font-weight:700;letter-spacing:3px;text-transform:uppercase}
-  .login-field input{background:#060810;border:1px solid #2a2d35;border-radius:4px;padding:14px 16px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:3px;outline:none;transition:border-color .2s;text-transform:uppercase}
-  .login-field input:focus{border-color:rgba(0,255,136,.25);box-shadow:0 0 12px rgba(0,255,136,.06)}
-  .login-field input::placeholder{color:#333;text-transform:none;letter-spacing:1px;font-size:12px}
+  .login-field input{width:100%;position:relative;z-index:3;border-radius:4px;padding:16px 18px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:15px;letter-spacing:4px;outline:none;text-transform:uppercase;text-align:center;
+    background:linear-gradient(180deg,#020604,#040a06,#030805);
+    border:1px solid #1a2a1e;
+    box-shadow:inset 0 0 20px rgba(0,0,0,.8),inset 0 0 40px rgba(0,20,8,.3),0 1px 0 rgba(255,255,255,.03),0 0 1px rgba(0,255,136,.15);
+    text-shadow:0 0 8px rgba(0,255,136,.4),0 0 20px rgba(0,255,136,.15);
+  }
+  .login-field input:focus{border-color:rgba(0,255,136,.3);box-shadow:inset 0 0 20px rgba(0,0,0,.8),inset 0 0 40px rgba(0,20,8,.3),0 0 6px rgba(0,255,136,.15)}
+  .login-field input::placeholder{color:rgba(0,255,136,.15);text-transform:none;letter-spacing:2px;font-size:12px;text-shadow:none}
+  /* CRT scanlines on login input */
+  .login-field{position:relative}
+  .login-field::after{content:'';position:absolute;bottom:0;left:0;right:0;height:calc(100% - 18px);border-radius:4px;
+    background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.15) 1px,rgba(0,0,0,.15) 2px);
+    pointer-events:none;z-index:4}
+  /* Password field same CRT style */
+  .login-pw-field input{width:100%;position:relative;z-index:3;border-radius:4px;padding:16px 18px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:15px;letter-spacing:4px;outline:none;text-align:center;
+    background:linear-gradient(180deg,#020604,#040a06,#030805);
+    border:1px solid #1a2a1e;
+    box-shadow:inset 0 0 20px rgba(0,0,0,.8),inset 0 0 40px rgba(0,20,8,.3),0 1px 0 rgba(255,255,255,.03),0 0 1px rgba(0,255,136,.15);
+    text-shadow:0 0 8px rgba(0,255,136,.4),0 0 20px rgba(0,255,136,.15);
+  }
+
+  /* Panel blip buttons — hardware-style close/back/cancel on panel edge */
+  .panel-blip{position:absolute;top:-1px;right:20px;z-index:10;padding:5px 14px;border-radius:0 0 4px 4px;cursor:pointer;transition:all .25s;
+    background:linear-gradient(180deg,#1a1c22,#12141a);
+    border:1px solid #3a3d44;border-top:none;
+    box-shadow:0 2px 6px rgba(0,0,0,.4),inset 0 -1px 0 rgba(255,255,255,.02);
+  }
+  .panel-blip span{font-family:'Saira',sans-serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;transition:color .25s,text-shadow .25s}
+  .panel-blip:hover{background:linear-gradient(180deg,#22242c,#1a1c24);border-color:#4a4d55}
+  .panel-blip:hover span{color:#aaa;text-shadow:0 0 6px rgba(255,255,255,.1)}
+  .panel-blip::before{content:'';position:absolute;top:4px;left:6px;width:4px;height:4px;border-radius:50%;background:#333;box-shadow:0 0 3px rgba(255,60,60,.2);transition:all .25s}
+  .panel-blip:hover::before{background:#f44;box-shadow:0 0 6px rgba(255,60,60,.4)}
   .login-pw-field input{text-transform:none;color:#ccc;letter-spacing:1px}
   .login-err{font-family:'Chakra Petch',sans-serif;font-size:11px;color:var(--red);min-height:14px;text-align:center;font-weight:600;margin-bottom:4px}
   .login-submit{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700;position:relative;min-height:48px}
@@ -1196,7 +1225,7 @@
   @media(max-width:768px){
     /* Login */
     .login-panel{width:92vw;max-width:420px;padding:20px 16px 14px}
-    .login-field input{font-size:16px}
+    .login-field input{font-size:16px;letter-spacing:3px;padding:14px 14px}
     .login-title{font-size:11px;letter-spacing:2px}
     .vault-subtitle{font-size:8px;letter-spacing:3px}
     .v-display{min-height:74px;padding:10px 12px}
@@ -1492,6 +1521,7 @@
     <div class="reg-title" id="regScreenTitle">Operation Dead Drop</div>
     <div class="reg-subtitle" id="regScreenSubtitle">Team Registration Portal</div>
     <div class="reg-panel">
+      <div class="panel-blip" onclick="showScreen('landingScreen')"><span>cancel</span></div>
       <div id="regForm">
         <!-- Hybrid mode type choice (hidden unless hybrid) -->
         <div class="reg-type-choice" id="regTypeChoice" style="display:none">
@@ -1520,7 +1550,6 @@
 
         <div class="reg-err" id="regErr"></div>
         <button class="reg-submit" id="regSubmitBtn" onclick="submitRegistration()">◈ Register Team ◈</button>
-        <div class="reg-cancel-link" onclick="showScreen('landingScreen')"><span>← Cancel</span></div>
       </div>
 
       <div id="regSuccess">
@@ -1543,6 +1572,7 @@
     <div style="display:flex;align-items:center;justify-content:center"><div class="login-title" id="loginTitle">Operation Dead Drop</div><button class="admin-edit-inline" onclick="event.stopPropagation();editOperationName()">✎</button></div>
     <div class="login-subtitle">Enter Your Credentials</div>
     <div class="login-panel">
+      <div class="panel-blip" onclick="showScreen('landingScreen')"><span>back</span></div>
       <div class="rv rv-1"></div><div class="rv rv-2"></div><div class="rv rv-3"></div><div class="rv rv-4"></div>
       <div class="login-field">
         <label id="loginIdLabel">Team ID</label>
@@ -1559,7 +1589,6 @@
         <span class="v-lbl" id="loginLbl">AWAITING INPUT</span>
       </div>
     </div>
-    <div class="login-back-link" onclick="showScreen('landingScreen')"><span>← Back</span></div>
     <div class="login-register-link" id="loginRegLink" onclick="goToRegistration()"><span id="loginRegText">Don't have an ID?</span> <span class="lrl-action" id="loginRegAction">Register here</span></div>
   </div>
 </div>
