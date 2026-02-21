@@ -938,7 +938,7 @@
   .lb-detail-section{margin-top:12px}
   .lb-detail-title{font-family:'Saira',sans-serif;font-size:9px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:8px;font-weight:700}
   .lb-member-row{display:flex;align-items:center;gap:10px;padding:6px 10px;background:rgba(0,212,255,.02);border:1px solid rgba(0,212,255,.06);border-radius:3px;margin-bottom:3px}
-  ;color:var(--cyan);font-weight:700;flex-shrink:0}
+  .lb-member-num{font-family:'Oxanium',sans-serif;font-size:10px;color:var(--cyan);font-weight:700;flex-shrink:0}
   .lb-member-name{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#bbb;font-weight:600;flex:1}
   .lb-member-meta{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#555}
   .lb-field-row{display:flex;align-items:center;gap:8px;padding:4px 10px;border-bottom:1px solid rgba(255,255,255,.02)}
@@ -3909,18 +3909,39 @@ function applyEventConfig(cfg){
   if(cfg.leaderboardStyle){regSettings.leaderboardStyle=cfg.leaderboardStyle;const sel=document.getElementById('apLeaderboardStyle');if(sel)sel.value=cfg.leaderboardStyle}
   if(cfg.landingTitle){regSettings.landingTitle=cfg.landingTitle;const el=document.getElementById('landingTitleEl');if(el)el.textContent=cfg.landingTitle;const inp=document.getElementById('apLandingTitle');if(inp)inp.value=cfg.landingTitle}
   if(cfg.landingSubtitle){regSettings.landingSubtitle=cfg.landingSubtitle;const el=document.getElementById('landingSubEl');if(el)el.textContent=cfg.landingSubtitle;const inp=document.getElementById('apLandingSubtitle');if(inp)inp.value=cfg.landingSubtitle}
-  if(cfg.teamSizeMin)regSettings.teamSizeMin=parseInt(cfg.teamSizeMin);
-  if(cfg.teamSizeMax)regSettings.teamSizeMax=parseInt(cfg.teamSizeMax);
-  if(cfg.maxTeams)regSettings.maxTeams=parseInt(cfg.maxTeams);
+  if(cfg.teamSizeMin){regSettings.teamSizeMin=parseInt(cfg.teamSizeMin);const sel=document.getElementById('apMinSize');if(sel)sel.value=cfg.teamSizeMin}
+  if(cfg.teamSizeMax){regSettings.teamSizeMax=parseInt(cfg.teamSizeMax);const sel=document.getElementById('apMaxSize');if(sel)sel.value=cfg.teamSizeMax}
+  if(cfg.maxTeams){regSettings.maxTeams=parseInt(cfg.maxTeams);const inp=document.getElementById('apMaxTeams');if(inp)inp.value=cfg.maxTeams}
   if(cfg.bannerFallback)regSettings.bannerFallback=cfg.bannerFallback;
   if(cfg.activeToIdle)activityThresholds.activeToIdle=parseInt(cfg.activeToIdle);
   if(cfg.idleToSilent)activityThresholds.idleToSilent=parseInt(cfg.idleToSilent);
+  // Landing banner
+  if(cfg.landingBannerUrl!==undefined){regSettings.landingBannerUrl=cfg.landingBannerUrl;applyBannerImage(cfg.landingBannerUrl);const inp=document.getElementById('apBannerUrl');if(inp)inp.value=cfg.landingBannerUrl;syncBannerPreview()}
+  // Registration settings
+  if(cfg.requireEmail!==undefined){regSettings.requireEmail=cfg.requireEmail==='true'||cfg.requireEmail===true;const cb=document.getElementById('apReqEmail');if(cb)cb.checked=regSettings.requireEmail}
+  if(cfg.requirePhone!==undefined){regSettings.requirePhone=cfg.requirePhone==='true'||cfg.requirePhone===true;const cb=document.getElementById('apReqPhone');if(cb)cb.checked=regSettings.requirePhone}
+  if(cfg.requireDept!==undefined){regSettings.requireDept=cfg.requireDept==='true'||cfg.requireDept===true;const cb=document.getElementById('apReqDept');if(cb)cb.checked=regSettings.requireDept}
+  if(cfg.registrationOpen!==undefined){
+    regSettings.registrationOpen=cfg.registrationOpen==='true'||cfg.registrationOpen===true;
+    const cb=document.getElementById('apRegOpen');if(cb)cb.checked=regSettings.registrationOpen;
+    const status=document.getElementById('apRegStatus');
+    if(status){status.textContent=regSettings.registrationOpen?'● OPEN':'● CLOSED';status.style.color=regSettings.registrationOpen?'var(--green)':'var(--red)'}
+  }
+  // Vault settings
+  if(cfg.vaultMaxAttempts!==undefined){regSettings.vaultMaxAttempts=parseInt(cfg.vaultMaxAttempts)}
+  if(cfg.vaultCooldownSec!==undefined){regSettings.vaultCooldownSec=parseInt(cfg.vaultCooldownSec)}
+  if(cfg.vaultUnlimitedAttempts!==undefined){regSettings.vaultUnlimitedAttempts=cfg.vaultUnlimitedAttempts==='true'||cfg.vaultUnlimitedAttempts===true}
   // Event timer
   if(cfg.eventStartTime){eventSettings.startTime=cfg.eventStartTime;const inp=document.getElementById('eventStartInput');if(inp)inp.value=cfg.eventStartTime.substring(0,16)}
   if(cfg.eventEndTime){eventSettings.endTime=cfg.eventEndTime;const inp=document.getElementById('eventEndInput');if(inp)inp.value=cfg.eventEndTime.substring(0,16)}
   if(cfg.eventAutoLock!==undefined){eventSettings.autoLock=cfg.eventAutoLock==='true'||cfg.eventAutoLock===true;const cb=document.getElementById('eventAutoLock');if(cb)cb.checked=eventSettings.autoLock}
   if(cfg.eventShowLeaderboardOnExpiry!==undefined){eventSettings.showLeaderboardOnExpiry=cfg.eventShowLeaderboardOnExpiry==='true'||cfg.eventShowLeaderboardOnExpiry===true;const cb=document.getElementById('eventShowLeaderboard');if(cb)cb.checked=eventSettings.showLeaderboardOnExpiry}
   if(cfg.allowDownloads!==undefined){allowDownloads=cfg.allowDownloads==='true'||cfg.allowDownloads===true}
+  // Sync threshold UI
+  const idleInp=document.getElementById('apThresholdIdle');if(idleInp)idleInp.value=activityThresholds.activeToIdle;
+  const silentInp=document.getElementById('apThresholdSilent');if(silentInp)silentInp.value=activityThresholds.idleToSilent;
+  // Update landing page labels based on participant mode
+  updateLandingForMode();
   updateEventStatus();
   startGlobalEventTimer();
 }
@@ -6223,7 +6244,9 @@ updateLandingForMode();
 
 function saveSession(){
   try{
-    const data={type:isAdmin?'admin':'team',team:currentVaultTeam,screen:_currentScreen};
+    // Only save session when on consoleScreen — no point saving login/reg/landing
+    if(_currentScreen!=='consoleScreen')return;
+    const data={type:isAdmin?'admin':'team',team:currentVaultTeam,screen:'consoleScreen'};
     if(isAdmin)data.adminSession=adminSession;
     // Track which panel is open
     const openPanel=document.querySelector('.expanded-panel.visible');
@@ -6243,7 +6266,8 @@ function restoreSession(){
     const data=JSON.parse(raw);
     if(!data||!data.team)return false;
     
-    const targetScreen=data.screen||'consoleScreen';
+    // Always restore to consoleScreen — that's the only valid restore target
+    const targetScreen='consoleScreen';
     
     if(data.type==='admin'&&data.adminSession){
       adminSession=data.adminSession;
@@ -6255,12 +6279,12 @@ function restoreSession(){
       _currentScreen=targetScreen;
       document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
       document.getElementById(targetScreen).classList.add('active');
-      const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',targetScreen==='consoleScreen');
+      const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',true);
       document.getElementById('notepadTrigger').classList.add('visible');
       startElapsedTimer();
       loadEventData().then(()=>{
         // Only restore panel if we're on the console screen
-        if(targetScreen==='consoleScreen'&&data.panel){
+        if(data.panel){
           const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
           if(panelMap[data.panel])openPanel(panelMap[data.panel]);
         }
@@ -6275,15 +6299,15 @@ function restoreSession(){
       _currentScreen=targetScreen;
       document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
       document.getElementById(targetScreen).classList.add('active');
-      const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',targetScreen==='consoleScreen');
+      const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',true);
       document.getElementById('notepadTrigger').classList.add('visible');
       startElapsedTimer();
       apiCall('getEventConfig').then(cfg=>{
         if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
       });
       startBroadcastPolling();
-      // Only restore panel if we're on the console screen
-      if(targetScreen==='consoleScreen'&&data.panel){
+      // Restore panel if one was open
+      if(data.panel){
         const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
         if(panelMap[data.panel])setTimeout(()=>openPanel(panelMap[data.panel]),300);
       }
