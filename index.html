@@ -172,7 +172,10 @@
   .login-field input::placeholder{color:#333;text-transform:none;letter-spacing:1px;font-size:12px}
   .login-pw-field input{text-transform:none;color:#ccc;letter-spacing:1px}
   .login-err{font-family:'Chakra Petch',sans-serif;font-size:11px;color:var(--red);min-height:14px;text-align:center;font-weight:600;margin-bottom:4px}
-  .login-submit{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700}
+  .login-submit{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700;position:relative;min-height:48px}
+  .login-submit.loading{color:transparent;pointer-events:none}
+  .login-submit.loading::after{content:'';position:absolute;inset:0;margin:auto;width:20px;height:20px;border:2px solid rgba(0,255,136,.2);border-top-color:var(--green);border-radius:50%;animation:btnSpin .6s linear infinite}
+  @keyframes btnSpin{to{transform:rotate(360deg)}}
   .login-submit:hover{background:rgba(0,255,136,.1);box-shadow:0 0 25px rgba(0,255,136,.12)}
   .login-status{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.03)}
   .login-register-link{font-family:'Chakra Petch',sans-serif;font-size:13px;color:#aaa;cursor:pointer;transition:color .2s;padding:16px 0 0;letter-spacing:.5px;text-align:center}
@@ -2275,8 +2278,11 @@ function submitLogin(){
     const pw=document.getElementById('loginPw').value;
     if(!pw){err.textContent='Please enter password';return}
     // Try admin login via API
-    err.textContent='Authenticating...';
+    err.textContent='';
+    const btn=document.getElementById('loginSubmitBtn');
+    btn.classList.add('loading');
     apiCall('login',{username:idVal,password:pw}).then(result=>{
+      btn.classList.remove('loading');
       if(result.ok){
         // Admin authenticated
         adminSession={username:result.username,role:result.role,adminToken:result.adminToken};
