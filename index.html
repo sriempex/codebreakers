@@ -2339,8 +2339,11 @@ function submitLogin(){
       }
       updateConsoleForTeam(currentVaultTeam);
       loginSuccess();
+      // Load event timer for players
+      apiCall('getEventConfig').then(cfg=>{
+        if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
+      });
     }else{
-      // Not a team — check if it's an admin username
       apiCall('validateUsername',{username:idVal}).then(vResult=>{
         btn.classList.remove('loading');
         if(vResult.ok&&vResult.found){
@@ -3756,6 +3759,17 @@ async function loadEventData(){
     });
     renderPortalUsersList();
   }
+  // Load vault codes
+  const vaultResult=await apiCall('getVaultCodes');
+  if(vaultResult.ok&&vaultResult.codes&&vaultResult.codes.length>0){
+    vaultCodes.length=0;
+    vaultResult.codes.forEach(c=>vaultCodes.push({
+      code:c.code||'',label:c.label||'',desc:c.desc||'',
+      codename:c.codename||'',unlocked:false,unlockedAt:null,
+      linkedMediaIdx:c.linkedMediaIdx!==undefined?c.linkedMediaIdx:null
+    }));
+    renderVaultPanel();renderKeysCodes();
+  }
   // Load submissions
   const subResult=await apiCall('getSubmissions');
   if(subResult.ok&&subResult.submissions){
@@ -3763,11 +3777,12 @@ async function loadEventData(){
       const team=registeredTeams.find(t=>t.id===s.teamId);
       if(team){
         team.submitTime=s.submittedAt;
-        team.submissionResults={totalScore:s.score,correctCount:s.correct,totalFields:s.total};
+        team.submissionResults={totalScore:s.score,totalPossible:s.totalPossible||0,correctCount:s.correct,totalFields:s.total};
       }
     });
   }
-  console.log('✓ Event data loaded from backend');
+  // Start global timer if event times are set
+  startGlobalEventTimer();
 }
 
 function applyEventConfig(cfg){
@@ -3783,6 +3798,14 @@ function applyEventConfig(cfg){
   if(cfg.bannerFallback)regSettings.bannerFallback=cfg.bannerFallback;
   if(cfg.activeToIdle)activityThresholds.activeToIdle=parseInt(cfg.activeToIdle);
   if(cfg.idleToSilent)activityThresholds.idleToSilent=parseInt(cfg.idleToSilent);
+  // Event timer
+  if(cfg.eventStartTime){eventSettings.startTime=cfg.eventStartTime;const inp=document.getElementById('eventStartInput');if(inp)inp.value=cfg.eventStartTime.substring(0,16)}
+  if(cfg.eventEndTime){eventSettings.endTime=cfg.eventEndTime;const inp=document.getElementById('eventEndInput');if(inp)inp.value=cfg.eventEndTime.substring(0,16)}
+  if(cfg.eventAutoLock!==undefined){eventSettings.autoLock=cfg.eventAutoLock==='true'||cfg.eventAutoLock===true;const cb=document.getElementById('eventAutoLock');if(cb)cb.checked=eventSettings.autoLock}
+  if(cfg.eventShowLeaderboardOnExpiry!==undefined){eventSettings.showLeaderboardOnExpiry=cfg.eventShowLeaderboardOnExpiry==='true'||cfg.eventShowLeaderboardOnExpiry===true;const cb=document.getElementById('eventShowLeaderboard');if(cb)cb.checked=eventSettings.showLeaderboardOnExpiry}
+  if(cfg.allowDownloads!==undefined){allowDownloads=cfg.allowDownloads==='true'||cfg.allowDownloads===true}
+  updateEventStatus();
+  startGlobalEventTimer();
 }
 
 // Admin auth now handled via login screen (submitLogin)
@@ -4081,8 +4104,13 @@ function saveEventConfigToBackend(){
       idleToSilent:activityThresholds.idleToSilent,
       vaultMaxAttempts:regSettings.vaultMaxAttempts,
       vaultCooldownSec:regSettings.vaultCooldownSec,
-      vaultUnlimitedAttempts:regSettings.vaultUnlimitedAttempts
-    }}).then(r=>{if(!r.ok)console.warn('Config save failed:',r.error)});
+      vaultUnlimitedAttempts:regSettings.vaultUnlimitedAttempts,
+      eventStartTime:eventSettings.startTime,
+      eventEndTime:eventSettings.endTime,
+      eventAutoLock:eventSettings.autoLock,
+      eventShowLeaderboardOnExpiry:eventSettings.showLeaderboardOnExpiry,
+      allowDownloads:allowDownloads
+    }}).then(r=>{});
   },1000); // 1 second debounce
 }
 
@@ -4123,9 +4151,22 @@ function saveIntelFieldsToBackend(){
     apiCall('saveIntelFields',{fields:intelFields.map(f=>({
       label:f.label||'',emoji:f.emoji||'',fieldType:f.type||'text',
       font:f.font||'',answer:f.answer||{}
-    }))}).then(r=>{if(!r.ok)console.warn('Intel save failed:',r.error)});
+    }))}).then(r=>{});
   },1500);
 }
+
+let _saveVaultTimer=null;
+function saveVaultCodesToBackend(){
+  if(!adminSession)return;
+  clearTimeout(_saveVaultTimer);
+  _saveVaultTimer=setTimeout(()=>{
+    apiCall('saveVaultCodes',{codes:vaultCodes.map(c=>({
+      code:c.code||'',label:c.label||'',desc:c.desc||'',
+      codename:c.codename||'',linkedMediaIdx:c.linkedMediaIdx
+    }))}).then(r=>{});
+  },1500);
+}
+
 function onParticipantModeChange(){
   regSettings.participantMode=document.getElementById('apParticipantMode')?.value||'team';
   updateLandingForMode();
@@ -4481,22 +4522,13 @@ function renderLeaderboard(){
 }
 
 // Simulate activity changes for demo (remove in production)
-function simulateActivity(){
-  registeredTeams.forEach(t=>{
-    if(Math.random()<0.3)t.lastActive=Date.now()-Math.floor(Math.random()*120000);
-    if(Math.random()<0.1&&t.fieldsCompleted<(intelFields.length||11))t.fieldsCompleted++;
-  });
-}
-
 function startTeamMonitor(){
   if(teamMonitorInterval)clearInterval(teamMonitorInterval);
   teamMonitorInterval=setInterval(()=>{
     if(document.getElementById('teamMonitorPanel').classList.contains('active')){
-      simulateActivity();
       renderTeamMonitor();
     }
     if(document.getElementById('leaderboardModule').classList.contains('active')){
-      simulateActivity();
       renderFullLeaderboard();
     }
   },3000);
@@ -4541,10 +4573,14 @@ function getSortedTeams(){
   // Sort
   teams.sort((a,b)=>{
     switch(sort){
-      case 'score':
-        if(b.fieldsCompleted!==a.fieldsCompleted)return b.fieldsCompleted-a.fieldsCompleted;
+      case 'score':{
+        const aScore=a.submissionResults?a.submissionResults.totalScore:0;
+        const bScore=b.submissionResults?b.submissionResults.totalScore:0;
+        if(bScore!==aScore)return bScore-aScore;
         if(a.submitTime&&b.submitTime)return a.submitTime.localeCompare(b.submitTime);
+        if(a.submitTime)return -1;if(b.submitTime)return 1;
         return b.lastActive-a.lastActive;
+      }
       case 'fields':return b.fieldsCompleted-a.fieldsCompleted;
       case 'recent':return b.lastActive-a.lastActive;
       case 'name':return a.name.localeCompare(b.name);
@@ -4872,7 +4908,7 @@ function saveNewVaultCode(){
   vaultCodes.push({code,label:label||'Unnamed',desc:desc||'',codename,unlocked:false,unlockedAt:null,linkedMediaIdx:linkedIdx});
   if(linkedIdx!==null&&mediaItems[linkedIdx])mediaItems[linkedIdx].vaultLocked=true;
   hideEditModal();
-  renderKeysCodes();renderVaultPanel();renderGrid();
+  renderKeysCodes();renderVaultPanel();renderGrid();saveVaultCodesToBackend();
 }
 function editVaultCode(i){
   const c=vaultCodes[i];
@@ -4901,7 +4937,7 @@ function saveVaultCode(i){
   const newIdx=vaultCodes[i].linkedMediaIdx;
   if(newIdx!==null&&mediaItems[newIdx]&&!vaultCodes[i].unlocked)mediaItems[newIdx].vaultLocked=true;
   hideEditModal();
-  renderKeysCodes();renderVaultPanel();
+  renderKeysCodes();renderVaultPanel();saveVaultCodesToBackend();
 }
 function deleteVaultCode(i){
   // Unmark linked media
@@ -4909,7 +4945,7 @@ function deleteVaultCode(i){
   if(idx!==null&&idx!==undefined&&mediaItems[idx])mediaItems[idx].vaultLocked=false;
   vaultCodes.splice(i,1);
   hideEditModal();
-  renderKeysCodes();renderVaultPanel();renderGrid();
+  renderKeysCodes();renderVaultPanel();renderGrid();saveVaultCodesToBackend();
 }
 
 // ── Broadcast System ──
@@ -5674,6 +5710,106 @@ function onEventTimeChange(){
   eventSettings.endTime=endVal?new Date(endVal).toISOString():null;
   eventSettings.expired=false;
   updateEventStatus();
+  startGlobalEventTimer();
+  saveEventConfigToBackend();
+}
+
+let _globalTimerInterval=null;
+function startGlobalEventTimer(){
+  if(_globalTimerInterval)clearInterval(_globalTimerInterval);
+  if(!eventSettings.startTime||!eventSettings.endTime)return;
+  
+  _globalTimerInterval=setInterval(()=>{
+    const now=Date.now();
+    const start=new Date(eventSettings.startTime).getTime();
+    const end=new Date(eventSettings.endTime).getTime();
+    const timerEl=document.getElementById('cTimer');
+    
+    if(now<start){
+      // Event hasn't started — show time until start
+      const diff=start-now;
+      const h=Math.floor(diff/3600000);
+      const m=Math.floor((diff%3600000)/60000);
+      const s=Math.floor((diff%60000)/1000);
+      if(timerEl)timerEl.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    }else if(now>=start&&now<end){
+      // Event is live — show remaining time
+      const diff=end-now;
+      const h=Math.floor(diff/3600000);
+      const m=Math.floor((diff%3600000)/60000);
+      const s=Math.floor((diff%60000)/1000);
+      if(timerEl){
+        timerEl.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+        timerEl.style.color=(diff<300000)?'var(--red)':''; // Red in last 5 minutes
+      }
+    }else if(!eventSettings.expired){
+      // Event just ended
+      eventSettings.expired=true;
+      if(timerEl){timerEl.textContent='00:00:00';timerEl.style.color='var(--red)'}
+      handleEventExpiry();
+    }
+    updateEventStatus();
+  },1000);
+}
+
+function handleEventExpiry(){
+  if(eventSettings.autoLock&&!isAdmin){
+    // Lock site for players — disable input, show overlay
+    document.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});
+    const lockOverlay=document.createElement('div');
+    lockOverlay.id='eventLockOverlay';
+    lockOverlay.style.cssText='position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:900';
+    lockOverlay.innerHTML='<div style="font-family:Russo One,sans-serif;font-size:28px;color:var(--red);letter-spacing:6px">TIME EXPIRED</div><div style="font-family:Saira,sans-serif;font-size:12px;color:#888;letter-spacing:3px">The event has ended. All submissions are locked.</div>';
+    document.body.appendChild(lockOverlay);
+  }
+  if(eventSettings.showLeaderboardOnExpiry){
+    // Show leaderboard after a short delay
+    setTimeout(()=>{
+      if(document.getElementById('eventLockOverlay')){
+        document.getElementById('eventLockOverlay').remove();
+      }
+      showPublicLeaderboard();
+    },eventSettings.autoLock?3000:500);
+  }
+}
+
+function showPublicLeaderboard(){
+  // Build and show a player-facing leaderboard
+  const teams=getSortedTeams();
+  const maxFields=intelFields.length||1;
+  
+  let html='<div style="width:90%;max-width:600px;max-height:80vh;overflow-y:auto">';
+  html+='<div style="text-align:center;margin-bottom:24px"><div style="font-family:Russo One,sans-serif;font-size:22px;color:var(--green);letter-spacing:4px">FINAL STANDINGS</div><div style="font-family:Saira,sans-serif;font-size:10px;color:#666;letter-spacing:2px;margin-top:4px">'+teams.length+' teams competed</div></div>';
+  
+  teams.slice(0,20).forEach((t,i)=>{
+    const rank=i+1;
+    const medal=rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':'';
+    const score=t.submissionResults?t.submissionResults.totalScore:0;
+    const possible=t.submissionResults?t.submissionResults.totalPossible:(maxFields*10);
+    const pct=possible?Math.round((score/possible)*100):0;
+    const barColor=rank===1?'#ffd700':rank===2?'#c0c0c0':rank===3?'#cd7f32':'#333';
+    const submitted=t.submitTime?'Submitted':'Not submitted';
+    
+    html+=`<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.05);${rank<=3?'background:rgba(255,255,255,.02)':''}">
+      <div style="font-family:Russo One,sans-serif;font-size:${rank<=3?'18':'14'}px;color:${rank===1?'#ffd700':rank===2?'#c0c0c0':rank===3?'#cd7f32':'#555'};min-width:36px;text-align:center">${medal||'#'+rank}</div>
+      <div style="flex:1">
+        <div style="font-family:Saira,sans-serif;font-size:13px;color:#ddd;font-weight:600">${t.name}</div>
+        <div style="height:3px;background:#111;border-radius:2px;margin-top:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${barColor};border-radius:2px"></div></div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:Oxanium,sans-serif;font-size:16px;font-weight:700;color:${rank<=3?'#fff':'#aaa'}">${pct}%</div>
+        <div style="font-family:IBM Plex Mono,monospace;font-size:8px;color:#555">${submitted}</div>
+      </div>
+    </div>`;
+  });
+  
+  html+='</div>';
+  
+  const overlay=document.createElement('div');
+  overlay.id='publicLeaderboard';
+  overlay.style.cssText='position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center';
+  overlay.innerHTML=html;
+  document.body.appendChild(overlay);
 }
 function updateEventStatus(){
   const msg=document.getElementById('eventStatusMsg');
