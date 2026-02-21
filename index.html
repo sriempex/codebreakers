@@ -53,14 +53,7 @@
   .reg-proceed{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:13px;letter-spacing:4px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700}
   .reg-proceed:hover{background:rgba(0,255,136,.1);box-shadow:0 0 25px rgba(0,255,136,.12)}
 
-  /* Screen back button — consistent top-left placement */
-  .screen-back{position:absolute;top:20px;left:20px;z-index:20;cursor:pointer;display:flex;align-items:center;gap:6px;padding:10px 20px;
-    border-radius:5px;transition:all .25s;
-    background:linear-gradient(180deg,rgba(0,212,255,.1),rgba(0,212,255,.05));border:1px solid rgba(0,212,255,.35);
-    box-shadow:0 0 10px rgba(0,212,255,.06)}
-  .screen-back:hover{background:linear-gradient(180deg,rgba(0,212,255,.18),rgba(0,212,255,.1));border-color:rgba(0,212,255,.5);box-shadow:0 0 18px rgba(0,212,255,.12)}
-  .screen-back span{font-family:'Saira',sans-serif;font-size:12px;color:var(--cyan);letter-spacing:3px;font-weight:700;text-transform:uppercase}
-  .screen-back svg{width:16px;height:16px;fill:none;stroke:var(--cyan);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+  /* Registration & login close buttons use .mv-close */
 
 
   /* ══════ LANDING PAGE ══════ */
@@ -1167,10 +1160,6 @@
     .tile-label{font-size:12px;letter-spacing:3px}
     .tile-sub{font-size:9px}
 
-    /* Back/Forward nav buttons — tighter to edges */
-    .screen-back{top:12px;left:12px;padding:8px 14px}
-    .screen-back span{font-size:10px;letter-spacing:2px}
-
     /* Login */
     .login-container{gap:14px}
     .login-title{font-size:14px}
@@ -1452,11 +1441,11 @@
 
 <!-- REGISTRATION -->
 <div class="screen" id="regScreen">
-  <div class="screen-back" onclick="showScreen('landingScreen')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span>Back</span></div>
   <div class="reg-container">
     <div class="reg-title" id="regScreenTitle">Operation Dead Drop</div>
     <div class="reg-subtitle" id="regScreenSubtitle">Team Registration Portal</div>
     <div class="reg-panel">
+      <button class="mv-close" onclick="showScreen('landingScreen')" style="position:absolute;top:12px;right:12px;z-index:5">✕ CLOSE</button>
       <div id="regForm">
         <!-- Hybrid mode type choice (hidden unless hybrid) -->
         <div class="reg-type-choice" id="regTypeChoice" style="display:none">
@@ -1503,11 +1492,11 @@
 
 <!-- LOGIN -->
 <div class="screen" id="loginScreen">
-  <div class="screen-back" onclick="showScreen('landingScreen')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span>Back</span></div>
   <div class="login-container">
     <div style="display:flex;align-items:center;justify-content:center"><div class="login-title" id="loginTitle">Operation Dead Drop</div><button class="admin-edit-inline" onclick="event.stopPropagation();editOperationName()">✎</button></div>
     <div class="login-subtitle">Enter Your Credentials</div>
     <div class="login-panel">
+      <button class="mv-close" onclick="showScreen('landingScreen')" style="position:absolute;top:12px;right:12px;z-index:5">✕ CLOSE</button>
       <div class="rv rv-1"></div><div class="rv rv-2"></div><div class="rv rv-3"></div><div class="rv rv-4"></div>
       <div class="login-field">
         <label id="loginIdLabel">Team ID</label>
@@ -2595,8 +2584,7 @@ function fontStyle(name){return name?`font-family:${getFontFamily(name)}`:''}
 // ══════ DATA ══════
 let operationName='Operation Dead Drop';
 let operationFont='Staatliches';
-let vaultSubtitle='Enter Your Team ID';
-let vaultSubFont='';
+// vault subtitle removed — login screen uses loginTitle
 let gridTiles=[
   {id:'feed',icon:'📡',label:'Intelligence Feed',labelFont:'',sub:'Surveillance imagery & intercepted visuals',subFont:'',badgeId:'feedBadge',dotClass:'silent',status:'SILENT'},
   {id:'media',icon:'🔊',label:'Media Lab',labelFont:'',sub:'Audio, maps, documents & video',subFont:'',badgeId:'mediaBadge',dotClass:'silent',status:'SILENT'},
@@ -4399,7 +4387,7 @@ function dispatchTeamMessage(teamId){
   hideEditModal();
   // If we're viewing as that team, show the banner immediately
   if(currentTeam&&currentTeam.id===teamId){
-    showPlayerBanner(msg);
+    showPlayerBanner('text',msg);
   }
   // Flash confirmation
   const flash=document.createElement('div');
@@ -4407,19 +4395,6 @@ function dispatchTeamMessage(teamId){
   flash.textContent='✓ Message sent to '+teamId;
   document.body.appendChild(flash);
   setTimeout(()=>flash.remove(),2500);
-}
-function showPlayerBanner(msg){
-  const banner=document.getElementById('playerBanner');
-  const content=document.getElementById('pbContent');
-  const icon=document.getElementById('pbIcon');
-  if(!banner||!content)return;
-  icon.textContent='💬';
-  content.innerHTML=`<div style="font-family:Chakra Petch,sans-serif;font-size:12px;color:#e0e0e0;letter-spacing:.5px">${msg}</div>`;
-  banner.classList.add('active');
-  const prog=document.getElementById('pbProgress');
-  if(prog){prog.style.transition='none';prog.style.width='100%';setTimeout(()=>{prog.style.transition='width 15s linear';prog.style.width='0%'},50)}
-  clearTimeout(window._bannerTimeout);
-  window._bannerTimeout=setTimeout(()=>dismissBanner(),15000);
 }
 
 // ── De-submit Mechanism ──
@@ -4436,7 +4411,7 @@ function desubmitTeam(teamId){
   if(currentTeam&&currentTeam.id===teamId){
     isSubmitted=false;
     renderIntelForm();
-    showPlayerBanner('Your submission has been reopened for revision. You may update your answers and re-submit.');
+    showPlayerBanner('text','Your submission has been reopened for revision. You may update your answers and re-submit.');
   }
   renderFullLeaderboard();
   renderLeaderboard();
@@ -4840,12 +4815,8 @@ function editOperationName(){
 function saveOperationName(){
   operationName=document.getElementById('eo_name').value.trim()||'Operation Dead Drop';
   operationFont=document.getElementById('eo_name_font').value;
-  const vt=document.getElementById('vaultTitle');
-  vt.textContent=operationName;
-  if(operationFont)vt.style.fontFamily=getFontFamily(operationFont);else vt.style.fontFamily='';
   const ct=document.getElementById('consoleTitle');
-  ct.textContent='◈ '+operationName;
-  if(operationFont)ct.style.fontFamily=getFontFamily(operationFont);else ct.style.fontFamily='';
+  if(ct){ct.textContent='◈ '+operationName;ct.style.fontFamily=operationFont?getFontFamily(operationFont):''}
   // Update page title and registration screen
   document.title=operationName+' — Console';
   const regTitle=document.getElementById('regScreenTitle');
@@ -5408,8 +5379,7 @@ renderIntelForm();
 buildRegForm();
 updateLandingForMode();
 // Apply stored fonts
-if(operationFont){const vt=document.getElementById('vaultTitle');const ct=document.getElementById('consoleTitle');if(vt)vt.style.fontFamily=getFontFamily(operationFont);if(ct)ct.style.fontFamily=getFontFamily(operationFont)}
-if(vaultSubFont){const vs=document.getElementById('vaultSubtitle');if(vs)vs.style.fontFamily=getFontFamily(vaultSubFont)}
+if(operationFont){const ct=document.getElementById('consoleTitle');if(ct)ct.style.fontFamily=getFontFamily(operationFont);const lt=document.getElementById('loginTitle');if(lt)lt.style.fontFamily=getFontFamily(operationFont)}
 </script>
 </body>
 </html>
