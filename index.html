@@ -3618,7 +3618,8 @@ function renderDocViewer(body,m,url,eu){
   }
   // R2 files: serve directly in iframe (PDFs render natively, images via img)
   if(isR2){
-    body.innerHTML=`<iframe class="mv-pdf-frame" src="${url}" allowfullscreen></iframe>${allowDownloads?`<div style="text-align:center;margin-top:8px"><a href="${url}" download target="_blank" style="color:var(--cyan);font-family:\'Saira\',sans-serif;font-size:10px;letter-spacing:1.5px;text-decoration:none;opacity:.7">DOWNLOAD ORIGINAL</a></div>`:''}`;
+    const pdfBlock=(!allowDownloads&&url.match(/\.pdf/i))?'#toolbar=0&navpanes=0':'';
+    body.innerHTML=`<iframe class="mv-pdf-frame" src="${url}${pdfBlock}" allowfullscreen></iframe>${allowDownloads?`<div style="text-align:center;margin-top:8px"><a href="${url}" download target="_blank" style="color:var(--cyan);font-family:\'Saira\',sans-serif;font-size:10px;letter-spacing:1.5px;text-decoration:none;opacity:.7">DOWNLOAD ORIGINAL</a></div>`:''}`;
     return;
   }
   // Office docs (non-Drive, non-R2)
@@ -3629,7 +3630,8 @@ function renderDocViewer(body,m,url,eu){
   }
   // PDFs (non-Drive, non-R2)
   if(isPdfUrl(url)){
-    body.innerHTML=`<iframe class="mv-pdf-frame" src="${url}" allowfullscreen></iframe>`;
+    const pdfBlock2=(!allowDownloads)?'#toolbar=0&navpanes=0':'';
+    body.innerHTML=`<iframe class="mv-pdf-frame" src="${url}${pdfBlock2}" allowfullscreen></iframe>`;
     return;
   }
   // Fallback
