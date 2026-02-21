@@ -2943,11 +2943,14 @@ function setFeedView(mode){
     gridEl.style.display='none';singleEl.classList.add('visible');
     toggleEl.style.display='';renderSinglePost();
   }
+  saveSession();
 }
 
 let currentPost=0;
 function openPost(i){currentPost=i;setFeedView('single')}
 function renderSinglePost(){
+  if(!posts.length)return;
+  if(currentPost>=posts.length)currentPost=0;
   const p=posts[currentPost],img=document.getElementById('singleImg');
   const resolved=(p.mediaUrl&&(p.mediaType==='video'||isVideoUrl(p.mediaUrl)))?resolveVideoEmbed(p.mediaUrl):null;
   const editBtn=document.body.classList.contains('edit-mode')?`<div class="feed-single-edit" onclick="event.stopPropagation();editFeedPost(${currentPost})" title="Edit this post">✎</div>`:'';
@@ -3053,7 +3056,7 @@ function toggleFeedMute(){
   const iframe=document.querySelector('#singleImg iframe');
   if(iframe)renderSinglePost();
 }
-function navPost(d){currentPost=(currentPost+d+posts.length)%posts.length;resetFeedZoom();renderSinglePost()}
+function navPost(d){currentPost=(currentPost+d+posts.length)%posts.length;resetFeedZoom();renderSinglePost();saveSession()}
 
 // ══════ FEED ZOOM + SWIPE (Unified Interaction Engine) ══════
 const feedZoom = {scale:1, x:0, y:0, minScale:1, maxScale:5};
@@ -3886,6 +3889,8 @@ async function loadEventData(){
     posts.length=0;
     feedResult.posts.forEach(p=>posts.push(p));
     renderFeed();renderGrid();
+    // If user was in focus mode, re-render the single post with fresh data
+    if(currentFeedView==='single')renderSinglePost();
   }
 
   const mediaResult=await apiCall('getMediaItems');
@@ -6257,6 +6262,9 @@ function saveSession(){
     // Save which panel is open so refresh restores exactly where the user was
     const openPanelEl=document.querySelector('.expanded-panel.visible');
     if(openPanelEl)data.panel=openPanelEl.id;
+    // Save feed view state so focus mode + post index survive refresh
+    data.feedView=currentFeedView;
+    data.feedPost=currentPost;
     localStorage.setItem('cb_session',JSON.stringify(data));
   }catch(e){}
 }
@@ -6296,7 +6304,16 @@ function restoreSession(){
           // Render panel content immediately with whatever is in memory
           // Backend refresh will update it in the background
           const t=panelMap[data.panel];
-          if(t==='feed'){renderFeed();setFeedView('grid')}
+          if(t==='feed'){
+            renderFeed();
+            // Restore exact feed view state — grid or focus mode + post index
+            if(data.feedView==='single'&&typeof data.feedPost==='number'){
+              currentPost=data.feedPost;
+              setFeedView('single');
+            }else{
+              setFeedView('grid');
+            }
+          }
           if(t==='media')renderMedia();
           if(t==='intel')renderIntelForm();
           if(t==='vault')renderVaultPanel();
@@ -6326,9 +6343,18 @@ function restoreSession(){
       apiCall('getEventConfig').then(cfg=>{
         if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
         // Re-render panel with fresh backend data once it arrives
+        // Preserve the feed view state the user was in before refresh
         if(data.panel&&panelMap[data.panel]){
           const t=panelMap[data.panel];
-          if(t==='feed'){renderFeed();setFeedView('grid')}
+          if(t==='feed'){
+            renderFeed();
+            if(data.feedView==='single'&&typeof data.feedPost==='number'){
+              currentPost=data.feedPost;
+              setFeedView('single');
+            }else{
+              setFeedView(currentFeedView);
+            }
+          }
           if(t==='media')renderMedia();
           if(t==='intel')renderIntelForm();
           if(t==='vault')renderVaultPanel();
