@@ -2771,6 +2771,21 @@ let gridTiles=[
 ];
 // Activity tracking for tile pulse system
 const tileActivity={feed:0,media:0,vault:0,intel:0};
+const activityThresholds={activeToIdle:60,idleToSilent:300}; // seconds, admin-configurable
+const tileStateLabels={active:'ACTIVE',idle:'IDLE',silent:'SILENT'};
+function getTileState(id){
+  const last=tileActivity[id];
+  if(!last)return'silent';
+  const ago=(Date.now()-last)/1000;
+  if(ago<activityThresholds.activeToIdle)return'active';
+  if(ago<activityThresholds.idleToSilent)return'idle';
+  return'silent';
+}
+function recordTileAccess(id){
+  tileActivity[id]=Date.now();
+  try{localStorage.setItem('cb_tile_activity',JSON.stringify(tileActivity));}catch(e){}
+  updateTileStates();
+}
 // Restore persisted tile activity from localStorage on load
 (function(){
   try{
@@ -2780,21 +2795,6 @@ const tileActivity={feed:0,media:0,vault:0,intel:0};
   // Update dotClass immediately so renderGrid() below picks up correct states
   updateTileStates();
 })();
-const activityThresholds={activeToIdle:60,idleToSilent:300}; // seconds, admin-configurable
-function recordTileAccess(id){
-  tileActivity[id]=Date.now();
-  try{localStorage.setItem('cb_tile_activity',JSON.stringify(tileActivity));}catch(e){}
-  updateTileStates();
-}
-function getTileState(id){
-  const last=tileActivity[id];
-  if(!last)return'silent';
-  const ago=(Date.now()-last)/1000;
-  if(ago<activityThresholds.activeToIdle)return'active';
-  if(ago<activityThresholds.idleToSilent)return'idle';
-  return'silent';
-}
-const tileStateLabels={active:'ACTIVE',idle:'IDLE',silent:'SILENT'};
 function updateTileStates(){
   gridTiles.forEach(t=>{
     const state=getTileState(t.id);
