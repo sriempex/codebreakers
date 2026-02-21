@@ -479,11 +479,17 @@
   .tile-badge.crimson{color:#e8667a;border-color:rgba(204,68,85,.25);background:rgba(204,68,85,.06)}
   .tile-badge.violet{color:#b088ee;border-color:rgba(153,119,221,.25);background:rgba(153,119,221,.06)}
   .tile-status{display:flex;align-items:center;gap:7px;z-index:2}
-  .tile-status span{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:3px;color:#777;font-weight:500;text-transform:uppercase}
+  .tile-status span{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:3px;font-weight:500;text-transform:uppercase}
   /* LED dots */
-  .tile-dot{width:6px;height:6px;border-radius:50%;animation:ledPulse 2s ease-in-out infinite}
-  .tile-dot.live{background:radial-gradient(circle at 40% 35%,#44ff88,#00cc44);box-shadow:0 0 4px rgba(0,255,136,.4)}
-  .tile-dot.pending{background:radial-gradient(circle at 40% 35%,#ffcc44,#cc8811);box-shadow:0 0 4px rgba(255,170,51,.4)}
+  .tile-dot{width:6px;height:6px;border-radius:50%}
+  .tile-dot.active{background:radial-gradient(circle at 40% 35%,#44ff88,#00cc44);box-shadow:0 0 6px rgba(0,255,136,.5);animation:ledPulse 1s ease-in-out infinite}
+  .tile-dot.monitored{background:radial-gradient(circle at 40% 35%,#66ccaa,#44aa88);box-shadow:0 0 4px rgba(68,170,136,.35);animation:ledPulse 2.5s ease-in-out infinite}
+  .tile-dot.idle{background:radial-gradient(circle at 40% 35%,#889aaa,#667788);box-shadow:0 0 3px rgba(102,119,136,.2);animation:ledPulse 4s ease-in-out infinite}
+  .tile-dot.silent{background:#3a3d44;box-shadow:none;animation:ledPulse 6s ease-in-out infinite}
+  .tile-status-label.active{color:#00ff88}
+  .tile-status-label.monitored{color:#44aa88}
+  .tile-status-label.idle{color:#667788}
+  .tile-status-label.silent{color:#3a3d44}
   /* Admin edit btn repositioned for monitor */
   .crt-monitor .admin-edit-btn{top:4px;right:4px;z-index:10}
 
@@ -2470,11 +2476,38 @@ let operationFont='Staatliches';
 let vaultSubtitle='Enter Your Team ID';
 let vaultSubFont='';
 let gridTiles=[
-  {id:'feed',icon:'📡',label:'Intelligence Feed',labelFont:'',sub:'Surveillance imagery & intercepted visuals',subFont:'',badgeId:'feedBadge',dotClass:'live',status:'LIVE'},
-  {id:'media',icon:'🔊',label:'Media Lab',labelFont:'',sub:'Audio, maps, documents & video',subFont:'',badgeId:'mediaBadge',dotClass:'live',status:'LIVE'},
-  {id:'vault',icon:'🔐',label:'The Vault',labelFont:'',sub:'Enter solved codes to unlock items',subFont:'',badgeId:'vaultBadge',dotClass:'pending',status:'LOCKED'},
-  {id:'intel',icon:'🎯',label:'Intel Submissions',labelFont:'',sub:'Submit decoded intelligence',subFont:'',badgeId:'intelBadge',dotClass:'pending',status:'AWAITING INPUT'}
+  {id:'feed',icon:'📡',label:'Intelligence Feed',labelFont:'',sub:'Surveillance imagery & intercepted visuals',subFont:'',badgeId:'feedBadge',dotClass:'silent',status:'SILENT'},
+  {id:'media',icon:'🔊',label:'Media Lab',labelFont:'',sub:'Audio, maps, documents & video',subFont:'',badgeId:'mediaBadge',dotClass:'silent',status:'SILENT'},
+  {id:'vault',icon:'🔐',label:'The Vault',labelFont:'',sub:'Enter solved codes to unlock items',subFont:'',badgeId:'vaultBadge',dotClass:'silent',status:'SILENT'},
+  {id:'intel',icon:'🎯',label:'Intel Submissions',labelFont:'',sub:'Submit decoded intelligence',subFont:'',badgeId:'intelBadge',dotClass:'silent',status:'SILENT'}
 ];
+// Activity tracking for tile pulse system
+const tileActivity={feed:0,media:0,vault:0,intel:0};
+function recordTileAccess(id){tileActivity[id]=Date.now();updateTileStates()}
+function getTileState(id){
+  const last=tileActivity[id];
+  if(!last)return'silent';
+  const ago=(Date.now()-last)/1000;
+  if(ago<30)return'active';
+  if(ago<120)return'monitored';
+  if(ago<300)return'idle';
+  return'silent';
+}
+const tileStateLabels={active:'ACTIVE',monitored:'MONITORED',idle:'IDLE',silent:'SILENT'};
+function updateTileStates(){
+  gridTiles.forEach(t=>{
+    const state=getTileState(t.id);
+    t.dotClass=state;
+    t.status=tileStateLabels[state];
+    // Update DOM directly if rendered
+    const statusEl=document.querySelector(`[data-tile="${t.id}"] .tile-dot`);
+    const labelEl=document.querySelector(`[data-tile="${t.id}"] .tile-status-label`);
+    if(statusEl){statusEl.className='tile-dot '+state}
+    if(labelEl){labelEl.className='tile-status-label '+state;labelEl.textContent=tileStateLabels[state]}
+  });
+}
+// Periodic state decay check every 10 seconds
+setInterval(updateTileStates,10000);
 let intelFields=[
   {label:'Seller Codename',emoji:'🕵️',type:'text',font:'',answer:{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}},
   {label:'Buyer Identity',emoji:'👤',type:'text',font:'',answer:{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}},
@@ -2575,7 +2608,7 @@ function renderMedia(){
 // ══════ PANELS ══════
 const overlay=document.getElementById('panelOverlay');
 let currentFeedView='grid';
-function openPanel(t){playTileClick();['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);
+function openPanel(t){playTileClick();recordTileAccess(t);['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);
   if(t==='feed'){renderFeed();setFeedView('grid')}if(t==='media')renderMedia();if(t==='intel')renderIntelForm();if(t==='vault')renderVaultPanel()}
 function closePanel(){overlay.style.cssText='';overlay.classList.remove('active');setTimeout(()=>document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible')),300)}
 
@@ -4220,7 +4253,7 @@ function renderGrid(){
     const isIntel=t.id==='intel';
     const isVault=t.id==='vault';
     const badgeCls=isVault?' crimson':isIntel?' violet':'';
-    return `<div class="crt-monitor" onclick="openPanel('${t.id}')">
+    return `<div class="crt-monitor" data-tile="${t.id}" onclick="openPanel('${t.id}')">
       ${isA?`<div class="admin-edit-btn" onclick="event.stopPropagation();editGridTile(${i})">✎</div>`:''}
       <div class="crt-screw s1"></div><div class="crt-screw s2"></div><div class="crt-screw s3"></div><div class="crt-screw s4"></div>
       <div class="crt-led"></div>
@@ -4230,7 +4263,7 @@ function renderGrid(){
         <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
         <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
         <div class="tile-badge${badgeCls}" id="${t.badgeId}">${t.id==='feed'?posts.length+' FILES':t.id==='media'?mediaItems.length+' FILES':t.id==='vault'?vaultCodes.filter(c=>c.unlocked).length+' / '+vaultCodes.length+' CRACKED':'0 / '+intelFields.length+' MARKED'}</div>
-        <div class="tile-status"><div class="tile-dot ${t.dotClass}"></div><span>${t.status}</span></div>
+        <div class="tile-status"><div class="tile-dot ${t.dotClass}"></div><span class="tile-status-label ${t.dotClass}">${t.status}</span></div>
       </div>
     </div>`;
   }).join('');
@@ -4259,7 +4292,7 @@ function editGridTile(i){
     <label style="display:flex;align-items:center;gap:6px;margin:-8px 0 10px;cursor:pointer"><input type="checkbox" id="eg_sub_all"><span style="font-size:9px;color:#888;letter-spacing:1px">Apply description font to all grid tiles</span></label>
     <div class="edit-field-row">
       <div class="edit-field"><label>Status Text</label><input id="eg_status" value="${t.status}"></div>
-      <div class="edit-field"><label>Status Dot</label><select id="eg_dot"><option${t.dotClass==='live'?' selected':''}>live</option><option${t.dotClass==='pending'?' selected':''}>pending</option></select></div>
+      <div class="edit-field"><label>Status Dot</label><div style="font-size:9px;color:#666;padding:10px 0;letter-spacing:.5px">Auto-managed · Activity pulse tracks player usage</div></div>
     </div>
     <div style="display:flex;gap:10px;margin-top:6px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveGridTile(${i})">Save</button></div>`);
   // If image icon, store URL in hidden state
@@ -4279,7 +4312,6 @@ function saveGridTile(i){
   gridTiles[i].label=document.getElementById('eg_label').value.trim();
   gridTiles[i].sub=document.getElementById('eg_sub').value.trim();
   gridTiles[i].status=document.getElementById('eg_status').value.trim();
-  gridTiles[i].dotClass=document.getElementById('eg_dot').value;
   const lf=document.getElementById('eg_label_font').value;
   const sf=document.getElementById('eg_sub_font').value;
   gridTiles[i].labelFont=lf;
