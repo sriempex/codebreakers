@@ -111,7 +111,7 @@
 
   /* Landing footer */
   .landing-footer{position:absolute;bottom:16px;left:0;right:0;text-align:center;z-index:5;animation:fadeUp .8s ease .6s both}
-  .landing-footer span{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#444;letter-spacing:1.5px;font-weight:500}
+  .landing-footer span{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#666;letter-spacing:1.5px;font-weight:500}
 
   /* Banner upload button (admin) */
   .landing-banner-upload{position:absolute;bottom:-8px;right:-8px;width:28px;height:28px;border-radius:50%;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.3);display:none;align-items:center;justify-content:center;cursor:pointer;z-index:10;transition:all .2s;font-size:12px;color:var(--cyan)}
@@ -169,9 +169,9 @@
   .login-submit{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700}
   .login-submit:hover{background:rgba(0,255,136,.1);box-shadow:0 0 25px rgba(0,255,136,.12)}
   .login-status{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.03)}
-  .login-register-link{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#888;cursor:pointer;transition:color .2s;padding:12px 0 0;letter-spacing:.5px;text-align:center}
+  .login-register-link{font-family:'Chakra Petch',sans-serif;font-size:13px;color:#aaa;cursor:pointer;transition:color .2s;padding:16px 0 0;letter-spacing:.5px;text-align:center}
   .login-register-link:hover{color:var(--cyan)}
-  .login-register-link span.lrl-action{color:var(--cyan);text-decoration:underline;text-underline-offset:3px}
+  .login-register-link span.lrl-action{color:var(--cyan);text-decoration:underline;text-underline-offset:3px;font-weight:600}
 
   /* ══════ VAULT PUZZLE (in-console) ══════ */
   .vault-puzzle-layout{display:flex;flex-direction:column;align-items:center;gap:24px;max-width:500px;margin:0 auto}
@@ -647,9 +647,9 @@
   .btn-red:hover{background:linear-gradient(180deg,rgba(70,25,25,.5),rgba(50,15,15,.6))}
 
   /* ══════ ADMIN ══════ */
-  .admin-trigger{position:fixed;bottom:10px;right:10px;z-index:800;width:32px;height:32px;border-radius:50%;display:none;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;
+  .admin-trigger{position:fixed;bottom:10px;right:10px;z-index:800;width:40px;height:40px;border-radius:50%;display:none;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;
     background:linear-gradient(180deg,rgba(150,160,180,.12),rgba(120,130,150,.06));border:1px solid rgba(150,160,180,.3);box-shadow:0 0 10px rgba(150,160,180,.08)}
-  .admin-trigger svg{width:15px;height:15px;fill:none;stroke:#8890a0;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
+  .admin-trigger svg{width:19px;height:19px;fill:none;stroke:#8890a0;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
   .admin-trigger:hover{border-color:rgba(150,160,180,.5);box-shadow:0 0 14px rgba(150,160,180,.15)}
   .admin-trigger:hover svg{stroke:#b0b8c8}
   .admin-trigger::after{content:'';position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px rgba(0,212,255,.6);animation:ledPulse 2s ease-in-out infinite;display:none}
@@ -697,10 +697,10 @@
   .admin-dropdown-toggle .adm-toggle.off{color:#666;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
 
   .logout-btn{position:fixed;bottom:20px;left:20px;z-index:400;display:none;align-items:center;gap:6px;border-radius:5px;padding:10px 20px;cursor:pointer;transition:all .25s;
-    background:linear-gradient(180deg,rgba(40,42,48,.6),rgba(26,28,32,.7));border:1px solid rgba(255,50,50,.25);
-    box-shadow:0 2px 6px rgba(0,0,0,.3);border-bottom:2px solid #0a0a0e}
+    background:linear-gradient(180deg,rgba(255,50,50,.1),rgba(255,50,50,.05));border:1px solid rgba(255,50,50,.35);
+    box-shadow:0 0 10px rgba(255,50,50,.06)}
   .logout-btn.visible{display:flex}
-  .logout-btn:hover{border-color:rgba(255,50,50,.45);color:var(--red);background:rgba(255,50,50,.08);box-shadow:0 0 18px rgba(255,50,50,.1);transform:translateY(-1px)}
+  .logout-btn:hover{background:linear-gradient(180deg,rgba(255,50,50,.18),rgba(255,50,50,.1));border-color:rgba(255,50,50,.5);box-shadow:0 0 18px rgba(255,50,50,.12)}
   .logout-btn:active{transform:translateY(0)}
   .logout-btn svg{width:16px;height:16px;fill:none;stroke:var(--red);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
   .logout-btn span{font-family:'Saira',sans-serif;font-size:12px;letter-spacing:3px;color:var(--red);font-weight:700;text-transform:uppercase}
@@ -1315,18 +1315,18 @@
 <div class="admin-dropdown" id="adminDropdown">
   <div class="admin-dropdown-header">
     <div class="admin-dropdown-dot"></div>
-    <span class="admin-dropdown-label">Admin</span>
+    <span class="admin-dropdown-label">Admin Menu</span>
   </div>
   <div class="admin-dropdown-body">
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openAdminPanel()"><span class="adm-icon">⚙</span><span class="adm-label">Admin Panel</span></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openBroadcast()"><span class="adm-icon">📢</span><span class="adm-label">Broadcast</span></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openLeaderboard()"><span class="adm-icon">🏆</span><span class="adm-label">Leaderboard</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openKeysCodes()"><span class="adm-icon">🔐</span><span class="adm-label">Keys & Codes</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openLeaderboard()"><span class="adm-icon">🏆</span><span class="adm-label">Leaderboard</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openTeamMonitor()"><span class="adm-icon">📡</span><span class="adm-label">Team Monitor</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openBroadcast()"><span class="adm-icon">📢</span><span class="adm-label">Broadcast</span></div>
     <div class="admin-dropdown-sep"></div>
     <div class="admin-dropdown-toggle" onclick="toggleAllowDownloads()"><span class="adm-icon">⬇</span><span class="adm-label">Allow Downloads</span><span class="adm-toggle off" id="admDlToggle">OFF</span></div>
-    <div class="admin-dropdown-toggle" onclick="toggleEditMode()"><span class="adm-icon">✎</span><span class="adm-label">Edit Mode</span><span class="adm-toggle off" id="admEditToggle">OFF</span></div>
     <div class="admin-dropdown-toggle pp-toggle" onclick="togglePlayerPreview()"><span class="adm-icon">👁</span><span class="adm-label">View as Player</span><span class="adm-toggle off" id="admPreviewToggle">OFF</span></div>
+    <div class="admin-dropdown-toggle" onclick="toggleEditMode()"><span class="adm-icon">✎</span><span class="adm-label">Edit Mode</span><span class="adm-toggle off" id="admEditToggle">OFF</span></div>
   </div>
 </div>
 
@@ -1406,7 +1406,7 @@
       <input type="file" id="landingBannerFile" accept="image/*" onchange="handleBannerUpload(this)">
     </div>
     <div class="landing-title" id="landingTitleEl">Code Breakers</div>
-    <div class="landing-subtitle" id="landingSubEl">Team Challenge Experience</div>
+    <div class="landing-subtitle" id="landingSubEl">Rise to The Challenge</div>
     <div class="landing-actions">
       <div class="landing-login-btn" onclick="goToLogin()">LOGIN</div>
     </div>
@@ -1474,7 +1474,7 @@
     <div class="login-panel">
       <div class="rv rv-1"></div><div class="rv rv-2"></div><div class="rv rv-3"></div><div class="rv rv-4"></div>
       <div class="login-field">
-        <label>Team ID or Username</label>
+        <label id="loginIdLabel">Team ID</label>
         <input type="text" id="loginId" placeholder="e.g. ALPHA-1234" autocomplete="off" spellcheck="false">
       </div>
       <div class="login-field login-pw-field" id="loginPwField" style="display:none">
@@ -1565,7 +1565,7 @@
       </div>
       <div class="edit-field-row" style="gap:12px;margin-bottom:12px">
         <div class="ap-field"><label>Title</label><input id="apLandingTitle" value="Code Breakers" onchange="updateLandingTitle()"></div>
-        <div class="ap-field"><label>Subtitle</label><input id="apLandingSubtitle" value="Team Challenge Experience" onchange="updateLandingSubtitle()"></div>
+        <div class="ap-field"><label>Subtitle</label><input id="apLandingSubtitle" value="Rise to The Challenge" onchange="updateLandingSubtitle()"></div>
       </div>
     </div>
     <div class="ap-section"><h4>📝 Registration Settings</h4>
@@ -1721,7 +1721,7 @@
 </div>
 
 <!-- Logout button — body level for z-index independence -->
-<div class="logout-btn" id="logoutBtn" onclick="showLogout()"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>Logout</span></div>
+<div class="logout-btn" id="logoutBtn" onclick="showLogout()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span>Logout</span></div>
 
 <div id="notepadPanel">
   <div class="notepad-header">
@@ -2534,7 +2534,7 @@ let regSettings={
   leaderboardStyle:'mixed',
   landingBannerUrl:'',
   landingTitle:'Code Breakers',
-  landingSubtitle:'Team Challenge Experience'
+  landingSubtitle:'Rise to The Challenge'
 };
 let currentRegType='team'; // for hybrid mode tracking
 let posts=[
@@ -3395,18 +3395,21 @@ function updateLandingForMode(){
   const regText=document.getElementById('loginRegText');
   const regAction=document.getElementById('loginRegAction');
   const regLink=document.getElementById('loginRegLink');
+  const idLabel=document.getElementById('loginIdLabel');
   if(!regText)return;
-  // Hide register link if registration is closed
   if(regLink)regLink.style.display=regSettings.registrationOpen===false?'none':'';
   if(mode==='team'){
     regText.textContent="Don't have a Team ID?";
     regAction.textContent='Register your team';
+    if(idLabel)idLabel.textContent='Team ID';
   }else if(mode==='individual'){
     regText.textContent="Don't have an ID?";
     regAction.textContent='Register here';
+    if(idLabel)idLabel.textContent='User ID';
   }else{
     regText.textContent="Don't have an ID?";
     regAction.textContent='Register your team or yourself';
+    if(idLabel)idLabel.textContent='Team / User ID';
   }
 }
 function updateLandingBanner(){
