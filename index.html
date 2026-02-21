@@ -2771,8 +2771,19 @@ let gridTiles=[
 ];
 // Activity tracking for tile pulse system
 const tileActivity={feed:0,media:0,vault:0,intel:0};
+// Restore persisted tile activity from localStorage on load
+(function(){
+  try{
+    const saved=localStorage.getItem('cb_tile_activity');
+    if(saved){const d=JSON.parse(saved);Object.keys(tileActivity).forEach(k=>{if(d[k])tileActivity[k]=d[k];});}
+  }catch(e){}
+})();
 const activityThresholds={activeToIdle:60,idleToSilent:300}; // seconds, admin-configurable
-function recordTileAccess(id){tileActivity[id]=Date.now();updateTileStates()}
+function recordTileAccess(id){
+  tileActivity[id]=Date.now();
+  try{localStorage.setItem('cb_tile_activity',JSON.stringify(tileActivity));}catch(e){}
+  updateTileStates();
+}
 function getTileState(id){
   const last=tileActivity[id];
   if(!last)return'silent';
