@@ -228,7 +228,7 @@
   .rv-1{top:7px;left:7px}.rv-2{top:7px;right:7px}.rv-3{bottom:7px;left:7px}.rv-4{bottom:7px;right:7px}
 
   /* Display — CRT glass with scanlines and phosphor glow */
-  .v-display{width:100%;height:68px;border-radius:4px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;position:relative;overflow:hidden;
+  .v-display{width:100%;min-height:68px;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:18px;position:relative;overflow:hidden;
     background:linear-gradient(180deg,#020604,#040a06,#030805);
     border:1px solid #1a2a1e;
     box-shadow:
@@ -307,11 +307,11 @@
   .v-dot.ok{background:radial-gradient(circle at 40% 35%,#44ff88,#00cc44);box-shadow:0 0 6px rgba(0,255,136,.5),0 0 12px rgba(0,255,136,.2);animation:none}
   .v-lbl{color:#aaa;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:600}
   .v-lbl.ok{color:var(--green)}
-  .v-tries{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-align:center;margin-top:4px;min-height:14px}
-  .v-tries.plenty{color:#667788}
+  .v-tries{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;text-align:center;min-height:14px;font-weight:700;transition:color .3s;text-transform:uppercase}
+  .v-tries.plenty{color:#44aa88}
   .v-tries.warning{color:var(--amber)}
   .v-tries.critical{color:var(--red)}
-  .v-tries{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:#888;margin-top:8px;text-transform:uppercase;transition:color .3s;font-weight:500}
+  
   .v-tries.warn{color:var(--amber)}
   .v-tries.crit{color:var(--red)}
   .v-lockout{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--red);margin-top:6px;min-height:18px;font-weight:600}
@@ -1562,8 +1562,8 @@
         </div>
         <div id="timerEventControls" style="display:none">
           <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px">
-            <div class="ap-field" style="flex:1;min-width:180px"><label>Event Start</label><input type="datetime-local" id="eventStartInput" onchange="onEventTimeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 12px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:11px;width:100%;outline:none"></div>
-            <div class="ap-field" style="flex:1;min-width:180px"><label>Event End</label><input type="datetime-local" id="eventEndInput" onchange="onEventTimeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 12px;color:var(--red);font-family:'IBM Plex Mono',monospace;font-size:11px;width:100%;outline:none"></div>
+            <div class="ap-field" style="flex:1;min-width:180px"><label>Event Start</label><input type="datetime-local" id="eventStartInput" onchange="onEventTimeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 12px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:11px;width:100%;outline:none;color-scheme:dark"></div>
+            <div class="ap-field" style="flex:1;min-width:180px"><label>Event End</label><input type="datetime-local" id="eventEndInput" onchange="onEventTimeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 12px;color:var(--red);font-family:'IBM Plex Mono',monospace;font-size:11px;width:100%;outline:none;color-scheme:dark"></div>
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
             <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="eventAutoLock" checked onchange="eventSettings.autoLock=this.checked"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa">Auto-lock site when timer expires</span></label>
@@ -1779,14 +1779,13 @@
           <div class="vault-panel" id="vaultPanel">
             <div class="v-rate-limit" id="vRateLimit"><span class="v-rate-limit-text" id="vRateLimitText">⚠ Security Lockout</span><span class="v-rate-limit-timer" id="vRateLimitTimer">30</span><div class="v-rate-limit-bar"><div class="v-rate-limit-fill" id="vRateLimitFill"></div></div><span class="v-rate-limit-sub" id="vRateLimitSub">Too many failed attempts</span></div>
             <div class="rv rv-1"></div><div class="rv rv-2"></div><div class="rv rv-3"></div><div class="rv rv-4"></div>
-            <div class="v-display"><span id="vDisp">ENTER CODE</span><span id="vCursor"></span></div>
+            <div class="v-display"><span id="vDisp">ENTER CODE</span><span id="vCursor"></span><div class="v-tries" id="vkTries"></div></div>
             <div class="kb-row"><div class="kb-key" onclick="vkType('1')"><span>1</span></div><div class="kb-key" onclick="vkType('2')"><span>2</span></div><div class="kb-key" onclick="vkType('3')"><span>3</span></div><div class="kb-key" onclick="vkType('4')"><span>4</span></div><div class="kb-key" onclick="vkType('5')"><span>5</span></div><div class="kb-key" onclick="vkType('6')"><span>6</span></div><div class="kb-key" onclick="vkType('7')"><span>7</span></div><div class="kb-key" onclick="vkType('8')"><span>8</span></div><div class="kb-key" onclick="vkType('9')"><span>9</span></div><div class="kb-key" onclick="vkType('0')"><span>0</span></div></div>
             <div class="kb-row"><div class="kb-key" onclick="vkType('Q')"><span>Q</span></div><div class="kb-key" onclick="vkType('W')"><span>W</span></div><div class="kb-key" onclick="vkType('E')"><span>E</span></div><div class="kb-key" onclick="vkType('R')"><span>R</span></div><div class="kb-key" onclick="vkType('T')"><span>T</span></div><div class="kb-key" onclick="vkType('Y')"><span>Y</span></div><div class="kb-key" onclick="vkType('U')"><span>U</span></div><div class="kb-key" onclick="vkType('I')"><span>I</span></div><div class="kb-key" onclick="vkType('O')"><span>O</span></div><div class="kb-key" onclick="vkType('P')"><span>P</span></div></div>
             <div class="kb-row"><div class="kb-key" onclick="vkType('A')"><span>A</span></div><div class="kb-key" onclick="vkType('S')"><span>S</span></div><div class="kb-key" onclick="vkType('D')"><span>D</span></div><div class="kb-key" onclick="vkType('F')"><span>F</span></div><div class="kb-key" onclick="vkType('G')"><span>G</span></div><div class="kb-key" onclick="vkType('H')"><span>H</span></div><div class="kb-key" onclick="vkType('J')"><span>J</span></div><div class="kb-key" onclick="vkType('K')"><span>K</span></div><div class="kb-key" onclick="vkType('L')"><span>L</span></div></div>
             <div class="kb-row"><div class="kb-key fn clr-key" onclick="vkClear()"><span>CLR</span></div><div class="kb-key" onclick="vkType('Z')"><span>Z</span></div><div class="kb-key" onclick="vkType('X')"><span>X</span></div><div class="kb-key" onclick="vkType('C')"><span>C</span></div><div class="kb-key" onclick="vkType('V')"><span>V</span></div><div class="kb-key" onclick="vkType('B')"><span>B</span></div><div class="kb-key" onclick="vkType('N')"><span>N</span></div><div class="kb-key" onclick="vkType('M')"><span>M</span></div><div class="kb-key fn del-key" onclick="vkDel()"><span>⌫</span></div></div>
             <div class="kb-row"><div class="kb-key fn sym-key" onclick="vkToggleSymbols()"><span id="vkSymLabel">SYM</span></div><div class="kb-key enter-key" style="flex:3" onclick="vkSubmit()"><span>ENTER</span></div></div>
             <div class="v-status"><div class="v-dot" id="vkDot"></div><span class="v-lbl" id="vkLbl">AWAITING INPUT</span></div>
-            <div class="v-tries" id="vkTries"></div>
           </div>
         </div>
         <div class="vault-unlock-section">
@@ -2302,7 +2301,7 @@ let vaultCodes=[
 ];
 let vkCode='';let vkFailCount=0;let vkTotalFails=0;let vkRateLimited=false;
 const vkDisp=document.getElementById('vDisp');
-function vkUpdDisp(){if(vkDisp){vkDisp.textContent=vkCode.length?vkCode:'ENTER CODE';vkDisp.style.color='';vkDisp.style.fontSize='';vkDisp.style.letterSpacing=''}}
+function vkUpdDisp(){if(vkDisp){vkDisp.textContent=vkCode.length?vkCode:'ENTER CODE';vkDisp.style.color='';vkDisp.style.fontSize='';vkDisp.style.letterSpacing=''}const triesEl=document.getElementById('vkTries');if(triesEl)triesEl.style.display=vkCode.length?'none':''}
 function vkType(ch){playClick();if(vkRateLimited)return;if(vkCode.length<20){vkCode+=ch;vkUpdDisp();vkGlitch()}}
 function vkDel(){playClick();if(vkRateLimited)return;vkCode=vkCode.slice(0,-1);vkUpdDisp();vkGlitch()}
 function vkClear(){playClick();if(vkRateLimited)return;vkCode='';vkUpdDisp();vkGlitch()}
@@ -2354,11 +2353,12 @@ function updateTriesDisplay(){
   const unlimited=regSettings.vaultUnlimitedAttempts;
   if(unlimited){el.textContent='';el.className='v-tries';return}
   const max=regSettings.vaultMaxAttempts||5;
-  const remaining=max-vkTotalFails;
-  if(vkTotalFails===0){el.textContent='';el.className='v-tries';return}
-  if(remaining<=0){el.textContent='0 ATTEMPTS REMAINING';el.className='v-tries critical';return}
-  el.textContent=remaining+' OF '+max+' ATTEMPT'+(remaining>1?'S':'')+' REMAINING';
-  el.className='v-tries '+(remaining<=1?'critical':remaining<=3?'warning':'plenty');
+  const remaining=Math.max(0,max-vkTotalFails);
+  el.textContent=remaining+' OF '+max+' ATTEMPT'+(remaining!==1?'S':'')+' REMAINING';
+  // Progressive colour: green → amber → red
+  if(remaining<=1)el.className='v-tries critical';
+  else if(remaining<=3)el.className='v-tries warning';
+  else el.className='v-tries plenty';
 }
 function triggerVaultLockout(seconds,title,subtitle){
   vkRateLimited=true;
@@ -2429,6 +2429,7 @@ function renderVaultPanel(){
       </div>`;
     }
   }).join('');
+  updateTriesDisplay();
 }
 let vkSymMode=false;
 function vkToggleSymbols(){
@@ -2551,11 +2552,13 @@ let intelFields=[
   {label:'Hideout Location',emoji:'📍',type:'text',font:'',answer:{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}},
   {label:'Payment Amount',emoji:'💰',type:'money',font:'',answer:{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}},
   {label:'Burner Phone #',emoji:'📞',type:'phone',font:'',answer:{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}},
-  {label:'Target Islands',emoji:'🏝️',type:'dual',font:'',answer:{expected:['',''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}}
+  {label:'Target Islands',emoji:'🏝️',type:'dual',font:'',placeholder1:'Island 1',placeholder2:'Island 2',answer:{expected:['',''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}}
 ];
 const intelLabels=['Seller Codename','Buyer Identity','Staging Country','Comms Platform','Smuggled Items','Hideout Location','Payment Amount','Burner Phone #','Target Island 1','Target Island 2'];
 let allowDownloads=false;
 let feedMuted=true;
+const postMuteState={}; // per-post mute memory: {postIndex: true/false}
+function isPostMuted(idx){return postMuteState[idx]!==undefined?postMuteState[idx]:feedMuted}
 let regSettings={
   teamSizeMin:2,
   teamSizeMax:4,
@@ -2677,22 +2680,19 @@ function renderSinglePost(){
   const p=posts[currentPost],img=document.getElementById('singleImg');
   const resolved=(p.mediaType==='video'&&p.mediaUrl)?resolveVideoEmbed(p.mediaUrl):null;
   const editBtn=document.body.classList.contains('edit-mode')?`<div class="feed-single-edit" onclick="event.stopPropagation();editFeedPost(${currentPost})" title="Edit this post">✎</div>`:'';
+  const muted=isPostMuted(currentPost);
 
   if(resolved&&resolved.type==='direct'){
-    // Direct video file
     img.style.background='#000';img.style.backgroundSize='';img.textContent='';
-    img.innerHTML=`<video class="feed-single-video" id="feedSingleVid" src="${resolved.url}" loop playsinline preload="auto" ${feedMuted?'muted':''} controls></video><div class="feed-mute-btn" onclick="event.stopPropagation();toggleFeedMute()">${feedMuted?'🔇':'🔊'}</div>${editBtn}`;
-    setTimeout(()=>{const v=document.getElementById('feedSingleVid');if(v){v.muted=feedMuted;v.play().catch(()=>{})}},50);
+    img.innerHTML=`<video class="feed-single-video" id="feedSingleVid" src="${resolved.url}" loop playsinline preload="auto" ${muted?'muted':''} controls></video><div class="feed-mute-btn" onclick="event.stopPropagation();toggleFeedMute()">${muted?'🔇':'🔊'}</div>${editBtn}`;
+    setTimeout(()=>{const v=document.getElementById('feedSingleVid');if(v){v.muted=muted;v.play().catch(()=>{})}},50);
   }else if(resolved&&resolved.type==='external'){
-    // Non-embeddable platform — show link
     img.style.background='#000';img.style.backgroundSize='';img.textContent='';
     img.innerHTML=buildExternalLink(resolved,editBtn);
   }else if(resolved&&resolved.embed){
-    // Embeddable platform (YouTube, Vimeo, Drive, Dailymotion, Streamable, Loom, fallback)
     img.style.background='#000';img.style.backgroundSize='';img.textContent='';
-    img.innerHTML=buildEmbedIframe(resolved,true,feedMuted)+editBtn;
+    img.innerHTML=buildEmbedIframe(resolved,true,muted)+editBtn;
   }else if(resolved&&resolved.type==='iframe-fallback'){
-    // Generic URL — try iframe
     img.style.background='#000';img.style.backgroundSize='';img.textContent='';
     img.innerHTML=`<iframe src="${resolved.url}" style="width:100%;height:100%;border:none" allow="autoplay;encrypted-media" allowfullscreen></iframe>${editBtn}`;
   }else if(p.mediaUrl){
@@ -2716,7 +2716,7 @@ function resolveVideoEmbed(url){
   if(/\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(u))return{type:'direct',url:u};
   // 2. YouTube
   const yt=u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-  if(yt)return{type:'youtube',id:yt[1],embed:`https://www.youtube.com/embed/${yt[1]}`,thumb:`https://img.youtube.com/vi/${yt[1]}/hqdefault.jpg`};
+  if(yt)return{type:'youtube',id:yt[1],embed:`https://www.youtube-nocookie.com/embed/${yt[1]}`,thumb:`https://img.youtube.com/vi/${yt[1]}/hqdefault.jpg`};
   // 3. Vimeo
   const vm=u.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/);
   if(vm)return{type:'vimeo',id:vm[1],embed:`https://player.vimeo.com/video/${vm[1]}`,thumb:null};
@@ -2747,7 +2747,7 @@ function buildEmbedIframe(resolved,autoplay,muted){
   const mutedParam=muted?1:0;
   let src=resolved.embed||resolved.url;
   // Add autoplay/mute params per platform
-  if(resolved.type==='youtube')src+=`?autoplay=${autoplay?1:0}&mute=${mutedParam}&loop=1&playlist=${resolved.id}&rel=0`;
+  if(resolved.type==='youtube')src+=`?autoplay=${autoplay?1:0}&mute=${mutedParam}&loop=1&playlist=${resolved.id}&rel=0&modestbranding=1&iv_load_policy=3&disablekb=0&fs=1&controls=1`;
   else if(resolved.type==='vimeo')src+=`?autoplay=${autoplay?1:0}&muted=${mutedParam}&loop=1`;
   else if(resolved.type==='dailymotion')src+=`?autoplay=${autoplay?1:0}&mute=${mutedParam}`;
   else if(resolved.type==='loom')src+=`?autoplay=${autoplay?1:0}`;
@@ -2769,11 +2769,17 @@ function buildExternalLink(resolved,editBtn){
   </div>${editBtn||''}`; 
 }
 function toggleFeedMute(){
-  feedMuted=!feedMuted;
+  const muted=isPostMuted(currentPost);
+  const newMuted=!muted;
+  postMuteState[currentPost]=newMuted;
+  feedMuted=newMuted; // Also update global default for new videos
   const vid=document.getElementById('feedSingleVid');
-  if(vid)vid.muted=feedMuted;
+  if(vid)vid.muted=newMuted;
   const btn=document.querySelector('.feed-mute-btn');
-  if(btn)btn.textContent=feedMuted?'🔇':'🔊';
+  if(btn)btn.textContent=newMuted?'🔇':'🔊';
+  // For iframes, need to re-render to apply mute change
+  const iframe=document.querySelector('#singleImg iframe');
+  if(iframe)renderSinglePost();
 }
 function navPost(d){currentPost=(currentPost+d+posts.length)%posts.length;resetFeedZoom();renderSinglePost()}
 
@@ -4499,14 +4505,17 @@ function renderIntelForm(){
     const lStyle=f.font?` style="${fontStyle(f.font)}"`:'';
     const clearBtn=`<div class="intel-exp-clear" onclick="clearIntelSlot(this)" title="Clear">✕</div>`;
     const keyHandler='onkeydown="if(event.key===\'Enter\'){this.blur()}"';
+    const ph=f.placeholder||'···';
     if(f.type==='money'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="border:none;background:transparent;box-shadow:none" placeholder="···" data-idx="${i}" ${keyHandler}></div><div class="intel-exp-check">—</div>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="border:none;background:transparent;box-shadow:none" placeholder="${ph}" data-idx="${i}" ${keyHandler}></div><div class="intel-exp-check">—</div>${clearBtn}</div>`;
     }else if(f.type==='phone'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="(XXX) XXX-XXXX" data-idx="${i}" oninput="formatPhone(this)" ${keyHandler}><div class="intel-exp-check">—</div>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${f.placeholder||'(XXX) XXX-XXXX'}" data-idx="${i}" oninput="formatPhone(this)" ${keyHandler}><div class="intel-exp-check">—</div>${clearBtn}</div>`;
     }else if(f.type==='dual'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-dual-wrap"><input class="intel-exp-input" placeholder="Value 1" data-idx="${i}" ${keyHandler}><span class="intel-dual-sep">&</span><input class="intel-exp-input" placeholder="Value 2" data-idx="${i}b" ${keyHandler}></div><div class="intel-exp-check">—</div>${clearBtn}</div>`;
+      const ph1=f.placeholder1||'Value 1';
+      const ph2=f.placeholder2||'Value 2';
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-dual-wrap"><input class="intel-exp-input" placeholder="${ph1}" data-idx="${i}" ${keyHandler}><span class="intel-dual-sep">&</span><input class="intel-exp-input" placeholder="${ph2}" data-idx="${i}b" ${keyHandler}></div><div class="intel-exp-check">—</div>${clearBtn}</div>`;
     }else{
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="···" data-idx="${i}" ${keyHandler}><div class="intel-exp-check">—</div>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${ph}" data-idx="${i}" ${keyHandler}><div class="intel-exp-check">—</div>${clearBtn}</div>`;
     }
   });
   if(isA)html+=`<div class="admin-add-btn" style="margin-top:10px;padding:14px" onclick="addIntelField()">+ Add Intel Field</div>`;
@@ -4548,6 +4557,7 @@ function editIntelField(i){
         <div class="edit-field" style="flex:.3"><label>Emoji</label><input id="ei_emoji" value="${f.emoji}"></div>
       </div>
       <div class="edit-font-row"><div class="edit-field"><label>Input Type</label><select id="ei_type"><option${f.type==='text'?' selected':''}>text</option><option${f.type==='money'?' selected':''}>money</option><option${f.type==='phone'?' selected':''}>phone</option><option${f.type==='dual'?' selected':''}>dual</option></select></div><div class="edit-field"><label>Label Font</label>${fontSelect('ei_font',f.font)}</div></div>
+      ${isDual?`<div class="edit-field-row"><div class="edit-field"><label>Placeholder 1</label><input id="ei_ph1" value="${f.placeholder1||''}" placeholder="e.g. Island 1"></div><div class="edit-field"><label>Placeholder 2</label><input id="ei_ph2" value="${f.placeholder2||''}" placeholder="e.g. Island 2"></div></div>`:`<div class="edit-field"><label>Placeholder Text</label><input id="ei_ph" value="${f.placeholder||''}" placeholder="e.g. Enter answer here"></div>`}
       <label style="display:flex;align-items:center;gap:6px;margin:-8px 0 10px;cursor:pointer"><input type="checkbox" id="ei_font_all"><span style="font-size:9px;color:#888;letter-spacing:1px">Apply font to all intel field labels</span></label>
     </div>
     <div class="edit-tab-content" id="tab-answer">
@@ -4603,6 +4613,13 @@ function saveIntelField(i){
   const font=document.getElementById('ei_font').value;
   intelFields[i].font=font;
   if(document.getElementById('ei_font_all').checked)intelFields.forEach(f=>f.font=font);
+  // Save placeholders
+  if(intelFields[i].type==='dual'){
+    intelFields[i].placeholder1=document.getElementById('ei_ph1')?.value.trim()||'';
+    intelFields[i].placeholder2=document.getElementById('ei_ph2')?.value.trim()||'';
+  }else{
+    intelFields[i].placeholder=document.getElementById('ei_ph')?.value.trim()||'';
+  }
   // Save answer config
   const exp1=document.getElementById('ei_exp1')?.value.trim()||'';
   const exp2=document.getElementById('ei_exp2')?.value.trim()||'';
