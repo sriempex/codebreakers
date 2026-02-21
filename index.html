@@ -2841,8 +2841,8 @@ function resetFeedZoom(){
 }
 // Click-to-zoom on focus image
 document.getElementById('singleImg')?.addEventListener('click',function(e){
-  // Don't zoom on video, mute btn, or shield clicks
-  if(e.target.closest('.feed-mute-btn')||e.target.closest('.no-download-shield')||e.target.tagName==='VIDEO')return;
+  // Don't zoom on video, mute btn, edit btn, or iframe clicks
+  if(e.target.closest('.feed-mute-btn')||e.target.closest('.feed-single-edit')||e.target.tagName==='VIDEO'||e.target.tagName==='IFRAME')return;
   toggleFeedZoom();
 });
 // Drag to pan when zoomed
@@ -3518,6 +3518,17 @@ document.addEventListener('keydown',e=>{
     if(e.key==='ArrowRight'){e.preventDefault();navPost(1)}
     if(e.key==='Escape'){e.preventDefault();setFeedView('grid')}
     return;
+  }
+  // Vault keypad — type with physical keyboard
+  const vaultOpen=document.getElementById('expVault')?.classList.contains('visible');
+  if(vaultOpen&&!e.target.closest('input,textarea,select')){
+    const key=e.key;
+    if(key==='Enter'){e.preventDefault();vkSubmit();return}
+    if(key==='Backspace'){e.preventDefault();vkDel();return}
+    if(key==='Escape'){e.preventDefault();vkClear();return}
+    if(key==='Delete'){e.preventDefault();vkClear();return}
+    if(/^[a-zA-Z0-9]$/.test(key)){e.preventDefault();vkType(key.toUpperCase());return}
+    if(vkSymMode&&/^[!@#$%^&*()\-_=+\[\]{};:'",.<>/?\\|`~]$/.test(key)){e.preventDefault();vkType(key);return}
   }
   // Escape closes expanded panel
   if(overlay.classList.contains('active')&&e.key==='Escape'){
