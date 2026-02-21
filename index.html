@@ -183,19 +183,19 @@
   .vault-unlock-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
   .vault-unlock-empty{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#555;line-height:1.8;font-weight:500;text-align:center;padding:20px 16px}
   .vault-unlock-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(0,255,136,.1);border-radius:4px;background:rgba(0,255,136,.02)}
-  .vault-unlock-item.locked{border-color:var(--border);background:rgba(255,255,255,.01);opacity:.5}
+  .vault-unlock-item.locked{border-color:var(--border);background:rgba(255,255,255,.01);opacity:.7}
   .vault-unlock-item .vui-icon{font-size:16px;flex-shrink:0}
   .vault-unlock-item .vui-info{flex:1;min-width:0}
   .vault-unlock-item .vui-label{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#ccc;font-weight:600;letter-spacing:.5px}
   .vault-unlock-item .vui-desc{font-family:'Chakra Petch',sans-serif;font-size:9px;color:#888;letter-spacing:.5px;margin-top:2px}
   .vault-unlock-item .vui-status{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;font-weight:600;flex-shrink:0}
   .vault-unlock-item .vui-status.unlocked{color:var(--green)}
-  .vault-unlock-item .vui-status.locked{color:#555}
+  .vault-unlock-item .vui-status.locked{color:#777}
   .vui-media-link{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--cyan);letter-spacing:1px;cursor:pointer;margin-top:4px;transition:color .2s}
   .vui-media-link:hover{color:#fff;text-decoration:underline}
-  .vui-classified{font-family:'IBM Plex Mono',monospace!important;letter-spacing:2px!important;color:#666!important;font-size:11px!important}
-  .vui-classified-sub{font-family:'IBM Plex Mono',monospace!important;letter-spacing:1px!important;color:#444!important;font-size:9px!important}
-  .vui-admin-hint{font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(0,212,255,.4);letter-spacing:1px;margin-top:3px}
+  .vui-classified{font-family:'IBM Plex Mono',monospace!important;letter-spacing:2px!important;color:#999!important;font-size:11px!important}
+  .vui-classified-sub{font-family:'IBM Plex Mono',monospace!important;letter-spacing:1px!important;color:#666!important;font-size:9px!important}
+  .vui-admin-hint{font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(255,170,51,.5);letter-spacing:1px;margin-top:3px}
   @media(max-width:768px){
     .vault-keypad-section{width:100%;max-width:420px}
     .vault-unlock-section{width:100%;max-width:420px}
@@ -570,6 +570,9 @@
   .media-exp-badge.map{color:var(--green);border:1px solid rgba(0,255,136,.3)}
   .media-exp-badge.video{color:#ff66aa;border:1px solid rgba(255,102,170,.3)}
   .media-exp-badge.locked{color:#777;border:1px solid #444}
+  .media-vault-hatch{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
+    background:repeating-linear-gradient(135deg,transparent,transparent 4px,rgba(255,170,51,.04) 4px,rgba(255,170,51,.04) 5px);
+    border:1px solid rgba(255,170,51,.15);border-radius:4px}
 
   /* Intel */
   .intel-expanded{display:flex;flex-direction:column;gap:10px;max-width:700px;margin:0 auto}
@@ -624,12 +627,13 @@
 
   /* ══════ ADMIN ══════ */
   .admin-trigger{position:fixed;bottom:10px;right:10px;z-index:800;width:32px;height:32px;border-radius:50%;display:none;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;
-    background:linear-gradient(180deg,rgba(255,170,51,.15),rgba(255,140,20,.08));border:1px solid rgba(255,170,51,.4);box-shadow:0 0 10px rgba(255,170,51,.12),0 0 20px rgba(255,170,51,.04)}
-  .admin-trigger svg{width:15px;height:15px;fill:none;stroke:var(--amber);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
-  .admin-trigger:hover{border-color:rgba(255,170,51,.6);box-shadow:0 0 14px rgba(255,170,51,.2)}
-  .admin-trigger::after{content:'';position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(0,255,136,.6);animation:ledPulse 2s ease-in-out infinite;display:none}
-  body.edit-mode .admin-trigger::after{display:block}
-  body.player-preview .admin-trigger::after{display:block;background:var(--cyan)!important;box-shadow:0 0 6px rgba(0,212,255,.6)!important}
+    background:linear-gradient(180deg,rgba(150,160,180,.12),rgba(120,130,150,.06));border:1px solid rgba(150,160,180,.3);box-shadow:0 0 10px rgba(150,160,180,.08)}
+  .admin-trigger svg{width:15px;height:15px;fill:none;stroke:#8890a0;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
+  .admin-trigger:hover{border-color:rgba(150,160,180,.5);box-shadow:0 0 14px rgba(150,160,180,.15)}
+  .admin-trigger:hover svg{stroke:#b0b8c8}
+  .admin-trigger::after{content:'';position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px rgba(0,212,255,.6);animation:ledPulse 2s ease-in-out infinite;display:none}
+  body.edit-mode .admin-trigger::after{display:block;background:var(--cyan);box-shadow:0 0 6px rgba(0,212,255,.6)}
+  body.player-preview .admin-trigger::after{display:block;background:var(--green)!important;box-shadow:0 0 6px rgba(0,255,136,.6)!important}
   body.player-preview .admin-topbar-label{display:none!important}
   body.player-preview .admin-dropdown-item,
   body.player-preview .admin-dropdown-toggle:not(.pp-toggle){opacity:.3;pointer-events:none}
@@ -668,6 +672,8 @@
   .admin-dropdown-toggle .adm-label{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#ccc;letter-spacing:.5px;font-weight:500;flex:1}
   .admin-dropdown-toggle .adm-toggle{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;padding:2px 8px;border-radius:2px;font-weight:600}
   .admin-dropdown-toggle .adm-toggle.on{color:var(--green);background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15)}
+  .admin-dropdown-toggle .adm-toggle.on-cyan{color:var(--cyan);background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.15)}
+  .admin-dropdown-toggle .adm-toggle.on-green{color:var(--green);background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15)}
   .admin-dropdown-toggle .adm-toggle.off{color:#666;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
 
   .logout-btn{position:fixed;bottom:20px;left:20px;z-index:400;display:none;align-items:center;gap:6px;border-radius:5px;padding:10px 20px;cursor:pointer;transition:all .25s;
@@ -2559,12 +2565,22 @@ function renderFeed(){
   setTimeout(()=>{grid.querySelectorAll('video.feed-card-video').forEach(v=>{v.muted=true;v.play().catch(()=>{})})},50);
 }
 function renderMedia(){
-  const list=document.getElementById('mediaList'),isA=document.body.classList.contains('edit-mode');
-  const visibleItems=isA?mediaItems:mediaItems.filter(m=>!m.vaultLocked);
+  const list=document.getElementById('mediaList');
+  const isEdit=document.body.classList.contains('edit-mode');
+  const isAdmin=document.body.classList.contains('admin-mode');
+  const isPreview=document.body.classList.contains('player-preview');
+  // Players and preview: hide vault-locked. Admin (edit or not): show all
+  const showAll=isAdmin&&!isPreview;
+  const visibleItems=showAll?mediaItems:mediaItems.filter(m=>!m.vaultLocked);
   list.innerHTML=visibleItems.map((m,i)=>{
     const realIdx=mediaItems.indexOf(m);
-    return `<div class="media-exp-item" style="${m.type==='locked'&&!m.unlocked?'opacity:.4;':''}${m.vaultLocked&&isA?'border-color:rgba(255,170,51,.2);':'  '}" onclick="openMediaViewer(${realIdx})">${isA?`<div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${realIdx})" style="position:absolute;top:8px;right:8px">✎</div>`:''}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(m.nameFont||'')}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(m.descFont||'')}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${m.vaultLocked&&isA?'🔐 vault-locked':m.type}${m.type==='locked'&&m.unlocked?' ✓':''}</span></div>`;
-  }).join('')+(isA?'<div class="admin-add-btn" onclick="addMediaItem()">+ Add Media</div>':'');
+    const isVL=m.vaultLocked&&showAll;
+    const vlStyle=isVL?'position:relative;border-color:rgba(255,170,51,.2);':'';
+    const lockedStyle=m.type==='locked'&&!m.unlocked?'opacity:.4;':'';
+    const crosshatch=isVL?'<div class="media-vault-hatch"></div>':'';
+    const badge=isVL?'🔐 vault-locked':m.type+(m.type==='locked'&&m.unlocked?' ✓':'');
+    return `<div class="media-exp-item" style="${lockedStyle}${vlStyle}" onclick="openMediaViewer(${realIdx})">${isEdit?`<div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${realIdx})" style="position:absolute;top:8px;right:8px">✎</div>`:''}${crosshatch}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(m.nameFont||'')}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(m.descFont||'')}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${badge}</span></div>`;
+  }).join('')+(isEdit?'<div class="admin-add-btn" onclick="addMediaItem()">+ Add Media</div>':'');
   const badge=document.getElementById('mediaBadge');if(badge)badge.textContent=visibleItems.length+' FILES';
 }
 
@@ -3221,13 +3237,13 @@ function openAdminDropdown(){
 function closeAdminDropdown(){document.getElementById('adminDropdown').classList.remove('open')}
 function syncAdminDropdownToggles(){
   const dlEl=document.getElementById('admDlToggle');
-  if(dlEl){dlEl.textContent=allowDownloads?'ON':'OFF';dlEl.className='adm-toggle '+(allowDownloads?'on':'off')}
+  if(dlEl){dlEl.textContent=allowDownloads?'ON':'OFF';dlEl.className='adm-toggle '+(allowDownloads?'on-green':'off')}
   const edEl=document.getElementById('admEditToggle');
   const isEdit=document.body.classList.contains('edit-mode');
-  if(edEl){edEl.textContent=isEdit?'ON':'OFF';edEl.className='adm-toggle '+(isEdit?'on':'off')}
+  if(edEl){edEl.textContent=isEdit?'ON':'OFF';edEl.className='adm-toggle '+(isEdit?'on-cyan':'off')}
   const ppEl=document.getElementById('admPreviewToggle');
   const isPreview=document.body.classList.contains('player-preview');
-  if(ppEl){ppEl.textContent=isPreview?'ON':'OFF';ppEl.className='adm-toggle '+(isPreview?'on':'off')}
+  if(ppEl){ppEl.textContent=isPreview?'ON':'OFF';ppEl.className='adm-toggle '+(isPreview?'on-green':'off')}
 }
 function toggleAllowDownloads(){
   allowDownloads=!allowDownloads;
