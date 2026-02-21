@@ -1890,7 +1890,10 @@
   </div>
 </div>
   <div class="console-topbar">
-    <span class="console-title" id="consoleTitle">◈ Operation Dead Drop</span><button class="admin-edit-inline" onclick="event.stopPropagation();editOperationName()">✎</button>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span class="console-title" id="consoleTitle">◈ Operation Dead Drop</span><button class="admin-edit-inline" onclick="event.stopPropagation();editOperationName()">✎</button>
+      <span id="buildStamp" style="display:none;font-family:'IBM Plex Mono',monospace;font-size:8px;color:#333;letter-spacing:1px;margin-top:-2px"></span>
+    </div>
     <div style="display:flex;align-items:center">
       <div class="timer-block"><div class="timer-digits" id="cTimer">01:28:45</div><div class="timer-label">Time Remaining</div></div>
     </div>
@@ -2428,6 +2431,7 @@ function submitLogin(){
         saveSession();
         loginSuccess();
         loadEventData();
+        document.dispatchEvent(new Event('adminReady'));
       }else{
         err.textContent='Authentication failed';
         playDenied();
@@ -6237,12 +6241,12 @@ updateLandingForMode();
 
 function saveSession(){
   try{
-    // Only save when user is authenticated (on console or a panel over it)
+    // Only save when user is authenticated on the console screen
     if(_currentScreen!=='consoleScreen')return;
     if(!currentVaultTeam)return;
-    const data={type:isAdmin?'admin':'team',team:currentVaultTeam,screen:'consoleScreen'};
+    const data={type:isAdmin?'admin':'team',team:currentVaultTeam};
     if(isAdmin)data.adminSession=adminSession;
-    // Track which panel is open
+    // Save which panel is open so refresh restores exactly where the user was
     const openPanelEl=document.querySelector('.expanded-panel.visible');
     if(openPanelEl)data.panel=openPanelEl.id;
     localStorage.setItem('cb_session',JSON.stringify(data));
@@ -6259,10 +6263,10 @@ function restoreSession(){
     if(!raw)return false;
     const data=JSON.parse(raw);
     if(!data||!data.team)return false;
-    
-    // Always restore to consoleScreen — that's the only valid restore target
+
     const targetScreen='consoleScreen';
-    
+    const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
+
     if(data.type==='admin'&&data.adminSession){
       adminSession=data.adminSession;
       isAdmin=true;
@@ -6276,11 +6280,11 @@ function restoreSession(){
       const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',true);
       document.getElementById('notepadTrigger').classList.add('visible');
       startElapsedTimer();
+      // Load data first, then reopen panel — avoids race condition where panel
+      // renders before content is loaded from backend
       loadEventData().then(()=>{
-        // Only restore panel if we're on the console screen
-        if(data.panel){
-          const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
-          if(panelMap[data.panel])openPanel(panelMap[data.panel]);
+        if(data.panel&&panelMap[data.panel]){
+          setTimeout(()=>openPanel(panelMap[data.panel]),150);
         }
       });
       return true;
@@ -6296,15 +6300,14 @@ function restoreSession(){
       const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',true);
       document.getElementById('notepadTrigger').classList.add('visible');
       startElapsedTimer();
+      // Load config first, then reopen panel
       apiCall('getEventConfig').then(cfg=>{
         if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
+        if(data.panel&&panelMap[data.panel]){
+          setTimeout(()=>openPanel(panelMap[data.panel]),150);
+        }
       });
       startBroadcastPolling();
-      // Restore panel if one was open
-      if(data.panel){
-        const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
-        if(panelMap[data.panel])setTimeout(()=>openPanel(panelMap[data.panel]),300);
-      }
       return true;
     }
   }catch(e){}
@@ -6313,6 +6316,38 @@ function restoreSession(){
 
 // Auto-restore on page load
 restoreSession();
+
+// ── Build stamp & cache check ──
+// Injected at parse time — if Cloudflare serves a cached file this value won't change.
+// Admin can see the stamp in the console topbar to confirm the live version.
+const _BUILD_TIME = new Date().toISOString(); // This updates every time the file is freshly parsed
+(function(){
+  // Show build stamp to admin only
+  function showBuildStamp(){
+    if(!document.body.classList.contains('admin-mode'))return;
+    const el=document.getElementById('buildStamp');
+    if(el){el.style.display='block';el.textContent='BUILD '+_BUILD_TIME.replace('T',' ').slice(0,19)+' UTC';}
+  }
+  // Check for cache staleness by fetching this page with a cache-busting query param
+  // and comparing the response's Last-Modified or ETag header
+  function checkCacheFreshness(){
+    if(!document.body.classList.contains('admin-mode'))return;
+    fetch(window.location.pathname+'?_cb='+Date.now(),{method:'HEAD',cache:'no-store'})
+      .then(r=>{
+        const lm=r.headers.get('last-modified')||r.headers.get('etag')||'';
+        const el=document.getElementById('buildStamp');
+        if(el&&lm){
+          const fresh=el.textContent+' · server: '+lm.slice(0,25);
+          el.textContent=fresh;
+          el.title='If server date differs from BUILD time, Cloudflare may be serving a cached version. Go to Cloudflare Pages → your project → Purge Cache.';
+        }
+      }).catch(()=>{});
+  }
+  // Run after admin state is confirmed
+  setTimeout(()=>{showBuildStamp();checkCacheFreshness();},1000);
+  // Also show when admin logs in mid-session
+  document.addEventListener('adminReady',()=>{showBuildStamp();checkCacheFreshness();});
+})();
 
 // Apply stored fonts
 if(operationFont){const ct=document.getElementById('consoleTitle');if(ct)ct.style.fontFamily=getFontFamily(operationFont);const lt=document.getElementById('loginTitle');if(lt)lt.style.fontFamily=getFontFamily(operationFont)}
