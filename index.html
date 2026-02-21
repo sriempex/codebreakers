@@ -138,10 +138,13 @@
   .reg-type-btn.selected .rtype-label{color:var(--green)}
 
   /* Vault rate limit overlay */
-  .v-rate-limit{position:absolute;inset:0;background:rgba(0,0,0,.85);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:10;opacity:0;pointer-events:none;transition:opacity .3s}
+  .v-rate-limit{position:absolute;inset:0;background:rgba(0,0,0,.92);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:10;opacity:0;pointer-events:none;transition:opacity .3s}
   .v-rate-limit.active{opacity:1;pointer-events:all}
-  .v-rate-limit-text{font-family:'Saira',sans-serif;font-size:11px;letter-spacing:3px;color:var(--amber);text-transform:uppercase;font-weight:600}
-  .v-rate-limit-timer{font-family:'IBM Plex Mono',monospace;font-size:28px;color:var(--red);letter-spacing:4px;font-weight:700}
+  .v-rate-limit-text{font-family:'Saira',sans-serif;font-size:11px;letter-spacing:3px;color:var(--red);text-transform:uppercase;font-weight:700}
+  .v-rate-limit-timer{font-family:'IBM Plex Mono',monospace;font-size:36px;color:var(--red);letter-spacing:4px;font-weight:700;text-shadow:0 0 20px rgba(255,50,50,.4)}
+  .v-rate-limit-sub{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:#555;margin-top:4px}
+  .v-rate-limit-bar{width:200px;height:2px;background:#1a1a1a;border-radius:1px;overflow:hidden;margin-top:8px}
+  .v-rate-limit-fill{height:100%;background:var(--red);box-shadow:0 0 6px rgba(255,50,50,.3);transition:width .15s linear}
 
   /* ══════ LOGIN ══════ */
   #loginScreen{display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#050607,#080a0c,#050607)}
@@ -190,6 +193,9 @@
   .vault-unlock-item .vui-status.locked{color:#555}
   .vui-media-link{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--cyan);letter-spacing:1px;cursor:pointer;margin-top:4px;transition:color .2s}
   .vui-media-link:hover{color:#fff;text-decoration:underline}
+  .vui-classified{font-family:'IBM Plex Mono',monospace!important;letter-spacing:2px!important;color:#666!important;font-size:11px!important}
+  .vui-classified-sub{font-family:'IBM Plex Mono',monospace!important;letter-spacing:1px!important;color:#444!important;font-size:9px!important}
+  .vui-admin-hint{font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(0,212,255,.4);letter-spacing:1px;margin-top:3px}
   @media(max-width:768px){
     .vault-keypad-section{width:100%;max-width:420px}
     .vault-unlock-section{width:100%;max-width:420px}
@@ -1735,7 +1741,7 @@
       <div class="vault-puzzle-layout">
         <div class="vault-keypad-section">
           <div class="vault-panel" id="vaultPanel">
-            <div class="v-rate-limit" id="vRateLimit"><span class="v-rate-limit-text">Slow Down</span><span class="v-rate-limit-timer" id="vRateLimitTimer">15</span></div>
+            <div class="v-rate-limit" id="vRateLimit"><span class="v-rate-limit-text" id="vRateLimitText">⚠ Security Lockout</span><span class="v-rate-limit-timer" id="vRateLimitTimer">30</span><div class="v-rate-limit-bar"><div class="v-rate-limit-fill" id="vRateLimitFill"></div></div><span class="v-rate-limit-sub" id="vRateLimitSub">Too many failed attempts</span></div>
             <div class="rv rv-1"></div><div class="rv rv-2"></div><div class="rv rv-3"></div><div class="rv rv-4"></div>
             <div class="v-display"><span id="vDisp">ENTER CODE</span><span id="vCursor"></span></div>
             <div class="kb-row"><div class="kb-key" onclick="vkType('1')"><span>1</span></div><div class="kb-key" onclick="vkType('2')"><span>2</span></div><div class="kb-key" onclick="vkType('3')"><span>3</span></div><div class="kb-key" onclick="vkType('4')"><span>4</span></div><div class="kb-key" onclick="vkType('5')"><span>5</span></div><div class="kb-key" onclick="vkType('6')"><span>6</span></div><div class="kb-key" onclick="vkType('7')"><span>7</span></div><div class="kb-key" onclick="vkType('8')"><span>8</span></div><div class="kb-key" onclick="vkType('9')"><span>9</span></div><div class="kb-key" onclick="vkType('0')"><span>0</span></div></div>
@@ -2253,11 +2259,11 @@ function openVault(){const ov=document.getElementById('vaultOpenOverlay');ov.cla
 
 // ══════ VAULT PUZZLE (in-console keypad) ══════
 let vaultCodes=[
-  {code:'SAMPLE1',label:'Encrypted Dossier',desc:'A classified personnel file',unlocked:false,unlockedAt:null,linkedMediaIdx:null},
-  {code:'SAMPLE2',label:'Audio Intercept',desc:'A recorded phone conversation',unlocked:false,unlockedAt:null,linkedMediaIdx:null},
-  {code:'SAMPLE3',label:'Location Data',desc:'GPS coordinates of the hideout',unlocked:false,unlockedAt:null,linkedMediaIdx:null}
+  {code:'SAMPLE1',label:'Encrypted Dossier',desc:'A classified personnel file',codename:'FILE-001',unlocked:false,unlockedAt:null,linkedMediaIdx:null},
+  {code:'SAMPLE2',label:'Audio Intercept',desc:'A recorded phone conversation',codename:'FILE-002',unlocked:false,unlockedAt:null,linkedMediaIdx:null},
+  {code:'SAMPLE3',label:'Location Data',desc:'GPS coordinates of the hideout',codename:'FILE-003',unlocked:false,unlockedAt:null,linkedMediaIdx:null}
 ];
-let vkCode='';let vkFailCount=0;let vkRateLimited=false;
+let vkCode='';let vkFailCount=0;let vkTotalFails=0;let vkRateLimited=false;
 const vkDisp=document.getElementById('vDisp');
 function vkUpdDisp(){if(vkDisp){vkDisp.textContent=vkCode.length?vkCode:'ENTER CODE';vkDisp.style.color='';vkDisp.style.fontSize='';vkDisp.style.letterSpacing=''}}
 function vkType(ch){playClick();if(vkRateLimited)return;if(vkCode.length<20){vkCode+=ch;vkUpdDisp();vkGlitch()}}
@@ -2278,32 +2284,66 @@ function vkSubmit(){
     vkDisp.textContent='✓ '+match.label.toUpperCase();vkDisp.style.color='#00ff88';vkDisp.style.fontSize='13px';vkDisp.style.letterSpacing='2px';
     document.getElementById('flashG').classList.add('on');
     setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
-    vkFailCount=0;
+    vkFailCount=0; // Reset consecutive fails on success
     setTimeout(()=>{vkCode='';vkUpdDisp();renderVaultPanel()},2000);
-    // Update grid badge + re-render media if open
     renderGrid();
   }else if(vaultCodes.find(c=>c.code.toUpperCase()===entered&&c.unlocked)){
-    // Already unlocked
     vkDisp.textContent='⚡ ALREADY CRACKED';vkDisp.style.color='var(--amber)';vkDisp.style.fontSize='13px';
     playClick();
     setTimeout(()=>{vkCode='';vkUpdDisp()},1500);
   }else{
-    // Invalid code
-    vkFailCount++;
+    // Invalid code — progressive lockout
+    vkFailCount++;vkTotalFails++;
     playDenied();vkDisp.textContent='✗ INVALID CODE';vkDisp.style.color='#ff3333';
     document.getElementById('flashR').classList.add('on');setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
-    setTimeout(()=>{vkCode='';vkUpdDisp()},1200);
-    if(vkFailCount>=3){
-      vkRateLimited=true;
-      const limiter=document.getElementById('vRateLimit');
-      limiter.classList.add('active');
-      let countdown=15;document.getElementById('vRateLimitTimer').textContent=countdown;
-      const interval=setInterval(()=>{
-        countdown--;document.getElementById('vRateLimitTimer').textContent=countdown;
-        if(countdown<=0){clearInterval(interval);limiter.classList.remove('active');vkRateLimited=false;vkFailCount=0}
-      },1000);
+    // Show remaining attempts before lockout
+    const nextThreshold=vkTotalFails<5?5:vkTotalFails<10?10:15;
+    const remaining=nextThreshold-vkTotalFails;
+    if(remaining>0&&remaining<=3){
+      setTimeout(()=>{vkDisp.textContent=remaining+' ATTEMPT'+(remaining>1?'S':'')+' REMAINING';vkDisp.style.color='var(--amber)';vkDisp.style.fontSize='11px'},1200);
+      setTimeout(()=>{vkCode='';vkUpdDisp()},3000);
+    }else{
+      setTimeout(()=>{vkCode='';vkUpdDisp()},1200);
+    }
+    // Trigger lockout at thresholds
+    if(vkTotalFails>=15){
+      triggerVaultLockout(300,'CRITICAL LOCKOUT','Maximum attempts exceeded');
+    }else if(vkTotalFails>=10){
+      triggerVaultLockout(120,'SECURITY LOCKOUT','Too many failed attempts');
+    }else if(vkTotalFails>=5){
+      triggerVaultLockout(30,'SECURITY LOCKOUT','Too many failed attempts');
     }
   }
+}
+function triggerVaultLockout(seconds,title,subtitle){
+  vkRateLimited=true;
+  const limiter=document.getElementById('vRateLimit');
+  const timerEl=document.getElementById('vRateLimitTimer');
+  const textEl=document.getElementById('vRateLimitText');
+  const subEl=document.getElementById('vRateLimitSub');
+  const fillEl=document.getElementById('vRateLimitFill');
+  textEl.textContent='⚠ '+title;
+  subEl.textContent=subtitle;
+  let countdown=seconds;
+  const total=seconds;
+  timerEl.textContent=formatLockoutTime(countdown);
+  if(fillEl)fillEl.style.width='100%';
+  limiter.classList.add('active');
+  const interval=setInterval(()=>{
+    countdown--;
+    timerEl.textContent=formatLockoutTime(countdown);
+    if(fillEl)fillEl.style.width=((countdown/total)*100)+'%';
+    if(countdown<=0){
+      clearInterval(interval);
+      limiter.classList.remove('active');
+      vkRateLimited=false;
+      vkFailCount=0;
+    }
+  },1000);
+}
+function formatLockoutTime(s){
+  if(s>=60){const m=Math.floor(s/60);const sec=s%60;return m+':'+String(sec).padStart(2,'0')}
+  return String(s);
 }
 function renderVaultPanel(){
   const list=document.getElementById('vaultUnlockList');
@@ -2311,11 +2351,10 @@ function renderVaultPanel(){
   if(!list)return;
   const unlocked=vaultCodes.filter(c=>c.unlocked).length;
   if(count)count.textContent=unlocked+' / '+vaultCodes.length+' codes cracked';
-  // Update dot status
   const dot=document.getElementById('vkDot');
   const lbl=document.getElementById('vkLbl');
   if(dot&&lbl){
-    if(unlocked===vaultCodes.length){dot.classList.add('ok');lbl.classList.add('ok');lbl.textContent='ALL CRACKED'}
+    if(unlocked===vaultCodes.length&&vaultCodes.length>0){dot.classList.add('ok');lbl.classList.add('ok');lbl.textContent='ALL CRACKED'}
     else if(unlocked>0){dot.className='v-dot';dot.style.background='radial-gradient(circle at 40% 35%,#ffcc44,#cc8811)';dot.style.boxShadow='0 0 6px rgba(255,170,51,.5)';lbl.textContent=unlocked+' UNLOCKED'}
     else{dot.className='v-dot';dot.style.background='';dot.style.boxShadow='';lbl.textContent='LOCKED'}
   }
@@ -2323,16 +2362,26 @@ function renderVaultPanel(){
     list.innerHTML='<div class="vault-unlock-empty">No vault codes configured yet. The admin can add codes in the Keys & Codes panel.</div>';
     return;
   }
+  const isAdmin=document.body.classList.contains('admin-mode');
   list.innerHTML=vaultCodes.map((c,i)=>{
-    let viewLink='';
-    if(c.unlocked&&c.linkedMediaIdx!==null&&c.linkedMediaIdx!==undefined){
-      viewLink=`<div class="vui-media-link" onclick="event.stopPropagation();closePanel();setTimeout(()=>{openPanel('media');setTimeout(()=>openMediaViewer(${c.linkedMediaIdx}),300)},350)">▸ View in Media Lab</div>`;
+    if(c.unlocked){
+      let viewLink='';
+      if(c.linkedMediaIdx!==null&&c.linkedMediaIdx!==undefined){
+        viewLink=`<div class="vui-media-link" onclick="event.stopPropagation();closePanel();setTimeout(()=>{openPanel('media');setTimeout(()=>openMediaViewer(${c.linkedMediaIdx}),300)},350)">▸ View in Media Lab</div>`;
+      }
+      return `<div class="vault-unlock-item">
+        <span class="vui-icon">🔓</span>
+        <div class="vui-info"><div class="vui-label">${c.label}</div><div class="vui-desc">${c.desc||'Unlocked'}</div>${viewLink}</div>
+        <span class="vui-status unlocked">CRACKED</span>
+      </div>`;
+    }else{
+      const codename=c.codename||'FILE-'+String(i+1).padStart(3,'0');
+      return `<div class="vault-unlock-item locked">
+        <span class="vui-icon">🔒</span>
+        <div class="vui-info"><div class="vui-label vui-classified">${codename}</div><div class="vui-desc vui-classified-sub">CLASSIFIED · Enter the correct code to unlock</div>${isAdmin?`<div class="vui-admin-hint">Admin: code = ${c.code}</div>`:''}</div>
+        <span class="vui-status locked">LOCKED</span>
+      </div>`;
     }
-    return `<div class="vault-unlock-item${c.unlocked?'':' locked'}">
-    <span class="vui-icon">${c.unlocked?'🔓':'🔒'}</span>
-    <div class="vui-info"><div class="vui-label">${c.unlocked?c.label:'???'}</div><div class="vui-desc">${c.unlocked?(c.desc||'Unlocked'):'Enter the correct code to unlock'}</div>${viewLink}</div>
-    <span class="vui-status ${c.unlocked?'unlocked':'locked'}">${c.unlocked?'CRACKED':'LOCKED'}</span>
-  </div>`;
   }).join('');
 }
 let vkSymMode=false;
@@ -3757,9 +3806,10 @@ function renderKeysCodes(){
   if(vaultCodes.length){
     vaultCodes.forEach((c,i)=>{
       const linked=c.linkedMediaIdx!==null&&c.linkedMediaIdx!==undefined&&mediaItems[c.linkedMediaIdx]?mediaItems[c.linkedMediaIdx].name:'None';
+      const codename=c.codename||'FILE-'+String(i+1).padStart(3,'0');
       html+=`<div class="kc-row">
         <span class="kc-icon">${c.unlocked?'🔓':'🔒'}</span>
-        <span class="kc-label">${c.label}<br><span style="font-size:8px;color:#555">Code: ${c.code} · Linked: ${linked}${c.unlocked?' · ✓ CRACKED':''}</span></span>
+        <span class="kc-label">${c.label}<br><span style="font-size:8px;color:#555">Codename: ${codename} · Code: ${c.code} · Linked: ${linked}${c.unlocked?' · ✓ CRACKED':''}</span></span>
         <span class="kc-value">${c.code}</span>
         <span class="kc-edit" onclick="editVaultCode(${i})">✎</span>
       </div>`;
@@ -3818,10 +3868,14 @@ function buildMediaOptions(selectedIdx){
   return opts;
 }
 function addVaultCode(){
+  const nextNum=vaultCodes.length+1;
   showEditModal(`<h3>Add Vault Puzzle Code</h3>
-    <div class="edit-field"><label>Label (what this code unlocks)</label><input id="ek_vc_label" placeholder="e.g. Classified Dossier, Surveillance Recording"></div>
-    <div class="edit-field"><label>Description</label><input id="ek_vc_desc" placeholder="e.g. Personnel file for the suspect"></div>
-    <div class="edit-field"><label>Code (what players must enter on the keypad)</label><input id="ek_vc_code" placeholder="e.g. SHADOW42" style="font-size:14px;letter-spacing:3px;text-transform:uppercase"></div>
+    <div class="edit-field-row">
+      <div class="edit-field"><label>Codename (shown to players when locked)</label><input id="ek_vc_codename" value="FILE-${String(nextNum).padStart(3,'0')}" placeholder="e.g. FILE-001, DEAD DROP ALPHA" style="letter-spacing:2px;text-transform:uppercase"></div>
+      <div class="edit-field"><label>Code (what players enter)</label><input id="ek_vc_code" placeholder="e.g. SHADOW42" style="font-size:14px;letter-spacing:3px;text-transform:uppercase"></div>
+    </div>
+    <div class="edit-field"><label>Label (revealed when cracked)</label><input id="ek_vc_label" placeholder="e.g. Classified Dossier, Surveillance Recording"></div>
+    <div class="edit-field"><label>Description (revealed when cracked)</label><input id="ek_vc_desc" placeholder="e.g. Personnel file for the suspect"></div>
     <div class="edit-field"><label>Linked Media Item (unlocked when code is cracked)</label><select id="ek_vc_media" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;width:100%;outline:none">${buildMediaOptions(null)}</select></div>
     <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#888;margin-top:4px">Linked media items will be hidden from players until this code is cracked.</div>
     <div style="display:flex;gap:10px;margin-top:12px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-green" onclick="saveNewVaultCode()">Add Code</button></div>`);
@@ -3830,11 +3884,11 @@ function saveNewVaultCode(){
   const label=document.getElementById('ek_vc_label').value.trim();
   const desc=document.getElementById('ek_vc_desc').value.trim();
   const code=document.getElementById('ek_vc_code').value.trim().toUpperCase();
+  const codename=document.getElementById('ek_vc_codename').value.trim().toUpperCase()||'FILE-'+String(vaultCodes.length+1).padStart(3,'0');
   const mediaVal=document.getElementById('ek_vc_media').value;
   const linkedIdx=mediaVal!==''?parseInt(mediaVal):null;
   if(!code)return;
-  vaultCodes.push({code,label:label||'Unnamed',desc:desc||'',unlocked:false,unlockedAt:null,linkedMediaIdx:linkedIdx});
-  // Mark linked media as vault-locked
+  vaultCodes.push({code,label:label||'Unnamed',desc:desc||'',codename,unlocked:false,unlockedAt:null,linkedMediaIdx:linkedIdx});
   if(linkedIdx!==null&&mediaItems[linkedIdx])mediaItems[linkedIdx].vaultLocked=true;
   hideEditModal();
   renderKeysCodes();renderVaultPanel();renderGrid();
@@ -3842,9 +3896,12 @@ function saveNewVaultCode(){
 function editVaultCode(i){
   const c=vaultCodes[i];
   showEditModal(`<h3>Edit Vault Puzzle Code</h3>
-    <div class="edit-field"><label>Label</label><input id="ek_vc_label" value="${c.label||''}"></div>
-    <div class="edit-field"><label>Description</label><input id="ek_vc_desc" value="${c.desc||''}"></div>
-    <div class="edit-field"><label>Code</label><input id="ek_vc_code" value="${c.code}" style="font-size:14px;letter-spacing:3px;text-transform:uppercase"></div>
+    <div class="edit-field-row">
+      <div class="edit-field"><label>Codename (shown when locked)</label><input id="ek_vc_codename" value="${c.codename||''}" style="letter-spacing:2px;text-transform:uppercase"></div>
+      <div class="edit-field"><label>Code</label><input id="ek_vc_code" value="${c.code}" style="font-size:14px;letter-spacing:3px;text-transform:uppercase"></div>
+    </div>
+    <div class="edit-field"><label>Label (revealed when cracked)</label><input id="ek_vc_label" value="${c.label||''}"></div>
+    <div class="edit-field"><label>Description (revealed when cracked)</label><input id="ek_vc_desc" value="${c.desc||''}"></div>
     <div class="edit-field"><label>Linked Media Item</label><select id="ek_vc_media" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;width:100%;outline:none">${buildMediaOptions(c.linkedMediaIdx)}</select></div>
     ${c.unlocked?'<div style="font-family:IBM Plex Mono,monospace;font-size:9px;color:var(--green);letter-spacing:1px;margin-top:4px">✓ CRACKED at '+new Date(c.unlockedAt).toLocaleTimeString()+'</div>':''}
     <div style="display:flex;gap:10px;margin-top:12px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-red" onclick="deleteVaultCode(${i})">Delete</button><button class="btn-standard btn-cyan" onclick="saveVaultCode(${i})">Save</button></div>`);
@@ -3852,15 +3909,14 @@ function editVaultCode(i){
 function saveVaultCode(i){
   const code=document.getElementById('ek_vc_code').value.trim().toUpperCase();
   if(!code)return;
-  // Unmark old linked media
   const oldIdx=vaultCodes[i].linkedMediaIdx;
   if(oldIdx!==null&&oldIdx!==undefined&&mediaItems[oldIdx])mediaItems[oldIdx].vaultLocked=false;
   vaultCodes[i].label=document.getElementById('ek_vc_label').value.trim()||'Unnamed';
   vaultCodes[i].desc=document.getElementById('ek_vc_desc').value.trim();
   vaultCodes[i].code=code;
+  vaultCodes[i].codename=document.getElementById('ek_vc_codename').value.trim().toUpperCase()||vaultCodes[i].codename;
   const mediaVal=document.getElementById('ek_vc_media').value;
   vaultCodes[i].linkedMediaIdx=mediaVal!==''?parseInt(mediaVal):null;
-  // Mark new linked media
   const newIdx=vaultCodes[i].linkedMediaIdx;
   if(newIdx!==null&&mediaItems[newIdx]&&!vaultCodes[i].unlocked)mediaItems[newIdx].vaultLocked=true;
   hideEditModal();
@@ -4441,6 +4497,7 @@ function editMediaItem(i){
   pendingMediaFileUrl='';
   const m=mediaItems[i];
   const typeOpts=['audio','doc','map','video','locked'].map(t=>`<option${m.type===t?' selected':''}>${t}</option>`).join('');
+  const isVaultLinked=vaultCodes.some(c=>c.linkedMediaIdx===i);
   showEditModal(`<h3>Edit Media Item #${i+1}</h3>
     <div class="edit-field"><label>Upload File (optional — auto-sets type)</label><input type="file" id="em_file" onchange="handleMediaUpload(this)"></div>
     <div class="edit-field"><label>File URL</label><input id="em_url" value="${m.fileUrl||''}" placeholder="/media/lab/filename.pdf"></div>
@@ -4455,9 +4512,13 @@ function editMediaItem(i){
       <div class="edit-field"><label>Category</label><select id="em_type">${typeOpts}</select></div>
       <div class="edit-field"><label>Unlock Key (locked files only)</label><input id="em_key" value="${m.unlockKey||''}" placeholder="Leave blank = any key works"></div>
     </div>
+    <div style="margin:10px 0;padding:10px 14px;border:1px solid ${m.vaultLocked?'rgba(255,170,51,.2)':'var(--border)'};border-radius:5px;background:${m.vaultLocked?'rgba(255,170,51,.03)':'rgba(255,255,255,.01)'}">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="em_vaultlock" ${m.vaultLocked?'checked':''}><span style="font-family:'Saira',sans-serif;font-size:11px;color:${m.vaultLocked?'var(--amber)':'#888'};letter-spacing:1px;font-weight:600">🔐 Vault-Locked</span></label>
+      <div style="font-family:'Chakra Petch',sans-serif;font-size:9px;color:#555;margin-top:4px;padding-left:24px">${isVaultLinked?'Linked to a vault code in Keys & Codes':'Hidden from players until unlocked via The Vault keypad. Link a vault code in Keys & Codes.'}</div>
+    </div>
     <div style="display:flex;gap:10px;margin-top:6px"><button class="btn-standard btn-red" onclick="confirmDelete(this,()=>deleteMediaItem(${i}))">Delete</button><span style="flex:1"></span><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveMediaItem(${i})">Save</button></div>`);
 }
-function saveMediaItem(i){mediaItems[i].icon=document.getElementById('em_ico').value.trim();mediaItems[i].name=document.getElementById('em_name').value.trim();mediaItems[i].desc=document.getElementById('em_desc').value.trim();mediaItems[i].type=document.getElementById('em_type').value;const urlVal=document.getElementById('em_url').value.trim();mediaItems[i].fileUrl=pendingMediaFileUrl||(urlVal==='[uploaded file]'?mediaItems[i].fileUrl:urlVal);mediaItems[i].unlockKey=document.getElementById('em_key').value.trim();const nf=document.getElementById('em_font').value;const df=document.getElementById('em_dfont').value;mediaItems[i].nameFont=nf;mediaItems[i].descFont=df;if(document.getElementById('em_font_all').checked)mediaItems.forEach(m=>{m.nameFont=nf;m.descFont=df});pendingMediaFileUrl='';hideEditModal();renderMedia();renderGrid()}
+function saveMediaItem(i){mediaItems[i].icon=document.getElementById('em_ico').value.trim();mediaItems[i].name=document.getElementById('em_name').value.trim();mediaItems[i].desc=document.getElementById('em_desc').value.trim();mediaItems[i].type=document.getElementById('em_type').value;const urlVal=document.getElementById('em_url').value.trim();mediaItems[i].fileUrl=pendingMediaFileUrl||(urlVal==='[uploaded file]'?mediaItems[i].fileUrl:urlVal);mediaItems[i].unlockKey=document.getElementById('em_key').value.trim();const vl=document.getElementById('em_vaultlock');if(vl)mediaItems[i].vaultLocked=vl.checked;const nf=document.getElementById('em_font').value;const df=document.getElementById('em_dfont').value;mediaItems[i].nameFont=nf;mediaItems[i].descFont=df;if(document.getElementById('em_font_all').checked)mediaItems.forEach(m=>{m.nameFont=nf;m.descFont=df});pendingMediaFileUrl='';hideEditModal();renderMedia();renderGrid()}
 function deleteMediaItem(i){mediaItems.splice(i,1);hideEditModal();renderMedia();renderGrid()}
 function addMediaItem(){
   pendingMediaFileUrl='';
