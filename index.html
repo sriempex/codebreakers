@@ -117,6 +117,11 @@
   .landing-banner-upload{position:absolute;bottom:-8px;right:-8px;width:28px;height:28px;border-radius:50%;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.3);display:none;align-items:center;justify-content:center;cursor:pointer;z-index:10;transition:all .2s;font-size:12px;color:var(--cyan)}
   .landing-banner-upload:hover{background:rgba(0,212,255,.25);border-color:rgba(0,212,255,.5)}
   body.edit-mode .landing-banner-upload{display:flex}
+  .save-blip{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--green);opacity:0;transition:opacity .2s;margin-left:8px;font-weight:600;vertical-align:middle;pointer-events:none}
+  .save-blip.show{opacity:1}
+  .banner-preview{width:100%;max-width:200px;aspect-ratio:1;border-radius:50%;overflow:hidden;border:1px solid var(--border);background:#080a10;display:flex;align-items:center;justify-content:center;margin:10px 0}
+  .banner-preview img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+  .banner-preview .bp-emoji{font-size:48px}
   #landingBannerFile{display:none}
 
   /* Admin Choice Modal */
@@ -488,12 +493,10 @@
   /* LED dots */
   .tile-dot{width:6px;height:6px;border-radius:50%}
   .tile-dot.active{background:radial-gradient(circle at 40% 35%,#44ff88,#00cc44);box-shadow:0 0 6px rgba(0,255,136,.5);animation:ledPulse 1s ease-in-out infinite}
-  .tile-dot.monitored{background:radial-gradient(circle at 40% 35%,#66ccaa,#44aa88);box-shadow:0 0 4px rgba(68,170,136,.35);animation:ledPulse 2.5s ease-in-out infinite}
-  .tile-dot.idle{background:radial-gradient(circle at 40% 35%,#889aaa,#667788);box-shadow:0 0 3px rgba(102,119,136,.2);animation:ledPulse 4s ease-in-out infinite}
+  .tile-dot.idle{background:radial-gradient(circle at 40% 35%,#ffaa33,#cc8800);box-shadow:0 0 4px rgba(204,136,0,.4);animation:ledPulse 2.5s ease-in-out infinite}
   .tile-dot.silent{background:#3a3d44;box-shadow:none;animation:ledPulse 6s ease-in-out infinite}
   .tile-status-label.active{color:#00ff88}
-  .tile-status-label.monitored{color:#44aa88}
-  .tile-status-label.idle{color:#667788}
+  .tile-status-label.idle{color:#cc8800}
   .tile-status-label.silent{color:#3a3d44}
   /* Admin edit btn repositioned for monitor */
   .crt-monitor .admin-edit-btn{top:4px;right:4px;z-index:10}
@@ -1577,7 +1580,7 @@
 <div id="adminPanel">
   <div class="ap-container">
     <div class="ap-header"><h3>🎛 Event Control</h3><button class="mv-close" onclick="closeEventControl()">✕ CLOSE</button></div>
-    <div class="ap-section"><h4>🎮 Event Settings</h4>
+    <div class="ap-section"><h4>🎮 Event Settings <span class="save-blip" id="blipEventSettings">✓ Saved</span></h4>
       <p>Configure participant mode, countdown timer, and leaderboard display.</p>
       <div style="margin-bottom:16px">
         <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">⏱ Event Timer</label>
@@ -1612,21 +1615,40 @@
         <div class="ap-field"><label>Participant Mode</label><select id="apParticipantMode" onchange="onParticipantModeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%;outline:none"><option value="team">Team Only</option><option value="individual">Individual Only</option><option value="hybrid">Open (Hybrid)</option></select></div>
         <div class="ap-field"><label>Leaderboard Style</label><select id="apLeaderboardStyle" onchange="onLeaderboardStyleChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%;outline:none"><option value="mixed">Single Mixed</option><option value="split">Split by Type</option><option value="labeled">Single with Labels</option></select></div>
       </div>
+      <div style="margin-top:12px">
+        <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">🟢 Activity Thresholds <span class="save-blip" id="blipThresholds">✓ Saved</span></label>
+        <p style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#666;margin:0 0 8px;letter-spacing:.3px">Controls when console tile status changes from Active → Idle → Silent.</p>
+        <div class="edit-field-row" style="gap:12px">
+          <div class="ap-field"><label>Active → Idle (seconds)</label><input type="number" id="apThresholdIdle" value="60" min="10" max="600" onchange="updateThresholds()" style="width:100%"></div>
+          <div class="ap-field"><label>Idle → Silent (seconds)</label><input type="number" id="apThresholdSilent" value="300" min="30" max="3600" onchange="updateThresholds()" style="width:100%"></div>
+        </div>
+      </div>
     </div>
     <div class="ap-section"><h4>🏠 Landing Page</h4>
       <p>Customize the landing page banner and text.</p>
       <div class="ap-field" style="margin-bottom:10px"><label>Banner Image</label>
         <div style="display:flex;gap:8px;align-items:center">
-          <input id="apBannerUrl" placeholder="Paste image URL or upload below" onchange="updateLandingBanner()" style="flex:1">
+          <input id="apBannerUrl" placeholder="Paste image URL" onchange="updateLandingBanner()" style="flex:1">
           <label style="cursor:pointer;font-size:9px;color:var(--cyan);letter-spacing:1px;padding:8px 12px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.05);white-space:nowrap;font-family:'IBM Plex Mono',monospace">
             📁 Upload
             <input type="file" accept="image/*" onchange="handleAdminBannerUpload(this)" style="display:none">
           </label>
+          <button class="ap-btn ap-btn-red" onclick="clearLandingBanner()" style="font-size:8px;padding:6px 10px;flex-shrink:0">✕ Clear</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px">
+        <div class="banner-preview" id="apBannerPreview"><span class="bp-emoji" id="apBannerFallbackPreview">🔐</span></div>
+        <div style="flex:1">
+          <div class="ap-field" style="margin-bottom:8px"><label>Fallback Icon</label>
+            <input id="apBannerFallback" value="🔐" onchange="updateBannerFallback()" style="width:60px;text-align:center;font-size:18px" maxlength="4">
+            <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-left:8px">Shown when no image is set</span>
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#555;letter-spacing:.5px" id="apBannerStatus">No image set</div>
         </div>
       </div>
       <div class="edit-field-row" style="gap:12px;margin-bottom:12px">
-        <div class="ap-field"><label>Title</label><input id="apLandingTitle" value="Code Breakers" onchange="updateLandingTitle()"></div>
-        <div class="ap-field"><label>Subtitle</label><input id="apLandingSubtitle" value="Rise to The Challenge" onchange="updateLandingSubtitle()"></div>
+        <div class="ap-field"><label>Title <span class="save-blip" id="blipLandingTitle">✓ Saved</span></label><input id="apLandingTitle" value="Code Breakers" onchange="updateLandingTitle()"></div>
+        <div class="ap-field"><label>Subtitle <span class="save-blip" id="blipLandingSub">✓ Saved</span></label><input id="apLandingSubtitle" value="Rise to The Challenge" onchange="updateLandingSubtitle()"></div>
       </div>
     </div>
     <div class="ap-section"><h4>📝 Registration Settings</h4>
@@ -2575,17 +2597,17 @@ let gridTiles=[
 ];
 // Activity tracking for tile pulse system
 const tileActivity={feed:0,media:0,vault:0,intel:0};
+const activityThresholds={activeToIdle:60,idleToSilent:300}; // seconds, admin-configurable
 function recordTileAccess(id){tileActivity[id]=Date.now();updateTileStates()}
 function getTileState(id){
   const last=tileActivity[id];
   if(!last)return'silent';
   const ago=(Date.now()-last)/1000;
-  if(ago<30)return'active';
-  if(ago<120)return'monitored';
-  if(ago<300)return'idle';
+  if(ago<activityThresholds.activeToIdle)return'active';
+  if(ago<activityThresholds.idleToSilent)return'idle';
   return'silent';
 }
-const tileStateLabels={active:'ACTIVE',monitored:'MONITORED',idle:'IDLE',silent:'SILENT'};
+const tileStateLabels={active:'ACTIVE',idle:'IDLE',silent:'SILENT'};
 function updateTileStates(){
   gridTiles.forEach(t=>{
     const state=getTileState(t.id);
@@ -2627,6 +2649,7 @@ let regSettings={
   participantMode:'team',
   leaderboardStyle:'mixed',
   landingBannerUrl:'',
+  bannerFallback:'🔐',
   landingTitle:'Code Breakers',
   landingSubtitle:'Rise to The Challenge',
   vaultMaxAttempts:5,
@@ -2665,7 +2688,7 @@ let mediaItems=[
 function renderFeed(){
   const grid=document.getElementById('feedGridView'),isA=document.body.classList.contains('edit-mode');
   grid.innerHTML=posts.map((p,i)=>{
-    const resolved=(p.mediaType==='video'&&p.mediaUrl)?resolveVideoEmbed(p.mediaUrl):null;
+    const resolved=(p.mediaUrl&&(p.mediaType==='video'||isVideoUrl(p.mediaUrl)))?resolveVideoEmbed(p.mediaUrl):null;
     const isVid=resolved&&resolved.type==='direct';
     const isEmbeddable=resolved&&resolved.type!=='direct'&&resolved.type!=='external';
     const isExternal=resolved&&resolved.type==='external';
@@ -2735,7 +2758,7 @@ let currentPost=0;
 function openPost(i){currentPost=i;setFeedView('single')}
 function renderSinglePost(){
   const p=posts[currentPost],img=document.getElementById('singleImg');
-  const resolved=(p.mediaType==='video'&&p.mediaUrl)?resolveVideoEmbed(p.mediaUrl):null;
+  const resolved=(p.mediaUrl&&(p.mediaType==='video'||isVideoUrl(p.mediaUrl)))?resolveVideoEmbed(p.mediaUrl):null;
   const editBtn=document.body.classList.contains('edit-mode')?`<div class="feed-single-edit" onclick="event.stopPropagation();editFeedPost(${currentPost})" title="Edit this post">✎</div>`:'';
   const muted=isPostMuted(currentPost);
 
@@ -3746,12 +3769,41 @@ function updateLandingBanner(){
   const url=(document.getElementById('apBannerUrl')?.value||'').trim();
   regSettings.landingBannerUrl=url;
   applyBannerImage(url);
+  syncBannerPreview();
+  showSaveBlip('blipLandingBanner');
 }
 function applyBannerImage(url){
   const img=document.getElementById('landingBannerImg');
   const icon=document.querySelector('.landing-banner-icon');
   if(url&&img&&icon){img.src=url;img.style.display='block';icon.style.display='none'}
-  else if(img&&icon){img.style.display='none';icon.style.display='block'}
+  else if(img&&icon){img.style.display='none';icon.style.display='block';icon.textContent=regSettings.bannerFallback||'🔐'}
+}
+function clearLandingBanner(){
+  regSettings.landingBannerUrl='';
+  const urlInput=document.getElementById('apBannerUrl');
+  if(urlInput)urlInput.value='';
+  applyBannerImage('');
+  syncBannerPreview();
+}
+function syncBannerPreview(){
+  const prev=document.getElementById('apBannerPreview');
+  const status=document.getElementById('apBannerStatus');
+  const url=regSettings.landingBannerUrl||'';
+  const fallback=regSettings.bannerFallback||'🔐';
+  if(url){
+    prev.innerHTML=`<img src="${url}" alt="Preview">`;
+    if(status)status.textContent='✓ Image set';status.style.color='var(--green)';
+  }else{
+    prev.innerHTML=`<span class="bp-emoji">${fallback}</span>`;
+    if(status){status.textContent='No image set — showing fallback icon';status.style.color='#555'}
+  }
+}
+function updateBannerFallback(){
+  const val=document.getElementById('apBannerFallback')?.value||'🔐';
+  regSettings.bannerFallback=val;
+  const icon=document.querySelector('.landing-banner-icon');
+  if(icon)icon.textContent=val;
+  syncBannerPreview();
 }
 function handleBannerUpload(input){
   if(!input.files||!input.files[0])return;
@@ -3762,6 +3814,7 @@ function handleBannerUpload(input){
     applyBannerImage(url);
     const urlInput=document.getElementById('apBannerUrl');
     if(urlInput)urlInput.value='[uploaded file]';
+    syncBannerPreview();
   };
   reader.readAsDataURL(input.files[0]);
 }
@@ -3771,18 +3824,37 @@ function handleAdminBannerUpload(input){
 function updateLandingTitle(){
   regSettings.landingTitle=document.getElementById('apLandingTitle')?.value||'Code Breakers';
   document.getElementById('landingTitleEl').textContent=regSettings.landingTitle;
+  showSaveBlip('blipLandingTitle');
 }
 function updateLandingSubtitle(){
   regSettings.landingSubtitle=document.getElementById('apLandingSubtitle')?.value||'Operations Console';
   document.getElementById('landingSubEl').textContent=regSettings.landingSubtitle;
+  showSaveBlip('blipLandingSub');
+}
+
+// ══════ SAVE BLIP MICRO-FEEDBACK ══════
+function showSaveBlip(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.add('show');
+  clearTimeout(el._blipTimer);
+  el._blipTimer=setTimeout(()=>el.classList.remove('show'),1800);
+}
+function updateThresholds(){
+  activityThresholds.activeToIdle=parseInt(document.getElementById('apThresholdIdle')?.value)||60;
+  activityThresholds.idleToSilent=parseInt(document.getElementById('apThresholdSilent')?.value)||300;
+  updateTileStates();
+  showSaveBlip('blipThresholds');
 }
 function onParticipantModeChange(){
   regSettings.participantMode=document.getElementById('apParticipantMode')?.value||'team';
   updateLandingForMode();
   buildRegForm();
+  showSaveBlip('blipEventSettings');
 }
 function onLeaderboardStyleChange(){
   regSettings.leaderboardStyle=document.getElementById('apLeaderboardStyle')?.value||'mixed';
+  showSaveBlip('blipEventSettings');
 }
 
 // ── Admin Panel ──
@@ -3835,6 +3907,13 @@ function syncAdminPanelSettings(){
   if(status){status.textContent=regSettings.registrationOpen?'● OPEN':'● CLOSED';status.style.color=regSettings.registrationOpen?'var(--green)':'var(--red)'}
   const apTimer=document.getElementById('apTimerDisplay');
   if(apTimer)apTimer.textContent=document.getElementById('cTimer').textContent;
+  // Sync activity thresholds
+  const thIdle=document.getElementById('apThresholdIdle');if(thIdle)thIdle.value=activityThresholds.activeToIdle;
+  const thSilent=document.getElementById('apThresholdSilent');if(thSilent)thSilent.value=activityThresholds.idleToSilent;
+  // Sync banner preview
+  syncBannerPreview();
+  // Sync banner fallback
+  const fbInput=document.getElementById('apBannerFallback');if(fbInput)fbInput.value=regSettings.bannerFallback||'🔐';
   syncManualCreationUI();
 }
 function _instantShow(el){
@@ -4742,24 +4821,24 @@ function switchTab(btn,tab){btn.parentElement.querySelectorAll('.edit-tab').forE
 // ── Operation Name ──
 function editOperationName(){
   showEditModal(`<h3>Edit Operation Details</h3>
-    <div class="edit-font-row"><div class="edit-field"><label>Operation Name</label><input id="eo_name" value="${operationName}"></div><div class="edit-field"><label>Font</label>${fontSelect('eo_name_font',operationFont)}</div></div>
-    <div class="edit-font-row"><div class="edit-field"><label>Vault Description</label><input id="eo_sub" value="${vaultSubtitle}"></div><div class="edit-field"><label>Font</label>${fontSelect('eo_sub_font',vaultSubFont)}</div></div>
+    <div class="edit-font-row"><div class="edit-field"><label>Operation Title</label><input id="eo_name" value="${operationName}"></div><div class="edit-field"><label>Font</label>${fontSelect('eo_name_font',operationFont)}</div></div>
     <div style="display:flex;gap:10px;margin-top:6px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveOperationName()">Save</button></div>`);
 }
 function saveOperationName(){
   operationName=document.getElementById('eo_name').value.trim()||'Operation Dead Drop';
   operationFont=document.getElementById('eo_name_font').value;
-  vaultSubtitle=document.getElementById('eo_sub').value.trim()||'Secure Terminal Access';
-  vaultSubFont=document.getElementById('eo_sub_font').value;
   const vt=document.getElementById('vaultTitle');
   vt.textContent=operationName;
   if(operationFont)vt.style.fontFamily=getFontFamily(operationFont);else vt.style.fontFamily='';
   const ct=document.getElementById('consoleTitle');
   ct.textContent='◈ '+operationName;
   if(operationFont)ct.style.fontFamily=getFontFamily(operationFont);else ct.style.fontFamily='';
-  const vs=document.getElementById('vaultSubtitle');
-  vs.textContent=vaultSubtitle;
-  if(vaultSubFont)vs.style.fontFamily=getFontFamily(vaultSubFont);else vs.style.fontFamily='';
+  // Update page title and registration screen
+  document.title=operationName+' — Console';
+  const regTitle=document.getElementById('regScreenTitle');
+  if(regTitle)regTitle.textContent=operationName;
+  const loginTitle=document.getElementById('loginTitle');
+  if(loginTitle)loginTitle.textContent=operationName;
   hideEditModal();
 }
 
@@ -4790,15 +4869,15 @@ function editGridTile(i){
   const t=gridTiles[i];
   const isImgIcon=t.icon.startsWith('http')||t.icon.startsWith('data:');
   showEditModal(`<h3>Edit Grid Tile: ${t.label}</h3>
-    <div class="edit-field"><label>Icon (emoji or image URL)</label>
+    <div class="edit-field"><label>Icon</label>
       <div style="display:flex;gap:8px;align-items:center">
-        <input id="eg_icon" value="${isImgIcon?'':t.icon}" placeholder="Paste emoji or image URL" style="flex:1">
+        <input id="eg_icon" value="${isImgIcon?'':t.icon}" placeholder="Type emoji (e.g. 📡)" style="flex:1;${isImgIcon?'display:none':''}">
         <label style="cursor:pointer;font-size:9px;color:var(--cyan);letter-spacing:1px;padding:8px 12px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.05);white-space:nowrap">
-          📁 Upload
+          📁 Upload Image
           <input type="file" accept="image/*" onchange="handleIconUpload(this)" style="display:none">
         </label>
       </div>
-      ${isImgIcon?`<div style="margin-top:6px;display:flex;align-items:center;gap:8px"><img src="${t.icon}" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid var(--border)"><span style="font-size:8px;color:#666">Current image icon</span><button onclick="document.getElementById('eg_icon').value='';document.getElementById('eg_icon_preview').innerHTML=''" style="font-size:8px;color:var(--red);background:none;border:1px solid rgba(255,50,50,.2);border-radius:3px;padding:2px 8px;cursor:pointer">Remove</button></div>`:''}
+      ${isImgIcon?`<div style="margin-top:6px;display:flex;align-items:center;gap:8px"><img src="${t.icon}" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid var(--border)"><span style="font-size:8px;color:#666">Current icon</span><button onclick="document.getElementById('eg_icon').style.display='';document.getElementById('eg_icon').value='📡';this.parentElement.remove()" style="font-size:8px;color:var(--red);background:none;border:1px solid rgba(255,50,50,.2);border-radius:3px;padding:2px 8px;cursor:pointer">Remove</button></div>`:''}
       <div id="eg_icon_preview"></div>
     </div>
     <div class="edit-field-row">
@@ -4808,10 +4887,7 @@ function editGridTile(i){
     <label style="display:flex;align-items:center;gap:6px;margin:-8px 0 10px;cursor:pointer"><input type="checkbox" id="eg_label_all"><span style="font-size:9px;color:#888;letter-spacing:1px">Apply label font to all grid tiles</span></label>
     <div class="edit-font-row"><div class="edit-field"><label>Description</label><input id="eg_sub" value="${t.sub}"></div><div class="edit-field"><label>Desc Font</label>${fontSelect('eg_sub_font',t.subFont)}</div></div>
     <label style="display:flex;align-items:center;gap:6px;margin:-8px 0 10px;cursor:pointer"><input type="checkbox" id="eg_sub_all"><span style="font-size:9px;color:#888;letter-spacing:1px">Apply description font to all grid tiles</span></label>
-    <div class="edit-field-row">
-      <div class="edit-field"><label>Status Text</label><input id="eg_status" value="${t.status}"></div>
-      <div class="edit-field"><label>Status Dot</label><div style="font-size:9px;color:#666;padding:10px 0;letter-spacing:.5px">Auto-managed · Activity pulse tracks player usage</div></div>
-    </div>
+    <div style="font-size:9px;color:#555;letter-spacing:.5px;padding:6px 0;border-top:1px solid var(--border);margin-top:4px">🟢 Status orb is auto-managed by activity thresholds (configurable in Event Control)</div>
     <div style="display:flex;gap:10px;margin-top:6px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveGridTile(${i})">Save</button></div>`);
   // If image icon, store URL in hidden state
   if(isImgIcon)document.getElementById('eg_icon').value=t.icon;
@@ -4826,10 +4902,9 @@ function handleIconUpload(input){
   reader.readAsDataURL(input.files[0]);
 }
 function saveGridTile(i){
-  gridTiles[i].icon=document.getElementById('eg_icon').value.trim();
+  gridTiles[i].icon=document.getElementById('eg_icon').value.trim()||'📡';
   gridTiles[i].label=document.getElementById('eg_label').value.trim();
   gridTiles[i].sub=document.getElementById('eg_sub').value.trim();
-  gridTiles[i].status=document.getElementById('eg_status').value.trim();
   const lf=document.getElementById('eg_label_font').value;
   const sf=document.getElementById('eg_sub_font').value;
   gridTiles[i].labelFont=lf;
@@ -5014,36 +5089,30 @@ let pendingFeedUploadType='';
 function handleFeedUpload(input){
   const file=input.files[0];if(!file)return;
   const zone=document.getElementById('feedUploadZone');
-  const sel=document.getElementById('ef_mtype');
-  if(file.type.startsWith('video/')){
-    const blobUrl=URL.createObjectURL(file);
-    pendingFeedUpload=blobUrl;
-    pendingFeedUploadType='video';
-    zone.innerHTML=`<video src="${blobUrl}" style="max-width:100%;max-height:120px;border-radius:4px" muted autoplay loop playsinline></video><br>✓ ${file.name}`;
-    if(sel)sel.value='video';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    pendingFeedUpload=e.target.result;
+    pendingFeedUploadType='image';
+    zone.innerHTML=`<img src="${pendingFeedUpload}" class="upload-preview"><br><span style="font-size:9px;color:var(--green)">✓ ${file.name}</span>`;
     zone.classList.add('has-file');
-  } else {
-    const reader=new FileReader();
-    reader.onload=e=>{
-      pendingFeedUpload=e.target.result;
-      pendingFeedUploadType='image';
-      zone.innerHTML=`<img src="${pendingFeedUpload}" class="upload-preview"><br>✓ ${file.name}`;
-      if(sel)sel.value='image';
-      zone.classList.add('has-file');
-    };
-    reader.readAsDataURL(file);
-  }
+    // Clear video URL field if image was uploaded
+    const vidField=document.getElementById('ef_video');
+    if(vidField)vidField.value='';
+  };
+  reader.readAsDataURL(file);
 }
 function editFeedPost(i){
   const p=posts[i];pendingFeedUpload='';pendingFeedUploadType='';
   const hasMedia=!!p.mediaUrl;
-  const previewHtml=hasMedia?(p.mediaType==='video'?`<video src="${p.mediaUrl}" style="max-width:100%;max-height:120px;border-radius:4px" muted autoplay loop playsinline></video><br>✓ Current video`:`<img src="${p.mediaUrl}" class="upload-preview"><br>✓ Current image`):'Click to upload image or video';
+  const isVid=hasMedia&&(p.mediaType==='video'||isVideoUrl(p.mediaUrl));
+  const previewHtml=hasMedia?(isVid?`<div style="font-size:9px;color:var(--amber);letter-spacing:1px;padding:10px 0">🎬 Video attached</div>`:`<img src="${p.mediaUrl}" class="upload-preview"><br><span style="font-size:9px;color:var(--green)">✓ Current image</span>`):'Click to upload an image';
   showEditModal(`<h3>Edit Feed Post #${i+1}</h3>
-    <div class="edit-field"><label>Media Type</label><select id="ef_mtype"><option value="image"${p.mediaType!=='video'?' selected':''}>Image</option><option value="video"${p.mediaType==='video'?' selected':''}>Video</option></select></div>
-    <div class="edit-field"><label>Media URL</label>
-      <div class="edit-tabs"><button class="edit-tab active" onclick="switchTab(this,'url')">URL</button><button class="edit-tab" onclick="switchTab(this,'upload')">Upload</button></div>
-      <div class="edit-tab-content active" id="tab-url"><input id="ef_media" value="${p.mediaUrl||''}" placeholder="File URL (image or video)..."></div>
-      <div class="edit-tab-content" id="tab-upload"><div class="upload-zone ${hasMedia?'has-file':''}" id="feedUploadZone" onclick="document.getElementById('feedFileInput').click()">${previewHtml}</div><input type="file" id="feedFileInput" accept="image/*,video/*" style="display:none" onchange="handleFeedUpload(this)"></div>
+    <div class="edit-field"><label>📷 Image (upload)</label>
+      <div class="upload-zone ${hasMedia&&!isVid?'has-file':''}" id="feedUploadZone" onclick="document.getElementById('feedFileInput').click()">${hasMedia&&!isVid?previewHtml:'Click to upload an image'}</div>
+      <input type="file" id="feedFileInput" accept="image/*" style="display:none" onchange="handleFeedUpload(this)">
+    </div>
+    <div class="edit-field"><label>🎬 Video URL <span style="font-size:8px;color:#555">(YouTube, Vimeo, Drive, etc.)</span></label>
+      <input id="ef_video" value="${isVid?p.mediaUrl:''}" placeholder="Paste video URL...">
     </div>
     <div class="edit-field"><label>Emoji (fallback)</label><input id="ef_emo" value="${p.emoji}"></div>
     <div class="edit-field"><label>Background Color</label><input id="ef_bg" value="${p.bg}"></div>
@@ -5051,13 +5120,22 @@ function editFeedPost(i){
     <label style="display:flex;align-items:center;gap:6px;margin:-8px 0 10px;cursor:pointer"><input type="checkbox" id="ef_font_all"><span style="font-size:9px;color:#888;letter-spacing:1px">Apply font to all post captions</span></label>
     <div style="display:flex;gap:10px;margin-top:6px"><button class="btn-standard btn-red" onclick="confirmDelete(this,()=>deleteFeedPost(${i}))">Delete</button><span style="flex:1"></span><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveFeedPost(${i})">Save</button></div>`);
 }
+function isVideoUrl(url){
+  if(!url)return false;
+  return /youtube|youtu\.be|vimeo|drive\.google|dailymotion|streamable|loom\.com/i.test(url)||/\.(mp4|webm|mov|ogg)(\?|$)/i.test(url);
+}
 function saveFeedPost(i){
-  posts[i].mediaType=document.getElementById('ef_mtype').value;
+  const videoUrl=(document.getElementById('ef_video')?.value||'').trim();
   if(pendingFeedUpload){
     posts[i].mediaUrl=pendingFeedUpload;
-    if(pendingFeedUploadType)posts[i].mediaType=pendingFeedUploadType;
-  } else {
-    posts[i].mediaUrl=document.getElementById('ef_media').value.trim();
+    posts[i].mediaType=pendingFeedUploadType||'image';
+  } else if(videoUrl){
+    posts[i].mediaUrl=videoUrl;
+    posts[i].mediaType='video';
+  } else if(!pendingFeedUpload&&!videoUrl){
+    // Keep existing media if neither field changed, unless both are empty
+    const hadUpload=posts[i].mediaUrl&&!isVideoUrl(posts[i].mediaUrl);
+    if(!hadUpload){posts[i].mediaUrl='';posts[i].mediaType='image'}
   }
   posts[i].emoji=document.getElementById('ef_emo').value.trim();
   posts[i].bg=document.getElementById('ef_bg').value.trim();
@@ -5068,24 +5146,26 @@ function saveFeedPost(i){
 }
 function deleteFeedPost(i){posts.splice(i,1);hideEditModal();renderFeed();renderGrid()}
 function addFeedPost(){pendingFeedUpload='';pendingFeedUploadType='';showEditModal(`<h3>Add New Feed Post</h3>
-    <div class="edit-field"><label>Media Type</label><select id="ef_mtype"><option value="image" selected>Image</option><option value="video">Video</option></select></div>
-    <div class="edit-field"><label>Media URL</label>
-      <div class="edit-tabs"><button class="edit-tab active" onclick="switchTab(this,'url')">URL</button><button class="edit-tab" onclick="switchTab(this,'upload')">Upload</button></div>
-      <div class="edit-tab-content active" id="tab-url"><input id="ef_media" value="" placeholder="File URL (image or video)..."></div>
-      <div class="edit-tab-content" id="tab-upload"><div class="upload-zone" id="feedUploadZone" onclick="document.getElementById('feedFileInput').click()">Click to upload image or video</div><input type="file" id="feedFileInput" accept="image/*,video/*" style="display:none" onchange="handleFeedUpload(this)"></div>
+    <div class="edit-field"><label>📷 Image (upload)</label>
+      <div class="upload-zone" id="feedUploadZone" onclick="document.getElementById('feedFileInput').click()">Click to upload an image</div>
+      <input type="file" id="feedFileInput" accept="image/*" style="display:none" onchange="handleFeedUpload(this)">
+    </div>
+    <div class="edit-field"><label>🎬 Video URL <span style="font-size:8px;color:#555">(YouTube, Vimeo, Drive, etc.)</span></label>
+      <input id="ef_video" value="" placeholder="Paste video URL...">
     </div>
     <div class="edit-field"><label>Emoji (fallback)</label><input id="ef_emo" value="📷"></div>
     <div class="edit-field"><label>Background Color</label><input id="ef_bg" value="#1a1a2a"></div>
     <div class="edit-font-row"><div class="edit-field"><label>Caption</label><textarea id="ef_cap"></textarea></div><div class="edit-field"><label>Caption Font</label>${fontSelect('ef_font','')}</div></div>
     <div style="display:flex;gap:10px;margin-top:6px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveNewFeedPost()">Add Post</button></div>`)}
 function saveNewFeedPost(){
-  const mtype=document.getElementById('ef_mtype').value;
-  const p={emoji:document.getElementById('ef_emo').value.trim()||'📷',bg:document.getElementById('ef_bg').value.trim()||'#1a1a2a',cap:document.getElementById('ef_cap').value.trim(),capFont:document.getElementById('ef_font').value,mediaType:mtype,mediaUrl:''};
+  const videoUrl=(document.getElementById('ef_video')?.value||'').trim();
+  const p={emoji:document.getElementById('ef_emo').value.trim()||'📷',bg:document.getElementById('ef_bg').value.trim()||'#1a1a2a',cap:document.getElementById('ef_cap').value.trim(),capFont:document.getElementById('ef_font').value,mediaType:'image',mediaUrl:''};
   if(pendingFeedUpload){
     p.mediaUrl=pendingFeedUpload;
-    if(pendingFeedUploadType)p.mediaType=pendingFeedUploadType;
-  } else {
-    p.mediaUrl=document.getElementById('ef_media').value.trim();
+    p.mediaType=pendingFeedUploadType||'image';
+  } else if(videoUrl){
+    p.mediaUrl=videoUrl;
+    p.mediaType='video';
   }
   posts.push(p);pendingFeedUpload='';hideEditModal();renderFeed();renderGrid();
 }
