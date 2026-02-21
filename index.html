@@ -228,7 +228,7 @@
   .rv-1{top:7px;left:7px}.rv-2{top:7px;right:7px}.rv-3{bottom:7px;left:7px}.rv-4{bottom:7px;right:7px}
 
   /* Display — CRT glass with scanlines and phosphor glow */
-  .v-display{width:100%;min-height:68px;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:18px;position:relative;overflow:hidden;
+  .v-display{width:100%;min-height:82px;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:18px;position:relative;overflow:hidden;padding:12px 16px;
     background:linear-gradient(180deg,#020604,#040a06,#030805);
     border:1px solid #1a2a1e;
     box-shadow:
@@ -255,9 +255,10 @@
     100%{filter:brightness(1)}
   }
 
-  #vDisp{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--green);font-size:22px;letter-spacing:6px;z-index:3;
+  #vDisp{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--green);font-size:22px;letter-spacing:6px;z-index:3;flex-shrink:0;
     text-shadow:0 0 8px rgba(0,255,136,.4),0 0 20px rgba(0,255,136,.15);animation:flick 5s infinite}
   #vCursor{display:inline-block;width:2px;height:20px;background:var(--green);margin-left:4px;vertical-align:middle;animation:blink .8s step-end infinite;box-shadow:0 0 6px rgba(0,255,136,.4);z-index:3}
+  .v-disp-row{display:flex;align-items:center;justify-content:center;z-index:3;flex-shrink:0}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
   @keyframes flick{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.75}94%{opacity:1}96%{opacity:.85}97%{opacity:1}}
 
@@ -307,7 +308,7 @@
   .v-dot.ok{background:radial-gradient(circle at 40% 35%,#44ff88,#00cc44);box-shadow:0 0 6px rgba(0,255,136,.5),0 0 12px rgba(0,255,136,.2);animation:none}
   .v-lbl{color:#aaa;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:600}
   .v-lbl.ok{color:var(--green)}
-  .v-tries{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;text-align:center;min-height:14px;font-weight:700;transition:color .3s;text-transform:uppercase}
+  .v-tries{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;text-align:center;min-height:14px;font-weight:700;transition:color .3s;text-transform:uppercase;z-index:3;margin-top:4px}
   .v-tries.plenty{color:#44aa88}
   .v-tries.warning{color:var(--amber)}
   .v-tries.critical{color:var(--red)}
@@ -824,6 +825,17 @@
   .lb-filter:hover{border-color:rgba(255,215,0,.12)}
   .lb-sort{display:flex;align-items:center;gap:6px;margin-left:auto}
   .lb-body{flex:1;overflow-y:auto;padding:12px 20px}
+  .lb-pagination{display:flex;align-items:center;justify-content:center;gap:4px;padding:10px 20px;border-top:1px solid var(--border);flex-wrap:wrap}
+  .lb-page-btn{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#888;letter-spacing:1px;padding:5px 10px;border:1px solid var(--border);border-radius:3px;background:rgba(255,255,255,.02);cursor:pointer;transition:all .2s}
+  .lb-page-btn:hover{border-color:rgba(0,212,255,.3);color:var(--cyan)}
+  .lb-page-btn.active{border-color:rgba(0,212,255,.4);color:var(--cyan);background:rgba(0,212,255,.06)}
+  .lb-page-btn.disabled{opacity:.3;pointer-events:none}
+  .lb-page-info{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;padding:0 8px}
+  .lb-msg-btn{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--cyan);letter-spacing:1px;cursor:pointer;padding:3px 8px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.04);transition:all .2s;white-space:nowrap}
+  .lb-msg-btn:hover{background:rgba(0,212,255,.1);border-color:rgba(0,212,255,.4)}
+  .lb-desub-btn{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--amber);letter-spacing:1px;cursor:pointer;padding:3px 8px;border:1px solid rgba(255,170,51,.2);border-radius:3px;background:rgba(255,170,51,.04);transition:all .2s;white-space:nowrap}
+  .lb-desub-btn:hover{background:rgba(255,170,51,.1);border-color:rgba(255,170,51,.4)}
+  .lb-desubmit-check{margin-right:6px;cursor:pointer}
 
   /* Leaderboard rows */
   .lb-row{border:1px solid var(--border);border-radius:5px;margin-bottom:6px;transition:all .2s;overflow:hidden;cursor:pointer}
@@ -1168,7 +1180,7 @@
     .login-panel{width:92vw;max-width:420px;padding:20px 16px 14px}
     .login-title{font-size:11px;letter-spacing:2px}
     .vault-subtitle{font-size:8px;letter-spacing:3px}
-    .v-display{height:56px}
+    .v-display{min-height:74px;padding:10px 12px}
     #vDisp{font-size:18px;letter-spacing:6px}
     .kb-row{max-width:100%;gap:3px;margin-bottom:3px}
     .kb-key{height:38px}
@@ -1624,7 +1636,14 @@
         <div class="ap-status-pill inactive"><span class="ap-status-dot off"></span> Inactive: <strong id="apInactiveCount">0</strong></div>
         <div class="ap-status-pill total">Total: <strong id="apTotalCount">0</strong></div>
       </div>
-      <div class="ap-team-list" id="apTeamMonitor" style="max-height:60vh"></div>
+      <div class="ap-team-list" id="apTeamMonitor" style="max-height:none"></div>
+      <div class="lb-pagination" id="tmPagination"></div>
+      <div style="display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--border);margin-top:8px">
+        <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555">Per page:</span>
+        <select id="tmPerPage" onchange="tmPerPage=parseInt(this.value);tmCurrentPage=0;renderTeamMonitor()" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:3px 6px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:9px;outline:none">
+          <option value="15" selected>15</option><option value="20">20</option><option value="25">25</option><option value="50">50</option>
+        </select>
+      </div>
     </div>
   </div>
 </div>
@@ -1698,6 +1717,19 @@
       </div>
     </div>
     <div class="lb-body" id="lbBody"></div>
+    <div class="lb-pagination" id="lbPagination"></div>
+    <div class="lb-admin-actions" id="lbAdminActions" style="display:none">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--border)">
+        <span style="font-family:Saira,sans-serif;font-size:9px;color:#888;letter-spacing:2px;font-weight:600">ADMIN:</span>
+        <button class="ap-btn ap-btn-amber" onclick="desubmitSelected()" style="font-size:9px;padding:5px 12px">↩ De-submit Selected</button>
+        <button class="ap-btn ap-btn-red" onclick="desubmitAll()" style="font-size:9px;padding:5px 12px">↩ De-submit All</button>
+        <div style="flex:1"></div>
+        <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555">Per page:</span>
+        <select id="lbPerPage" onchange="lbPerPage=parseInt(this.value);lbCurrentPage=0;renderFullLeaderboard()" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:3px 6px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:9px;outline:none">
+          <option value="15" selected>15</option><option value="20">20</option><option value="25">25</option><option value="50">50</option>
+        </select>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1779,7 +1811,7 @@
           <div class="vault-panel" id="vaultPanel">
             <div class="v-rate-limit" id="vRateLimit"><span class="v-rate-limit-text" id="vRateLimitText">⚠ Security Lockout</span><span class="v-rate-limit-timer" id="vRateLimitTimer">30</span><div class="v-rate-limit-bar"><div class="v-rate-limit-fill" id="vRateLimitFill"></div></div><span class="v-rate-limit-sub" id="vRateLimitSub">Too many failed attempts</span></div>
             <div class="rv rv-1"></div><div class="rv rv-2"></div><div class="rv rv-3"></div><div class="rv rv-4"></div>
-            <div class="v-display"><span id="vDisp">ENTER CODE</span><span id="vCursor"></span><div class="v-tries" id="vkTries"></div></div>
+            <div class="v-display"><div class="v-disp-row"><span id="vDisp">ENTER CODE</span><span id="vCursor"></span></div><div class="v-tries" id="vkTries"></div></div>
             <div class="kb-row"><div class="kb-key" onclick="vkType('1')"><span>1</span></div><div class="kb-key" onclick="vkType('2')"><span>2</span></div><div class="kb-key" onclick="vkType('3')"><span>3</span></div><div class="kb-key" onclick="vkType('4')"><span>4</span></div><div class="kb-key" onclick="vkType('5')"><span>5</span></div><div class="kb-key" onclick="vkType('6')"><span>6</span></div><div class="kb-key" onclick="vkType('7')"><span>7</span></div><div class="kb-key" onclick="vkType('8')"><span>8</span></div><div class="kb-key" onclick="vkType('9')"><span>9</span></div><div class="kb-key" onclick="vkType('0')"><span>0</span></div></div>
             <div class="kb-row"><div class="kb-key" onclick="vkType('Q')"><span>Q</span></div><div class="kb-key" onclick="vkType('W')"><span>W</span></div><div class="kb-key" onclick="vkType('E')"><span>E</span></div><div class="kb-key" onclick="vkType('R')"><span>R</span></div><div class="kb-key" onclick="vkType('T')"><span>T</span></div><div class="kb-key" onclick="vkType('Y')"><span>Y</span></div><div class="kb-key" onclick="vkType('U')"><span>U</span></div><div class="kb-key" onclick="vkType('I')"><span>I</span></div><div class="kb-key" onclick="vkType('O')"><span>O</span></div><div class="kb-key" onclick="vkType('P')"><span>P</span></div></div>
             <div class="kb-row"><div class="kb-key" onclick="vkType('A')"><span>A</span></div><div class="kb-key" onclick="vkType('S')"><span>S</span></div><div class="kb-key" onclick="vkType('D')"><span>D</span></div><div class="kb-key" onclick="vkType('F')"><span>F</span></div><div class="kb-key" onclick="vkType('G')"><span>G</span></div><div class="kb-key" onclick="vkType('H')"><span>H</span></div><div class="kb-key" onclick="vkType('J')"><span>J</span></div><div class="kb-key" onclick="vkType('K')"><span>K</span></div><div class="kb-key" onclick="vkType('L')"><span>L</span></div></div>
@@ -2301,7 +2333,7 @@ let vaultCodes=[
 ];
 let vkCode='';let vkFailCount=0;let vkTotalFails=0;let vkRateLimited=false;
 const vkDisp=document.getElementById('vDisp');
-function vkUpdDisp(){if(vkDisp){vkDisp.textContent=vkCode.length?vkCode:'ENTER CODE';vkDisp.style.color='';vkDisp.style.fontSize='';vkDisp.style.letterSpacing=''}const triesEl=document.getElementById('vkTries');if(triesEl)triesEl.style.display=vkCode.length?'none':''}
+function vkUpdDisp(){if(vkDisp){vkDisp.textContent=vkCode.length?vkCode:'ENTER CODE';vkDisp.style.color='';vkDisp.style.fontSize='';vkDisp.style.letterSpacing=''}const triesEl=document.getElementById('vkTries');if(triesEl)triesEl.style.visibility=vkCode.length?'hidden':'visible'}
 function vkType(ch){playClick();if(vkRateLimited)return;if(vkCode.length<20){vkCode+=ch;vkUpdDisp();vkGlitch()}}
 function vkDel(){playClick();if(vkRateLimited)return;vkCode=vkCode.slice(0,-1);vkUpdDisp();vkGlitch()}
 function vkClear(){playClick();if(vkRateLimited)return;vkCode='';vkUpdDisp();vkGlitch()}
@@ -2383,6 +2415,7 @@ function triggerVaultLockout(seconds,title,subtitle){
       limiter.classList.remove('active');
       vkRateLimited=false;
       vkFailCount=0;vkTotalFails=0;
+      vkCode='';vkUpdDisp();
       updateTriesDisplay();
     }
   },1000);
@@ -3811,10 +3844,13 @@ function renderTeamMonitor(){
   document.getElementById('apInactiveCount').textContent=inactive.length;
   document.getElementById('apTotalCount').textContent=registeredTeams.length;
 
-  // Sort: active first (most recent), then inactive (most recent)
   const sorted=[...active.sort((a,b)=>b.lastActive-a.lastActive),...inactive.sort((a,b)=>b.lastActive-a.lastActive)];
+  const totalPages=Math.max(1,Math.ceil(sorted.length/tmPerPage));
+  if(tmCurrentPage>=totalPages)tmCurrentPage=totalPages-1;
+  const start=tmCurrentPage*tmPerPage;
+  const pageTeams=sorted.slice(start,start+tmPerPage);
 
-  el.innerHTML=sorted.length?sorted.map(t=>{
+  el.innerHTML=pageTeams.length?pageTeams.map(t=>{
     const on=isTeamActive(t);
     return `<div class="ap-monitor-row ${on?'active':'inactive'}">
       <div class="ap-monitor-dot ${on?'on':'off'}"></div>
@@ -3822,8 +3858,11 @@ function renderTeamMonitor(){
       <span class="ap-monitor-name">${t.name} (${t.members.length})</span>
       <span class="ap-monitor-fields">${t.fieldsCompleted}/${intelFields.length}</span>
       <span class="ap-monitor-time">${timeSince(t.lastActive)}</span>
+      <span class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage('${t.id}','${t.name.replace(/'/g,"\\'")}')">💬</span>
     </div>`;
   }).join(''):'<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:12px 0;text-align:center">No teams registered yet</div>';
+
+  renderPagination('tmPagination',sorted.length,tmPerPage,tmCurrentPage,p=>{tmCurrentPage=p;renderTeamMonitor()});
 }
 
 function renderLeaderboard(){
@@ -3935,21 +3974,33 @@ function getSortedTeams(){
   return teams;
 }
 
+let lbPerPage=15,lbCurrentPage=0;
+let tmPerPage=15,tmCurrentPage=0;
+
 function renderFullLeaderboard(){
   const body=document.getElementById('lbBody');
   if(!body)return;
   const teams=getSortedTeams();
   const maxFields=intelFields.length||1;
+  const totalPages=Math.max(1,Math.ceil(teams.length/lbPerPage));
+  if(lbCurrentPage>=totalPages)lbCurrentPage=totalPages-1;
+  const start=lbCurrentPage*lbPerPage;
+  const pageTeams=teams.slice(start,start+lbPerPage);
 
   document.getElementById('lbTeamCount').textContent=teams.length+' team'+(teams.length!==1?'s':'');
 
+  // Show admin actions if admin
+  const adminActions=document.getElementById('lbAdminActions');
+  if(adminActions)adminActions.style.display=isAdmin?'':'none';
+
   if(!teams.length){
     body.innerHTML='<div style="text-align:center;padding:40px 0"><div style="font-size:40px;opacity:.3;margin-bottom:12px">🏆</div><div style="font-family:Chakra Petch,sans-serif;font-size:11px;color:#555">No teams match your filters</div></div>';
+    renderPagination('lbPagination',teams.length,lbPerPage,lbCurrentPage,p=>{lbCurrentPage=p;renderFullLeaderboard()});
     return;
   }
 
-  body.innerHTML=teams.map((t,idx)=>{
-    const rank=idx+1;
+  body.innerHTML=pageTeams.map((t,idx)=>{
+    const rank=start+idx+1;
     const rc=rank===1?'r1':rank===2?'r2':rank===3?'r3':'rn';
     const pct=Math.round((t.fieldsCompleted/maxFields)*100);
     const barColor=rank===1?'#ffd700':rank===2?'#c0c0c0':rank===3?'#cd7f32':'#333';
@@ -3958,7 +4009,6 @@ function renderFullLeaderboard(){
 
     let detailHtml='';
     if(expanded){
-      // Members
       const members=t.memberDetails||t.members?.map(n=>({name:n}))||[];
       let membersHtml=members.map((m,mi)=>{
         const name=typeof m==='string'?m:m.name;
@@ -3967,7 +4017,6 @@ function renderFullLeaderboard(){
         return `<div class="lb-member-row"><div class="lb-member-num">${mi+1}</div><span class="lb-member-name">${name}</span><span class="lb-member-meta">${dept}${dept&&email?' · ':''}${email}</span></div>`;
       }).join('');
 
-      // Field-by-field status (if submitted)
       let fieldsHtml='';
       if(t.submissionResults){
         fieldsHtml=t.submissionResults.results.map(r=>{
@@ -3979,9 +4028,15 @@ function renderFullLeaderboard(){
         fieldsHtml=`<div style="font-family:IBM Plex Mono,monospace;font-size:9px;color:#555;padding:8px 0">Awaiting submission</div>`;
       }
 
+      const msgBtn=isAdmin?`<button class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage('${t.id}','${t.name.replace(/'/g,"\\'")}')">💬 Message Team</button>`:'';
+      const desubBtn=isAdmin&&t.submitTime?`<button class="lb-desub-btn" onclick="event.stopPropagation();desubmitTeam('${t.id}')">↩ De-submit</button>`:'';
+
       detailHtml=`<div class="lb-detail">
         <div class="lb-detail-section"><div class="lb-detail-title">👥 Team Members</div>${membersHtml}</div>
         <div class="lb-detail-section"><div class="lb-detail-title">📋 Field Status</div>${fieldsHtml}</div>
+        <div class="lb-detail-section"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          ${msgBtn}${desubBtn}
+        </div></div>
         <div class="lb-detail-section"><div style="display:flex;gap:16px;flex-wrap:wrap;font-family:IBM Plex Mono,monospace;font-size:8px;color:#666;letter-spacing:1px">
           <span>ID: ${t.id}</span>
           <span>Registered: ${t.registeredAt?new Date(t.registeredAt).toLocaleTimeString():'-'}</span>
@@ -3991,8 +4046,11 @@ function renderFullLeaderboard(){
       </div>`;
     }
 
+    const checkbox=isAdmin&&t.submitTime?`<input type="checkbox" class="lb-desubmit-check" data-team="${t.id}" onclick="event.stopPropagation()">`:'';
+
     return `<div class="lb-row${expanded?' expanded':''}" onclick="toggleLbTeam('${t.id}')">
       <div class="lb-row-main">
+        ${checkbox}
         <div class="lb-rank ${rc}">#${rank}</div>
         <div class="lb-team-status ${on?'on':'off'}"></div>
         <div class="lb-team-info">
@@ -4013,11 +4071,123 @@ function renderFullLeaderboard(){
       ${detailHtml}
     </div>`;
   }).join('');
+
+  renderPagination('lbPagination',teams.length,lbPerPage,lbCurrentPage,p=>{lbCurrentPage=p;renderFullLeaderboard()});
 }
 
 function toggleLbTeam(id){
   lbExpandedTeam=lbExpandedTeam===id?null:id;
   renderFullLeaderboard();
+}
+
+// ── Shared Pagination Renderer ──
+function renderPagination(containerId,total,perPage,currentPage,onPageChange){
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  const totalPages=Math.ceil(total/perPage);
+  if(totalPages<=1){el.innerHTML='';return}
+  let html='';
+  html+=`<button class="lb-page-btn${currentPage===0?' disabled':''}" onclick="event.stopPropagation()">◂ Prev</button>`;
+  // Show max 7 page buttons with ellipsis
+  const maxBtns=7;
+  let startP=Math.max(0,currentPage-3);
+  let endP=Math.min(totalPages-1,startP+maxBtns-1);
+  if(endP-startP<maxBtns-1)startP=Math.max(0,endP-maxBtns+1);
+  if(startP>0)html+=`<button class="lb-page-btn" data-p="0">1</button><span class="lb-page-info">…</span>`;
+  for(let p=startP;p<=endP;p++){
+    html+=`<button class="lb-page-btn${p===currentPage?' active':''}" data-p="${p}">${p+1}</button>`;
+  }
+  if(endP<totalPages-1)html+=`<span class="lb-page-info">…</span><button class="lb-page-btn" data-p="${totalPages-1}">${totalPages}</button>`;
+  html+=`<button class="lb-page-btn${currentPage>=totalPages-1?' disabled':''}" data-p="${currentPage+1}">Next ▸</button>`;
+  html+=`<span class="lb-page-info">${currentPage*perPage+1}–${Math.min(total,(currentPage+1)*perPage)} of ${total}</span>`;
+  el.innerHTML=html;
+  el.querySelectorAll('.lb-page-btn:not(.disabled)').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const txt=btn.textContent;
+      if(txt.includes('Prev'))onPageChange(Math.max(0,currentPage-1));
+      else if(txt.includes('Next'))onPageChange(Math.min(totalPages-1,currentPage+1));
+      else if(btn.dataset.p!==undefined)onPageChange(parseInt(btn.dataset.p));
+    });
+  });
+}
+
+// ── Direct Team Messaging ──
+function sendTeamMessage(teamId,teamName){
+  showEditModal(`<h3>💬 Message: ${teamName}</h3>
+    <div style="font-family:IBM Plex Mono,monospace;font-size:9px;color:#666;letter-spacing:1px;margin-bottom:10px">Team ID: ${teamId} · Message will display as a banner on their screen</div>
+    <div class="edit-field"><label>Message</label><textarea id="tmMsgText" rows="3" placeholder="Type a message to this team..." style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px;color:var(--green);font-family:Chakra Petch,sans-serif;font-size:12px;outline:none;resize:vertical"></textarea></div>
+    <div style="display:flex;gap:10px;margin-top:12px"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><span style="flex:1"></span><button class="btn-standard btn-cyan" onclick="dispatchTeamMessage('${teamId}')">📡 Send Message</button></div>`);
+}
+function dispatchTeamMessage(teamId){
+  const msg=document.getElementById('tmMsgText')?.value.trim();
+  if(!msg)return;
+  // Store targeted message
+  if(!window.teamMessages)window.teamMessages={};
+  if(!window.teamMessages[teamId])window.teamMessages[teamId]=[];
+  window.teamMessages[teamId].push({text:msg,time:new Date().toISOString(),read:false});
+  hideEditModal();
+  // If we're viewing as that team, show the banner immediately
+  if(currentTeam&&currentTeam.id===teamId){
+    showPlayerBanner(msg);
+  }
+  // Flash confirmation
+  const flash=document.createElement('div');
+  flash.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.3);border-radius:6px;padding:10px 20px;font-family:IBM Plex Mono,monospace;font-size:11px;color:var(--cyan);letter-spacing:1px;animation:fadeIn .3s ease';
+  flash.textContent='✓ Message sent to '+teamId;
+  document.body.appendChild(flash);
+  setTimeout(()=>flash.remove(),2500);
+}
+function showPlayerBanner(msg){
+  const banner=document.getElementById('playerBanner');
+  const content=document.getElementById('pbContent');
+  const icon=document.getElementById('pbIcon');
+  if(!banner||!content)return;
+  icon.textContent='💬';
+  content.innerHTML=`<div style="font-family:Chakra Petch,sans-serif;font-size:12px;color:#e0e0e0;letter-spacing:.5px">${msg}</div>`;
+  banner.classList.add('active');
+  const prog=document.getElementById('pbProgress');
+  if(prog){prog.style.transition='none';prog.style.width='100%';setTimeout(()=>{prog.style.transition='width 15s linear';prog.style.width='0%'},50)}
+  clearTimeout(window._bannerTimeout);
+  window._bannerTimeout=setTimeout(()=>dismissBanner(),15000);
+}
+
+// ── De-submit Mechanism ──
+function desubmitTeam(teamId){
+  const team=registeredTeams.find(t=>t.id===teamId);
+  if(!team)return;
+  team.submitTime=null;
+  team.submissionResults=null;
+  team.isSubmitted=false;
+  // Notification
+  if(!window.teamMessages)window.teamMessages={};
+  if(!window.teamMessages[teamId])window.teamMessages[teamId]=[];
+  window.teamMessages[teamId].push({text:'Your submission has been reopened for revision by the administrator.',time:new Date().toISOString(),read:false,type:'system'});
+  if(currentTeam&&currentTeam.id===teamId){
+    isSubmitted=false;
+    renderIntelForm();
+    showPlayerBanner('Your submission has been reopened for revision. You may update your answers and re-submit.');
+  }
+  renderFullLeaderboard();
+  renderLeaderboard();
+}
+function desubmitSelected(){
+  const checks=document.querySelectorAll('.lb-desubmit-check:checked');
+  if(!checks.length){
+    alert('No teams selected. Expand a submitted team\'s row to use individual de-submit, or check the boxes next to submitted teams.');
+    return;
+  }
+  if(!confirm(`De-submit ${checks.length} team(s)? Their submissions will be unlocked for revision.`))return;
+  checks.forEach(cb=>{
+    const teamId=cb.dataset.team;
+    if(teamId)desubmitTeam(teamId);
+  });
+}
+function desubmitAll(){
+  const submitted=registeredTeams.filter(t=>t.submitTime);
+  if(!submitted.length){alert('No teams have submitted yet.');return}
+  if(!confirm(`De-submit ALL ${submitted.length} team(s)? Every submission will be unlocked for revision.`))return;
+  submitted.forEach(t=>desubmitTeam(t.id));
 }
 
 // ── Keys & Codes Panel ──
