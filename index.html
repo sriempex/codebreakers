@@ -3392,7 +3392,7 @@ function renderMediaContent(m){
     if(isImage){
       body.innerHTML=`<img class="mv-image-viewer" src="${url}" alt="${m.name}" onclick="this.classList.toggle('zoomed')">`;
     }else{
-      body.innerHTML=`<div class="mv-no-file"><div class="mv-no-file-icon">${m.icon}</div><div class="mv-no-file-text">File uploaded locally — cannot preview in viewer.<br><br><a href="${url}" download="${m.name||'file'}" style="color:var(--cyan);text-decoration:underline;font-size:11px;letter-spacing:1px">⬇ DOWNLOAD FILE</a><br><br><span style="font-size:9px;color:#555">For persistent hosting, upload to Google Drive and paste the share link.</span></div></div>`;
+      body.innerHTML=`<div class="mv-no-file"><div class="mv-no-file-icon">${m.icon}</div><div class="mv-no-file-text">File uploaded locally — cannot preview in viewer.${allowDownloads?`<br><br><a href="${url}" download="${m.name||'file'}" style="color:var(--cyan);text-decoration:underline;font-size:11px;letter-spacing:1px">⬇ DOWNLOAD FILE</a>`:''}<br><br><span style="font-size:9px;color:#555">For persistent hosting, upload to Google Drive and paste the share link.</span></div></div>`;
     }
     return;
   }
@@ -3612,7 +3612,7 @@ function renderDocViewer(body,m,url,eu){
   }
   // Google Drive files: use /preview (handles PDFs, docs, sheets, slides natively)
   if(isDrive){
-    body.innerHTML=`<iframe class="mv-pdf-frame" src="${eu.preview}" allow="autoplay" allowfullscreen></iframe><div style="text-align:center;margin-top:8px"><a href="${eu.download}" target="_blank" style="color:var(--cyan);font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1.5px;text-decoration:none;opacity:.7">DOWNLOAD ORIGINAL</a></div>`;
+    body.innerHTML=`<iframe class="mv-pdf-frame" src="${eu.preview}" allow="autoplay" allowfullscreen></iframe>${allowDownloads?`<div style="text-align:center;margin-top:8px"><a href="${eu.download}" target="_blank" style="color:var(--cyan);font-family:\'Saira\',sans-serif;font-size:10px;letter-spacing:1.5px;text-decoration:none;opacity:.7">DOWNLOAD ORIGINAL</a></div>`:''}`;
     return;
   }
   // Office docs (non-Drive)
@@ -3627,7 +3627,7 @@ function renderDocViewer(body,m,url,eu){
     return;
   }
   // Fallback
-  body.innerHTML=`<iframe class="mv-pdf-frame" src="${url}" allowfullscreen></iframe><div style="text-align:center;margin-top:8px"><a href="${url}" target="_blank" style="color:var(--cyan);font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1.5px;text-decoration:none;opacity:.7">OPEN IN NEW TAB</a></div>`;
+  body.innerHTML=`<iframe class="mv-pdf-frame" src="${url}" allowfullscreen></iframe>${allowDownloads?`<div style="text-align:center;margin-top:8px"><a href="${url}" target="_blank" style="color:var(--cyan);font-family:\'Saira\',sans-serif;font-size:10px;letter-spacing:1.5px;text-decoration:none;opacity:.7">OPEN IN NEW TAB</a></div>`:''}`;
 }
 
 function renderLockedView(i){
@@ -5104,19 +5104,48 @@ async function uploadFileToDrive(file,subfolder){
   return new Promise((resolve,reject)=>{
     const reader=new FileReader();
     reader.onload=async e=>{
-      // Strip the data:xxx;base64, prefix to get raw base64
       const dataUrl=e.target.result;
       const base64=dataUrl.split(',')[1];
-      const result=await apiCall('uploadFile',{
-        fileData:base64,
-        mimeType:file.type||'application/octet-stream',
-        fileName:file.name||'upload_'+Date.now(),
-        subfolder:subfolder||''
-      });
-      if(result.ok){
-        resolve(result);
-      }else{
-        reject(new Error(result.error||'Upload failed'));
+      
+      // Check file size — Apps Script has ~50MB execution limit but practical limit ~10MB for base64
+      if(base64.length>10*1024*1024){
+        reject(new Error('File too large (max ~7.5MB). Compress or use a smaller file.'));
+        return;
+      }
+      
+      try{
+        const payload={
+          action:'uploadFile',
+          fileData:base64,
+          mimeType:file.type||'application/octet-stream',
+          fileName:file.name||'upload_'+Date.now(),
+          subfolder:subfolder||''
+        };
+        if(adminSession)payload.adminToken=adminSession.adminToken;
+        
+        // POST with text/plain Content-Type avoids CORS preflight
+        // Apps Script handles the redirect transparently
+        const resp=await fetch(API_URL,{
+          method:'POST',
+          headers:{'Content-Type':'text/plain;charset=utf-8'},
+          body:JSON.stringify(payload),
+          redirect:'follow'
+        });
+        
+        const text=await resp.text();
+        let result;
+        try{result=JSON.parse(text)}catch(e){
+          // Response might be HTML if something went wrong
+          console.error('Upload response:',text.substring(0,500));
+          reject(new Error('Upload failed — server error'));
+          return;
+        }
+        
+        if(result.ok)resolve(result);
+        else reject(new Error(result.error||'Upload failed'));
+      }catch(err){
+        console.error('Upload error:',err);
+        reject(err);
       }
     };
     reader.onerror=()=>reject(new Error('File read failed'));
