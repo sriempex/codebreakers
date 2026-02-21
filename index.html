@@ -307,6 +307,10 @@
   .v-dot.ok{background:radial-gradient(circle at 40% 35%,#44ff88,#00cc44);box-shadow:0 0 6px rgba(0,255,136,.5),0 0 12px rgba(0,255,136,.2);animation:none}
   .v-lbl{color:#aaa;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:600}
   .v-lbl.ok{color:var(--green)}
+  .v-tries{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-align:center;margin-top:4px;min-height:14px}
+  .v-tries.plenty{color:#667788}
+  .v-tries.warning{color:var(--amber)}
+  .v-tries.critical{color:var(--red)}
   .v-tries{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:#888;margin-top:8px;text-transform:uppercase;transition:color .3s;font-weight:500}
   .v-tries.warn{color:var(--amber)}
   .v-tries.crit{color:var(--red)}
@@ -1540,13 +1544,32 @@
     <div class="ap-section"><h4>🎮 Event Settings</h4>
       <p>Configure participant mode, countdown timer, and leaderboard display.</p>
       <div style="margin-bottom:16px">
-        <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">⏱ Countdown Timer</label>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <button class="admin-timer-btn" id="pauseBtn" onclick="togglePause()">⏸ PAUSE</button>
-          <input class="admin-timer-input" id="timerInput" placeholder="HH:MM:SS" maxlength="8">
-          <button class="admin-timer-btn" onclick="setNewTime()">SET</button>
-          <button class="admin-timer-btn" onclick="resetTimer()">RESET</button>
+        <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">⏱ Event Timer</label>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+          <select id="timerMode" onchange="onTimerModeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none">
+            <option value="countdown">Manual Countdown</option>
+            <option value="event">Event Schedule</option>
+          </select>
           <span style="font-family:'IBM Plex Mono',monospace;font-size:16px;color:var(--red);letter-spacing:3px;margin-left:8px;font-weight:700;text-shadow:0 0 8px rgba(255,50,50,.3)" id="apTimerDisplay">—</span>
+        </div>
+        <div id="timerCountdownControls">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <button class="admin-timer-btn" id="pauseBtn" onclick="togglePause()">⏸ PAUSE</button>
+            <input class="admin-timer-input" id="timerInput" placeholder="HH:MM:SS" maxlength="8">
+            <button class="admin-timer-btn" onclick="setNewTime()">SET</button>
+            <button class="admin-timer-btn" onclick="resetTimer()">RESET</button>
+          </div>
+        </div>
+        <div id="timerEventControls" style="display:none">
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+            <div class="ap-field" style="flex:1;min-width:180px"><label>Event Start</label><input type="datetime-local" id="eventStartInput" onchange="onEventTimeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 12px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:11px;width:100%;outline:none"></div>
+            <div class="ap-field" style="flex:1;min-width:180px"><label>Event End</label><input type="datetime-local" id="eventEndInput" onchange="onEventTimeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 12px;color:var(--red);font-family:'IBM Plex Mono',monospace;font-size:11px;width:100%;outline:none"></div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="eventAutoLock" checked onchange="eventSettings.autoLock=this.checked"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa">Auto-lock site when timer expires</span></label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="eventShowLeaderboard" checked onchange="eventSettings.showLeaderboardOnExpiry=this.checked"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa">Reveal leaderboard on expiry</span></label>
+          </div>
+          <div id="eventStatusMsg" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#666;letter-spacing:1px;margin-top:8px"></div>
         </div>
       </div>
       <div class="edit-field-row" style="gap:12px;margin-bottom:12px">
@@ -2298,6 +2321,7 @@ function vkSubmit(){
     document.getElementById('flashG').classList.add('on');
     setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
     vkFailCount=0;vkTotalFails=0;
+    updateTriesDisplay();
     setTimeout(()=>{vkCode='';vkUpdDisp();renderVaultPanel()},2000);
     renderGrid();
   }else if(vaultCodes.find(c=>c.code.toUpperCase()===entered&&c.unlocked)){
@@ -2311,21 +2335,30 @@ function vkSubmit(){
     const maxAttempts=regSettings.vaultMaxAttempts||5;
     const cooldown=regSettings.vaultCooldownSec||30;
     const unlimited=regSettings.vaultUnlimitedAttempts;
+    updateTriesDisplay();
     if(unlimited){
-      // No lockout, just show fail message
       setTimeout(()=>{vkCode='';vkUpdDisp()},1200);
     }else{
       const remaining=maxAttempts-vkTotalFails;
-      if(remaining>0&&remaining<=3){
-        setTimeout(()=>{vkDisp.textContent=remaining+' ATTEMPT'+(remaining>1?'S':'')+' REMAINING';vkDisp.style.color='var(--amber)';vkDisp.style.fontSize='11px'},1200);
-        setTimeout(()=>{vkCode='';vkUpdDisp()},3000);
-      }else if(remaining<=0){
+      if(remaining<=0){
         triggerVaultLockout(cooldown,'SECURITY LOCKOUT','Maximum attempts reached · '+cooldown+'s cooldown');
       }else{
         setTimeout(()=>{vkCode='';vkUpdDisp()},1200);
       }
     }
   }
+}
+function updateTriesDisplay(){
+  const el=document.getElementById('vkTries');
+  if(!el)return;
+  const unlimited=regSettings.vaultUnlimitedAttempts;
+  if(unlimited){el.textContent='';el.className='v-tries';return}
+  const max=regSettings.vaultMaxAttempts||5;
+  const remaining=max-vkTotalFails;
+  if(vkTotalFails===0){el.textContent='';el.className='v-tries';return}
+  if(remaining<=0){el.textContent='0 ATTEMPTS REMAINING';el.className='v-tries critical';return}
+  el.textContent=remaining+' OF '+max+' ATTEMPT'+(remaining>1?'S':'')+' REMAINING';
+  el.className='v-tries '+(remaining<=1?'critical':remaining<=3?'warning':'plenty');
 }
 function triggerVaultLockout(seconds,title,subtitle){
   vkRateLimited=true;
@@ -2349,7 +2382,8 @@ function triggerVaultLockout(seconds,title,subtitle){
       clearInterval(interval);
       limiter.classList.remove('active');
       vkRateLimited=false;
-      vkFailCount=0;
+      vkFailCount=0;vkTotalFails=0;
+      updateTriesDisplay();
     }
   },1000);
 }
@@ -2571,13 +2605,18 @@ let mediaItems=[
 function renderFeed(){
   const grid=document.getElementById('feedGridView'),isA=document.body.classList.contains('edit-mode');
   grid.innerHTML=posts.map((p,i)=>{
-    const isVid=p.mediaType==='video'&&p.mediaUrl;
-    const isImg=p.mediaType!=='video'&&p.mediaUrl;
+    const resolved=(p.mediaType==='video'&&p.mediaUrl)?resolveVideoEmbed(p.mediaUrl):null;
+    const isVid=resolved&&resolved.type==='direct';
+    const isEmbeddable=resolved&&resolved.type!=='direct'&&resolved.type!=='external';
+    const isExternal=resolved&&resolved.type==='external';
+    const isImg=!resolved&&p.mediaUrl;
     let media='';
     if(isImg){
       media=`<div class="no-download-shield" oncontextmenu="return false"></div><img src="${p.mediaUrl}" style="width:100%;height:100%;object-fit:cover;pointer-events:none;-webkit-user-drag:none" draggable="false">`;
+    } else if(isEmbeddable||isExternal){
+      media=buildVideoThumbnail(resolved);
     } else if(isVid){
-      media=`<video class="feed-card-video" src="${p.mediaUrl}" muted loop playsinline preload="auto"></video><div class="feed-video-badge">▶ VIDEO</div>`;
+      media=`<video class="feed-card-video" src="${resolved.url}" muted loop playsinline preload="auto"></video><div class="feed-video-badge">▶ VIDEO</div>`;
     } else {
       media=`<span style="opacity:.5">${p.emoji}</span>`;
     }
@@ -2636,23 +2675,98 @@ let currentPost=0;
 function openPost(i){currentPost=i;setFeedView('single')}
 function renderSinglePost(){
   const p=posts[currentPost],img=document.getElementById('singleImg');
-  const isVid=p.mediaType==='video'&&p.mediaUrl;
+  const resolved=(p.mediaType==='video'&&p.mediaUrl)?resolveVideoEmbed(p.mediaUrl):null;
   const editBtn=document.body.classList.contains('edit-mode')?`<div class="feed-single-edit" onclick="event.stopPropagation();editFeedPost(${currentPost})" title="Edit this post">✎</div>`:'';
 
-  if(isVid){
+  if(resolved&&resolved.type==='direct'){
+    // Direct video file
     img.style.background='#000';img.style.backgroundSize='';img.textContent='';
-    img.innerHTML=`<video class="feed-single-video" id="feedSingleVid" src="${p.mediaUrl}" loop playsinline preload="auto" ${feedMuted?'muted':''} controls></video><div class="feed-mute-btn" onclick="event.stopPropagation();toggleFeedMute()">${feedMuted?'🔇':'🔊'}</div>${editBtn}`;
+    img.innerHTML=`<video class="feed-single-video" id="feedSingleVid" src="${resolved.url}" loop playsinline preload="auto" ${feedMuted?'muted':''} controls></video><div class="feed-mute-btn" onclick="event.stopPropagation();toggleFeedMute()">${feedMuted?'🔇':'🔊'}</div>${editBtn}`;
     setTimeout(()=>{const v=document.getElementById('feedSingleVid');if(v){v.muted=feedMuted;v.play().catch(()=>{})}},50);
-  } else if(p.mediaUrl){
+  }else if(resolved&&resolved.type==='external'){
+    // Non-embeddable platform — show link
+    img.style.background='#000';img.style.backgroundSize='';img.textContent='';
+    img.innerHTML=buildExternalLink(resolved,editBtn);
+  }else if(resolved&&resolved.embed){
+    // Embeddable platform (YouTube, Vimeo, Drive, Dailymotion, Streamable, Loom, fallback)
+    img.style.background='#000';img.style.backgroundSize='';img.textContent='';
+    img.innerHTML=buildEmbedIframe(resolved,true,feedMuted)+editBtn;
+  }else if(resolved&&resolved.type==='iframe-fallback'){
+    // Generic URL — try iframe
+    img.style.background='#000';img.style.backgroundSize='';img.textContent='';
+    img.innerHTML=`<iframe src="${resolved.url}" style="width:100%;height:100%;border:none" allow="autoplay;encrypted-media" allowfullscreen></iframe>${editBtn}`;
+  }else if(p.mediaUrl){
+    // Image
     img.style.background='';img.style.backgroundSize='';
     img.innerHTML=`<div class="no-download-shield" oncontextmenu="return false"></div><img src="${p.mediaUrl}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;-webkit-user-drag:none" draggable="false">${editBtn}`;
-  } else {
+  }else{
+    // Emoji placeholder
     img.style.background=p.bg;img.style.backgroundSize='';img.textContent=p.emoji;img.innerHTML=p.emoji+editBtn;
   }
   const capEl=document.getElementById('singleCap');
   capEl.textContent=p.cap;
   capEl.style.fontFamily=p.capFont?getFontFamily(p.capFont):'';
   document.getElementById('singleCounter').textContent=(currentPost+1)+' / '+posts.length;
+}
+// ══════ VIDEO EMBED RESOLVER ══════
+function resolveVideoEmbed(url){
+  if(!url)return null;
+  const u=url.trim();
+  // 1. Direct video file
+  if(/\.(mp4|webm|mov|ogg)(\?.*)?$/i.test(u))return{type:'direct',url:u};
+  // 2. YouTube
+  const yt=u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if(yt)return{type:'youtube',id:yt[1],embed:`https://www.youtube.com/embed/${yt[1]}`,thumb:`https://img.youtube.com/vi/${yt[1]}/hqdefault.jpg`};
+  // 3. Vimeo
+  const vm=u.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/);
+  if(vm)return{type:'vimeo',id:vm[1],embed:`https://player.vimeo.com/video/${vm[1]}`,thumb:null};
+  // 4. Google Drive
+  const gd=u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([a-zA-Z0-9_-]+)/);
+  if(gd)return{type:'gdrive',id:gd[1],embed:`https://drive.google.com/file/d/${gd[1]}/preview`,thumb:`https://drive.google.com/thumbnail?id=${gd[1]}&sz=w400`};
+  // 5. Dailymotion
+  const dm=u.match(/(?:dailymotion\.com\/video\/|dai\.ly\/)([a-zA-Z0-9]+)/);
+  if(dm)return{type:'dailymotion',id:dm[1],embed:`https://www.dailymotion.com/embed/video/${dm[1]}`,thumb:`https://www.dailymotion.com/thumbnail/video/${dm[1]}`};
+  // 6. Streamable
+  const st=u.match(/streamable\.com\/([a-zA-Z0-9]+)/);
+  if(st)return{type:'streamable',id:st[1],embed:`https://streamable.com/e/${st[1]}`,thumb:null};
+  // 7. Loom
+  const lm=u.match(/loom\.com\/share\/([a-zA-Z0-9]+)/);
+  if(lm)return{type:'loom',id:lm[1],embed:`https://www.loom.com/embed/${lm[1]}`,thumb:null};
+  // 8. Facebook video (limited embed support)
+  if(/facebook\.com\/.*\/videos\/|fb\.watch/i.test(u))return{type:'external',url:u,label:'Facebook Video'};
+  // 9. TikTok (no iframe support)
+  if(/tiktok\.com/i.test(u))return{type:'external',url:u,label:'TikTok'};
+  // 10. Instagram (no iframe support)
+  if(/instagram\.com\/(reel|p)\//i.test(u))return{type:'external',url:u,label:'Instagram'};
+  // 11. Twitter/X video (no iframe support)
+  if(/(twitter\.com|x\.com)\/.*\/status\//i.test(u))return{type:'external',url:u,label:'X (Twitter)'};
+  // 12. Generic URL — try iframe as last resort
+  return{type:'iframe-fallback',url:u,thumb:null};
+}
+function buildEmbedIframe(resolved,autoplay,muted){
+  const mutedParam=muted?1:0;
+  let src=resolved.embed||resolved.url;
+  // Add autoplay/mute params per platform
+  if(resolved.type==='youtube')src+=`?autoplay=${autoplay?1:0}&mute=${mutedParam}&loop=1&playlist=${resolved.id}&rel=0`;
+  else if(resolved.type==='vimeo')src+=`?autoplay=${autoplay?1:0}&muted=${mutedParam}&loop=1`;
+  else if(resolved.type==='dailymotion')src+=`?autoplay=${autoplay?1:0}&mute=${mutedParam}`;
+  else if(resolved.type==='loom')src+=`?autoplay=${autoplay?1:0}`;
+  return `<iframe src="${src}" style="width:100%;height:100%;border:none" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
+}
+function buildVideoThumbnail(resolved){
+  if(resolved.thumb)return `<img src="${resolved.thumb}" style="width:100%;height:100%;object-fit:cover"><div class="feed-video-badge">▶ VIDEO</div>`;
+  // For platforms without thumbnails, show a styled placeholder
+  const label=resolved.type==='external'?resolved.label:resolved.type.toUpperCase();
+  return `<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0a0c12;gap:6px"><span style="font-size:32px;opacity:.5">▶</span><span style="font-family:IBM Plex Mono,monospace;font-size:8px;color:#555;letter-spacing:2px">${label}</span></div><div class="feed-video-badge">▶ VIDEO</div>`;
+}
+function buildExternalLink(resolved,editBtn){
+  const label=resolved.label||'Video';
+  return `<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0a0c12;gap:12px">
+    <span style="font-size:40px;opacity:.4">▶</span>
+    <span style="font-family:Chakra Petch,sans-serif;font-size:12px;color:#888;letter-spacing:1px">${label}</span>
+    <a href="${resolved.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="font-family:IBM Plex Mono,monospace;font-size:10px;color:var(--cyan);letter-spacing:1px;padding:8px 16px;border:1px solid rgba(0,212,255,.3);border-radius:4px;background:rgba(0,212,255,.06);text-decoration:none;transition:all .2s">Open in ${label} ↗</a>
+    <span style="font-family:IBM Plex Mono,monospace;font-size:8px;color:#444;letter-spacing:1px">This platform does not support inline playback</span>
+  </div>${editBtn||''}`; 
 }
 function toggleFeedMute(){
   feedMuted=!feedMuted;
@@ -3146,25 +3260,60 @@ function fmtTime(s){if(!s||isNaN(s))return'0:00';const m=Math.floor(s/60),sec=Ma
 
 // ── Video Player ──
 function renderVideoPlayer(body,m,eu){
-  const src=eu.direct||eu.preview;
-  body.innerHTML=`
-    <div class="mv-video-wrap">
-      <video class="mv-video" id="mvVideo" src="${src}" preload="metadata"></video>
-      <div class="mv-video-controls">
-        <div class="mv-video-play" id="mvVidPlay" onclick="toggleMvVideo()">▶</div>
-        <div class="mv-video-bar" onclick="seekVideo(event)"><div class="mv-video-progress" id="mvVidProgress"></div></div>
-        <span class="mv-video-time" id="mvVidTime">0:00</span>
-        <span class="mv-video-full" onclick="fullscreenVideo()" title="Fullscreen">⛶</span>
-      </div>
-    </div>`;
-  const vid=document.getElementById('mvVideo');
-  vid.addEventListener('timeupdate',()=>{
-    const pct=(vid.currentTime/vid.duration)*100;
-    document.getElementById('mvVidProgress').style.width=pct+'%';
-    document.getElementById('mvVidTime').textContent=fmtTime(vid.currentTime)+' / '+fmtTime(vid.duration);
-  });
-  vid.addEventListener('ended',()=>{document.getElementById('mvVidPlay').textContent='▶'});
-  vid.addEventListener('click',toggleMvVideo);
+  const url=m.fileUrl||'';
+  const resolved=resolveVideoEmbed(url);
+  
+  if(resolved&&resolved.type==='direct'){
+    // Direct video file — use custom player
+    const src=eu.direct||eu.preview||resolved.url;
+    body.innerHTML=`
+      <div class="mv-video-wrap">
+        <video class="mv-video" id="mvVideo" src="${src}" preload="metadata"></video>
+        <div class="mv-video-controls">
+          <div class="mv-video-play" id="mvVidPlay" onclick="toggleMvVideo()">▶</div>
+          <div class="mv-video-bar" onclick="seekVideo(event)"><div class="mv-video-progress" id="mvVidProgress"></div></div>
+          <span class="mv-video-time" id="mvVidTime">0:00</span>
+          <span class="mv-video-full" onclick="fullscreenVideo()" title="Fullscreen">⛶</span>
+        </div>
+      </div>`;
+    const vid=document.getElementById('mvVideo');
+    vid.addEventListener('timeupdate',()=>{
+      const pct=(vid.currentTime/vid.duration)*100;
+      document.getElementById('mvVidProgress').style.width=pct+'%';
+      document.getElementById('mvVidTime').textContent=fmtTime(vid.currentTime)+' / '+fmtTime(vid.duration);
+    });
+    vid.addEventListener('ended',()=>{document.getElementById('mvVidPlay').textContent='▶'});
+    vid.addEventListener('click',toggleMvVideo);
+  }else if(resolved&&resolved.type==='external'){
+    // Non-embeddable platform
+    body.innerHTML=`<div class="mv-video-wrap" style="display:flex;align-items:center;justify-content:center">${buildExternalLink(resolved)}</div>`;
+  }else if(resolved&&(resolved.embed||resolved.type==='iframe-fallback')){
+    // Embeddable platform — iframe
+    body.innerHTML=`<div class="mv-video-wrap">${buildEmbedIframe(resolved,false,false)}</div>`;
+  }else{
+    // Fallback: try Google Drive preview (legacy behavior)
+    const src=eu.direct||eu.preview;
+    body.innerHTML=`
+      <div class="mv-video-wrap">
+        <video class="mv-video" id="mvVideo" src="${src}" preload="metadata"></video>
+        <div class="mv-video-controls">
+          <div class="mv-video-play" id="mvVidPlay" onclick="toggleMvVideo()">▶</div>
+          <div class="mv-video-bar" onclick="seekVideo(event)"><div class="mv-video-progress" id="mvVidProgress"></div></div>
+          <span class="mv-video-time" id="mvVidTime">0:00</span>
+          <span class="mv-video-full" onclick="fullscreenVideo()" title="Fullscreen">⛶</span>
+        </div>
+      </div>`;
+    const vid=document.getElementById('mvVideo');
+    if(vid){
+      vid.addEventListener('timeupdate',()=>{
+        const pct=(vid.currentTime/vid.duration)*100;
+        document.getElementById('mvVidProgress').style.width=pct+'%';
+        document.getElementById('mvVidTime').textContent=fmtTime(vid.currentTime)+' / '+fmtTime(vid.duration);
+      });
+      vid.addEventListener('ended',()=>{document.getElementById('mvVidPlay').textContent='▶'});
+      vid.addEventListener('click',toggleMvVideo);
+    }
+  }
 }
 
 function toggleMvVideo(){
@@ -4625,11 +4774,117 @@ function saveNewMediaItem(){const urlVal=document.getElementById('em_url').value
 
 // ══════ TIMER ══════
 let timerSec=5325,timerPaused=false,timerOriginal=5325;
+let timerMode='countdown'; // 'countdown' or 'event'
+let eventSettings={
+  startTime:null, // ISO string
+  endTime:null,   // ISO string
+  autoLock:true,
+  showLeaderboardOnExpiry:true,
+  expired:false
+};
+
+function onTimerModeChange(){
+  timerMode=document.getElementById('timerMode').value;
+  document.getElementById('timerCountdownControls').style.display=timerMode==='countdown'?'':'none';
+  document.getElementById('timerEventControls').style.display=timerMode==='event'?'':'none';
+  if(timerMode==='event')updateEventStatus();
+}
+function onEventTimeChange(){
+  const startVal=document.getElementById('eventStartInput').value;
+  const endVal=document.getElementById('eventEndInput').value;
+  eventSettings.startTime=startVal?new Date(startVal).toISOString():null;
+  eventSettings.endTime=endVal?new Date(endVal).toISOString():null;
+  eventSettings.expired=false;
+  updateEventStatus();
+}
+function updateEventStatus(){
+  const msg=document.getElementById('eventStatusMsg');
+  if(!msg)return;
+  if(!eventSettings.startTime||!eventSettings.endTime){
+    msg.textContent='Set both start and end times to activate event timer';msg.style.color='#666';return;
+  }
+  const now=Date.now();
+  const start=new Date(eventSettings.startTime).getTime();
+  const end=new Date(eventSettings.endTime).getTime();
+  if(now<start){msg.textContent='⏳ Event has not started yet';msg.style.color='var(--amber)'}
+  else if(now>=start&&now<end){msg.textContent='🟢 Event is LIVE';msg.style.color='var(--green)'}
+  else{msg.textContent='🔴 Event has ended';msg.style.color='var(--red)'}
+}
+
+// Countdown mode functions
 function togglePause(){timerPaused=!timerPaused;document.getElementById('pauseBtn').textContent=timerPaused?'▶ RESUME':'⏸ PAUSE';document.getElementById('cTimer').classList.toggle('paused',timerPaused)}
 function setNewTime(){const v=document.getElementById('timerInput').value.trim();const parts=v.split(':');if(parts.length===3){timerSec=parseInt(parts[0])*3600+parseInt(parts[1])*60+parseInt(parts[2]);timerOriginal=timerSec;renderTimer()}else if(parts.length===2){timerSec=parseInt(parts[0])*60+parseInt(parts[1]);timerOriginal=timerSec;renderTimer()}}
 function resetTimer(){timerSec=timerOriginal;timerPaused=false;document.getElementById('pauseBtn').textContent='⏸ PAUSE';document.getElementById('cTimer').classList.remove('paused');renderTimer()}
-function renderTimer(){const h=Math.floor(timerSec/3600),m=Math.floor((timerSec%3600)/60),s=timerSec%60;document.getElementById('cTimer').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
-function tickTimer(){if(timerPaused||timerSec<=0)return;timerSec--;renderTimer()}
+function renderTimer(){
+  const el=document.getElementById('cTimer');
+  const h=Math.floor(timerSec/3600),m=Math.floor((timerSec%3600)/60),s=timerSec%60;
+  el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function renderTimerLabel(label){
+  const labelEl=document.querySelector('.timer-label');
+  if(labelEl)labelEl.textContent=label;
+}
+
+function tickTimer(){
+  if(timerMode==='countdown'){
+    if(timerPaused||timerSec<=0)return;
+    timerSec--;renderTimer();
+    if(timerSec<=0)onTimerExpired();
+  }else if(timerMode==='event'){
+    if(!eventSettings.startTime||!eventSettings.endTime)return;
+    const now=Date.now();
+    const start=new Date(eventSettings.startTime).getTime();
+    const end=new Date(eventSettings.endTime).getTime();
+    const el=document.getElementById('cTimer');
+    if(now<start){
+      // Pre-event: count down to start
+      const diff=Math.max(0,Math.floor((start-now)/1000));
+      const h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60),s=diff%60;
+      el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+      el.classList.add('paused');
+      renderTimerLabel('Starts In');
+    }else if(now>=start&&now<end){
+      // Live: count down to end
+      const diff=Math.max(0,Math.floor((end-now)/1000));
+      const h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60),s=diff%60;
+      el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+      el.classList.remove('paused');
+      renderTimerLabel('Time Remaining');
+    }else{
+      // Expired
+      el.textContent='00:00:00';
+      el.classList.remove('paused');
+      renderTimerLabel('Event Ended');
+      if(!eventSettings.expired)onTimerExpired();
+    }
+  }
+}
+function onTimerExpired(){
+  eventSettings.expired=true;
+  updateEventStatus();
+  if(eventSettings.autoLock&&!isAdmin){
+    showEventLockOverlay();
+  }
+  if(eventSettings.showLeaderboardOnExpiry&&!isAdmin){
+    // Auto-show leaderboard after short delay
+    setTimeout(()=>openLeaderboard(),2000);
+  }
+}
+function showEventLockOverlay(){
+  let overlay=document.getElementById('eventLockOverlay');
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id='eventLockOverlay';
+    overlay.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;animation:fadeIn .5s ease';
+    overlay.innerHTML=`
+      <div style="font-family:Staatliches,cursive;font-size:32px;color:var(--red);letter-spacing:6px;text-transform:uppercase">⏱ Time's Up</div>
+      <div style="font-family:Chakra Petch,sans-serif;font-size:14px;color:#888;letter-spacing:1px">The event has ended. All submissions are now locked.</div>
+      <div style="font-family:IBM Plex Mono,monospace;font-size:11px;color:#555;letter-spacing:2px;margin-top:8px">Final results are being compiled...</div>
+    `;
+    document.body.appendChild(overlay);
+  }
+}
+
 setInterval(tickTimer,1000);
 // Initial dynamic renders
 renderGrid();
