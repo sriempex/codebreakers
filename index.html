@@ -1553,7 +1553,7 @@
     </div>
     <div class="ap-section"><h4>🏷️ Add Manual Entry</h4>
       <p id="apManualDesc">Manually create teams or individuals with custom or auto-generated IDs.</p>
-      <div class="ap-row" id="apManualTypeRow" style="display:none;margin-bottom:10px">
+      <div class="ap-row" id="apManualTypeRow" style="margin-bottom:10px">
         <div class="ap-field"><label>Entry Type</label><select id="apManualType" onchange="onManualTypeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%;outline:none"><option value="team">Team</option><option value="individual">Individual</option></select></div>
       </div>
       <div class="ap-row">
@@ -3860,9 +3860,6 @@ function openPortalUsers(){
   _instantShow(document.getElementById('portalUsersPanel'));
   showAdminTabs('portalUsersPanel');
   renderPortalUsersList();
-  // Show/hide type row based on participant mode
-  const mode=regSettings.participantMode||'team';
-  document.getElementById('apManualTypeRow').style.display=mode==='hybrid'?'':'none';
   onManualTypeChange();
 }
 function closePortalUsers(){
@@ -3963,8 +3960,7 @@ function removeAdmin(i){
 function renderAdminList(){renderPortalUsersList()} // backward compat
 
 function createManualTeam(){
-  const mode=regSettings.participantMode||'team';
-  const effectiveType=mode==='hybrid'?(document.getElementById('apManualType')?.value||'team'):mode;
+  const effectiveType=document.getElementById('apManualType')?.value||'team';
   const name=document.getElementById('apTeamName').value.trim();
   const id=document.getElementById('apTeamId').value.trim()||generateTeamId(effectiveType==='individual'?(name||'SOLO'):(name||'TEAM'));
   const msg=document.getElementById('apTeamMsg');
@@ -3985,21 +3981,8 @@ function onManualTypeChange(){
   document.getElementById('apManualCreateBtn').textContent=isInd?'Create Participant':'Create Team';
 }
 function syncManualCreationUI(){
-  const mode=regSettings.participantMode||'team';
-  const typeRow=document.getElementById('apManualTypeRow');
-  const desc=document.getElementById('apManualDesc');
-  if(mode==='hybrid'){
-    if(typeRow)typeRow.style.display='';
-    if(desc)desc.textContent='Manually create teams or individual participants.';
-  }else{
-    if(typeRow)typeRow.style.display='none';
-    const isInd=mode==='individual';
-    if(desc)desc.textContent=isInd?'Manually create individual participants.':'Manually create teams with custom or auto-generated IDs.';
-    document.getElementById('apManualNameLabel').textContent=isInd?'Participant Name':'Team Name';
-    document.getElementById('apManualIdLabel').textContent=isInd?'Participant ID (leave blank to auto-generate)':'Team ID (leave blank to auto-generate)';
-    document.getElementById('apTeamName').placeholder=isInd?'e.g. Jane Doe':'e.g. Alpha Squad';
-    document.getElementById('apManualCreateBtn').textContent=isInd?'Create Participant':'Create Team';
-  }
+  // Type dropdown is always visible in Portal Users — just sync labels to current selection
+  onManualTypeChange();
 }
 function autoGenTeamId(){const name=document.getElementById('apTeamName').value.trim()||'TEAM';document.getElementById('apTeamId').value=generateTeamId(name)}
 function removeTeam(i){manualTeams.splice(i,1);renderPortalUsersList()}
