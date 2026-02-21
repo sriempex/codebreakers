@@ -542,9 +542,9 @@
   .feed-card-img img{width:100%;height:100%;object-fit:cover}
   /* Anti-download: prevent right-click save, drag, long-press */
   .feed-card-img,.feed-single-img,.mv-image-viewer{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;pointer-events:auto}
-  .feed-card-img img,.feed-single-img img{pointer-events:none;-webkit-user-drag:none;user-select:none}
-  .no-download-shield{position:absolute;inset:0;z-index:2;-webkit-user-select:none;user-select:none}
+  .feed-card-img img{pointer-events:none;-webkit-user-drag:none;user-select:none}
   .feed-single-img .no-download-shield{pointer-events:none}
+  .no-download-shield{position:absolute;inset:0;z-index:2;-webkit-user-select:none;user-select:none}
   /* Feed video in grid */
   .feed-card-video{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
   /* Feed video in single view */
@@ -564,7 +564,8 @@
   .feed-single-img{width:100%;aspect-ratio:1;background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:72px;background-size:cover;background-position:center;touch-action:none;position:relative;overflow:hidden;cursor:zoom-in}
   .feed-single-img.zoomed{cursor:grab}
   .feed-single-img.zoomed.dragging{cursor:grabbing}
-  .feed-single-img .feed-zoom-img{width:100%;height:100%;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none;transform-origin:0 0;transition:none;will-change:transform}
+  .feed-single-img .feed-zoom-wrapper{width:100%;height:100%;transform-origin:0 0;will-change:transform;display:flex;align-items:center;justify-content:center}
+  .feed-single-img .feed-zoom-wrapper img{width:100%;height:100%;object-fit:contain;-webkit-user-drag:none;user-select:none;pointer-events:none}
   .feed-single-edit{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
     background:rgba(0,0,0,.7);border:1px solid rgba(0,212,255,.3);color:var(--cyan);font-size:16px;cursor:pointer;z-index:5;transition:all .2s;backdrop-filter:blur(4px)}
   .feed-single-edit:hover{background:rgba(0,212,255,.15);border-color:rgba(0,212,255,.5);box-shadow:0 0 12px rgba(0,212,255,.15)}
@@ -1337,11 +1338,14 @@
     <span class="admin-dropdown-label">Admin Menu</span>
   </div>
   <div class="admin-dropdown-body">
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openAdminPanel()"><span class="adm-icon">⚙</span><span class="adm-label">Admin Panel</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openEventControl()"><span class="adm-icon">🎛</span><span class="adm-label">Event Control</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openKeysCodes()"><span class="adm-icon">🔐</span><span class="adm-label">Keys & Codes</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openLeaderboard()"><span class="adm-icon">🏆</span><span class="adm-label">Leaderboard</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openTeamMonitor()"><span class="adm-icon">📡</span><span class="adm-label">Team Monitor</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openBroadcast()"><span class="adm-icon">📢</span><span class="adm-label">Broadcast</span></div>
+    <div class="admin-dropdown-sep"></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openChangePassword()"><span class="adm-icon">🔑</span><span class="adm-label">Change Password</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openPortalUsers()"><span class="adm-icon">👥</span><span class="adm-label">Portal Users</span></div>
     <div class="admin-dropdown-sep"></div>
     <div class="admin-dropdown-toggle" onclick="toggleAllowDownloads()"><span class="adm-icon">⬇</span><span class="adm-label">Allow Downloads</span><span class="adm-toggle off" id="admDlToggle">OFF</span></div>
     <div class="admin-dropdown-toggle pp-toggle" onclick="togglePlayerPreview()"><span class="adm-icon">👁</span><span class="adm-label">View as Player</span><span class="adm-toggle off" id="admPreviewToggle">OFF</span></div>
@@ -1517,29 +1521,36 @@
 <!-- CONSOLE -->
 <div class="screen" id="consoleScreen">
 
-<!-- ADMIN PROFILE PANEL -->
-<div id="adminPanel">
-  <div class="ap-container">
-    <div class="ap-header"><h3>⚙ Admin Panel</h3><button class="mv-close" onclick="closeAdminPanel()">✕ CLOSE</button></div>
-    <div class="ap-section"><h4>🔐 Change Password</h4>
-      <div class="ap-field"><label>Current Password</label><input type="password" id="apCurPw"></div>
-      <div class="ap-field"><label>New Password</label><input type="password" id="apNewPw"></div>
-      <div class="ap-field"><label>Confirm New Password</label><input type="password" id="apConfPw"></div>
-      <button class="ap-btn ap-btn-cyan" onclick="changeAdminPw()">Update Password</button>
-      <div class="ap-msg" id="apPwMsg"></div>
+<!-- CHANGE PASSWORD MODAL -->
+<div id="changePwModal" style="display:none;position:fixed;inset:0;z-index:920;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center" onclick="if(event.target===this)closeChangePassword()">
+  <div style="background:#0a0e18;border:1px solid var(--border);border-radius:6px;padding:24px;width:340px;max-width:90vw">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <h4 style="font-family:Saira,sans-serif;font-size:13px;letter-spacing:3px;color:#d0e8f0;text-transform:uppercase;margin:0;font-weight:700">🔑 Change Password</h4>
+      <button class="mv-close" onclick="closeChangePassword()" style="position:static;font-size:10px;padding:4px 10px">✕</button>
     </div>
-    <div class="ap-section"><h4>👥 Portal Administrators</h4>
-      <p>Add additional administrators who can access the admin panel.</p>
+    <div class="ap-field"><label>Current Password</label><input type="password" id="apCurPw"></div>
+    <div class="ap-field"><label>New Password</label><input type="password" id="apNewPw"></div>
+    <div class="ap-field"><label>Confirm New Password</label><input type="password" id="apConfPw"></div>
+    <button class="ap-btn ap-btn-cyan" onclick="changeAdminPw()" style="width:100%;margin-top:4px">Update Password</button>
+    <div class="ap-msg" id="apPwMsg"></div>
+  </div>
+</div>
+
+<!-- PORTAL USERS PANEL -->
+<div id="portalUsersPanel">
+  <div class="ap-container" style="width:560px">
+    <div class="ap-header"><h3>👥 Portal Users</h3><button class="mv-close" onclick="closePortalUsers()">✕ CLOSE</button></div>
+    <div class="ap-section"><h4>🔑 Add Administrator</h4>
+      <p>Administrators can access the admin menu and all management tools.</p>
       <div class="ap-row">
         <div class="ap-field"><label>Username</label><input id="apAddUser"></div>
-        <div class="ap-field"><label>Password</label><input id="apAddPw"></div>
+        <div class="ap-field"><label>Password</label><input id="apAddPw" type="password"></div>
         <button class="ap-btn ap-btn-green" onclick="addAdmin()" style="flex-shrink:0;margin-bottom:10px">+ Add</button>
       </div>
       <div class="ap-msg" id="apAdminMsg"></div>
-      <div id="apAdminList"></div>
     </div>
-    <div class="ap-section"><h4>🏷️ Manual Entry Creation</h4>
-      <p id="apManualDesc">Manually create teams with custom or auto-generated IDs.</p>
+    <div class="ap-section"><h4>🏷️ Add Manual Entry</h4>
+      <p id="apManualDesc">Manually create teams or individuals with custom or auto-generated IDs.</p>
       <div class="ap-row" id="apManualTypeRow" style="display:none;margin-bottom:10px">
         <div class="ap-field"><label>Entry Type</label><select id="apManualType" onchange="onManualTypeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%;outline:none"><option value="team">Team</option><option value="individual">Individual</option></select></div>
       </div>
@@ -1552,8 +1563,18 @@
         <button class="ap-btn ap-btn-cyan" onclick="autoGenTeamId()" style="font-size:8px">🎲 Generate ID</button>
       </div>
       <div class="ap-msg" id="apTeamMsg"></div>
-      <div class="ap-team-list" id="apTeamList"></div>
     </div>
+    <div class="ap-section"><h4>📋 All Portal Users</h4>
+      <p>All administrators and manually created entries.</p>
+      <div id="puCombinedList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EVENT CONTROL PANEL -->
+<div id="adminPanel">
+  <div class="ap-container">
+    <div class="ap-header"><h3>🎛 Event Control</h3><button class="mv-close" onclick="closeEventControl()">✕ CLOSE</button></div>
     <div class="ap-section"><h4>🎮 Event Settings</h4>
       <p>Configure participant mode, countdown timer, and leaderboard display.</p>
       <div style="margin-bottom:16px">
@@ -2687,7 +2708,7 @@ function renderMedia(){
 // ══════ PANELS ══════
 const overlay=document.getElementById('panelOverlay');
 let currentFeedView='grid';
-function openPanel(t){playTileClick();recordTileAccess(t);['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);
+function openPanel(t){playTileClick();recordTileAccess(t);['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel','portalUsersPanel'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);
   if(t==='feed'){renderFeed();setFeedView('grid')}if(t==='media')renderMedia();if(t==='intel')renderIntelForm();if(t==='vault')renderVaultPanel()}
 function closePanel(){overlay.style.cssText='';overlay.classList.remove('active');setTimeout(()=>document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible')),300)}
 
@@ -2730,9 +2751,10 @@ function renderSinglePost(){
     img.style.background='#000';img.style.backgroundSize='';img.textContent='';
     img.innerHTML=`<iframe src="${resolved.url}" style="width:100%;height:100%;border:none" allow="autoplay;encrypted-media" allowfullscreen></iframe>${editBtn}`;
   }else if(p.mediaUrl){
-    // Image
+    // Image — wrapped for zoom/pan
     img.style.background='';img.style.backgroundSize='';
-    img.innerHTML=`<div class="no-download-shield" oncontextmenu="return false" style="pointer-events:none"></div><img class="feed-zoom-img" src="${p.mediaUrl}" draggable="false">${editBtn}`;
+    img.innerHTML=`<div class="feed-zoom-wrapper" id="feedZoomWrap"><div class="no-download-shield" oncontextmenu="return false"></div><img src="${p.mediaUrl}" draggable="false"></div>${editBtn}`;
+    resetFeedZoom();
   }else{
     // Emoji placeholder
     img.style.background=p.bg;img.style.backgroundSize='';img.textContent=p.emoji;img.innerHTML=p.emoji+editBtn;
@@ -2817,220 +2839,224 @@ function toggleFeedMute(){
 }
 function navPost(d){currentPost=(currentPost+d+posts.length)%posts.length;resetFeedZoom();renderSinglePost()}
 
-// ══════ FEED ZOOM ENGINE (transform-based) ══════
-const feedZoom={scale:1,x:0,y:0,minScale:1,maxScale:5,dragging:false,startX:0,startY:0,startPanX:0,startPanY:0,pinching:false,pinchDist0:0,pinchScale0:1};
+// ══════ FEED ZOOM + SWIPE (Unified Interaction Engine) ══════
+const feedZoom = {scale:1, x:0, y:0, minScale:1, maxScale:5};
 
-function getFeedZoomImg(){return document.querySelector('#singleImg .feed-zoom-img')}
-function getFeedZoomContainer(){return document.getElementById('singleImg')}
+function getFeedZoomWrap(){return document.getElementById('feedZoomWrap')}
+function getFeedContainer(){return document.getElementById('singleImg')}
+function isZoomablePost(){return !!getFeedZoomWrap()}
 
 function applyFeedZoom(){
-  const img=getFeedZoomImg();if(!img)return;
-  img.style.transform=`translate(${feedZoom.x}px,${feedZoom.y}px) scale(${feedZoom.scale})`;
-  const c=getFeedZoomContainer();
+  const w=getFeedZoomWrap();if(!w)return;
+  w.style.transform=`translate(${feedZoom.x}px,${feedZoom.y}px) scale(${feedZoom.scale})`;
+  const c=getFeedContainer();
   if(c){
-    if(feedZoom.scale>1){c.classList.add('zoomed');c.style.cursor=feedZoom.dragging?'grabbing':'grab'}
-    else{c.classList.remove('zoomed');c.style.cursor='zoom-in'}
+    if(feedZoom.scale>1.01){c.classList.add('zoomed')}
+    else{c.classList.remove('zoomed','dragging')}
   }
 }
 
 function clampFeedPan(){
-  const c=getFeedZoomContainer(),img=getFeedZoomImg();if(!c||!img)return;
-  const cw=c.clientWidth,ch=c.clientHeight;
-  const iw=cw*feedZoom.scale,ih=ch*feedZoom.scale;
-  if(iw<=cw){feedZoom.x=(cw-iw)/2}else{feedZoom.x=Math.min(0,Math.max(cw-iw,feedZoom.x))}
-  if(ih<=ch){feedZoom.y=(ch-ih)/2}else{feedZoom.y=Math.min(0,Math.max(ch-ih,feedZoom.y))}
+  const c=getFeedContainer();if(!c)return;
+  const cw=c.clientWidth, ch=c.clientHeight;
+  const sw=cw*feedZoom.scale, sh=ch*feedZoom.scale;
+  if(sw<=cw){feedZoom.x=(cw-sw)/2}else{feedZoom.x=Math.min(0,Math.max(cw-sw,feedZoom.x))}
+  if(sh<=ch){feedZoom.y=(ch-sh)/2}else{feedZoom.y=Math.min(0,Math.max(ch-sh,feedZoom.y))}
 }
 
-function feedZoomAt(cx,cy,newScale){
-  const c=getFeedZoomContainer();if(!c)return;
+function feedZoomTo(cx, cy, newScale){
+  const c=getFeedContainer();if(!c)return;
   const rect=c.getBoundingClientRect();
-  const px=cx-rect.left,py=cy-rect.top;
-  const oldScale=feedZoom.scale;
+  const px=cx-rect.left, py=cy-rect.top;
+  const old=feedZoom.scale;
   feedZoom.scale=Math.min(feedZoom.maxScale,Math.max(feedZoom.minScale,newScale));
-  // Zoom toward pointer
-  feedZoom.x=px-(px-feedZoom.x)*(feedZoom.scale/oldScale);
-  feedZoom.y=py-(py-feedZoom.y)*(feedZoom.scale/oldScale);
+  feedZoom.x=px-(px-feedZoom.x)*(feedZoom.scale/old);
+  feedZoom.y=py-(py-feedZoom.y)*(feedZoom.scale/old);
   clampFeedPan();applyFeedZoom();
 }
 
 function resetFeedZoom(){
-  feedZoom.scale=1;feedZoom.x=0;feedZoom.y=0;feedZoom.dragging=false;feedZoom.pinching=false;
-  const c=getFeedZoomContainer();if(c){c.classList.remove('zoomed','dragging');c.style.cursor='zoom-in'}
-  const img=getFeedZoomImg();if(img)img.style.transform='';
+  feedZoom.scale=1;feedZoom.x=0;feedZoom.y=0;
+  const c=getFeedContainer();if(c){c.classList.remove('zoomed','dragging')}
+  const w=getFeedZoomWrap();if(w)w.style.transform='';
 }
 
-function toggleFeedZoom(e){
-  if(feedZoom.scale>1){resetFeedZoom();return}
-  // Zoom to 2.5x centered on click point
-  const cx=e?e.clientX:0,cy=e?e.clientY:0;
-  if(e){feedZoomAt(cx,cy,2.5)}else{feedZoom.scale=2.5;clampFeedPan();applyFeedZoom()}
-}
-
-// Click-to-zoom on focus image
-document.getElementById('singleImg')?.addEventListener('click',function(e){
-  if(e.target.closest('.feed-mute-btn')||e.target.closest('.feed-single-edit')||e.target.tagName==='VIDEO'||e.target.tagName==='IFRAME')return;
-  if(feedZoom.dragging)return; // was a drag, not a click
-  if(!getFeedZoomImg())return; // only zoom on actual images
-  toggleFeedZoom(e);
-});
-
-// Scroll wheel zoom
-document.getElementById('singleImg')?.addEventListener('wheel',function(e){
-  if(!getFeedZoomImg())return;
-  e.preventDefault();
-  const delta=e.deltaY>0?0.85:1.18;
-  feedZoomAt(e.clientX,e.clientY,feedZoom.scale*delta);
-},{passive:false});
-
-// Drag to pan when zoomed
+// ── Unified mouse handler ──
 (function(){
-  const container=document.getElementById('singleImg');
-  if(!container)return;
-  let moved=false;
-  container.addEventListener('mousedown',function(e){
-    if(feedZoom.scale<=1)return;
-    feedZoom.dragging=true;moved=false;
-    feedZoom.startX=e.clientX;feedZoom.startY=e.clientY;
-    feedZoom.startPanX=feedZoom.x;feedZoom.startPanY=feedZoom.y;
-    container.classList.add('dragging');
+  const el=document.getElementById('singleImg');if(!el)return;
+  let mDown=false, mMoved=false, mStartX=0, mStartY=0, mPanStartX=0, mPanStartY=0, mSwipeDx=0;
+
+  el.addEventListener('mousedown',function(e){
+    if(e.target.closest('.feed-mute-btn')||e.target.closest('.feed-single-edit')||e.target.tagName==='VIDEO'||e.target.tagName==='IFRAME')return;
+    mDown=true; mMoved=false; mStartX=e.clientX; mStartY=e.clientY; mSwipeDx=0;
+    mPanStartX=feedZoom.x; mPanStartY=feedZoom.y;
+    if(feedZoom.scale>1.01) el.classList.add('dragging');
     e.preventDefault();
   });
+
   window.addEventListener('mousemove',function(e){
-    if(!feedZoom.dragging)return;
-    const dx=e.clientX-feedZoom.startX,dy=e.clientY-feedZoom.startY;
-    if(Math.abs(dx)>3||Math.abs(dy)>3)moved=true;
-    feedZoom.x=feedZoom.startPanX+dx;
-    feedZoom.y=feedZoom.startPanY+dy;
-    clampFeedPan();applyFeedZoom();
+    if(!mDown)return;
+    const dx=e.clientX-mStartX, dy=e.clientY-mStartY;
+    if(Math.abs(dx)>3||Math.abs(dy)>3) mMoved=true;
+    if(!mMoved)return;
+
+    if(feedZoom.scale>1.01){
+      // Panning zoomed image
+      feedZoom.x=mPanStartX+dx;
+      feedZoom.y=mPanStartY+dy;
+      clampFeedPan();applyFeedZoom();
+    } else {
+      // Swiping between posts
+      mSwipeDx=dx;
+      el.style.transform=`translateX(${dx*.4}px)`;
+      el.style.opacity=1-Math.abs(dx)/600;
+    }
   });
+
   window.addEventListener('mouseup',function(){
-    if(!feedZoom.dragging)return;
-    feedZoom.dragging=false;
-    container.classList.remove('dragging');
-    // If barely moved, let click handler fire
-    if(!moved)feedZoom.dragging=false;
+    if(!mDown)return; mDown=false;
+    el.classList.remove('dragging');
+
+    if(!mMoved && isZoomablePost()){
+      // Click — toggle zoom
+      if(feedZoom.scale>1.01){
+        resetFeedZoom();
+      }else{
+        // Zoom to 2.5x centered on click
+        feedZoom.scale=2.5;
+        const c=getFeedContainer();
+        if(c){feedZoom.x=(c.clientWidth*(1-2.5))/2;feedZoom.y=(c.clientHeight*(1-2.5))/2}
+        clampFeedPan();applyFeedZoom();
+      }
+    } else if(feedZoom.scale<=1.01 && Math.abs(mSwipeDx)>50){
+      // Swipe navigation
+      const dir=mSwipeDx>0?-1:1;
+      el.style.transition='transform .2s,opacity .2s';
+      el.style.transform=`translateX(${mSwipeDx>0?'100px':'-100px'})`;el.style.opacity='0';
+      setTimeout(()=>{
+        navPost(dir);
+        el.style.transition='none';el.style.transform=`translateX(${dir>0?'60px':'-60px'})`;el.style.opacity='0';
+        requestAnimationFrame(()=>{
+          el.style.transition='transform .25s ease-out,opacity .25s ease-out';
+          el.style.transform='translateX(0)';el.style.opacity='1';
+        });
+      },200);
+      setTimeout(()=>{el.style.transition=''},450);
+      return;
+    }
+    // Reset swipe transform if didn't navigate
+    if(feedZoom.scale<=1.01){
+      el.style.transition='transform .2s,opacity .2s';
+      el.style.transform='';el.style.opacity='';
+      setTimeout(()=>{el.style.transition=''},250);
+    }
   });
 
-  // Touch: pinch-to-zoom + drag-to-pan
-  let touchStartDist=0,touchStartScale=1,touchStartX=0,touchStartY=0,touchStartPanX=0,touchStartPanY=0,touchMoved=false;
+  // Scroll wheel zoom
+  el.addEventListener('wheel',function(e){
+    if(!isZoomablePost())return;
+    e.preventDefault();
+    const factor=e.deltaY>0?0.82:1.22;
+    feedZoomTo(e.clientX,e.clientY,feedZoom.scale*factor);
+  },{passive:false});
 
-  function getTouchDist(t){return Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)}
-  function getTouchMid(t){return{x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2}}
+  // ── Unified touch handler ──
+  let tStartX=0, tStartY=0, tMoved=false, tSwipeDx=0, tPanStartX=0, tPanStartY=0;
+  let pinching=false, pinchDist0=0, pinchScale0=1, pinchMidX=0, pinchMidY=0;
 
-  container.addEventListener('touchstart',function(e){
-    if(!getFeedZoomImg())return;
-    touchMoved=false;
-    if(e.touches.length===2){
-      feedZoom.pinching=true;
-      touchStartDist=getTouchDist(e.touches);
-      touchStartScale=feedZoom.scale;
-      const mid=getTouchMid(e.touches);
-      touchStartX=mid.x;touchStartY=mid.y;
-      touchStartPanX=feedZoom.x;touchStartPanY=feedZoom.y;
+  function touchDist(t){return Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)}
+  function touchMid(t){return{x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2}}
+
+  el.addEventListener('touchstart',function(e){
+    if(e.target.closest('.feed-mute-btn')||e.target.closest('.feed-single-edit')||e.target.tagName==='VIDEO'||e.target.tagName==='IFRAME')return;
+    tMoved=false; tSwipeDx=0;
+
+    if(e.touches.length===2 && isZoomablePost()){
+      // Pinch start
+      pinching=true;
+      pinchDist0=touchDist(e.touches);
+      pinchScale0=feedZoom.scale;
+      const mid=touchMid(e.touches);
+      pinchMidX=mid.x; pinchMidY=mid.y;
+      tPanStartX=feedZoom.x; tPanStartY=feedZoom.y;
       e.preventDefault();
-    }else if(e.touches.length===1&&feedZoom.scale>1){
-      feedZoom.dragging=true;
-      touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;
-      touchStartPanX=feedZoom.x;touchStartPanY=feedZoom.y;
-      e.preventDefault();
+    } else if(e.touches.length===1){
+      tStartX=e.touches[0].clientX; tStartY=e.touches[0].clientY;
+      tPanStartX=feedZoom.x; tPanStartY=feedZoom.y;
+      if(feedZoom.scale>1.01) e.preventDefault();
     }
   },{passive:false});
 
-  container.addEventListener('touchmove',function(e){
-    if(!getFeedZoomImg())return;
-    if(feedZoom.pinching&&e.touches.length===2){
-      e.preventDefault();touchMoved=true;
-      const dist=getTouchDist(e.touches);
-      const newScale=touchStartScale*(dist/touchStartDist);
-      const mid=getTouchMid(e.touches);
-      feedZoomAt(mid.x,mid.y,newScale);
-      // Also pan with pinch movement
-      feedZoom.x+=(mid.x-touchStartX)*0.5;
-      feedZoom.y+=(mid.y-touchStartY)*0.5;
-      touchStartX=mid.x;touchStartY=mid.y;
-      clampFeedPan();applyFeedZoom();
-    }else if(feedZoom.dragging&&e.touches.length===1){
-      e.preventDefault();touchMoved=true;
-      feedZoom.x=touchStartPanX+(e.touches[0].clientX-touchStartX);
-      feedZoom.y=touchStartPanY+(e.touches[0].clientY-touchStartY);
-      clampFeedPan();applyFeedZoom();
+  el.addEventListener('touchmove',function(e){
+    if(pinching && e.touches.length===2){
+      // Pinch zoom + pan
+      e.preventDefault(); tMoved=true;
+      const dist=touchDist(e.touches);
+      const mid=touchMid(e.touches);
+      feedZoomTo(mid.x, mid.y, pinchScale0*(dist/pinchDist0));
+    } else if(e.touches.length===1 && !pinching){
+      const dx=e.touches[0].clientX-tStartX;
+      const dy=e.touches[0].clientY-tStartY;
+      if(Math.abs(dx)>5||Math.abs(dy)>5) tMoved=true;
+      if(!tMoved)return;
+
+      if(feedZoom.scale>1.01){
+        // Pan zoomed image
+        e.preventDefault();
+        feedZoom.x=tPanStartX+dx;
+        feedZoom.y=tPanStartY+dy;
+        clampFeedPan();applyFeedZoom();
+      } else {
+        // Swipe between posts
+        if(Math.abs(dy)>Math.abs(dx))return; // vertical scroll, ignore
+        tSwipeDx=dx;
+        el.style.transform=`translateX(${dx*.4}px)`;
+        el.style.opacity=1-Math.abs(dx)/600;
+      }
     }
   },{passive:false});
 
-  container.addEventListener('touchend',function(e){
-    if(feedZoom.pinching&&e.touches.length<2){
-      feedZoom.pinching=false;
-      if(feedZoom.scale<1.05){resetFeedZoom()}
+  el.addEventListener('touchend',function(e){
+    if(pinching && e.touches.length<2){
+      pinching=false;
+      if(feedZoom.scale<1.05) resetFeedZoom();
+      return;
     }
-    if(e.touches.length===0){
-      feedZoom.dragging=false;
-      // Double-tap to zoom on mobile
-    }
-  });
-})();
+    if(e.touches.length>0)return; // still touching
 
-// ══════ SWIPE ══════
-(function(){
-  const img=document.getElementById('singleImg');
-  let sx=0,sy=0,dx=0,swiping=false;
-  img.addEventListener('touchstart',e=>{if(feedZoom.scale>1||e.touches.length>1)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;swiping=true},{passive:true});
-  img.addEventListener('touchmove',e=>{
-    if(!swiping||feedZoom.scale>1)return;
-    dx=e.touches[0].clientX-sx;
-    const dy=Math.abs(e.touches[0].clientY-sy);
-    if(dy>Math.abs(dx)){swiping=false;return}
-    img.style.transform=`translateX(${dx*.4}px)`;
-    img.style.opacity=1-Math.abs(dx)/600;
-  },{passive:true});
-  img.addEventListener('touchend',()=>{
-    if(!swiping){img.style.transform='';img.style.opacity='';return}
-    swiping=false;
-    if(Math.abs(dx)>50){
-      const dir=dx>0?-1:1;
-      img.style.transition='transform .2s,opacity .2s';
-      img.style.transform=`translateX(${dx>0?'100px':'-100px'})`;img.style.opacity='0';
+    if(!tMoved && isZoomablePost()){
+      // Tap — toggle zoom
+      if(feedZoom.scale>1.01){
+        resetFeedZoom();
+      } else {
+        feedZoom.scale=2.5;
+        const c=getFeedContainer();
+        if(c){feedZoom.x=(c.clientWidth*(1-2.5))/2;feedZoom.y=(c.clientHeight*(1-2.5))/2}
+        clampFeedPan();applyFeedZoom();
+      }
+    } else if(feedZoom.scale<=1.01 && Math.abs(tSwipeDx)>50){
+      // Swipe navigation
+      const dir=tSwipeDx>0?-1:1;
+      el.style.transition='transform .2s,opacity .2s';
+      el.style.transform=`translateX(${tSwipeDx>0?'100px':'-100px'})`;el.style.opacity='0';
       setTimeout(()=>{
         navPost(dir);
-        img.style.transition='none';img.style.transform=`translateX(${dir>0?'60px':'-60px'})`;img.style.opacity='0';
+        el.style.transition='none';el.style.transform=`translateX(${dir>0?'60px':'-60px'})`;el.style.opacity='0';
         requestAnimationFrame(()=>{
-          img.style.transition='transform .25s ease-out,opacity .25s ease-out';
-          img.style.transform='translateX(0)';img.style.opacity='1';
+          el.style.transition='transform .25s ease-out,opacity .25s ease-out';
+          el.style.transform='translateX(0)';el.style.opacity='1';
         });
       },200);
-    } else {
-      img.style.transition='transform .2s,opacity .2s';
-      img.style.transform='';img.style.opacity='';
+      setTimeout(()=>{el.style.transition=''},450);
+      return;
     }
-    setTimeout(()=>{img.style.transition=''},450);
-  });
-  // Mouse drag swipe for desktop (only when not zoomed)
-  let mx=0,mdx=0,mdrag=false;
-  img.addEventListener('mousedown',e=>{if(feedZoom.scale>1)return;mx=e.clientX;mdx=0;mdrag=true;e.preventDefault()});
-  window.addEventListener('mousemove',e=>{
-    if(!mdrag||feedZoom.scale>1)return;mdx=e.clientX-mx;
-    img.style.transform=`translateX(${mdx*.4}px)`;
-    img.style.opacity=1-Math.abs(mdx)/600;
-  });
-  window.addEventListener('mouseup',()=>{
-    if(!mdrag)return;mdrag=false;
-    if(feedZoom.scale>1){img.style.transform='';img.style.opacity='';return}
-    if(Math.abs(mdx)>50){
-      const dir=mdx>0?-1:1;
-      img.style.transition='transform .2s,opacity .2s';
-      img.style.transform=`translateX(${mdx>0?'100px':'-100px'})`;img.style.opacity='0';
-      setTimeout(()=>{
-        navPost(dir);
-        img.style.transition='none';img.style.transform=`translateX(${dir>0?'60px':'-60px'})`;img.style.opacity='0';
-        requestAnimationFrame(()=>{
-          img.style.transition='transform .25s ease-out,opacity .25s ease-out';
-          img.style.transform='translateX(0)';img.style.opacity='1';
-        });
-      },200);
-    } else {
-      img.style.transition='transform .2s,opacity .2s';
-      img.style.transform='';img.style.opacity='';
+
+    // Reset swipe transform
+    if(feedZoom.scale<=1.01){
+      el.style.transition='transform .2s,opacity .2s';
+      el.style.transform='';el.style.opacity='';
+      setTimeout(()=>{el.style.transition=''},250);
     }
-    setTimeout(()=>{img.style.transition=''},450);
   });
 })();
 
@@ -3758,7 +3784,7 @@ function onLeaderboardStyleChange(){
 }
 
 // ── Admin Panel ──
-const adminPanelIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel'];
+const adminPanelIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel','portalUsersPanel'];
 function closeAllAdminPanels(){
   adminPanelIds.forEach(id=>{
     const el=document.getElementById(id);
@@ -3786,10 +3812,11 @@ function switchAdminTab(panelId){
   _instantShow(document.getElementById(panelId));
   showAdminTabs(panelId);
   // Trigger panel-specific init
-  if(panelId==='adminPanel'){renderAdminList();renderTeamList();syncAdminPanelSettings()}
+  if(panelId==='adminPanel'){syncAdminPanelSettings()}
   if(panelId==='leaderboardModule'){renderFullLeaderboard()}
   if(panelId==='teamMonitorPanel'){renderTeamMonitor();startTeamMonitor()}
   if(panelId==='keysCodesPanel'){renderKeysCodes()}
+  if(panelId==='portalUsersPanel'){renderPortalUsersList()}
 }
 function syncAdminPanelSettings(){
   const minEl=document.getElementById('apMinSize');
@@ -3813,21 +3840,82 @@ function _instantShow(el){
   el.classList.add('active');
 }
 let apTimerInterval=null;
-function openAdminPanel(){
+// ══════ CHANGE PASSWORD MODAL ══════
+function openChangePassword(){
+  document.getElementById('changePwModal').style.display='flex';
+  document.getElementById('apCurPw').value='';
+  document.getElementById('apNewPw').value='';
+  document.getElementById('apConfPw').value='';
+  document.getElementById('apPwMsg').textContent='';
+}
+function closeChangePassword(){
+  document.getElementById('changePwModal').style.display='none';
+}
+
+// ══════ PORTAL USERS PANEL ══════
+function openPortalUsers(){
+  closeAllAdminPanels();
+  _instantShow(document.getElementById('portalUsersPanel'));
+  showAdminTabs('portalUsersPanel');
+  renderPortalUsersList();
+  // Show/hide type row based on participant mode
+  const mode=regSettings.participantMode||'team';
+  document.getElementById('apManualTypeRow').style.display=mode==='hybrid'?'':'none';
+  onManualTypeChange();
+}
+function closePortalUsers(){
+  const el=document.getElementById('portalUsersPanel');
+  el.style.cssText='';el.classList.remove('active');hideAdminTabs();
+}
+function renderPortalUsersList(){
+  const el=document.getElementById('puCombinedList');
+  if(!el)return;
+  let html='';
+  // Admins first
+  adminUsers.forEach((a,i)=>{
+    html+=`<div class="ap-team-row">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;padding:2px 8px;border-radius:2px;color:var(--amber);background:rgba(255,170,51,.08);border:1px solid rgba(255,170,51,.15);margin-right:8px;font-weight:600">ADMIN</span>
+      <span class="ap-team-id">${a.user}</span>
+      <span class="ap-team-name" style="color:#555">••••••••</span>
+      ${adminUsers.length>1?`<span class="ap-team-del" onclick="removeAdmin(${i})">✕</span>`:''}
+    </div>`;
+  });
+  // Manual entries
+  manualTeams.forEach((t,i)=>{
+    const isIndiv=t.type==='individual';
+    const badge=isIndiv?'PLAYER':'TEAM';
+    const badgeColor=isIndiv?'var(--cyan)':'var(--green)';
+    const badgeBg=isIndiv?'rgba(0,212,255,.08)':'rgba(0,255,136,.08)';
+    const badgeBorder=isIndiv?'rgba(0,212,255,.15)':'rgba(0,255,136,.15)';
+    html+=`<div class="ap-team-row">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;padding:2px 8px;border-radius:2px;color:${badgeColor};background:${badgeBg};border:1px solid ${badgeBorder};margin-right:8px;font-weight:600">${badge}</span>
+      <span class="ap-team-id">${t.id}</span>
+      <span class="ap-team-name">${t.name}</span>
+      <span class="ap-team-del" onclick="removeTeam(${i})">✕</span>
+    </div>`;
+  });
+  if(!html) html='<div style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#555;padding:12px 0;letter-spacing:.5px">No portal users created yet.</div>';
+  el.innerHTML=html;
+}
+function removeManualTeam(i){removeTeam(i)}
+
+// ══════ EVENT CONTROL PANEL ══════
+function openEventControl(){
   closeAllAdminPanels();
   _instantShow(document.getElementById('adminPanel'));
   showAdminTabs('adminPanel');
-  renderAdminList();renderTeamList();
   syncAdminPanelSettings();
   // Start live timer sync
   if(apTimerInterval)clearInterval(apTimerInterval);
   apTimerInterval=setInterval(()=>{const el=document.getElementById('apTimerDisplay');if(el)el.textContent=document.getElementById('cTimer').textContent},250);
 }
-function closeAdminPanel(){
+function openAdminPanel(){openEventControl()} // backward compat alias
+function closeEventControl(){
   const el=document.getElementById('adminPanel');
   el.style.cssText='';el.classList.remove('active');hideAdminTabs();
   if(apTimerInterval){clearInterval(apTimerInterval);apTimerInterval=null}
 }
+function closeAdminPanel(){closeEventControl()} // backward compat alias
 function openTeamMonitor(){
   closeAllAdminPanels();
   _instantShow(document.getElementById('teamMonitorPanel'));
@@ -3864,16 +3952,13 @@ function addAdmin(){
   adminUsers.push({user:u,pass:p});
   msg.className='ap-msg ok';msg.textContent='✓ Admin "'+u+'" added';
   document.getElementById('apAddUser').value='';document.getElementById('apAddPw').value='';
-  renderAdminList();
+  renderPortalUsersList();
 }
 function removeAdmin(i){
   if(adminUsers.length<=1)return;
-  adminUsers.splice(i,1);renderAdminList();
+  adminUsers.splice(i,1);renderPortalUsersList();
 }
-function renderAdminList(){
-  const el=document.getElementById('apAdminList');
-  el.innerHTML=adminUsers.map((a,i)=>`<div class="ap-team-row"><span class="ap-team-id">${a.user}</span><span class="ap-team-name">••••••••</span>${adminUsers.length>1?`<span class="ap-team-del" onclick="removeAdmin(${i})">✕</span>`:''}</div>`).join('');
-}
+function renderAdminList(){renderPortalUsersList()} // backward compat
 
 function createManualTeam(){
   const mode=regSettings.participantMode||'team';
@@ -3887,7 +3972,7 @@ function createManualTeam(){
   manualTeams.push({name:name,id:id,type:effectiveType});
   msg.className='ap-msg ok';msg.textContent=`✓ ${effectiveType==='individual'?'Participant':'Team'} "${name}" created with ID: ${id}`;
   document.getElementById('apTeamName').value='';document.getElementById('apTeamId').value='';
-  renderTeamList();
+  renderPortalUsersList();
 }
 function onManualTypeChange(){
   const t=document.getElementById('apManualType')?.value||'team';
@@ -3915,11 +4000,8 @@ function syncManualCreationUI(){
   }
 }
 function autoGenTeamId(){const name=document.getElementById('apTeamName').value.trim()||'TEAM';document.getElementById('apTeamId').value=generateTeamId(name)}
-function removeTeam(i){manualTeams.splice(i,1);renderTeamList()}
-function renderTeamList(){
-  const el=document.getElementById('apTeamList');
-  el.innerHTML=manualTeams.length?manualTeams.map((t,i)=>`<div class="ap-team-row"><span class="ap-team-id">${t.id}</span><span class="ap-team-name">${t.name}</span><span class="ap-team-del" onclick="removeTeam(${i})">✕</span></div>`).join(''):'<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:8px 0">No teams created yet</div>';
-}
+function removeTeam(i){manualTeams.splice(i,1);renderPortalUsersList()}
+function renderTeamList(){renderPortalUsersList()} // backward compat
 
 // ── Team Monitor (Activity Tracking) ──
 const INACTIVE_THRESHOLD=5*60*1000; // 5 minutes
