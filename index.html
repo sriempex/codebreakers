@@ -3286,10 +3286,9 @@ function showConfirm(){if(isSubmitted)return;playConfirmPrompt();const inputs=do
 function hideConfirm(){document.getElementById('confirmModal').classList.remove('active')}
 function finalSubmit(){
   isSubmitted=true;
-  // Grade all answers silently — results stored for admin/leaderboard only
+  // Grade all answers locally — results stored for admin/leaderboard
   submissionResults=gradeAllSubmissions();
   submissionResults.submittedAt=new Date().toISOString();
-  console.log('Submission graded:',submissionResults); // For debugging, remove in prod
 
   document.getElementById('confirmModal').classList.remove('active');
   document.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});
@@ -3302,7 +3301,24 @@ function finalSubmit(){
   playSuccess();
   document.getElementById('flashG').classList.add('on');
   setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
-  // TODO: Post results to Google Sheets backend
+
+  // Send to backend
+  if(currentVaultTeam&&currentVaultTeam.id!=='ADMIN'){
+    const answers={};
+    document.querySelectorAll('.intel-exp-input').forEach(inp=>{
+      const idx=inp.dataset.idx;
+      const fi=parseInt(idx);
+      if(!isNaN(fi)&&intelFields[fi]){
+        const key=intelFields[fi].label;
+        if(idx.endsWith('b')){answers[key+'_2']=inp.value.trim()}
+        else{answers[key]=inp.value.trim()}
+      }
+    });
+    apiCall('submitAnswers',{teamId:currentVaultTeam.id,answers:answers}).then(r=>{
+      if(r.ok)console.log('✓ Submission saved to backend, score:',r.score);
+      else console.warn('Submission save failed:',r.error);
+    });
+  }
 }
 
 // ══════ MEDIA VIEWER ══════
@@ -3659,6 +3675,27 @@ async function loadEventData(){
     feedResult.posts.forEach(p=>posts.push(p));
     renderFeed();renderGrid();
   }
+  // Load media items
+  const mediaResult=await apiCall('getMediaItems');
+  if(mediaResult.ok&&mediaResult.items&&mediaResult.items.length>0){
+    mediaItems.length=0;
+    mediaResult.items.forEach(m=>mediaItems.push({
+      icon:m.filename||'📄',name:m.title||'',nameFont:m.titleFont||'',
+      desc:m.desc||'',descFont:m.descFont||'',
+      type:m.type||'doc',fileUrl:m.url||''
+    }));
+    renderMedia();renderGrid();
+  }
+  // Load intel fields (with answer keys for admin)
+  const intelResult=await apiCall('getIntelFields');
+  if(intelResult.ok&&intelResult.fields&&intelResult.fields.length>0){
+    intelFields.length=0;
+    intelResult.fields.forEach(f=>intelFields.push({
+      label:f.label||'',emoji:f.emoji||'',type:f.fieldType||'text',
+      font:f.font||'',answer:f.answer||{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}
+    }));
+    renderIntelForm();renderGrid();
+  }
   // Load teams
   const teamsResult=await apiCall('getTeams');
   if(teamsResult.ok&&teamsResult.teams){
@@ -3670,6 +3707,17 @@ async function loadEventData(){
       registeredTeams.push(team);
     });
     renderPortalUsersList();
+  }
+  // Load submissions
+  const subResult=await apiCall('getSubmissions');
+  if(subResult.ok&&subResult.submissions){
+    subResult.submissions.forEach(s=>{
+      const team=registeredTeams.find(t=>t.id===s.teamId);
+      if(team){
+        team.submitTime=s.submittedAt;
+        team.submissionResults={totalScore:s.score,correctCount:s.correct,totalFields:s.total};
+      }
+    });
   }
   console.log('✓ Event data loaded from backend');
 }
@@ -4000,6 +4048,31 @@ function saveFeedPostsToBackend(){
       mediaUrl:p.mediaUrl,mediaType:p.mediaType,
       focalX:p.focalX||50,focalY:p.focalY||50
     }))}).then(r=>{if(!r.ok)console.warn('Feed save failed:',r.error)});
+  },1500);
+}
+
+let _saveMediaTimer=null;
+function saveMediaItemsToBackend(){
+  if(!adminSession)return;
+  clearTimeout(_saveMediaTimer);
+  _saveMediaTimer=setTimeout(()=>{
+    apiCall('saveMediaItems',{items:mediaItems.map(m=>({
+      type:m.type||'',title:m.name||'',titleFont:m.nameFont||'',
+      desc:m.desc||'',descFont:m.descFont||'',
+      url:m.fileUrl||'',filename:m.icon||''
+    }))}).then(r=>{if(!r.ok)console.warn('Media save failed:',r.error)});
+  },1500);
+}
+
+let _saveIntelTimer=null;
+function saveIntelFieldsToBackend(){
+  if(!adminSession)return;
+  clearTimeout(_saveIntelTimer);
+  _saveIntelTimer=setTimeout(()=>{
+    apiCall('saveIntelFields',{fields:intelFields.map(f=>({
+      label:f.label||'',emoji:f.emoji||'',fieldType:f.type||'text',
+      font:f.font||'',answer:f.answer||{}
+    }))}).then(r=>{if(!r.ok)console.warn('Intel save failed:',r.error)});
   },1500);
 }
 function onParticipantModeChange(){
@@ -5238,7 +5311,7 @@ function saveIntelField(i){
     fuzzyThreshold:parseInt(document.getElementById('ei_fuzzy')?.value)||85,
     points:parseInt(document.getElementById('ei_pts')?.value)||10
   };
-  hideEditModal();renderIntelForm();renderGrid();
+  hideEditModal();renderIntelForm();renderGrid();saveIntelFieldsToBackend();
 }
 // Two-step delete: first click shows confirm, second click executes
 function confirmDelete(btn,fn){
@@ -5246,7 +5319,7 @@ function confirmDelete(btn,fn){
   btn.dataset.armed='1';btn.textContent='⚠ Confirm?';btn.style.background='rgba(255,50,50,.25)';
   setTimeout(()=>{if(btn){btn.dataset.armed='';btn.textContent='Delete';btn.style.background=''}},3000);
 }
-function deleteIntelField(i){intelFields.splice(i,1);hideEditModal();renderIntelForm();renderGrid()}
+function deleteIntelField(i){intelFields.splice(i,1);hideEditModal();renderIntelForm();renderGrid();saveIntelFieldsToBackend()}
 function addIntelField(){
   showEditModal(`<h3>Add Intel Field</h3>
     <div class="edit-field-row">
@@ -5264,7 +5337,7 @@ function saveNewIntelField(){
     font:document.getElementById('ei_font').value,
     answer:{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}
   });
-  hideEditModal();renderIntelForm();renderGrid();
+  hideEditModal();renderIntelForm();renderGrid();saveIntelFieldsToBackend();
 }
 
 // ── Feed Posts ──
@@ -5441,8 +5514,8 @@ function editMediaItem(i){
     </div>
     <div style="display:flex;gap:10px;margin-top:6px"><button class="btn-standard btn-red" onclick="confirmDelete(this,()=>deleteMediaItem(${i}))">Delete</button><span style="flex:1"></span><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveMediaItem(${i})">Save</button></div>`);
 }
-function saveMediaItem(i){mediaItems[i].icon=document.getElementById('em_ico').value.trim();mediaItems[i].name=document.getElementById('em_name').value.trim();mediaItems[i].desc=document.getElementById('em_desc').value.trim();mediaItems[i].type=document.getElementById('em_type').value;const urlVal=document.getElementById('em_url').value.trim();mediaItems[i].fileUrl=pendingMediaFileUrl||(urlVal==='[uploaded file]'?mediaItems[i].fileUrl:urlVal);mediaItems[i].unlockKey=document.getElementById('em_key').value.trim();const vl=document.getElementById('em_vaultlock');if(vl)mediaItems[i].vaultLocked=vl.checked;const nf=document.getElementById('em_font').value;const df=document.getElementById('em_dfont').value;mediaItems[i].nameFont=nf;mediaItems[i].descFont=df;if(document.getElementById('em_font_all').checked)mediaItems.forEach(m=>{m.nameFont=nf;m.descFont=df});pendingMediaFileUrl='';hideEditModal();renderMedia();renderGrid()}
-function deleteMediaItem(i){mediaItems.splice(i,1);hideEditModal();renderMedia();renderGrid()}
+function saveMediaItem(i){mediaItems[i].icon=document.getElementById('em_ico').value.trim();mediaItems[i].name=document.getElementById('em_name').value.trim();mediaItems[i].desc=document.getElementById('em_desc').value.trim();mediaItems[i].type=document.getElementById('em_type').value;const urlVal=document.getElementById('em_url').value.trim();mediaItems[i].fileUrl=pendingMediaFileUrl||(urlVal==='[uploaded file]'?mediaItems[i].fileUrl:urlVal);mediaItems[i].unlockKey=document.getElementById('em_key').value.trim();const vl=document.getElementById('em_vaultlock');if(vl)mediaItems[i].vaultLocked=vl.checked;const nf=document.getElementById('em_font').value;const df=document.getElementById('em_dfont').value;mediaItems[i].nameFont=nf;mediaItems[i].descFont=df;if(document.getElementById('em_font_all').checked)mediaItems.forEach(m=>{m.nameFont=nf;m.descFont=df});pendingMediaFileUrl='';hideEditModal();renderMedia();renderGrid();saveMediaItemsToBackend()}
+function deleteMediaItem(i){mediaItems.splice(i,1);hideEditModal();renderMedia();renderGrid();saveMediaItemsToBackend()}
 function addMediaItem(){
   pendingMediaFileUrl='';
   showEditModal(`<h3>Add New Media Item</h3>
@@ -5460,7 +5533,7 @@ function addMediaItem(){
     </div>
     <div style="display:flex;gap:10px;margin-top:6px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveNewMediaItem()">Add Item</button></div>`);
 }
-function saveNewMediaItem(){const urlVal=document.getElementById('em_url').value.trim();mediaItems.push({icon:document.getElementById('em_ico').value.trim()||'📄',name:document.getElementById('em_name').value.trim(),desc:document.getElementById('em_desc').value.trim(),type:document.getElementById('em_type').value,fileUrl:pendingMediaFileUrl||(urlVal==='[uploaded file]'?'':urlVal),unlockKey:document.getElementById('em_key').value.trim(),nameFont:document.getElementById('em_font').value,descFont:document.getElementById('em_dfont').value});pendingMediaFileUrl='';hideEditModal();renderMedia();renderGrid()}
+function saveNewMediaItem(){const urlVal=document.getElementById('em_url').value.trim();mediaItems.push({icon:document.getElementById('em_ico').value.trim()||'📄',name:document.getElementById('em_name').value.trim(),desc:document.getElementById('em_desc').value.trim(),type:document.getElementById('em_type').value,fileUrl:pendingMediaFileUrl||(urlVal==='[uploaded file]'?'':urlVal),unlockKey:document.getElementById('em_key').value.trim(),nameFont:document.getElementById('em_font').value,descFont:document.getElementById('em_dfont').value});pendingMediaFileUrl='';hideEditModal();renderMedia();renderGrid();saveMediaItemsToBackend()}
 
 // ══════ TIMER ══════
 let timerSec=5325,timerPaused=false,timerOriginal=5325;
