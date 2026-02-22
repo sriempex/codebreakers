@@ -870,9 +870,9 @@
   .ap-container{width:600px;max-width:92vw;max-height:85vh;overflow-y:auto;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
     border:1px solid rgba(255,255,255,.05);box-shadow:0 25px 80px rgba(0,0,0,.7)}
-  .ap-header{padding:18px 24px;border-bottom:1px solid rgba(0,255,136,.08);background:linear-gradient(180deg,#1a1d28,#14161e);display:flex;align-items:center;justify-content:space-between}
+  .ap-header{padding:18px 28px;border-bottom:1px solid rgba(0,255,136,.08);background:linear-gradient(180deg,#1a1d28,#14161e);display:flex;align-items:center;justify-content:space-between}
   .ap-header h3{font-family:'Staatliches',cursive;font-size:14px;letter-spacing:4px;color:#ffd699;text-transform:uppercase;margin:0}
-  .ap-section{padding:20px 24px;border-bottom:1px solid var(--border)}
+  .ap-section{padding:22px 28px;border-bottom:1px solid var(--border)}
   .ap-section:last-child{border-bottom:none}
   .ap-section h4{font-family:'Saira',sans-serif;font-size:13px;letter-spacing:3px;color:#d0e8f0;text-transform:uppercase;margin:0 0 14px;font-weight:700}
   .ap-section p{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#aaa;letter-spacing:.3px;margin:0 0 12px;line-height:1.6;font-weight:500}
@@ -882,6 +882,12 @@
   .ap-field input:focus{border-color:rgba(0,212,255,.2)}
   .ap-row{display:flex;gap:10px;align-items:flex-end}
   .ap-row .ap-field{flex:1}
+  .ap-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+  .ap-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 16px}
+  .ap-grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px 16px}
+  .ap-full-row{display:flex;gap:8px;align-items:center;width:100%;flex-wrap:wrap}
+  .ap-field select{width:100%;background:#080a10;border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:9px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;box-sizing:border-box}
+  .ap-field select:focus{border-color:rgba(0,212,255,.2)}
   .ap-btn{font-family:'Saira',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;cursor:pointer;padding:8px 18px;border-radius:3px;transition:all .2s}
   .ap-btn-cyan{color:#c0e8f8;background:linear-gradient(180deg,rgba(15,30,40,.5),rgba(10,20,30,.6));border:1px solid rgba(0,212,255,.25);border-bottom:2px solid rgba(0,212,255,.12)}
   .ap-btn-cyan:hover{border-color:rgba(0,212,255,.4)}
@@ -1412,7 +1418,7 @@
     .admin-login-box{width:90vw;max-width:340px;padding:22px 18px}
     .edit-box{width:94vw;max-width:500px;padding:18px}
     .ap-container{width:96vw;max-height:90vh}
-    .ap-section{padding:14px 16px}
+    .ap-section{padding:16px 20px}
     .ap-row{flex-direction:column}
     .bc-container{width:96vw}
     .pb-inner{padding:10px 14px}
@@ -1694,7 +1700,7 @@
 
 <!-- PORTAL USERS PANEL -->
 <div id="portalUsersPanel">
-  <div class="ap-container" style="width:560px">
+  <div class="ap-container">
     <div class="ap-header"><h3>👥 Portal Users</h3><button class="mv-close" onclick="closePortalUsers()">✕ CLOSE</button></div>
     <div class="ap-section"><h4>🔑 Add Administrator</h4>
       <p>Administrators can access the admin menu and all management tools.</p>
@@ -1735,17 +1741,17 @@
       <p>Configure participant mode, countdown timer, and leaderboard display.</p>
       <div style="margin-bottom:16px">
         <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">⏱ Event Timer</label>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
-          <select id="timerMode" onchange="onTimerModeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none">
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px;width:100%">
+          <select id="timerMode" onchange="onTimerModeChange()" style="flex:1;background:#080a10;border:1px solid var(--border);border-radius:4px;padding:9px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none">
             <option value="countdown">Manual Countdown</option>
             <option value="event">Event Schedule</option>
           </select>
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:16px;color:var(--red);letter-spacing:3px;margin-left:8px;font-weight:700;text-shadow:0 0 8px rgba(255,50,50,.3)" id="apTimerDisplay">—</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:16px;color:var(--red);letter-spacing:3px;font-weight:700;text-shadow:0 0 8px rgba(255,50,50,.3);min-width:100px;text-align:right" id="apTimerDisplay">—</span>
         </div>
         <div id="timerCountdownControls">
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <div style="display:flex;gap:8px;align-items:center;width:100%">
             <button class="admin-timer-btn" id="pauseBtn" onclick="togglePause()">⏸ PAUSE</button>
-            <input class="admin-timer-input" id="timerInput" placeholder="HH:MM:SS" maxlength="8">
+            <input class="admin-timer-input" id="timerInput" placeholder="HH:MM:SS" maxlength="8" style="flex:1;min-width:0">
             <button class="admin-timer-btn" onclick="setNewTime()">SET</button>
             <button class="admin-timer-btn" onclick="resetTimer()">RESET</button>
           </div>
@@ -1755,27 +1761,27 @@
             <div class="ap-field" style="flex:1;min-width:180px"><label>Event Start</label><input type="datetime-local" id="eventStartInput" onchange="onEventTimeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 12px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:11px;width:100%;outline:none;color-scheme:dark"></div>
             <div class="ap-field" style="flex:1;min-width:180px"><label>Event End</label><input type="datetime-local" id="eventEndInput" onchange="onEventTimeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 12px;color:var(--red);font-family:'IBM Plex Mono',monospace;font-size:11px;width:100%;outline:none;color-scheme:dark"></div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="eventAutoLock" checked onchange="eventSettings.autoLock=this.checked"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa">Auto-lock site when timer expires</span></label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="eventAutoLock" checked onchange="eventSettings.autoLock=this.checked"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa">Auto-lock when timer expires</span></label>
             <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="eventShowLeaderboard" checked onchange="eventSettings.showLeaderboardOnExpiry=this.checked"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa">Reveal leaderboard on expiry</span></label>
           </div>
           <div id="eventStatusMsg" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#666;letter-spacing:1px;margin-top:8px"></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05)">
-            <button class="ap-btn ap-btn-amber" id="eventPauseBtn" onclick="toggleEventPause()" style="font-size:9px;padding:5px 12px">⏸ Pause Timer</button>
-            <button class="ap-btn ap-btn-red" onclick="forceEndEvent()" style="font-size:9px;padding:5px 12px">⛔ Force End</button>
-            <button class="ap-btn ap-btn-cyan" onclick="exportResults()" style="font-size:9px;padding:5px 12px">📊 Export Results</button>
-            <button class="ap-btn ap-btn-red" onclick="clearAllData()" style="font-size:9px;padding:5px 12px;opacity:.7">🗑 Clear All Data</button>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05)">
+            <button class="ap-btn ap-btn-amber" id="eventPauseBtn" onclick="toggleEventPause()" style="font-size:9px;padding:5px 8px;width:100%">⏸ Pause</button>
+            <button class="ap-btn ap-btn-red" onclick="forceEndEvent()" style="font-size:9px;padding:5px 8px;width:100%">⛔ Force End</button>
+            <button class="ap-btn ap-btn-cyan" onclick="exportResults()" style="font-size:9px;padding:5px 8px;width:100%">📊 Export</button>
+            <button class="ap-btn ap-btn-red" onclick="clearAllData()" style="font-size:9px;padding:5px 8px;width:100%;opacity:.7">🗑 Clear</button>
           </div>
         </div>
       </div>
-      <div class="edit-field-row" style="gap:12px;margin-bottom:12px">
-        <div class="ap-field"><label>Participant Mode</label><select id="apParticipantMode" onchange="onParticipantModeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%;outline:none"><option value="team">Team Only</option><option value="individual">Individual Only</option><option value="hybrid">Open (Hybrid)</option></select></div>
-        <div class="ap-field"><label>Leaderboard Style</label><select id="apLeaderboardStyle" onchange="onLeaderboardStyleChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%;outline:none"><option value="mixed">Single Mixed</option><option value="split">Split by Type</option><option value="labeled">Single with Labels</option></select></div>
+      <div class="ap-grid-2" style="margin-bottom:12px">
+        <div class="ap-field"><label>Participant Mode</label><select id="apParticipantMode" onchange="onParticipantModeChange()"><option value="team">Team Only</option><option value="individual">Individual Only</option><option value="hybrid">Open (Hybrid)</option></select></div>
+        <div class="ap-field"><label>Leaderboard Style</label><select id="apLeaderboardStyle" onchange="onLeaderboardStyleChange()"><option value="mixed">Single Mixed</option><option value="split">Split by Type</option><option value="labeled">Single with Labels</option></select></div>
       </div>
       <div style="margin-top:12px">
         <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">🟢 Activity Thresholds <span class="save-blip" id="blipThresholds">✓ Saved</span></label>
         <p style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#666;margin:0 0 8px;letter-spacing:.3px">Controls when console tile status changes from Active → Idle → Silent.</p>
-        <div class="edit-field-row" style="gap:12px">
+        <div class="ap-grid-2">
           <div class="ap-field"><label>Active → Idle (seconds)</label><input type="number" id="apThresholdIdle" value="60" min="10" max="600" onchange="updateThresholds()" style="width:100%"></div>
           <div class="ap-field"><label>Idle → Silent (seconds)</label><input type="number" id="apThresholdSilent" value="300" min="30" max="3600" onchange="updateThresholds()" style="width:100%"></div>
         </div>
@@ -1784,44 +1790,46 @@
     <div class="ap-section"><h4>🏠 Landing Page</h4>
       <p>Customize the landing page banner and text.</p>
       <div class="ap-field" style="margin-bottom:10px"><label>Banner Image</label>
-        <div style="display:flex;gap:8px;align-items:center">
-          <label style="cursor:pointer;font-size:9px;color:var(--cyan);letter-spacing:1px;padding:8px 14px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.05);white-space:nowrap;font-family:'IBM Plex Mono',monospace;text-align:center">
-            📁 Upload Banner
+        <div style="display:flex;gap:8px;align-items:center;width:100%">
+          <label style="cursor:pointer;font-size:9px;color:var(--cyan);letter-spacing:1px;padding:9px 14px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.05);white-space:nowrap;font-family:'IBM Plex Mono',monospace;text-align:center;flex:1">
+            📁 Upload Banner Image
             <input type="file" accept="image/*" onchange="handleAdminBannerUpload(this)" style="display:none">
           </label>
-          <button class="ap-btn ap-btn-red" onclick="clearLandingBanner()" style="font-size:8px;padding:6px 10px;flex-shrink:0">✕ Clear</button>
+          <button class="ap-btn ap-btn-red" onclick="clearLandingBanner()" style="font-size:9px;padding:9px 14px;flex-shrink:0;white-space:nowrap">✕ Clear Banner</button>
         </div>
       </div>
-      <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px">
+      <div style="display:flex;gap:20px;align-items:center;margin-bottom:14px;padding:12px 16px;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.04);border-radius:6px">
         <div class="banner-preview" id="apBannerPreview"><span class="bp-emoji" id="apBannerFallbackPreview">🔐</span></div>
-        <div style="flex:1">
+        <div style="flex:1;min-width:0">
           <div class="ap-field" style="margin-bottom:8px"><label>Fallback Icon</label>
-            <input id="apBannerFallback" value="🔐" onchange="updateBannerFallback()" style="width:60px;text-align:center;font-size:18px" maxlength="4">
-            <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-left:8px">Shown when no image is set</span>
+            <div style="display:flex;align-items:center;gap:10px">
+              <input id="apBannerFallback" value="🔐" onchange="updateBannerFallback()" style="width:54px;text-align:center;font-size:18px;background:#080a10;border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:6px;color:#ddd;outline:none" maxlength="4">
+              <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555">Shown when no image is uploaded</span>
+            </div>
           </div>
           <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#555;letter-spacing:.5px" id="apBannerStatus">No image set</div>
         </div>
       </div>
-      <div class="edit-field-row" style="gap:12px;margin-bottom:12px">
+      <div class="ap-grid-2" style="margin-bottom:12px">
         <div class="ap-field"><label>Title <span class="save-blip" id="blipLandingTitle">✓ Saved</span></label><input id="apLandingTitle" value="Code Breakers" onchange="updateLandingTitle()"></div>
         <div class="ap-field"><label>Subtitle <span class="save-blip" id="blipLandingSub">✓ Saved</span></label><input id="apLandingSubtitle" value="Rise to The Challenge" onchange="updateLandingSubtitle()"></div>
       </div>
     </div>
     <div class="ap-section"><h4>📝 Registration Settings</h4>
       <p>Configure team registration parameters. Changes apply immediately.</p>
-      <div class="edit-field-row" style="gap:12px;margin-bottom:12px">
+      <div class="ap-grid-3" style="margin-bottom:12px">
         <div class="ap-field"><label>Min Team Size</label><select id="apMinSize" onchange="updateRegSettings()"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
         <div class="ap-field"><label>Max Team Size</label><select id="apMaxSize" onchange="updateRegSettings()"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></div>
         <div class="ap-field"><label>Max Teams</label><input type="number" id="apMaxTeams" value="20" min="2" max="100" onchange="updateRegSettings()"></div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:12px">
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqEmail" checked onchange="updateRegSettings()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999;letter-spacing:.5px">Require Email Address</span></label>
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqPhone" onchange="updateRegSettings()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999;letter-spacing:.5px">Require Phone Number</span></label>
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqDept" onchange="updateRegSettings()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999;letter-spacing:.5px">Require Department</span></label>
       </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apRegOpen" checked onchange="updateRegSettings()"><span style="font-family:Saira,sans-serif;font-size:10px;color:var(--green);letter-spacing:1px;font-weight:600">Registration Open</span></label>
-        <span id="apRegStatus" style="font-family:IBM Plex Mono,monospace;font-size:8px;color:var(--green);letter-spacing:1px">● OPEN</span>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(0,255,136,.1);border-radius:4px;background:rgba(0,255,136,.02)">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;flex:1"><input type="checkbox" id="apRegOpen" checked onchange="updateRegSettings()"><span style="font-family:Saira,sans-serif;font-size:10px;color:var(--green);letter-spacing:1px;font-weight:600">Registration Open</span></label>
+        <span id="apRegStatus" style="font-family:IBM Plex Mono,monospace;font-size:9px;color:var(--green);letter-spacing:1px;font-weight:700">● OPEN</span>
       </div>
     </div>
     <div class="ap-section"><h4>🖋 Typography <span class="save-blip" id="blipTypography">✓ Saved</span></h4>
@@ -1834,7 +1842,7 @@
         <div class="ap-field"><label>Intel Field Inputs</label><div id="fc_intelInput_wrap"></div></div>
         <div class="ap-field"><label>Vault / Keypad Display</label><div id="fc_vaultDisplay_wrap"></div></div>
       </div>
-      <button class="ap-btn ap-btn-ghost" onclick="resetFontConfig()" style="font-size:9px;padding:5px 12px">↺ Reset All to Default</button>
+      <button class="ap-btn ap-btn-ghost" onclick="resetFontConfig()" style="font-size:9px;padding:7px 16px;display:block;width:100%;text-align:center">↺ Reset All Typography to Default</button>
     </div>
   </div>
 </div>
