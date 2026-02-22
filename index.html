@@ -4844,7 +4844,7 @@ function isTeamGhost(t){
   // Ghost: registered but never meaningfully engaged — lastActive within 45s of registeredAt
   if(!t.registeredAt)return false;
   const regTime=new Date(t.registeredAt).getTime();
-  return(t.lastActive-regTime)<45000;
+  return(t.lastActive-regTime)<300000; // 5 minutes — never meaningfully engaged
 }
 function removeGhostTeam(teamId){
   const idx=registeredTeams.findIndex(t=>t.id===teamId);
@@ -5757,7 +5757,8 @@ function renderIntelForm(){
     const keyHandler='onkeydown="if(event.key===\'Enter\'){this.blur()}"';
     const ph=f.placeholder||'···';
     if(f.type==='money'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="border:none;background:transparent;box-shadow:none${f.inputFont?';'+fontStyle(f.inputFont):''}" placeholder="${ph}" data-idx="${i}" oninput="formatMoney(this)" ${keyHandler}></div>${clearBtn}</div>`;
+      const _moneyIStyle=_iFont?`border:none;background:transparent;box-shadow:none;${fontStyle(_iFont)}`:'border:none;background:transparent;box-shadow:none';
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="${_moneyIStyle}" placeholder="${ph}" data-idx="${i}" oninput="formatMoney(this)" ${keyHandler}></div>${clearBtn}</div>`;
     }else if(f.type==='phone'){
       html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${f.placeholder||'(XXX) XXX-XXXX'}" data-idx="${i}" oninput="formatPhone(this)" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='number'){
@@ -5767,7 +5768,8 @@ function renderIntelForm(){
     }else if(f.type==='email'){
       html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${f.placeholder||'name@domain.com'}" data-idx="${i}" inputmode="email" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='plate'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${f.placeholder||'ABC-1234'}" data-idx="${i}" style="text-transform:uppercase;letter-spacing:2px${f.inputFont?';'+fontStyle(f.inputFont):''}" oninput="this.value=this.value.toUpperCase()" maxlength="12" ${keyHandler}>${clearBtn}</div>`;
+      const _plateIStyle=`text-transform:uppercase;letter-spacing:2px${_iFont?';'+fontStyle(_iFont):''}`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${f.placeholder||'ABC-1234'}" data-idx="${i}" style="${_plateIStyle}" oninput="this.value=this.value.toUpperCase()" maxlength="12" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='select'){
       const opts=(f.options||[]).map(o=>`<option value="${o}">${o}</option>`).join('');
       html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><select class="intel-exp-input intel-select"${iStyle} data-idx="${i}"><option value="">— Select —</option>${opts}</select>${clearBtn}</div>`;
@@ -5819,9 +5821,9 @@ function editIntelField(i){
         <div class="edit-field"><label>Label</label><input id="ei_label" value="${f.label}"></div>
         <div class="edit-field" style="flex:.3"><label>Emoji</label><input id="ei_emoji" value="${f.emoji}"></div>
       </div>
-      <div class="edit-font-row"><div class="edit-field"><label>Input Type</label><select id="ei_type"><option${f.type==='text'?' selected':''} value="text">Text (general)</option><option${f.type==='number'?' selected':''} value="number">Number</option><option${f.type==='money'?' selected':''} value="money">Money ($)</option><option${f.type==='phone'?' selected':''} value="phone">Phone #</option><option${f.type==='date'?' selected':''} value="date">Date</option><option${f.type==='email'?' selected':''} value="email">Email</option><option${f.type==='plate'?' selected':''} value="plate">License Plate</option><option${f.type==='dual'?' selected':''} value="dual">Dual Field</option><option${f.type==='select'?' selected':''} value="select">Multiple Choice</option></select></div><div class="edit-field"><label>Label Font</label>${fontSelect('ei_font',f.font)}</div><div class="edit-field"><label>Input Font</label>${fontSelect('ei_input_font',f.inputFont||'')}</div></div>
+      <div class="edit-font-row"><div class="edit-field"><label>Input Type</label><select id="ei_type"><option${f.type==='text'?' selected':''} value="text">Text (general)</option><option${f.type==='number'?' selected':''} value="number">Number</option><option${f.type==='money'?' selected':''} value="money">Money ($)</option><option${f.type==='phone'?' selected':''} value="phone">Phone #</option><option${f.type==='date'?' selected':''} value="date">Date</option><option${f.type==='email'?' selected':''} value="email">Email</option><option${f.type==='plate'?' selected':''} value="plate">License Plate</option><option${f.type==='dual'?' selected':''} value="dual">Dual Field</option><option${f.type==='select'?' selected':''} value="select">Multiple Choice</option></select></div></div>
       ${isDual?`<div class="edit-field-row"><div class="edit-field"><label>Placeholder 1</label><input id="ei_ph1" value="${f.placeholder1||''}" placeholder="e.g. Island 1"></div><div class="edit-field"><label>Placeholder 2</label><input id="ei_ph2" value="${f.placeholder2||''}" placeholder="e.g. Island 2"></div></div>`:f.type==='select'?`<div class="edit-field"><label>Dropdown Options (comma-separated)</label><input id="ei_options" value="${(f.options||[]).join(', ')}" placeholder="e.g. Option A, Option B, Option C"></div>`:`<div class="edit-field"><label>Placeholder Text</label><input id="ei_ph" value="${f.placeholder||''}" placeholder="e.g. Enter answer here"></div>`}
-      <label style="display:flex;align-items:center;gap:6px;margin:-8px 0 10px;cursor:pointer"><input type="checkbox" id="ei_font_all"><span style="font-size:9px;color:#888;letter-spacing:1px">Apply font to all intel field labels</span></label>
+
     </div>
     <div class="edit-tab-content" id="tab-answer">
       ${expInputs}
@@ -5873,11 +5875,7 @@ function saveIntelField(i){
   intelFields[i].label=document.getElementById('ei_label').value.trim();
   intelFields[i].emoji=document.getElementById('ei_emoji').value.trim();
   intelFields[i].type=document.getElementById('ei_type').value;
-  const font=document.getElementById('ei_font').value;
-  const inputFont=document.getElementById('ei_input_font')?.value||'';
-  intelFields[i].font=font;
-  intelFields[i].inputFont=inputFont;
-  if(document.getElementById('ei_font_all').checked)intelFields.forEach(f=>{f.font=font;f.inputFont=inputFont});
+  // font/inputFont managed centrally via Typography panel — not edited per-field
   // Save placeholders / options
   if(intelFields[i].type==='dual'){
     intelFields[i].placeholder1=document.getElementById('ei_ph1')?.value.trim()||'';
