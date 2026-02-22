@@ -1489,6 +1489,24 @@
   .flash-red.on{opacity:1}
   .dust{position:fixed;width:1px;height:1px;background:rgba(255,255,255,.08);border-radius:50%;pointer-events:none;z-index:9998;animation:dustF linear infinite}
   @keyframes dustF{0%{transform:translateY(100vh) translateX(0);opacity:0}10%{opacity:.15}90%{opacity:.15}100%{transform:translateY(-20px) translateX(20px);opacity:0}}
+  /* Drag-to-reorder */
+  .drag-handle{display:none;cursor:grab;padding:2px 4px;color:#444;font-size:14px;letter-spacing:-2px;user-select:none;-webkit-user-select:none;touch-action:none;flex-shrink:0;align-self:center}
+  .drag-handle:hover{color:#888}
+  .drag-handle:active{cursor:grabbing}
+  body.edit-mode .drag-handle{display:flex}
+  .feed-card.drag-over{border-color:var(--cyan)!important;box-shadow:0 0 12px rgba(0,212,255,.2)!important}
+  .feed-card.dragging{opacity:.35;pointer-events:none}
+  .media-exp-item.drag-over{border-color:var(--cyan)!important;box-shadow:0 0 12px rgba(0,212,255,.2)!important}
+  .media-exp-item.dragging{opacity:.35;pointer-events:none}
+  .drag-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.85;transform:scale(.95);box-shadow:0 12px 40px rgba(0,0,0,.5);border-radius:4px;overflow:hidden}
+  /* Landing Page Preview */
+  #landingPreviewOverlay{position:fixed;inset:0;z-index:9500;background:#000;display:none;flex-direction:column}
+  #landingPreviewOverlay.active{display:flex}
+  .lp-preview-bar{position:absolute;top:0;left:0;right:0;z-index:9501;display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 20px;background:linear-gradient(180deg,rgba(0,0,0,.85),transparent);pointer-events:none}
+  .lp-preview-bar>*{pointer-events:all}
+  .lp-preview-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;opacity:.7}
+  .lp-preview-close{font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;padding:6px 16px;border:1px solid rgba(0,212,255,.3);border-radius:3px;background:rgba(0,212,255,.08);color:var(--cyan);cursor:pointer;transition:all .2s}
+  .lp-preview-close:hover{background:rgba(0,212,255,.15);border-color:rgba(0,212,255,.5)}
 </style>
 </head>
 <body>
@@ -1819,6 +1837,7 @@
         <div class="ap-field"><label>Title <span class="save-blip" id="blipLandingTitle">✓ Saved</span></label><input id="apLandingTitle" value="Code Breakers" onchange="updateLandingTitle()"></div>
         <div class="ap-field"><label>Subtitle <span class="save-blip" id="blipLandingSub">✓ Saved</span></label><input id="apLandingSubtitle" value="Rise to The Challenge" onchange="updateLandingSubtitle()"></div>
       </div>
+      <div style="text-align:center;padding-top:4px"><button class="ap-btn ap-btn-cyan" onclick="previewLandingPage()" style="font-size:10px;padding:8px 20px">👁 Preview Landing Page</button></div>
     </div>
     <div class="ap-section"><h4>📝 Registration Settings</h4>
       <p>Configure team registration parameters. Changes apply immediately.</p>
@@ -3045,7 +3064,7 @@ function renderFeed(){
     }
     const bgStyle=!p.mediaUrl?`background:${p.bg};`:'';
     const _capFont=resolveFont('feedCap',p.capFont||'');
-    return `<div class="feed-card" onclick="openPost(${i})">${isA?`<div class="admin-edit-btn" onclick="event.stopPropagation();editFeedPost(${i})">✎</div>`:''}<div class="feed-card-img" style="${bgStyle}" oncontextmenu="return false">${media}</div><div class="feed-card-cap"><p style="${fontStyle(_capFont)}">${p.cap}</p></div></div>`;
+    return `<div class="feed-card" data-idx="${i}" onclick="openPost(${i})">${isA?`<div class="drag-handle" onpointerdown="startDrag(event,'feed',${i})" onclick="event.stopPropagation()">⋮⋮</div><div class="admin-edit-btn" onclick="event.stopPropagation();editFeedPost(${i})">✎</div>`:''}<div class="feed-card-img" style="${bgStyle}" oncontextmenu="return false">${media}</div><div class="feed-card-cap"><p style="${fontStyle(_capFont)}">${p.cap}</p></div></div>`;
   }).join('')+(isA?'<div class="admin-add-btn" onclick="addFeedPost()">+ Add Post</div>':'');
   document.getElementById('feedBadge').textContent=posts.length+' ITEMS';
   // Force-play all grid videos after DOM insertion
@@ -3081,7 +3100,7 @@ function renderMedia(){
     const clickHandler=_mediaSelectMode?`onclick="toggleMediaSelect(${realIdx})"`:(`onclick="openMediaViewer(${realIdx})"`);
     const _mNameFont=resolveFont('mediaName',m.nameFont||'');
     const _mDescFont=resolveFont('mediaDesc',m.descFont||'');
-    return `<div class="media-exp-item" style="${lockedStyle}${vlStyle}${selStyle}" ${clickHandler}>${isEdit&&!_mediaSelectMode?`<div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${realIdx})" style="position:absolute;top:8px;right:8px">✎</div>`:''}${checkHtml}${crosshatch}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(_mNameFont)}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(_mDescFont)}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${badge}</span></div>`;
+    return `<div class="media-exp-item" data-idx="${realIdx}" style="${lockedStyle}${vlStyle}${selStyle}" ${clickHandler}>${isEdit&&!_mediaSelectMode?`<div class="drag-handle" onpointerdown="startDrag(event,'media',${realIdx})" onclick="event.stopPropagation()">⋮⋮</div><div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${realIdx})" style="position:absolute;top:8px;right:8px">✎</div>`:''}${checkHtml}${crosshatch}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(_mNameFont)}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(_mDescFont)}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${badge}</span></div>`;
   }).join('')+(isEdit&&!_mediaSelectMode?'<div class="admin-add-btn" onclick="addMediaItem()">+ Add Item</div>':'');
   const badge=document.getElementById('mediaBadge');if(badge)badge.textContent=visibleItems.length+' ITEMS';
 }
@@ -5967,7 +5986,7 @@ function addIntelField(){
       <div class="edit-field"><label>Label</label><input id="ei_label" value=""></div>
       <div class="edit-field" style="flex:.3"><label>Emoji</label><input id="ei_emoji" value="📋"></div>
     </div>
-    <div class="edit-font-row"><div class="edit-field"><label>Input Type</label><select id="ei_type"><option value="text" selected>Text (general)</option><option value="number">Number</option><option value="money">Money ($)</option><option value="phone">Phone #</option><option value="date">Date</option><option value="email">Email</option><option value="plate">License Plate</option><option value="dual">Dual Field</option><option value="select">Multiple Choice</option></select></div><div class="edit-field"><label>Label Font</label>${fontSelect('ei_font','')}</div></div>
+    <div class="edit-field"><label>Input Type</label><select id="ei_type"><option value="text" selected>Text (general)</option><option value="number">Number</option><option value="money">Money ($)</option><option value="phone">Phone #</option><option value="date">Date</option><option value="email">Email</option><option value="plate">License Plate</option><option value="dual">Dual Field</option><option value="select">Multiple Choice</option></select></div>
     <div style="display:flex;gap:10px;margin-top:6px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveNewIntelField()">Add Field</button></div>`);
 }
 function saveNewIntelField(){
@@ -5975,7 +5994,7 @@ function saveNewIntelField(){
     label:document.getElementById('ei_label').value.trim()||'New Field',
     emoji:document.getElementById('ei_emoji').value.trim()||'📋',
     type:document.getElementById('ei_type').value,
-    font:document.getElementById('ei_font').value,
+    font:'',
     inputFont:'',
     answer:{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}
   });
@@ -6247,6 +6266,138 @@ function addMediaItem(){
     <div style="display:flex;gap:10px;margin-top:6px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveNewMediaItem()">Add Item</button></div>`);
 }
 function saveNewMediaItem(){const vl=document.getElementById('em_vaultlock');const isVL=vl&&vl.checked;mediaItems.push({icon:document.getElementById('em_ico').value.trim()||'📄',name:document.getElementById('em_name').value.trim(),desc:document.getElementById('em_desc').value.trim(),type:document.getElementById('em_type').value,fileUrl:pendingMediaFileUrl||'',unlockKey:document.getElementById('em_key').value.trim(),nameFont:'',descFont:'',vaultLocked:isVL,vaultCode:isVL?(document.getElementById('em_vaultcode')?.value.trim().toUpperCase()||''):'',vaultCodename:isVL?(document.getElementById('em_vaultcodename')?.value.trim().toUpperCase()||''):''});pendingMediaFileUrl='';hideEditModal();syncVaultCodesFromMedia();renderMedia();renderGrid();renderVaultPanel();renderKeysCodes();saveMediaItemsToBackend()}
+
+// ══════ LANDING PAGE PREVIEW ══════
+function previewLandingPage(){
+  // Clone the landing screen into a standalone preview
+  const landing=document.getElementById('landingScreen');
+  if(!landing)return;
+  const overlay=document.getElementById('landingPreviewOverlay');
+  const frame=document.getElementById('landingPreviewFrame');
+
+  // Build a standalone HTML doc with just the landing screen
+  const styles=document.querySelectorAll('style');
+  let css='';
+  styles.forEach(s=>css+=s.textContent);
+  // Also grab Google Fonts
+  const fontLinks=[...document.querySelectorAll('link[href*="fonts.googleapis"]')].map(l=>l.outerHTML).join('');
+
+  const landingClone=landing.cloneNode(true);
+  landingClone.style.display='flex';
+  landingClone.style.position='relative';
+  landingClone.style.width='100%';
+  landingClone.style.height='100%';
+  // Remove edit-mode upload buttons
+  landingClone.querySelectorAll('.landing-banner-upload,.admin-edit-inline').forEach(el=>el.remove());
+
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${fontLinks}<style>${css}
+  body{margin:0;overflow:hidden;background:#000}
+  #landingScreen{display:flex!important;position:relative;width:100vw;height:100vh}
+  .landing-banner-upload{display:none!important}
+  </style></head><body>${landingClone.outerHTML}</body></html>`;
+
+  const blob=new Blob([html],{type:'text/html'});
+  frame.src=URL.createObjectURL(blob);
+
+  overlay.classList.add('active');
+}
+function closeLandingPreview(){
+  const overlay=document.getElementById('landingPreviewOverlay');
+  const frame=document.getElementById('landingPreviewFrame');
+  overlay.classList.remove('active');
+  if(frame.src.startsWith('blob:'))URL.revokeObjectURL(frame.src);
+  frame.src='about:blank';
+}
+
+// ══════ DRAG-TO-REORDER ══════
+let _drag={active:false,type:null,fromIdx:null,ghost:null,overIdx:null};
+
+function startDrag(e,type,idx){
+  e.preventDefault();e.stopPropagation();
+  const target=e.target.closest(type==='feed'?'.feed-card':'.media-exp-item');
+  if(!target)return;
+
+  _drag={active:true,type,fromIdx:idx,ghost:null,overIdx:null};
+
+  // Create ghost
+  const rect=target.getBoundingClientRect();
+  const ghost=target.cloneNode(true);
+  ghost.className='drag-ghost';
+  ghost.style.width=rect.width+'px';
+  ghost.style.height=rect.height+'px';
+  ghost.style.left=rect.left+'px';
+  ghost.style.top=rect.top+'px';
+  document.body.appendChild(ghost);
+  _drag.ghost=ghost;
+
+  // Mark source as dragging
+  target.classList.add('dragging');
+
+  const offsetX=e.clientX-rect.left;
+  const offsetY=e.clientY-rect.top;
+
+  function onMove(ev){
+    const cx=ev.clientX||ev.touches?.[0]?.clientX||0;
+    const cy=ev.clientY||ev.touches?.[0]?.clientY||0;
+    ghost.style.left=(cx-offsetX)+'px';
+    ghost.style.top=(cy-offsetY)+'px';
+
+    // Find drop target
+    ghost.style.display='none';
+    const el=document.elementFromPoint(cx,cy);
+    ghost.style.display='';
+
+    const selector=type==='feed'?'.feed-card[data-idx]':'.media-exp-item[data-idx]';
+    const items=document.querySelectorAll(selector);
+    items.forEach(it=>it.classList.remove('drag-over'));
+
+    if(el){
+      const dropTarget=el.closest(selector);
+      if(dropTarget){
+        const dropIdx=parseInt(dropTarget.dataset.idx);
+        if(!isNaN(dropIdx)&&dropIdx!==idx){
+          dropTarget.classList.add('drag-over');
+          _drag.overIdx=dropIdx;
+        }
+      }
+    }
+  }
+
+  function onEnd(){
+    window.removeEventListener('pointermove',onMove);
+    window.removeEventListener('pointerup',onEnd);
+    window.removeEventListener('pointercancel',onEnd);
+
+    if(ghost)ghost.remove();
+
+    // Clear all visual states
+    const selector=_drag.type==='feed'?'.feed-card':'.media-exp-item';
+    document.querySelectorAll(selector).forEach(el=>{
+      el.classList.remove('dragging','drag-over');
+    });
+
+    // Perform reorder
+    if(_drag.overIdx!==null&&_drag.overIdx!==_drag.fromIdx){
+      const arr=_drag.type==='feed'?posts:mediaItems;
+      const from=_drag.fromIdx;
+      const to=_drag.overIdx;
+      const item=arr.splice(from,1)[0];
+      arr.splice(to,0,item);
+
+      if(_drag.type==='feed'){
+        renderFeed();renderGrid();saveFeedPostsToBackend();
+      }else{
+        syncVaultCodesFromMedia();renderMedia();renderGrid();renderVaultPanel();renderKeysCodes();saveMediaItemsToBackend();
+      }
+    }
+
+    _drag={active:false,type:null,fromIdx:null,ghost:null,overIdx:null};
+  }
+
+  window.addEventListener('pointermove',onMove);
+  window.addEventListener('pointerup',onEnd);
+  window.addEventListener('pointercancel',onEnd);
+}
 
 // ══════ TIMER ══════
 let timerSec=5325,timerPaused=false,timerOriginal=5325;
@@ -6724,7 +6875,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-0530';
+const _BUILD_ID = '20260222-0600';
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
@@ -7051,6 +7202,14 @@ function confirmVaultLock(){
   <div class="anb-btn" id="anb-portalUsersPanel" onclick="switchAdminTab('portalUsersPanel')" title="Users">
     <span class="anb-icon">👥</span><span class="anb-label">Users</span>
   </div>
+</div>
+
+<div id="landingPreviewOverlay">
+  <div class="lp-preview-bar">
+    <span class="lp-preview-label">👁 Landing Page Preview</span>
+    <button class="lp-preview-close" onclick="closeLandingPreview()">✕ Close Preview</button>
+  </div>
+  <iframe id="landingPreviewFrame" style="flex:1;border:none;width:100%;height:100%"></iframe>
 </div>
 
 </body>
