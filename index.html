@@ -1091,6 +1091,8 @@
 
   /* Team View mode — removed, replaced by edit-mode approach */
   .edit-field-row{display:flex;gap:10px}.edit-field-row .edit-field{flex:1}
+  #em_ico_select{width:52px;overflow:hidden;text-overflow:'';transition:width .15s}
+  #em_ico_select.ico-expanded,#em_ico_select:focus{width:100%}
   .edit-box .edit-field input[type="file"]{padding:8px}
   .edit-font-row{display:flex;gap:10px;align-items:flex-end}
   .edit-font-row .edit-field:first-child{flex:1}
@@ -3064,8 +3066,8 @@ function renderMedia(){
   // Players and preview: hide vault-locked. Admin (edit or not): show all
   const showAll=isAdmin&&!isPreview;
   const visibleItems=showAll?mediaItems:mediaItems.filter(m=>!m.vaultLocked||vaultCodes.find(c=>c.linkedMediaIdx===mediaItems.indexOf(m)&&c.unlocked));
-  // Select button in edit mode header area
-  const selectBtnHtml=isEdit&&!_mediaSelectMode?`<div style="text-align:right;margin-bottom:8px"><button onclick="enterMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 12px;color:#666;cursor:pointer">☑ SELECT</button></div>`:'';
+  // Select button in edit mode header area — only show when items exist
+  const selectBtnHtml=isEdit&&!_mediaSelectMode&&visibleItems.length>0?`<div style="text-align:right;margin-bottom:8px"><button onclick="enterMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 12px;color:#666;cursor:pointer">☑ SELECT</button></div>`:'';
   list.innerHTML=selectBtnHtml+visibleItems.map((m,i)=>{
     const realIdx=mediaItems.indexOf(m);
     const isVL=m.vaultLocked&&showAll;
@@ -3080,7 +3082,7 @@ function renderMedia(){
     const _mNameFont=resolveFont('mediaName',m.nameFont||'');
     const _mDescFont=resolveFont('mediaDesc',m.descFont||'');
     return `<div class="media-exp-item" style="${lockedStyle}${vlStyle}${selStyle}" ${clickHandler}>${isEdit&&!_mediaSelectMode?`<div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${realIdx})" style="position:absolute;top:8px;right:8px">✎</div>`:''}${checkHtml}${crosshatch}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(_mNameFont)}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(_mDescFont)}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${badge}</span></div>`;
-  }).join('')+(isEdit&&!_mediaSelectMode?'<div class="admin-add-btn" onclick="addMediaItem()">+ Add Media</div>':'');
+  }).join('')+(isEdit&&!_mediaSelectMode?'<div class="admin-add-btn" onclick="addMediaItem()">+ Add Item</div>':'');
   const badge=document.getElementById('mediaBadge');if(badge)badge.textContent=visibleItems.length+' ITEMS';
 }
 
@@ -6038,7 +6040,7 @@ function editFeedPost(i){
   const isVid=hasMedia&&(p.mediaType==='video'||isVideoUrl(p.mediaUrl));
   const previewHtml=hasMedia?(isVid?`<video src="${p.mediaUrl}" style="max-width:100%;max-height:120px;border-radius:4px" muted autoplay loop playsinline></video><br><span style="font-size:9px;color:var(--green)">✓ Current video</span>`:`<img src="${p.mediaUrl}" class="upload-preview"><br><span style="font-size:9px;color:var(--green)">✓ Current image</span>`):'Click to upload image or video';
   showEditModal(`<h3>Edit Feed Post #${i+1}</h3>
-    <div class="edit-field"><label>📷 Media (upload)</label>
+    <div class="edit-field"><label>📷 Media</label>
       <div class="upload-zone ${hasMedia?'has-file':''}" id="feedUploadZone" onclick="document.getElementById('feedFileInput').click()">${hasMedia?previewHtml:'Click to upload image or video'}</div>
       <input type="file" id="feedFileInput" accept="image/*,video/*" style="display:none" onchange="handleFeedUpload(this)">
     </div>
@@ -6050,10 +6052,6 @@ function editFeedPost(i){
       </div>
       <div style="font-size:8px;color:#555;letter-spacing:.5px;margin-top:4px">Position: <span id="focalDisplay">${p.focalX||50}%, ${p.focalY||50}%</span></div>
     </div>
-    <div class="edit-field"><label>🎬 Video URL <span style="font-size:8px;color:#555">(YouTube, Vimeo, Drive, etc.)</span></label>
-      <input id="ef_video" value="${isVid?p.mediaUrl:''}" placeholder="Paste video URL...">
-    </div>
-    <div class="edit-field"><label>Emoji (fallback)</label><input id="ef_emo" value="${p.emoji}"></div>
     <div class="edit-field"><label>Caption</label><textarea id="ef_cap">${p.cap}</textarea></div>
     <div style="display:flex;gap:10px;margin-top:6px"><button class="btn-standard btn-red" onclick="confirmDelete(this,()=>deleteFeedPost(${i}))">Delete</button><span style="flex:1"></span><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveFeedPost(${i})">Save</button></div>`);
 }
@@ -6094,25 +6092,13 @@ function isVideoUrl(url){
   return /youtube|youtu\.be|vimeo|drive\.google|dailymotion|streamable|loom\.com/i.test(url)||/\.(mp4|webm|mov|ogg)(\?|$)/i.test(url);
 }
 function saveFeedPost(i){
-  const videoUrl=(document.getElementById('ef_video')?.value||'').trim();
   if(pendingFeedUpload){
     posts[i].mediaUrl=pendingFeedUpload;
     posts[i].mediaType=pendingFeedUploadType||'image';
-  } else if(videoUrl){
-    posts[i].mediaUrl=videoUrl;
-    posts[i].mediaType='video';
-  } else if(!pendingFeedUpload&&!videoUrl){
-    // Keep existing media if neither field changed, unless both are empty
-    const hadUpload=posts[i].mediaUrl&&!isVideoUrl(posts[i].mediaUrl);
-    if(!hadUpload){posts[i].mediaUrl='';posts[i].mediaType='image'}
   }
-  posts[i].emoji=document.getElementById('ef_emo').value.trim();
-  
   posts[i].focalX=pendingFocalX;
   posts[i].focalY=pendingFocalY;
   posts[i].cap=document.getElementById('ef_cap').value.trim();
-  
-  
   pendingFeedUpload='';pendingFeedUploadType='';hideEditModal();renderFeed();renderGrid();
   if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
   saveFeedPostsToBackend();
@@ -6134,25 +6120,18 @@ function deleteFeedPost(i){const delPost=posts[i];if(delPost&&delPost.imageUrl)d
   if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
   saveFeedPostsToBackend();
 }
-function addFeedPost(){pendingFeedUpload='';pendingFeedUploadType='';showEditModal(`<h3>Add New Feed Post</h3>
-    <div class="edit-field"><label>📷 Media (upload)</label>
+function addFeedPost(){pendingFeedUpload='';pendingFeedUploadType='';showEditModal(`<h3>Add Feed Post</h3>
+    <div class="edit-field"><label>📷 Media</label>
       <div class="upload-zone" id="feedUploadZone" onclick="document.getElementById('feedFileInput').click()">Click to upload image or video</div>
       <input type="file" id="feedFileInput" accept="image/*,video/*" style="display:none" onchange="handleFeedUpload(this)">
     </div>
-    <div class="edit-field"><label>🎬 Video URL <span style="font-size:8px;color:#555">(YouTube, Vimeo, Drive, etc.)</span></label>
-      <input id="ef_video" value="" placeholder="Paste video URL...">
-    </div>
-    <div class="edit-field"><label>Emoji (fallback)</label><input id="ef_emo" value="📷"></div>
     <div class="edit-field"><label>Caption</label><textarea id="ef_cap"></textarea></div>
     <div style="display:flex;gap:10px;margin-top:6px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveNewFeedPost()">Add Post</button></div>`)}
 function saveNewFeedPost(){
-  const videoUrl=(document.getElementById('ef_video')?.value||'').trim();
+  const p={emoji:'📷',bg:'#1a1a2a',cap:document.getElementById('ef_cap').value.trim(),capFont:'',mediaType:'image',mediaUrl:''};
   if(pendingFeedUpload){
     p.mediaUrl=pendingFeedUpload;
     p.mediaType=pendingFeedUploadType||'image';
-  } else if(videoUrl){
-    p.mediaUrl=videoUrl;
-    p.mediaType='video';
   }
   posts.push(p);pendingFeedUpload='';hideEditModal();renderFeed();renderGrid();
   if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
@@ -6171,7 +6150,7 @@ function buildIconPicker(currentIcon){
   const isCustom=currentIcon&&(currentIcon.startsWith('http')||currentIcon.startsWith('data:'));
   const opts=mediaIconPresets.map(p=>`<option value="${p.v}"${!isCustom&&currentIcon===p.v?' selected':''}>${p.v} ${p.l}</option>`).join('');
   return `<div style="display:flex;gap:4px;align-items:center">
-    <select id="em_ico_select" onchange="if(this.value!=='__custom__')document.getElementById('em_ico').value=this.value" style="flex:1;font-size:13px">
+    <select id="em_ico_select" onchange="if(this.value!=='__custom__')document.getElementById('em_ico').value=this.value" style="flex:1;font-size:13px" onfocus="this.classList.add('ico-expanded')" onblur="this.classList.remove('ico-expanded')">
       ${opts}
       <option value="__custom__"${isCustom?' selected':''}>⊕ Custom...</option>
     </select>
@@ -6199,13 +6178,13 @@ function editMediaItem(i){
   const typeOpts=['document','image','audio','video','dossier'].map(t=>`<option${m.type===t?' selected':''}>${t}</option>`).join('');
   const hasFile=m.fileUrl&&!m.fileUrl.startsWith('data:')&&!m.fileUrl.startsWith('blob:');
   const fileInfo=hasFile?`<div style="font-size:9px;color:var(--green);margin-bottom:6px">✓ File uploaded · <span style="color:#666;cursor:pointer" onclick="if(confirm('Remove uploaded file?')){document.getElementById('em_url_cleared').value='1';this.parentElement.style.display='none'}">remove</span></div>`:'';
-  showEditModal(`<h3>Edit Media Item #${i+1}</h3>
+  showEditModal(`<h3>Edit Item #${i+1}</h3>
     ${fileInfo}
     <div class="edit-field"><label>Upload File${hasFile?' (replace existing)':''}</label><input type="file" id="em_file" onchange="handleMediaUpload(this)"></div>
     <input type="hidden" id="em_url_cleared" value="0">
+    <div class="edit-field"><label>File Name</label><input id="em_name" value="${m.name}"></div>
     <div class="edit-field-row">
       <div class="edit-field" style="flex:.4"><label>Icon</label>${buildIconPicker(m.icon)}</div>
-      <div class="edit-field"><label>File Name</label><input id="em_name" value="${m.name}"></div>
     </div>
     <div class="edit-field"><label>Description</label><textarea id="em_desc">${m.desc}</textarea></div>
     <div class="edit-field-row">
@@ -6245,11 +6224,11 @@ function saveMediaItem(i){mediaItems[i].icon=document.getElementById('em_ico').v
 function deleteMediaItem(i){const delMedia=mediaItems[i];if(delMedia&&delMedia.fileUrl)deleteFromR2(delMedia.fileUrl);mediaItems.splice(i,1);hideEditModal();syncVaultCodesFromMedia();renderMedia();renderGrid();renderVaultPanel();renderKeysCodes();saveMediaItemsToBackend()}
 function addMediaItem(){
   pendingMediaFileUrl='';
-  showEditModal(`<h3>Add New Media Item</h3>
+  showEditModal(`<h3>Add Item</h3>
     <div class="edit-field"><label>Upload File</label><input type="file" id="em_file" onchange="handleMediaUpload(this)"></div>
+    <div class="edit-field"><label>File Name</label><input id="em_name" value=""></div>
     <div class="edit-field-row">
       <div class="edit-field" style="flex:.4"><label>Icon</label>${buildIconPicker('📄')}</div>
-      <div class="edit-field"><label>File Name</label><input id="em_name" value=""></div>
     </div>
     <div class="edit-field"><label>Description</label><textarea id="em_desc"></textarea></div>
     <div class="edit-field-row">
@@ -6745,7 +6724,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-0500';
+const _BUILD_ID = '20260222-0530';
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
@@ -7056,15 +7035,15 @@ function confirmVaultLock(){
   <div class="anb-btn" id="anb-adminPanel" onclick="switchAdminTab('adminPanel')" title="Mission Control">
     <span class="anb-icon">🎛</span><span class="anb-label">Control</span>
   </div>
-  <div class="anb-btn" id="anb-teamMonitorPanel" onclick="switchAdminTab('teamMonitorPanel')" title="Team Monitor">
-    <span class="anb-icon">📡</span><span class="anb-label">Monitor</span>
+  <div class="anb-btn" id="anb-keysCodesPanel" onclick="switchAdminTab('keysCodesPanel')" title="Keys & Codes">
+    <span class="anb-icon">🔐</span><span class="anb-label">Keys</span>
   </div>
   <div class="anb-btn" id="anb-leaderboardModule" onclick="switchAdminTab('leaderboardModule')" title="Leaderboard">
     <span class="anb-icon">🏆</span><span class="anb-label">Leaderboard</span>
   </div>
   <div class="anb-sep"></div>
-  <div class="anb-btn" id="anb-keysCodesPanel" onclick="switchAdminTab('keysCodesPanel')" title="Keys & Codes">
-    <span class="anb-icon">🔐</span><span class="anb-label">Keys</span>
+  <div class="anb-btn" id="anb-teamMonitorPanel" onclick="switchAdminTab('teamMonitorPanel')" title="Team Monitor">
+    <span class="anb-icon">📡</span><span class="anb-label">Monitor</span>
   </div>
   <div class="anb-btn" id="anb-broadcastPanel" onclick="switchAdminTab('broadcastPanel')" title="Broadcast">
     <span class="anb-icon">📢</span><span class="anb-label">Broadcast</span>
