@@ -30,7 +30,8 @@
   }
   .reg-crt-inner{position:relative;z-index:1}
   .reg-crt .reg-section-title{color:var(--green);border-bottom-color:rgba(0,255,136,.12);text-shadow:0 0 10px rgba(0,255,136,.2)}
-  .reg-crt .reg-field label{color:rgba(0,255,136,.4);font-size:10px;letter-spacing:2.5px}
+  .reg-crt .reg-field label{color:rgba(0,255,136,.5);font-size:10px;letter-spacing:2.5px}
+  .reg-crt .reg-main-label{color:var(--cyan);font-size:11px;letter-spacing:3px;font-weight:700}
   .reg-crt .reg-field input{background:rgba(0,255,136,.03);border-color:rgba(0,255,136,.1);color:var(--green);text-shadow:0 0 6px rgba(0,255,136,.2)}
   .reg-crt .reg-field input:focus{border-color:rgba(0,255,136,.25);box-shadow:0 0 8px rgba(0,255,136,.08)}
   .reg-crt .reg-field input::placeholder{color:rgba(0,255,136,.12)}
@@ -609,7 +610,7 @@
 
   /* Feed — view modes */
   .feed-view-toggle{display:flex;gap:4px;margin-bottom:14px;max-width:900px;margin-left:auto;margin-right:auto}
-  .feed-view-btn{flex:1;border-radius:4px;padding:8px;text-align:center;cursor:pointer;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;color:#666;font-weight:700;transition:all .15s;text-transform:uppercase;
+  .feed-view-btn{flex:1;border-radius:4px;padding:5px 8px;text-align:center;cursor:pointer;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;color:#666;font-weight:700;transition:all .15s;text-transform:uppercase;
     background:linear-gradient(180deg,rgba(30,32,38,.5),rgba(20,22,28,.6));
     border:1px solid rgba(255,255,255,.04);border-bottom:2px solid #08080c}
   .feed-view-btn.active{color:#b0e8cc;border-color:rgba(0,255,136,.1);background:linear-gradient(180deg,rgba(15,40,25,.4),rgba(10,30,18,.5))}
@@ -834,7 +835,8 @@
   body.player-preview #logoutBtn{display:none!important}
   body.player-preview .admin-topbar-label{display:none!important}
   body.player-preview .admin-dropdown{display:none!important}
-  body.player-preview .console-team{display:inline!important;cursor:default!important;color:#888!important}
+  body.player-preview .console-team{display:inline!important;color:#888!important}
+  body.player-preview .team-chevron{display:inline!important}
   body.player-preview .notepad-trigger.visible{display:flex!important}
   body.player-preview .admin-edit-btn{display:none!important}
   body.player-preview .admin-edit-inline{display:none!important}
@@ -1420,7 +1422,7 @@
     .feed-card-img{font-size:24px}
     .feed-card-cap p{font-size:9px}
     .feed-view-toggle{margin-bottom:10px}
-    .feed-view-btn{padding:7px;font-size:7px}
+    .feed-view-btn{padding:4px 7px;font-size:7px}
     .feed-single{max-width:100%;gap:12px}
     .feed-single-img{border-radius:0}
     .feed-single-caption{font-size:12px;max-width:100%;padding:0 8px}
@@ -1718,15 +1720,13 @@
           </div>
 
           <div class="reg-section">
-            <div class="reg-section-title">◈ Team Identity</div>
             <div class="reg-field full">
-              <label>Team Name</label>
+              <label class="reg-main-label">Team Name</label>
               <input type="text" id="regTeamName" placeholder="Enter your team name" maxlength="30">
             </div>
           </div>
 
           <div class="reg-section">
-            <div class="reg-section-title">◈ Operatives</div>
             <div id="regOperatives"></div>
           </div>
 
@@ -1745,7 +1745,7 @@
       </div>
       <div class="login-btn-row" id="regBtnRow">
         <div class="login-hw-btn esc-key" onclick="regBack()"><span>← ESC</span></div>
-        <div class="login-hw-btn enter-key" id="regSubmitBtn" onclick="submitRegistration()"><span>◈ REGISTER</span></div>
+        <div class="login-hw-btn enter-key" id="regSubmitBtn" onclick="submitRegistration()"><span>REGISTER</span></div>
       </div>
     </div>
   </div>
@@ -2284,7 +2284,7 @@ function submitRegistration(){
       document.getElementById('regForm').style.display='';
       document.getElementById('regSuccess').style.display='none';
       document.getElementById('regBtnRow').style.display='';
-      if(btnSpan)btnSpan.textContent='◈ REGISTER';
+      if(btnSpan)btnSpan.textContent='REGISTER';
       btn.style.opacity='';btn.style.pointerEvents='';
     },4000);
     return;
@@ -2389,16 +2389,13 @@ function buildRegForm(){
   let effectiveType=mode==='individual'?'individual':(mode==='team'?'team':currentRegType);
 
   // Update section title
-  const sectionTitle=container.closest('.reg-panel')?.querySelector('.reg-section-title');
   const teamNameField=document.getElementById('regTeamName');
-  const teamNameLabel=teamNameField?.previousElementSibling;
 
   if(effectiveType==='individual'){
-    if(sectionTitle)sectionTitle.textContent='◈ Your Identity';
     // Hide team name, show individual name
     const nameSection=teamNameField?.closest('.reg-section');
     if(nameSection){
-      nameSection.innerHTML=`<div class="reg-section-title">◈ Your Identity</div><div class="reg-field full"><label>Full Name</label><input type="text" id="regIndividualName" placeholder="Enter your full name" maxlength="40"></div>`;
+      nameSection.innerHTML=`<div class="reg-field full"><label class="reg-main-label">Full Name</label><input type="text" id="regIndividualName" placeholder="Enter your full name" maxlength="40"></div>`;
     }
     // Show individual-specific optional fields instead of member slots
     let html='';
@@ -2410,14 +2407,14 @@ function buildRegForm(){
     // Team mode — restore standard team form
     const nameSection=document.getElementById('regTeamName')?.closest('.reg-section')||document.getElementById('regIndividualName')?.closest('.reg-section');
     if(nameSection&&!document.getElementById('regTeamName')){
-      nameSection.innerHTML=`<div class="reg-section-title">◈ Team Identity</div><div class="reg-field full"><label>Team Name</label><input type="text" id="regTeamName" placeholder="Enter your team name" maxlength="30"></div>`;
+      nameSection.innerHTML=`<div class="reg-field full"><label class="reg-main-label">Team Name</label><input type="text" id="regTeamName" placeholder="Enter your team name" maxlength="30"></div>`;
     }
     // Standard team member slots
     const max=regSettings.teamSizeMax;
     const min=regSettings.teamSizeMin;
     let html='';
     if(min<max){
-      html+=`<div class="reg-field full" style="margin-bottom:12px"><label>Number of Team Members</label><select id="regMemberCount" onchange="rebuildMemberSlots()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%;outline:none">`;
+      html+=`<div class="reg-field full" style="margin-bottom:12px"><label class="reg-main-label">Number of Team Members</label><select id="regMemberCount" onchange="rebuildMemberSlots()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%;outline:none">`;
       for(let n=min;n<=max;n++)html+=`<option value="${n}"${n===max?' selected':''}>${n} Members</option>`;
       html+=`</select></div>`;
     }else{
@@ -6585,7 +6582,7 @@ function closeLandingPreview(){
   const regSuccess=document.getElementById('regSuccess');if(regSuccess)regSuccess.style.display='none';
   const regBtnRow=document.getElementById('regBtnRow');if(regBtnRow)regBtnRow.style.display='';
   const regBtn=document.getElementById('regSubmitBtn');
-  if(regBtn){const s=regBtn.querySelector('span');if(s)s.textContent='◈ REGISTER';regBtn.style.opacity='';regBtn.style.pointerEvents=''}
+  if(regBtn){const s=regBtn.querySelector('span');if(s)s.textContent='REGISTER';regBtn.style.opacity='';regBtn.style.pointerEvents=''}
 }
 function previewNav(screenId,btn){
   showScreen(screenId);
@@ -7159,7 +7156,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-1200';
+const _BUILD_ID = '20260222-1300';
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
