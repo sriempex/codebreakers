@@ -45,7 +45,7 @@
   .reg-cancel-link{text-align:center;margin-top:16px;cursor:pointer;transition:opacity .2s}
   .reg-cancel-link span{font-family:'Saira',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:#666;text-transform:uppercase;transition:color .2s}
   .reg-cancel-link:hover span{color:#aaa}
-  .reg-submit{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700;margin-top:8px;position:relative;min-height:48px}
+  .reg-submit{width:auto;min-width:240px;display:block;margin:12px auto 0;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:12px;letter-spacing:4px;padding:12px 32px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700;position:relative;min-height:46px}
   .reg-submit.loading{color:transparent;pointer-events:none}
   .reg-submit.loading::after{content:'';position:absolute;inset:0;margin:auto;width:20px;height:20px;border:2px solid rgba(0,255,136,.2);border-top-color:var(--green);border-radius:50%;animation:btnSpin .6s linear infinite}
   .reg-submit:hover{background:rgba(0,255,136,.1);box-shadow:0 0 25px rgba(0,255,136,.12)}
@@ -229,7 +229,7 @@
   .vault-unlock-section{width:420px;max-width:100%;padding:0}
   .vault-unlock-header{display:flex;align-items:center;justify-content:space-between;padding:0 0 10px;border-bottom:1px solid rgba(0,255,136,.08);margin-bottom:0}
   .vault-unlock-title{font-family:'Saira',sans-serif;font-size:12px;color:#d0e8d8;letter-spacing:3px;font-weight:700;text-transform:uppercase}
-  .vault-unlock-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#888;letter-spacing:1px}
+  .vault-unlock-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#888;letter-spacing:1px;text-transform:uppercase}
   .vault-unlock-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
   .vault-unlock-empty{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#555;line-height:1.8;font-weight:500;text-align:center;padding:20px 16px}
   .vault-unlock-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(0,255,136,.1);border-radius:4px;background:rgba(0,255,136,.02)}
@@ -654,12 +654,25 @@
     border:1px solid rgba(255,170,51,.15);border-radius:4px}
 
   /* Intel — Neon Grid */
-  .intel-expanded{display:flex;flex-direction:column;gap:8px;max-width:900px;margin:0 auto;align-items:center}
+  .intel-exp-body{display:flex;flex-direction:column;overflow:hidden;padding:0!important}
+  .intel-scroll-area{flex:1;overflow-y:auto;padding:20px 20px 0;display:flex;flex-direction:column;gap:8px;align-items:center;max-width:100%}
+  .intel-expanded,.intel-scroll-area>*{max-width:900px;width:100%}
+  .intel-transmit-dock{flex-shrink:0;padding:14px 20px;background:linear-gradient(0deg,rgba(0,0,0,.6) 60%,transparent);border-top:1px solid rgba(0,255,136,.08);display:flex;justify-content:center;align-items:center}
+  .intel-transmit-dock::before{content:'';position:absolute;left:0;right:0;top:-20px;height:20px;background:linear-gradient(0deg,rgba(8,9,11,.3),transparent);pointer-events:none}
   .intel-exp-row{display:flex;align-items:center;gap:10px;padding:10px 14px;overflow:hidden;position:relative;border-radius:2px;
     border:1px solid rgba(0,255,136,.15);
     background:linear-gradient(180deg,rgba(0,255,136,.01),transparent);
     width:100%;max-width:600px;
+    transition:border-color .2s,background .2s,box-shadow .2s;
+    cursor:default;
   }
+  .intel-exp-row:hover{
+    border-color:rgba(0,255,136,.38);
+    background:linear-gradient(180deg,rgba(0,255,136,.04),rgba(0,255,136,.01));
+    box-shadow:0 0 0 1px rgba(0,255,136,.08) inset,0 2px 16px rgba(0,255,136,.04);
+  }
+  .intel-exp-row:hover .intel-exp-num{color:rgba(0,255,136,.65);}
+  .intel-exp-row:hover::before{background:linear-gradient(90deg,rgba(0,255,136,.07),transparent 40%);}
   .intel-exp-row::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,255,136,.03),transparent 30%);pointer-events:none}
   .intel-exp-num{font-family:'Orbitron','Oxanium',sans-serif;font-size:10px;font-weight:700;color:rgba(0,255,136,.35);width:28px;flex-shrink:0}
   .intel-exp-label{font-family:'Chakra Petch',sans-serif;font-size:12px;font-weight:700;color:#8cf0b0;letter-spacing:2px;text-transform:uppercase;width:170px;flex-shrink:0}
@@ -704,6 +717,38 @@
   }
   .intel-submit-btn:active{transform:translateY(1px);box-shadow:0 0 15px rgba(0,255,136,.1),inset 0 2px 4px rgba(0,0,0,.3)}
   .intel-submit-btn:disabled{opacity:.2;cursor:not-allowed;transform:none}
+
+  /* ══════ ADMIN NAV BAR ══════ */
+  #adminNavBar{
+    position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+    z-index:900;
+    display:none;
+    gap:2px;
+    background:rgba(8,10,18,.95);
+    border:1px solid rgba(255,255,255,.06);
+    border-bottom:none;
+    border-radius:8px 8px 0 0;
+    padding:6px 8px 4px;
+    backdrop-filter:blur(12px);
+    box-shadow:0 -4px 30px rgba(0,0,0,.6),0 -1px 0 rgba(255,255,255,.03);
+    align-items:center;
+  }
+  #adminNavBar.visible{display:flex}
+  .anb-btn{
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+    padding:6px 12px;border-radius:5px;cursor:pointer;
+    border:1px solid transparent;
+    transition:all .18s;
+    min-width:64px;
+    background:none;
+  }
+  .anb-btn:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.06)}
+  .anb-btn.active{background:rgba(0,212,255,.07);border-color:rgba(0,212,255,.15)}
+  .anb-icon{font-size:14px;line-height:1}
+  .anb-label{font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1px;color:#555;text-transform:uppercase;white-space:nowrap}
+  .anb-btn:hover .anb-label{color:#888}
+  .anb-btn.active .anb-label{color:var(--cyan)}
+  .anb-sep{width:1px;height:28px;background:rgba(255,255,255,.05);margin:0 2px;flex-shrink:0}
 
   /* ══════ CONFIRM MODAL ══════ */
   #confirmModal{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
@@ -822,7 +867,7 @@
   #teamMonitorPanel.active{opacity:1;pointer-events:all}
   #portalUsersPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
   #portalUsersPanel.active{opacity:1;pointer-events:all}
-  .ap-container{width:560px;max-width:92vw;max-height:85vh;overflow-y:auto;border-radius:8px;
+  .ap-container{width:600px;max-width:92vw;max-height:85vh;overflow-y:auto;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
     border:1px solid rgba(255,255,255,.05);box-shadow:0 25px 80px rgba(0,0,0,.7)}
   .ap-header{padding:18px 24px;border-bottom:1px solid rgba(0,255,136,.08);background:linear-gradient(180deg,#1a1d28,#14161e);display:flex;align-items:center;justify-content:space-between}
@@ -1582,7 +1627,7 @@
         </div>
 
         <div class="reg-err" id="regErr"></div>
-        <button class="reg-submit" id="regSubmitBtn" onclick="submitRegistration()">◈ Register Team ◈</button>
+        <button class="reg-submit" id="regSubmitBtn" onclick="submitRegistration()">◈ REGISTER ◈</button>
       </div>
 
       <div id="regSuccess">
@@ -1740,8 +1785,8 @@
       <p>Customize the landing page banner and text.</p>
       <div class="ap-field" style="margin-bottom:10px"><label>Banner Image</label>
         <div style="display:flex;gap:8px;align-items:center">
-          <label style="cursor:pointer;font-size:9px;color:var(--cyan);letter-spacing:1px;padding:8px 12px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.05);white-space:nowrap;font-family:'IBM Plex Mono',monospace;flex:1;text-align:center">
-            📁 Upload Banner Image
+          <label style="cursor:pointer;font-size:9px;color:var(--cyan);letter-spacing:1px;padding:8px 14px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.05);white-space:nowrap;font-family:'IBM Plex Mono',monospace;text-align:center">
+            📁 Upload Banner
             <input type="file" accept="image/*" onchange="handleAdminBannerUpload(this)" style="display:none">
           </label>
           <button class="ap-btn ap-btn-red" onclick="clearLandingBanner()" style="font-size:8px;padding:6px 10px;flex-shrink:0">✕ Clear</button>
@@ -1782,12 +1827,12 @@
     <div class="ap-section"><h4>🖋 Typography <span class="save-blip" id="blipTypography">✓ Saved</span></h4>
       <p>Global font overrides for each content zone. Leave as Default to use the theme font. Per-item fonts are ignored when a global is set.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-bottom:12px">
-        <div class="ap-field"><label>Feed Captions</label><span id="fc_feedCap_wrap"></span></div>
-        <div class="ap-field"><label>Media Titles</label><span id="fc_mediaName_wrap"></span></div>
-        <div class="ap-field"><label>Media Descriptions</label><span id="fc_mediaDesc_wrap"></span></div>
-        <div class="ap-field"><label>Intel Field Labels</label><span id="fc_intelLabel_wrap"></span></div>
-        <div class="ap-field"><label>Intel Field Inputs</label><span id="fc_intelInput_wrap"></span></div>
-        <div class="ap-field"><label>Vault / Keypad Display</label><span id="fc_vaultDisplay_wrap"></span></div>
+        <div class="ap-field"><label>Feed Captions</label><div id="fc_feedCap_wrap"></div></div>
+        <div class="ap-field"><label>Media Titles</label><div id="fc_mediaName_wrap"></div></div>
+        <div class="ap-field"><label>Media Descriptions</label><div id="fc_mediaDesc_wrap"></div></div>
+        <div class="ap-field"><label>Intel Field Labels</label><div id="fc_intelLabel_wrap"></div></div>
+        <div class="ap-field"><label>Intel Field Inputs</label><div id="fc_intelInput_wrap"></div></div>
+        <div class="ap-field"><label>Vault / Keypad Display</label><div id="fc_vaultDisplay_wrap"></div></div>
       </div>
       <button class="ap-btn ap-btn-ghost" onclick="resetFontConfig()" style="font-size:9px;padding:5px 12px">↺ Reset All to Default</button>
     </div>
@@ -1975,8 +2020,8 @@
 <!-- EXPANDED -->
 <div id="panelOverlay">
   <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter">1 / 12</span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-caption" id="singleCap"></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
-  <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🔊</span><span class="exp-title">Media Lab</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
-  <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div class="intel-expanded" id="intelForm"></div></div></div>
+  <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
+  <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area" id="intelForm"></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
   <div class="expanded-panel" id="expVault">
     <div class="exp-header"><span class="panel-icon">🔐</span><span class="exp-title">The Vault</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div>
     <div class="exp-body">
@@ -1997,10 +2042,10 @@
         <div class="vault-unlock-section">
           <div class="vault-unlock-header">
             <span class="vault-unlock-title">🔓 Vault Log</span>
-            <span class="vault-unlock-count" id="vaultUnlockCount">0 / 0 codes cracked</span>
+            <span class="vault-unlock-count" id="vaultUnlockCount">0 OF 0 ITEMS UNLOCKED</span>
           </div>
           <div class="vault-unlock-list" id="vaultUnlockList">
-            <div class="vault-unlock-empty">No codes entered yet. Solve puzzles across the Intelligence Feed and Media Lab to discover vault codes.</div>
+            <div class="vault-unlock-empty">No codes entered yet. Solve puzzles across the Intelligence Feed and Evidence Locker to discover vault codes.</div>
           </div>
         </div>
       </div>
@@ -2635,7 +2680,7 @@ function showVaultUnlockNotification(fileName){
     toast.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);z-index:999;padding:14px 24px;border-radius:6px;border:1px solid rgba(0,255,136,.3);background:linear-gradient(180deg,rgba(10,20,15,.95),rgba(5,15,10,.98));backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 20px rgba(0,255,136,.1);transition:transform .4s ease,opacity .4s ease;opacity:0;max-width:90vw;text-align:center';
     document.body.appendChild(toast);
   }
-  toast.innerHTML=`<div style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:3px;color:var(--green);font-weight:700;margin-bottom:4px">🔓 CLASSIFIED FILE RELEASED</div><div style="font-family:'Exo 2',sans-serif;font-size:12px;color:#ccc"><strong>${fileName}</strong> is now available in the Media Lab</div>`;
+  toast.innerHTML=`<div style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:3px;color:var(--green);font-weight:700;margin-bottom:4px">🔓 CLASSIFIED FILE RELEASED</div><div style="font-family:'Exo 2',sans-serif;font-size:12px;color:#ccc"><strong>${fileName}</strong> is now available in the Evidence Locker</div>`;
   requestAnimationFrame(()=>{toast.style.opacity='1';toast.style.transform='translateX(-50%) translateY(0)'});
   setTimeout(()=>{toast.style.opacity='0';toast.style.transform='translateX(-50%) translateY(80px)'},4500);
 }
@@ -2689,7 +2734,7 @@ function renderVaultPanel(){
   const count=document.getElementById('vaultUnlockCount');
   if(!list)return;
   const unlocked=vaultCodes.filter(c=>c.unlocked).length;
-  if(count)count.textContent=unlocked+' of '+vaultCodes.length+' Files Unlocked';
+  if(count)count.textContent=unlocked+' OF '+vaultCodes.length+' ITEMS UNLOCKED';
   const dot=document.getElementById('vkDot');
   const lbl=document.getElementById('vkLbl');
   if(dot&&lbl){
@@ -2706,7 +2751,7 @@ function renderVaultPanel(){
     if(c.unlocked){
       let viewLink='';
       if(c.linkedMediaIdx!==null&&c.linkedMediaIdx!==undefined){
-        viewLink=`<div class="vui-media-link" onclick="event.stopPropagation();closePanel();setTimeout(()=>{openPanel('media');setTimeout(()=>openMediaViewer(${c.linkedMediaIdx}),300)},350)">▸ View in Media Lab</div>`;
+        viewLink=`<div class="vui-media-link" onclick="event.stopPropagation();closePanel();setTimeout(()=>{openPanel('media');setTimeout(()=>openMediaViewer(${c.linkedMediaIdx}),300)},350)">▸ View in Evidence Locker</div>`;
       }
       return `<div class="vault-unlock-item">
         <span class="vui-icon">🔓</span>
@@ -2828,7 +2873,7 @@ function resolveFont(globalKey,perItemFont){
 // vault subtitle removed — login screen uses loginTitle
 let gridTiles=[
   {id:'feed',icon:'📡',label:'Intelligence Feed',labelFont:'',sub:'Surveillance imagery & intercepted visuals',subFont:'',badgeId:'feedBadge',dotClass:'silent',status:'SILENT'},
-  {id:'media',icon:'🔊',label:'Media Lab',labelFont:'',sub:'Audio, maps, documents & video',subFont:'',badgeId:'mediaBadge',dotClass:'silent',status:'SILENT'},
+  {id:'media',icon:'🗂️',label:'Evidence Locker',labelFont:'',sub:'Collected assets, files & recovered media',subFont:'',badgeId:'mediaBadge',dotClass:'silent',status:'SILENT'},
   {id:'vault',icon:'🔐',label:'The Vault',labelFont:'',sub:'Enter solved codes to unlock items',subFont:'',badgeId:'vaultBadge',dotClass:'silent',status:'SILENT'},
   {id:'intel',icon:'🎯',label:'Intel Submissions',labelFont:'',sub:'Submit decoded intelligence',subFont:'',badgeId:'intelBadge',dotClass:'silent',status:'SILENT'}
 ];
@@ -2948,7 +2993,7 @@ function renderFeed(){
     const _capFont=resolveFont('feedCap',p.capFont||'');
     return `<div class="feed-card" onclick="openPost(${i})">${isA?`<div class="admin-edit-btn" onclick="event.stopPropagation();editFeedPost(${i})">✎</div>`:''}<div class="feed-card-img" style="${bgStyle}" oncontextmenu="return false">${media}</div><div class="feed-card-cap"><p style="${fontStyle(_capFont)}">${p.cap}</p></div></div>`;
   }).join('')+(isA?'<div class="admin-add-btn" onclick="addFeedPost()">+ Add Post</div>':'');
-  document.getElementById('feedBadge').textContent=posts.length+' FILES';
+  document.getElementById('feedBadge').textContent=posts.length+' ITEMS';
   // Force-play all grid videos after DOM insertion
   setTimeout(()=>{grid.querySelectorAll('video.feed-card-video').forEach(v=>{v.muted=true;v.play().catch(()=>{})})},50);
 }
@@ -2966,7 +3011,7 @@ function renderMedia(){
   const isPreview=document.body.classList.contains('player-preview');
   // Players and preview: hide vault-locked. Admin (edit or not): show all
   const showAll=isAdmin&&!isPreview;
-  const visibleItems=showAll?mediaItems:mediaItems.filter(m=>!m.vaultLocked);
+  const visibleItems=showAll?mediaItems:mediaItems.filter(m=>!m.vaultLocked||vaultCodes.find(c=>c.linkedMediaIdx===mediaItems.indexOf(m)&&c.unlocked));
   // Select button in edit mode header area
   const selectBtnHtml=isEdit&&!_mediaSelectMode?`<div style="text-align:right;margin-bottom:8px"><button onclick="enterMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 12px;color:#666;cursor:pointer">☑ SELECT</button></div>`:'';
   list.innerHTML=selectBtnHtml+visibleItems.map((m,i)=>{
@@ -2984,7 +3029,7 @@ function renderMedia(){
     const _mDescFont=resolveFont('mediaDesc',m.descFont||'');
     return `<div class="media-exp-item" style="${lockedStyle}${vlStyle}${selStyle}" ${clickHandler}>${isEdit&&!_mediaSelectMode?`<div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${realIdx})" style="position:absolute;top:8px;right:8px">✎</div>`:''}${checkHtml}${crosshatch}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(_mNameFont)}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(_mDescFont)}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${badge}</span></div>`;
   }).join('')+(isEdit&&!_mediaSelectMode?'<div class="admin-add-btn" onclick="addMediaItem()">+ Add Media</div>':'');
-  const badge=document.getElementById('mediaBadge');if(badge)badge.textContent=visibleItems.length+' FILES';
+  const badge=document.getElementById('mediaBadge');if(badge)badge.textContent=visibleItems.length+' ITEMS';
 }
 
 // ══════ PANELS ══════
@@ -3539,7 +3584,7 @@ function finalSubmit(){
   document.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});
   // Show neutral checkmarks — NO indication of right/wrong
     document.getElementById('intelSubmitBtn').disabled=true;
-  const _sl=document.getElementById('intelSubmitBtn');if(_sl)_sl.textContent='◈ TRANSMITTED ◈';
+  const _sl=document.getElementById('intelSubmitBtn');if(_sl){_sl.textContent='◈ TRANSMITTED ◈';_sl.disabled=true;}
   document.getElementById('intelBadge').textContent='SUBMITTED';
   document.getElementById('intelBadge').classList.remove('amber');
   playSuccess();
@@ -4085,6 +4130,20 @@ function applyEventConfig(cfg){
     Object.assign(fontConfig,cfg.fontConfig);
     applyFontConfig();
   }
+  // Grid tile customisations (label, icon, sub, fonts)
+  if(cfg.gridTiles&&Array.isArray(cfg.gridTiles)){
+    cfg.gridTiles.forEach(saved=>{
+      const tile=gridTiles.find(t=>t.id===saved.id);
+      if(tile){
+        if(saved.icon)tile.icon=saved.icon;
+        if(saved.label)tile.label=saved.label;
+        if(saved.sub)tile.sub=saved.sub;
+        tile.labelFont=saved.labelFont||'';
+        tile.subFont=saved.subFont||'';
+      }
+    });
+    renderGrid();
+  }
   // Sync threshold UI
   const idleInp=document.getElementById('apThresholdIdle');if(idleInp)idleInp.value=activityThresholds.activeToIdle;
   const silentInp=document.getElementById('apThresholdSilent');if(silentInp)silentInp.value=activityThresholds.idleToSilent;
@@ -4330,7 +4389,43 @@ function handleBannerUpload(input){
   reader.readAsDataURL(input.files[0]);
 }
 function handleAdminBannerUpload(input){
-  handleBannerUpload(input);
+  if(!input.files||!input.files[0])return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const url=e.target.result;
+    // Show preview modal
+    showBannerPreviewModal(url,input);
+  };
+  reader.readAsDataURL(input.files[0]);
+  input.value=''; // reset so same file can be re-selected
+}
+
+let _pendingBannerUrl='';
+function showBannerPreviewModal(url,inputEl){
+  _pendingBannerUrl=url;
+  showEditModal(`<h3>📷 Banner Preview</h3>
+    <p style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:#888;margin-bottom:16px">How your banner will appear on the landing page.</p>
+    <div style="display:flex;justify-content:center;margin-bottom:20px">
+      <div style="width:180px;height:180px;border-radius:50%;overflow:hidden;border:2px solid rgba(0,212,255,.3);box-shadow:0 0 30px rgba(0,212,255,.08);background:#080a10;display:flex;align-items:center;justify-content:center">
+        <img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="btn-standard btn-ghost" onclick="cancelBannerPreview()">✕ Cancel</button>
+      <button class="btn-standard btn-cyan" onclick="acceptBannerPreview()">✓ Use This Image</button>
+    </div>`);
+}
+function acceptBannerPreview(){
+  regSettings.landingBannerUrl=_pendingBannerUrl;
+  applyBannerImage(_pendingBannerUrl);
+  syncBannerPreview();
+  saveEventConfigToBackend();
+  hideEditModal();
+  _pendingBannerUrl='';
+}
+function cancelBannerPreview(){
+  _pendingBannerUrl='';
+  hideEditModal();
 }
 function updateLandingTitle(){
   regSettings.landingTitle=document.getElementById('apLandingTitle')?.value||'Code Breakers';
@@ -4370,6 +4465,7 @@ function saveEventConfigToBackend(){
     apiCall('saveEventConfig',{config:{
       operationName,operationFont,
       fontConfig:fontConfig,
+      gridTiles:gridTiles.map(t=>({id:t.id,icon:t.icon,label:t.label,sub:t.sub,labelFont:t.labelFont,subFont:t.subFont})),
       participantMode:regSettings.participantMode,
       leaderboardStyle:regSettings.leaderboardStyle,
       landingTitle:regSettings.landingTitle,
@@ -4480,10 +4576,21 @@ function closeAllAdminPanels(){
   lbExpandedTeam=null;
   hideAdminTabs();
 }
-function showAdminTabs(activeId){}
-function hideAdminTabs(){}
+function showAdminTabs(activeId){
+  const bar=document.getElementById('adminNavBar');
+  if(!bar)return;
+  bar.classList.add('visible');
+  bar.querySelectorAll('.anb-btn').forEach(btn=>{
+    const isActive=btn.id==='anb-'+activeId;
+    btn.classList.toggle('active',isActive);
+  });
+}
+function hideAdminTabs(){
+  const bar=document.getElementById('adminNavBar');
+  if(bar)bar.classList.remove('visible');
+  document.querySelectorAll('.anb-btn').forEach(b=>b.classList.remove('active'));
+}
 function switchAdminTab(panelId){
-  // Close current, open new — without closing tab bar
   adminPanelIds.forEach(id=>{
     const el=document.getElementById(id);
     if(el){el.classList.remove('active');el.style.cssText=''}
@@ -4491,12 +4598,12 @@ function switchAdminTab(panelId){
   if(teamMonitorInterval){clearInterval(teamMonitorInterval);teamMonitorInterval=null}
   _instantShow(document.getElementById(panelId));
   showAdminTabs(panelId);
-  // Trigger panel-specific init
   if(panelId==='adminPanel'){syncAdminPanelSettings();initTypographyPanel()}
   if(panelId==='leaderboardModule'){renderFullLeaderboard()}
   if(panelId==='teamMonitorPanel'){renderTeamMonitor();startTeamMonitor()}
   if(panelId==='keysCodesPanel'){renderKeysCodes()}
   if(panelId==='portalUsersPanel'){renderPortalUsersList()}
+  if(panelId==='broadcastPanel'){/* nothing extra */}
 }
 function syncAdminPanelSettings(){
   const minEl=document.getElementById('apMinSize');
@@ -5126,7 +5233,7 @@ function renderKeysCodes(){
   const vaultLockedMedia=mediaItems.filter(m=>m.vaultLocked);
   html+=`<div class="kc-section">
     <div class="kc-section-title">🔐 Vault Locked Items (${vaultLockedMedia.length})</div>
-    <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#666;margin-bottom:8px">Items marked as Vault-Locked in the Media Lab. Edit any item there to set or change its Vault Code — changes sync here automatically.</div>`;
+    <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#666;margin-bottom:8px">Items marked as Vault-Locked in the Evidence Locker. Edit any item there to set or change its Vault Code — changes sync here automatically.</div>`;
   if(vaultLockedMedia.length){
     vaultLockedMedia.forEach(m=>{
       const idx=mediaItems.indexOf(m);
@@ -5142,7 +5249,7 @@ function renderKeysCodes(){
       </div>`;
     });
   }else{
-    html+=`<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:4px 0">No vault-locked items. Edit a Media Lab item and enable the Vault-Locked toggle to add one.</div>`;
+    html+=`<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:4px 0">No vault-locked items. Edit an Evidence Locker item and enable the Vault-Locked toggle to add one.</div>`;
   }
   // Vault attempt settings
   html+=`<div style="margin-top:12px;padding:10px 14px;border:1px solid var(--border);border-radius:4px;background:rgba(255,255,255,.01)">
@@ -5544,7 +5651,7 @@ function saveOperationName(){
 // ── Grid Tiles ──
 function vaultBadgeText(){
   const u=vaultCodes.filter(c=>c.unlocked).length,t=vaultCodes.length;
-  return u+' of '+t+' Files Unlocked';
+  return u+' OF '+t+' ITEMS UNLOCKED';
 }
 function updateVaultBadgeColor(){
   const badge=document.getElementById('vaultBadge');
@@ -5576,7 +5683,7 @@ function renderGrid(){
         <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:48px;height:48px;object-fit:contain">`:t.icon}</div>
         <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
         <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
-        <div class="tile-badge${badgeCls}" id="${t.badgeId}">${t.id==='feed'?posts.length+' FILES':t.id==='media'?mediaItems.length+' FILES':t.id==='vault'?vaultBadgeText():'0 / '+intelFields.length+' MARKED'}</div>
+        <div class="tile-badge${badgeCls}" id="${t.badgeId}">${t.id==='feed'?posts.length+' ITEMS':t.id==='media'?(isAdmin?mediaItems.length:mediaItems.filter(m=>!m.vaultLocked||vaultCodes.find(c=>c.linkedMediaIdx===mediaItems.indexOf(m)&&c.unlocked)).length)+' ITEMS':t.id==='vault'?vaultBadgeText():'0 / '+intelFields.length+' MARKED'}</div>
         <div class="tile-status"><div class="tile-dot ${t.dotClass}"></div><span class="tile-status-label ${t.dotClass}">${t.status}</span></div>
       </div>
     </div>`;
@@ -5628,7 +5735,7 @@ function saveGridTile(i){
   gridTiles[i].subFont=sf;
   if(document.getElementById('eg_label_all').checked)gridTiles.forEach(t=>t.labelFont=lf);
   if(document.getElementById('eg_sub_all').checked)gridTiles.forEach(t=>t.subFont=sf);
-  hideEditModal();renderGrid();
+  hideEditModal();renderGrid();saveEventConfigToBackend();
 }
 
 // ── Intel Fields ──
@@ -5672,12 +5779,14 @@ function renderIntelForm(){
       html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${ph}" data-idx="${i}" ${keyHandler}>${clearBtn}</div>`;
     }
   });
-  if(isA)html+=`<div class="admin-add-btn" style="margin-top:10px;padding:14px" onclick="addIntelField()">+ Add Intel Field</div>`;
-  html+=`<div class="intel-submit-wrap"><button class="intel-submit-btn" id="intelSubmitBtn" onclick="showConfirm()">◈ TRANSMIT ◈</button></div>`;
+  if(isA)html+=`<div class="admin-add-btn" style="margin-top:10px;padding:14px;max-width:600px;width:100%" onclick="addIntelField()">+ Add Intel Field</div>`;
   form.innerHTML=html;
+  // Render transmit button into sticky dock
+  const dock=document.getElementById('intelTransmitDock');
+  if(dock)dock.innerHTML=`<button class="intel-submit-btn" id="intelSubmitBtn" onclick="showConfirm()">◈ TRANSMIT ◈</button>`;
   // Restore values
   form.querySelectorAll('.intel-exp-input').forEach(inp=>{if(prevVals[inp.dataset.idx])inp.value=prevVals[inp.dataset.idx]});
-  if(isSubmitted){form.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});document.getElementById('intelSubmitBtn').disabled=true;document.getElementById('intelSubmitBtn').textContent='◈ TRANSMITTED ◈'}
+  if(isSubmitted){form.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});const btn=document.getElementById('intelSubmitBtn');if(btn){btn.disabled=true;btn.textContent='◈ TRANSMITTED ◈'}}
   // Sync intelLabels array
   syncIntelLabels();
 }
@@ -6058,7 +6167,7 @@ function editMediaItem(i){
           <div class="edit-field"><label>Vault Code <span style="color:#666;font-weight:400">(players enter this on the Vault keypad)</span></label><input id="em_vaultcode" value="${m.vaultCode||''}" placeholder="e.g. SHADOW42" style="font-size:13px;letter-spacing:3px;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"></div>
           <div class="edit-field" style="flex:.6"><label>Codename <span style="color:#666;font-weight:400">(shown when locked)</span></label><input id="em_vaultcodename" value="${m.vaultCodename||''}" placeholder="e.g. FILE-001" style="letter-spacing:2px;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"></div>
         </div>
-        <div style="font-family:'Chakra Petch',sans-serif;font-size:9px;color:#666;margin-top:4px">This item will be hidden from players until they crack the vault code. Once unlocked, it appears in the Media Lab.</div>
+        <div style="font-family:'Chakra Petch',sans-serif;font-size:9px;color:#666;margin-top:4px">This item will be hidden from players until they crack the vault code. Once unlocked, it appears in the Evidence Locker.</div>
       </div>
     </div>
     <div style="display:flex;gap:10px;margin-top:6px"><button class="btn-standard btn-red" onclick="confirmDelete(this,()=>deleteMediaItem(${i}))">Delete</button><span style="flex:1"></span><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveMediaItem(${i})">Save</button></div>`);
@@ -6706,14 +6815,47 @@ function unlockAdminConsole(){
 // ═══════════════════════════════════════════════════════════════
 
 function initTypographyPanel(){
-  const keys=['feedCap','mediaName','mediaDesc','intelLabel','intelInput','vaultDisplay'];
-  keys.forEach(k=>{
-    const wrap=document.getElementById('fc_'+k+'_wrap');
-    if(!wrap)return;
-    const sel=fontSelect('fc_'+k,fontConfig[k]||'');
-    wrap.innerHTML=sel;
-    const el=wrap.querySelector('select');
-    if(el)el.onchange=()=>{ fontConfig[k]=el.value; applyFontConfig(); saveEventConfigToBackend(); blip('blipTypography'); };
+  const zones=[
+    {key:'feedCap',   id:'fc_feedCap_wrap'},
+    {key:'mediaName', id:'fc_mediaName_wrap'},
+    {key:'mediaDesc', id:'fc_mediaDesc_wrap'},
+    {key:'intelLabel',id:'fc_intelLabel_wrap'},
+    {key:'intelInput',id:'fc_intelInput_wrap'},
+    {key:'vaultDisplay',id:'fc_vaultDisplay_wrap'}
+  ];
+  zones.forEach(({key,id})=>{
+    const wrap=document.getElementById(id);
+    if(!wrap){return;}
+    // Build styled select inline
+    const groups=[
+      {label:'Default',fonts:[]},
+      {label:'Military / Industrial',fonts:['Russo One','Black Ops One','Quantico','Aldrich','Staatliches']},
+      {label:'Sci-Fi / Tech',fonts:['Orbitron','Oxanium','Audiowide','Electrolize','Michroma','Chakra Petch']},
+      {label:'Clean / UI',fonts:['Saira','Exo 2','Play','Rajdhani','Teko']},
+      {label:'Monospace / Terminal',fonts:['IBM Plex Mono','JetBrains Mono','Share Tech Mono','Nova Mono','Major Mono Display']},
+      {label:'Retro / Pixel',fonts:['Press Start 2P','VT323','Silkscreen']},
+    ];
+    let selHtml=`<select id="${id}_sel" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:6px 10px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;outline:none">`;
+    selHtml+=`<option value=""${!fontConfig[key]?' selected':''}>— Default —</option>`;
+    groups.slice(1).forEach(g=>{
+      selHtml+=`<optgroup label="${g.label}">`;
+      g.fonts.forEach(fn=>{
+        const f=availableFonts.find(x=>x.name===fn);
+        if(f)selHtml+=`<option value="${f.name}"${f.name===fontConfig[key]?' selected':''}>${f.name}</option>`;
+      });
+      selHtml+=`</optgroup>`;
+    });
+    selHtml+=`</select>`;
+    wrap.innerHTML=selHtml;
+    const sel=wrap.querySelector('select');
+    if(sel){
+      sel.onchange=function(){
+        fontConfig[key]=this.value;
+        applyFontConfig();
+        saveEventConfigToBackend();
+        blip('blipTypography');
+      };
+    }
   });
 }
 
@@ -6768,11 +6910,11 @@ function openVaultLockPicker(){
     });
     gridHtml+=`</div>`;
   }else{
-    gridHtml=`<div style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:#555;padding:20px 0;text-align:center">All media files are already vault-locked, or no files exist in the Media Lab yet.</div>`;
+    gridHtml=`<div style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:#555;padding:20px 0;text-align:center">All items are already vault-locked, or no items exist in the Evidence Locker yet.</div>`;
   }
 
   showEditModal(`<h3>🔐 Vault Lock an Existing File</h3>
-    <p style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:#888;margin-bottom:14px;line-height:1.6">Select a Media Lab file to vault-lock. Players will see it as classified until they crack the code.</p>
+    <p style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:#888;margin-bottom:14px;line-height:1.6">Select an Evidence Locker item to vault-lock. Players will see it as classified until they crack the code.</p>
     <div style="font-family:'Saira',sans-serif;font-size:9px;letter-spacing:2px;color:var(--amber);text-transform:uppercase;margin-bottom:8px;font-weight:700">Select File</div>
     ${gridHtml}
     <div id="vlpCodeFields" style="display:none">
@@ -6836,6 +6978,29 @@ function confirmVaultLock(){
   renderMedia();renderGrid();renderVaultPanel();renderKeysCodes();
   saveMediaItemsToBackend();
 }
+
+
+<div id="adminNavBar">
+  <div class="anb-btn" id="anb-adminPanel" onclick="switchAdminTab('adminPanel')" title="Event Control">
+    <span class="anb-icon">🎛</span><span class="anb-label">Control</span>
+  </div>
+  <div class="anb-btn" id="anb-teamMonitorPanel" onclick="switchAdminTab('teamMonitorPanel')" title="Team Monitor">
+    <span class="anb-icon">📡</span><span class="anb-label">Monitor</span>
+  </div>
+  <div class="anb-btn" id="anb-leaderboardModule" onclick="switchAdminTab('leaderboardModule')" title="Leaderboard">
+    <span class="anb-icon">🏆</span><span class="anb-label">Leaderboard</span>
+  </div>
+  <div class="anb-sep"></div>
+  <div class="anb-btn" id="anb-keysCodesPanel" onclick="switchAdminTab('keysCodesPanel')" title="Keys & Codes">
+    <span class="anb-icon">🔐</span><span class="anb-label">Keys</span>
+  </div>
+  <div class="anb-btn" id="anb-broadcastPanel" onclick="switchAdminTab('broadcastPanel')" title="Broadcast">
+    <span class="anb-icon">📢</span><span class="anb-label">Broadcast</span>
+  </div>
+  <div class="anb-btn" id="anb-portalUsersPanel" onclick="switchAdminTab('portalUsersPanel')" title="Users">
+    <span class="anb-icon">👥</span><span class="anb-label">Users</span>
+  </div>
+</div>
 
 </script>
 </body>
