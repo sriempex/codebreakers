@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Staatliches&family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Saira:wght@400;500;600;700&family=Oxanium:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Share+Tech+Mono&family=Russo+One&family=Exo+2:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Teko:wght@400;500;600;700&family=Play:wght@400;700&family=Audiowide&family=Press+Start+2P&family=VT323&family=Silkscreen&family=Major+Mono+Display&family=Nova+Mono&family=Aldrich&family=Electrolize&family=Michroma&family=Quantico:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
-  :root{--green:#00ff88;--green-dim:rgba(0,255,136,.4);--green-glow:rgba(0,255,136,.12);--red:#ff3333;--amber:#ffaa33;--cyan:#00d4ff;--steel-light:#4a4e54;--steel-dark:#22252a;--bg-deep:#08090b;--bg-panel:#10121a;--bg-surface:#171a24;--border:#252830}
+  :root{--green:#00ff88;--green-dim:rgba(0,255,136,.4);--green-glow:rgba(0,255,136,.12);--red:#ff3333;--amber:#ffaa33;--cyan:#00d4ff;--steel-light:#4a4e54;--steel-dark:#22252a;--bg-deep:#08090b;--bg-panel:#10121a;--bg-surface:#171a24;--border:#252830;--op-font:inherit}
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--bg-deep);overflow:hidden;width:100vw;height:100vh;font-family:'Chakra Petch',sans-serif;font-weight:500;color:#ccc;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#2a2d35;border-radius:2px}
@@ -1734,9 +1734,8 @@
       <p>Customize the landing page banner and text.</p>
       <div class="ap-field" style="margin-bottom:10px"><label>Banner Image</label>
         <div style="display:flex;gap:8px;align-items:center">
-          <input id="apBannerUrl" placeholder="Paste image URL" onchange="updateLandingBanner()" style="flex:1">
-          <label style="cursor:pointer;font-size:9px;color:var(--cyan);letter-spacing:1px;padding:8px 12px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.05);white-space:nowrap;font-family:'IBM Plex Mono',monospace">
-            📁 Upload
+          <label style="cursor:pointer;font-size:9px;color:var(--cyan);letter-spacing:1px;padding:8px 12px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.05);white-space:nowrap;font-family:'IBM Plex Mono',monospace;flex:1;text-align:center">
+            📁 Upload Banner Image
             <input type="file" accept="image/*" onchange="handleAdminBannerUpload(this)" style="display:none">
           </label>
           <button class="ap-btn ap-btn-red" onclick="clearLandingBanner()" style="font-size:8px;padding:6px 10px;flex-shrink:0">✕ Clear</button>
@@ -1977,7 +1976,7 @@
         </div>
         <div class="vault-unlock-section">
           <div class="vault-unlock-header">
-            <span class="vault-unlock-title">🔓 Unlock Log</span>
+            <span class="vault-unlock-title">🔓 Vault Log</span>
             <span class="vault-unlock-count" id="vaultUnlockCount">0 / 0 codes cracked</span>
           </div>
           <div class="vault-unlock-list" id="vaultUnlockList">
@@ -2670,7 +2669,7 @@ function renderVaultPanel(){
   const count=document.getElementById('vaultUnlockCount');
   if(!list)return;
   const unlocked=vaultCodes.filter(c=>c.unlocked).length;
-  if(count)count.textContent='UNLOCKED '+unlocked+' / '+vaultCodes.length+' Files Unlocked';
+  if(count)count.textContent=unlocked+' of '+vaultCodes.length+' Files Unlocked';
   const dot=document.getElementById('vkDot');
   const lbl=document.getElementById('vkLbl');
   if(dot&&lbl){
@@ -2777,6 +2776,13 @@ function fontSelect(id,current){
   return html;
 }
 function getFontFamily(name){const f=availableFonts.find(x=>x.name===name);return f?f.family:''}
+function applyOperationFont(name){
+  const fam=name?getFontFamily(name):'';
+  const targets=['consoleTitle','loginTitle','landingTitleEl'];
+  targets.forEach(id=>{const el=document.getElementById(id);if(el)el.style.fontFamily=fam});
+  // Also update CSS variable so any future themed elements inherit it
+  document.documentElement.style.setProperty('--op-font',fam||'inherit');
+}
 function fontStyle(name){return name?`font-family:${getFontFamily(name)}`:''}
 
 // ══════ DATA ══════
@@ -3965,7 +3971,7 @@ async function loadEventData(){
     intelFields.length=0;
     intelResult.fields.forEach(f=>intelFields.push({
       label:f.label||'',emoji:f.emoji||'',type:f.fieldType||'text',
-      font:f.font||'',answer:f.answer||{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}
+      font:f.font||'',inputFont:f.inputFont||'',answer:f.answer||{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}
     }));
     _cacheContent('cb_intel',intelFields);
     renderIntelForm();renderGrid();
@@ -4001,7 +4007,7 @@ async function loadEventData(){
 
 function applyEventConfig(cfg){
   if(cfg.operationName){operationName=cfg.operationName;const ct=document.getElementById('consoleTitle');if(ct)ct.textContent='◈ '+operationName;document.title=operationName+' — Console'}
-  if(cfg.operationFont)operationFont=cfg.operationFont;
+  if(cfg.operationFont){operationFont=cfg.operationFont;applyOperationFont(operationFont)}
   if(cfg.participantMode){regSettings.participantMode=cfg.participantMode;const sel=document.getElementById('apParticipantMode');if(sel)sel.value=cfg.participantMode}
   if(cfg.leaderboardStyle){regSettings.leaderboardStyle=cfg.leaderboardStyle;const sel=document.getElementById('apLeaderboardStyle');if(sel)sel.value=cfg.leaderboardStyle}
   if(cfg.landingTitle){regSettings.landingTitle=cfg.landingTitle;const el=document.getElementById('landingTitleEl');if(el)el.textContent=cfg.landingTitle;const inp=document.getElementById('apLandingTitle');if(inp)inp.value=cfg.landingTitle}
@@ -4013,7 +4019,7 @@ function applyEventConfig(cfg){
   if(cfg.activeToIdle)activityThresholds.activeToIdle=parseInt(cfg.activeToIdle);
   if(cfg.idleToSilent)activityThresholds.idleToSilent=parseInt(cfg.idleToSilent);
   // Landing banner
-  if(cfg.landingBannerUrl!==undefined){regSettings.landingBannerUrl=cfg.landingBannerUrl;applyBannerImage(cfg.landingBannerUrl);const inp=document.getElementById('apBannerUrl');if(inp)inp.value=cfg.landingBannerUrl;syncBannerPreview()}
+  if(cfg.landingBannerUrl!==undefined){regSettings.landingBannerUrl=cfg.landingBannerUrl;applyBannerImage(cfg.landingBannerUrl);syncBannerPreview()}
   // Registration settings
   if(cfg.requireEmail!==undefined){regSettings.requireEmail=cfg.requireEmail==='true'||cfg.requireEmail===true;const cb=document.getElementById('apReqEmail');if(cb)cb.checked=regSettings.requireEmail}
   if(cfg.requirePhone!==undefined){regSettings.requirePhone=cfg.requirePhone==='true'||cfg.requirePhone===true;const cb=document.getElementById('apReqPhone');if(cb)cb.checked=regSettings.requirePhone}
@@ -4230,8 +4236,7 @@ function updateLandingForMode(){
   }
 }
 function updateLandingBanner(){
-  const url=(document.getElementById('apBannerUrl')?.value||'').trim();
-  regSettings.landingBannerUrl=url;
+  const url=regSettings.landingBannerUrl||'';
   applyBannerImage(url);
   syncBannerPreview();
   showSaveBlip('blipLandingBanner');
@@ -4244,8 +4249,6 @@ function applyBannerImage(url){
 }
 function clearLandingBanner(){
   regSettings.landingBannerUrl='';
-  const urlInput=document.getElementById('apBannerUrl');
-  if(urlInput)urlInput.value='';
   applyBannerImage('');
   syncBannerPreview();
 }
@@ -4277,8 +4280,6 @@ function handleBannerUpload(input){
     const url=e.target.result;
     regSettings.landingBannerUrl=url;
     applyBannerImage(url);
-    const urlInput=document.getElementById('apBannerUrl');
-    if(urlInput)urlInput.value='[uploaded file]';
     syncBannerPreview();
   };
   reader.readAsDataURL(input.files[0]);
@@ -4393,7 +4394,7 @@ function saveIntelFieldsToBackend(){
   _saveIntelTimer=setTimeout(()=>{
     apiCall('saveIntelFields',{fields:intelFields.map(f=>({
       label:f.label||'',emoji:f.emoji||'',fieldType:f.type||'text',
-      font:f.font||'',answer:f.answer||{}
+      font:f.font||'',inputFont:f.inputFont||'',answer:f.answer||{}
     }))}).then(r=>{});
     _cacheContent('cb_intel',intelFields);
   },1500);
@@ -5452,7 +5453,8 @@ function saveOperationName(){
   operationName=document.getElementById('eo_name').value.trim()||'Operation Dead Drop';
   operationFont=document.getElementById('eo_name_font').value;
   const ct=document.getElementById('consoleTitle');
-  if(ct){ct.textContent='◈ '+operationName;ct.style.fontFamily=operationFont?getFontFamily(operationFont):''}
+  if(ct)ct.textContent='◈ '+operationName;
+  applyOperationFont(operationFont);
   // Update page title and registration screen
   document.title=operationName+' — Console';
   const regTitle=document.getElementById('regScreenTitle');
@@ -5466,7 +5468,7 @@ function saveOperationName(){
 // ── Grid Tiles ──
 function vaultBadgeText(){
   const u=vaultCodes.filter(c=>c.unlocked).length,t=vaultCodes.length;
-  return 'UNLOCKED '+u+' / '+t;
+  return u+' of '+t+' Files Unlocked';
 }
 function updateVaultBadgeColor(){
   const badge=document.getElementById('vaultBadge');
@@ -5566,30 +5568,31 @@ function renderIntelForm(){
     const num=String(i+1).padStart(2,'0');
     const editBtn=isA?`<div class="admin-row-edit" onclick="event.stopPropagation();editIntelField(${i})">✎</div>`:'';
     const lStyle=f.font?` style="${fontStyle(f.font)}"`:'';
+    const iStyle=f.inputFont?` style="${fontStyle(f.inputFont)}"`:'';
     const clearBtn=`<div class="intel-exp-clear" onclick="clearIntelSlot(this)" title="Clear">✕</div>`;
     const keyHandler='onkeydown="if(event.key===\'Enter\'){this.blur()}"';
     const ph=f.placeholder||'···';
     if(f.type==='money'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="border:none;background:transparent;box-shadow:none" placeholder="${ph}" data-idx="${i}" oninput="formatMoney(this)" ${keyHandler}></div>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="border:none;background:transparent;box-shadow:none${f.inputFont?';'+fontStyle(f.inputFont):''}" placeholder="${ph}" data-idx="${i}" oninput="formatMoney(this)" ${keyHandler}></div>${clearBtn}</div>`;
     }else if(f.type==='phone'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${f.placeholder||'(XXX) XXX-XXXX'}" data-idx="${i}" oninput="formatPhone(this)" ${keyHandler}>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${f.placeholder||'(XXX) XXX-XXXX'}" data-idx="${i}" oninput="formatPhone(this)" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='number'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${ph}" data-idx="${i}" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9.\\-]/g,'')" ${keyHandler}>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${ph}" data-idx="${i}" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9.\\-]/g,'')" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='date'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${f.placeholder||'MM/DD/YYYY'}" data-idx="${i}" oninput="formatDate(this)" maxlength="10" ${keyHandler}>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${f.placeholder||'MM/DD/YYYY'}" data-idx="${i}" oninput="formatDate(this)" maxlength="10" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='email'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${f.placeholder||'name@domain.com'}" data-idx="${i}" inputmode="email" ${keyHandler}>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${f.placeholder||'name@domain.com'}" data-idx="${i}" inputmode="email" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='plate'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${f.placeholder||'ABC-1234'}" data-idx="${i}" style="text-transform:uppercase;letter-spacing:2px" oninput="this.value=this.value.toUpperCase()" maxlength="12" ${keyHandler}>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${f.placeholder||'ABC-1234'}" data-idx="${i}" style="text-transform:uppercase;letter-spacing:2px${f.inputFont?';'+fontStyle(f.inputFont):''}" oninput="this.value=this.value.toUpperCase()" maxlength="12" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='select'){
       const opts=(f.options||[]).map(o=>`<option value="${o}">${o}</option>`).join('');
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><select class="intel-exp-input intel-select" data-idx="${i}"><option value="">— Select —</option>${opts}</select>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><select class="intel-exp-input intel-select"${iStyle} data-idx="${i}"><option value="">— Select —</option>${opts}</select>${clearBtn}</div>`;
     }else if(f.type==='dual'){
       const ph1=f.placeholder1||'Value 1';
       const ph2=f.placeholder2||'Value 2';
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-dual-wrap"><input class="intel-exp-input" placeholder="${ph1}" data-idx="${i}" ${keyHandler}><span class="intel-dual-sep">&</span><input class="intel-exp-input" placeholder="${ph2}" data-idx="${i}b" ${keyHandler}></div>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-dual-wrap"><input class="intel-exp-input"${iStyle} placeholder="${ph1}" data-idx="${i}" ${keyHandler}><span class="intel-dual-sep">&</span><input class="intel-exp-input"${iStyle} placeholder="${ph2}" data-idx="${i}b" ${keyHandler}></div>${clearBtn}</div>`;
     }else{
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${ph}" data-idx="${i}" ${keyHandler}>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${ph}" data-idx="${i}" ${keyHandler}>${clearBtn}</div>`;
     }
   });
   if(isA)html+=`<div class="admin-add-btn" style="margin-top:10px;padding:14px" onclick="addIntelField()">+ Add Intel Field</div>`;
@@ -5630,7 +5633,7 @@ function editIntelField(i){
         <div class="edit-field"><label>Label</label><input id="ei_label" value="${f.label}"></div>
         <div class="edit-field" style="flex:.3"><label>Emoji</label><input id="ei_emoji" value="${f.emoji}"></div>
       </div>
-      <div class="edit-font-row"><div class="edit-field"><label>Input Type</label><select id="ei_type"><option${f.type==='text'?' selected':''} value="text">Text (general)</option><option${f.type==='number'?' selected':''} value="number">Number</option><option${f.type==='money'?' selected':''} value="money">Money ($)</option><option${f.type==='phone'?' selected':''} value="phone">Phone #</option><option${f.type==='date'?' selected':''} value="date">Date</option><option${f.type==='email'?' selected':''} value="email">Email</option><option${f.type==='plate'?' selected':''} value="plate">License Plate</option><option${f.type==='dual'?' selected':''} value="dual">Dual Field</option><option${f.type==='select'?' selected':''} value="select">Multiple Choice</option></select></div><div class="edit-field"><label>Label Font</label>${fontSelect('ei_font',f.font)}</div></div>
+      <div class="edit-font-row"><div class="edit-field"><label>Input Type</label><select id="ei_type"><option${f.type==='text'?' selected':''} value="text">Text (general)</option><option${f.type==='number'?' selected':''} value="number">Number</option><option${f.type==='money'?' selected':''} value="money">Money ($)</option><option${f.type==='phone'?' selected':''} value="phone">Phone #</option><option${f.type==='date'?' selected':''} value="date">Date</option><option${f.type==='email'?' selected':''} value="email">Email</option><option${f.type==='plate'?' selected':''} value="plate">License Plate</option><option${f.type==='dual'?' selected':''} value="dual">Dual Field</option><option${f.type==='select'?' selected':''} value="select">Multiple Choice</option></select></div><div class="edit-field"><label>Label Font</label>${fontSelect('ei_font',f.font)}</div><div class="edit-field"><label>Input Font</label>${fontSelect('ei_input_font',f.inputFont||'')}</div></div>
       ${isDual?`<div class="edit-field-row"><div class="edit-field"><label>Placeholder 1</label><input id="ei_ph1" value="${f.placeholder1||''}" placeholder="e.g. Island 1"></div><div class="edit-field"><label>Placeholder 2</label><input id="ei_ph2" value="${f.placeholder2||''}" placeholder="e.g. Island 2"></div></div>`:f.type==='select'?`<div class="edit-field"><label>Dropdown Options (comma-separated)</label><input id="ei_options" value="${(f.options||[]).join(', ')}" placeholder="e.g. Option A, Option B, Option C"></div>`:`<div class="edit-field"><label>Placeholder Text</label><input id="ei_ph" value="${f.placeholder||''}" placeholder="e.g. Enter answer here"></div>`}
       <label style="display:flex;align-items:center;gap:6px;margin:-8px 0 10px;cursor:pointer"><input type="checkbox" id="ei_font_all"><span style="font-size:9px;color:#888;letter-spacing:1px">Apply font to all intel field labels</span></label>
     </div>
@@ -5685,8 +5688,10 @@ function saveIntelField(i){
   intelFields[i].emoji=document.getElementById('ei_emoji').value.trim();
   intelFields[i].type=document.getElementById('ei_type').value;
   const font=document.getElementById('ei_font').value;
+  const inputFont=document.getElementById('ei_input_font')?.value||'';
   intelFields[i].font=font;
-  if(document.getElementById('ei_font_all').checked)intelFields.forEach(f=>f.font=font);
+  intelFields[i].inputFont=inputFont;
+  if(document.getElementById('ei_font_all').checked)intelFields.forEach(f=>{f.font=font;f.inputFont=inputFont});
   // Save placeholders / options
   if(intelFields[i].type==='dual'){
     intelFields[i].placeholder1=document.getElementById('ei_ph1')?.value.trim()||'';
@@ -5731,6 +5736,7 @@ function saveNewIntelField(){
     emoji:document.getElementById('ei_emoji').value.trim()||'📋',
     type:document.getElementById('ei_type').value,
     font:document.getElementById('ei_font').value,
+    inputFont:'',
     answer:{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}
   });
   hideEditModal();renderIntelForm();renderGrid();saveIntelFieldsToBackend();
@@ -5810,9 +5816,7 @@ function editFeedPost(i){
       <input id="ef_video" value="${isVid?p.mediaUrl:''}" placeholder="Paste video URL...">
     </div>
     <div class="edit-field"><label>Emoji (fallback)</label><input id="ef_emo" value="${p.emoji}"></div>
-    <div class="edit-field"><label>Background Color</label><input id="ef_bg" value="${p.bg}"></div>
-    <div class="edit-font-row"><div class="edit-field"><label>Caption</label><textarea id="ef_cap">${p.cap}</textarea></div><div class="edit-field"><label>Caption Font</label>${fontSelect('ef_font',p.capFont||'')}</div></div>
-    <label style="display:flex;align-items:center;gap:6px;margin:-8px 0 10px;cursor:pointer"><input type="checkbox" id="ef_font_all"><span style="font-size:9px;color:#888;letter-spacing:1px">Apply font to all post captions</span></label>
+    <div class="edit-field"><label>Caption</label><textarea id="ef_cap">${p.cap}</textarea></div>
     <div style="display:flex;gap:10px;margin-top:6px"><button class="btn-standard btn-red" onclick="confirmDelete(this,()=>deleteFeedPost(${i}))">Delete</button><span style="flex:1"></span><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveFeedPost(${i})">Save</button></div>`);
 }
 // ── Focal Point Selector ──
@@ -5865,12 +5869,12 @@ function saveFeedPost(i){
     if(!hadUpload){posts[i].mediaUrl='';posts[i].mediaType='image'}
   }
   posts[i].emoji=document.getElementById('ef_emo').value.trim();
-  posts[i].bg=document.getElementById('ef_bg').value.trim();
+  
   posts[i].focalX=pendingFocalX;
   posts[i].focalY=pendingFocalY;
   posts[i].cap=document.getElementById('ef_cap').value.trim();
-  const cf=document.getElementById('ef_font').value;posts[i].capFont=cf;
-  if(document.getElementById('ef_font_all').checked)posts.forEach(p=>p.capFont=cf);
+  
+  
   pendingFeedUpload='';pendingFeedUploadType='';hideEditModal();renderFeed();renderGrid();
   if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
   saveFeedPostsToBackend();
@@ -5901,12 +5905,10 @@ function addFeedPost(){pendingFeedUpload='';pendingFeedUploadType='';showEditMod
       <input id="ef_video" value="" placeholder="Paste video URL...">
     </div>
     <div class="edit-field"><label>Emoji (fallback)</label><input id="ef_emo" value="📷"></div>
-    <div class="edit-field"><label>Background Color</label><input id="ef_bg" value="#1a1a2a"></div>
-    <div class="edit-font-row"><div class="edit-field"><label>Caption</label><textarea id="ef_cap"></textarea></div><div class="edit-field"><label>Caption Font</label>${fontSelect('ef_font','')}</div></div>
+    <div class="edit-field"><label>Caption</label><textarea id="ef_cap"></textarea></div>
     <div style="display:flex;gap:10px;margin-top:6px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveNewFeedPost()">Add Post</button></div>`)}
 function saveNewFeedPost(){
   const videoUrl=(document.getElementById('ef_video')?.value||'').trim();
-  const p={emoji:document.getElementById('ef_emo').value.trim()||'📷',bg:document.getElementById('ef_bg').value.trim()||'#1a1a2a',cap:document.getElementById('ef_cap').value.trim(),capFont:document.getElementById('ef_font').value,mediaType:'image',mediaUrl:''};
   if(pendingFeedUpload){
     p.mediaUrl=pendingFeedUpload;
     p.mediaType=pendingFeedUploadType||'image';
@@ -5920,6 +5922,39 @@ function saveNewFeedPost(){
 }
 
 // ── Media Items (enhanced with file upload + auto-detect) ──
+// ── Media Icon Picker (dropdown + custom upload) ──
+const mediaIconPresets=[
+  {v:'📄',l:'Document'},{v:'🖼️',l:'Image'},{v:'🎵',l:'Audio'},{v:'🎬',l:'Video'},
+  {v:'📋',l:'Dossier'},{v:'🔒',l:'Locked'},{v:'📁',l:'File'},{v:'📊',l:'Data'},
+  {v:'🗺️',l:'Map'},{v:'📎',l:'Attachment'},{v:'📷',l:'Photo'},{v:'🎤',l:'Recording'},
+  {v:'💾',l:'Disk'},{v:'🔑',l:'Key'},{v:'📡',l:'Signal'},{v:'⚠️',l:'Warning'}
+];
+function buildIconPicker(currentIcon){
+  const isCustom=currentIcon&&(currentIcon.startsWith('http')||currentIcon.startsWith('data:'));
+  const opts=mediaIconPresets.map(p=>`<option value="${p.v}"${!isCustom&&currentIcon===p.v?' selected':''}>${p.v} ${p.l}</option>`).join('');
+  return `<div style="display:flex;gap:4px;align-items:center">
+    <select id="em_ico_select" onchange="if(this.value!=='__custom__')document.getElementById('em_ico').value=this.value" style="flex:1;font-size:13px">
+      ${opts}
+      <option value="__custom__"${isCustom?' selected':''}>⊕ Custom...</option>
+    </select>
+    <input id="em_ico" type="hidden" value="${currentIcon||'📄'}">
+    <label style="cursor:pointer;font-size:8px;color:var(--cyan);padding:6px 8px;border:1px solid rgba(0,212,255,.2);border-radius:3px;white-space:nowrap" title="Upload custom icon">
+      📁<input type="file" accept="image/*" onchange="handleIconUpload(this)" style="display:none">
+    </label>
+  </div>`;
+}
+function handleIconUpload(input){
+  const file=input.files[0];if(!file)return;
+  uploadFileToDrive(file,'icon').then(r=>{
+    document.getElementById('em_ico').value=r.directUrl;
+    const sel=document.getElementById('em_ico_select');if(sel)sel.value='__custom__';
+  }).catch(()=>{
+    const reader=new FileReader();
+    reader.onload=e=>{document.getElementById('em_ico').value=e.target.result;const sel=document.getElementById('em_ico_select');if(sel)sel.value='__custom__'};
+    reader.readAsDataURL(file);
+  });
+}
+
 function editMediaItem(i){
   pendingMediaFileUrl='';
   const m=mediaItems[i];
@@ -5931,12 +5966,10 @@ function editMediaItem(i){
     <div class="edit-field"><label>Upload File${hasFile?' (replace existing)':''}</label><input type="file" id="em_file" onchange="handleMediaUpload(this)"></div>
     <input type="hidden" id="em_url_cleared" value="0">
     <div class="edit-field-row">
-      <div class="edit-field" style="flex:.25"><label>Icon</label><input id="em_ico" value="${m.icon}"></div>
+      <div class="edit-field" style="flex:.4"><label>Icon</label>${buildIconPicker(m.icon)}</div>
       <div class="edit-field"><label>File Name</label><input id="em_name" value="${m.name}"></div>
     </div>
-    <div class="edit-font-row"><div class="edit-field"><label>Name Font</label>${fontSelect('em_font',m.nameFont||'')}</div><div class="edit-field"><label>Desc Font</label>${fontSelect('em_dfont',m.descFont||'')}</div></div>
     <div class="edit-field"><label>Description</label><textarea id="em_desc">${m.desc}</textarea></div>
-    <label style="display:flex;align-items:center;gap:6px;margin:-8px 0 10px;cursor:pointer"><input type="checkbox" id="em_font_all"><span style="font-size:9px;color:#888;letter-spacing:1px">Apply fonts to all media items</span></label>
     <div class="edit-field-row">
       <div class="edit-field"><label>Category</label><select id="em_type">${typeOpts}</select></div>
       <div class="edit-field"><label>File Password <span style="color:#666;font-weight:400">(to open/view)</span></label><input id="em_key" value="${m.unlockKey||''}" placeholder="Leave blank = no password"></div>
@@ -5970,17 +6003,16 @@ function toggleVaultLockUI(){
     if(lbl)lbl.style.color='#888';
   }
 }
-function saveMediaItem(i){mediaItems[i].icon=document.getElementById('em_ico').value.trim();mediaItems[i].name=document.getElementById('em_name').value.trim();mediaItems[i].desc=document.getElementById('em_desc').value.trim();mediaItems[i].type=document.getElementById('em_type').value;const cleared=document.getElementById('em_url_cleared')?.value==='1';if(pendingMediaFileUrl){mediaItems[i].fileUrl=pendingMediaFileUrl}else if(cleared){if(mediaItems[i].fileUrl)deleteFromR2(mediaItems[i].fileUrl);mediaItems[i].fileUrl=''}mediaItems[i].unlockKey=document.getElementById('em_key').value.trim();const vl=document.getElementById('em_vaultlock');if(vl){mediaItems[i].vaultLocked=vl.checked;if(vl.checked){mediaItems[i].vaultCode=(document.getElementById('em_vaultcode')?.value.trim().toUpperCase()||'');mediaItems[i].vaultCodename=(document.getElementById('em_vaultcodename')?.value.trim().toUpperCase()||'')}else{mediaItems[i].vaultCode='';mediaItems[i].vaultCodename=''}}const nf=document.getElementById('em_font').value;const df=document.getElementById('em_dfont').value;mediaItems[i].nameFont=nf;mediaItems[i].descFont=df;if(document.getElementById('em_font_all').checked)mediaItems.forEach(m=>{m.nameFont=nf;m.descFont=df});pendingMediaFileUrl='';hideEditModal();syncVaultCodesFromMedia();renderMedia();renderGrid();renderKeysCodes();renderVaultPanel();saveMediaItemsToBackend()}
+function saveMediaItem(i){mediaItems[i].icon=document.getElementById('em_ico').value.trim();mediaItems[i].name=document.getElementById('em_name').value.trim();mediaItems[i].desc=document.getElementById('em_desc').value.trim();mediaItems[i].type=document.getElementById('em_type').value;const cleared=document.getElementById('em_url_cleared')?.value==='1';if(pendingMediaFileUrl){mediaItems[i].fileUrl=pendingMediaFileUrl}else if(cleared){if(mediaItems[i].fileUrl)deleteFromR2(mediaItems[i].fileUrl);mediaItems[i].fileUrl=''}mediaItems[i].unlockKey=document.getElementById('em_key').value.trim();const vl=document.getElementById('em_vaultlock');if(vl){mediaItems[i].vaultLocked=vl.checked;if(vl.checked){mediaItems[i].vaultCode=(document.getElementById('em_vaultcode')?.value.trim().toUpperCase()||'');mediaItems[i].vaultCodename=(document.getElementById('em_vaultcodename')?.value.trim().toUpperCase()||'')}else{mediaItems[i].vaultCode='';mediaItems[i].vaultCodename=''}}pendingMediaFileUrl='';hideEditModal();syncVaultCodesFromMedia();renderMedia();renderGrid();renderKeysCodes();renderVaultPanel();saveMediaItemsToBackend()}
 function deleteMediaItem(i){const delMedia=mediaItems[i];if(delMedia&&delMedia.fileUrl)deleteFromR2(delMedia.fileUrl);mediaItems.splice(i,1);hideEditModal();syncVaultCodesFromMedia();renderMedia();renderGrid();renderVaultPanel();renderKeysCodes();saveMediaItemsToBackend()}
 function addMediaItem(){
   pendingMediaFileUrl='';
   showEditModal(`<h3>Add New Media Item</h3>
     <div class="edit-field"><label>Upload File</label><input type="file" id="em_file" onchange="handleMediaUpload(this)"></div>
     <div class="edit-field-row">
-      <div class="edit-field" style="flex:.25"><label>Icon</label><input id="em_ico" value="📄"></div>
+      <div class="edit-field" style="flex:.4"><label>Icon</label>${buildIconPicker('📄')}</div>
       <div class="edit-field"><label>File Name</label><input id="em_name" value=""></div>
     </div>
-    <div class="edit-font-row"><div class="edit-field"><label>Name Font</label>${fontSelect('em_font','')}</div><div class="edit-field"><label>Desc Font</label>${fontSelect('em_dfont','')}</div></div>
     <div class="edit-field"><label>Description</label><textarea id="em_desc"></textarea></div>
     <div class="edit-field-row">
       <div class="edit-field"><label>Category</label><select id="em_type"><option>document</option><option>image</option><option>audio</option><option>video</option><option>dossier</option></select></div>
@@ -5997,7 +6029,7 @@ function addMediaItem(){
     </div>
     <div style="display:flex;gap:10px;margin-top:6px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveNewMediaItem()">Add Item</button></div>`);
 }
-function saveNewMediaItem(){const vl=document.getElementById('em_vaultlock');const isVL=vl&&vl.checked;mediaItems.push({icon:document.getElementById('em_ico').value.trim()||'📄',name:document.getElementById('em_name').value.trim(),desc:document.getElementById('em_desc').value.trim(),type:document.getElementById('em_type').value,fileUrl:pendingMediaFileUrl||'',unlockKey:document.getElementById('em_key').value.trim(),nameFont:document.getElementById('em_font').value,descFont:document.getElementById('em_dfont').value,vaultLocked:isVL,vaultCode:isVL?(document.getElementById('em_vaultcode')?.value.trim().toUpperCase()||''):'',vaultCodename:isVL?(document.getElementById('em_vaultcodename')?.value.trim().toUpperCase()||''):''});pendingMediaFileUrl='';hideEditModal();syncVaultCodesFromMedia();renderMedia();renderGrid();renderVaultPanel();renderKeysCodes();saveMediaItemsToBackend()}
+function saveNewMediaItem(){const vl=document.getElementById('em_vaultlock');const isVL=vl&&vl.checked;mediaItems.push({icon:document.getElementById('em_ico').value.trim()||'📄',name:document.getElementById('em_name').value.trim(),desc:document.getElementById('em_desc').value.trim(),type:document.getElementById('em_type').value,fileUrl:pendingMediaFileUrl||'',unlockKey:document.getElementById('em_key').value.trim(),nameFont:'',descFont:'',vaultLocked:isVL,vaultCode:isVL?(document.getElementById('em_vaultcode')?.value.trim().toUpperCase()||''):'',vaultCodename:isVL?(document.getElementById('em_vaultcodename')?.value.trim().toUpperCase()||''):''});pendingMediaFileUrl='';hideEditModal();syncVaultCodesFromMedia();renderMedia();renderGrid();renderVaultPanel();renderKeysCodes();saveMediaItemsToBackend()}
 
 // ══════ TIMER ══════
 let timerSec=5325,timerPaused=false,timerOriginal=5325;
@@ -6475,7 +6507,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-0300';
+const _BUILD_ID = '20260222-0330';
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
@@ -6519,8 +6551,8 @@ const _BUILD_ID = '20260222-0300';
   document.addEventListener('adminReady',()=>setTimeout(checkCache,800));
 })();
 
-// Apply stored fonts
-if(operationFont){const ct=document.getElementById('consoleTitle');if(ct)ct.style.fontFamily=getFontFamily(operationFont);const lt=document.getElementById('loginTitle');if(lt)lt.style.fontFamily=getFontFamily(operationFont)}
+// Apply stored operation font via centralized helper
+if(operationFont)applyOperationFont(operationFont);
 
 // ═══════════════════════════════════════════════════════════════
 // SECURITY HARDENING
