@@ -175,29 +175,42 @@
       linear-gradient(175deg,#22252c 0%,#1a1c22 20%,#141620 50%,#111318 80%,#0e1014 100%);
     border:1px solid #3a3d44;
     box-shadow:inset 0 1px 0 rgba(255,255,255,.04),inset 0 -1px 0 rgba(0,0,0,.3),0 2px 0 #0a0a0c,0 4px 0 #151518,0 8px 0 #0a0a0c,0 30px 70px rgba(0,0,0,.9)}
-  .login-field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
-  .login-field label{font-family:'Saira',sans-serif;font-size:10px;color:#999;font-weight:700;letter-spacing:3px;text-transform:uppercase}
-  .login-field input{width:100%;position:relative;z-index:3;border-radius:4px;padding:16px 18px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:15px;letter-spacing:4px;outline:none;text-transform:uppercase;text-align:center;
+  /* ══════ UNIFIED LOGIN CRT ══════ */
+  .login-led{position:absolute;top:10px;left:18px;width:8px;height:8px;border-radius:50%;background:#2a2a2a;box-shadow:inset 0 1px 2px rgba(0,0,0,.6);z-index:10;transition:all .3s}
+  .login-led.active{background:#ffaa33;box-shadow:0 0 6px rgba(255,170,51,.5),inset 0 1px 2px rgba(0,0,0,.2);animation:ledFlash .8s ease-in-out infinite}
+  .login-led.granted{background:#00ff88;box-shadow:0 0 8px rgba(0,255,136,.6),inset 0 1px 2px rgba(0,0,0,.2);animation:none}
+  .login-led.denied{background:#ff3333;box-shadow:0 0 8px rgba(255,51,51,.6);animation:ledFlash .3s ease-in-out 3}
+  @keyframes ledFlash{0%,100%{opacity:1}50%{opacity:.3}}
+  .login-crt-unified{border-radius:5px;padding:20px 18px;position:relative;overflow:hidden;margin-bottom:12px;
     background:linear-gradient(180deg,#020604,#040a06,#030805);
     border:1px solid #1a2a1e;
-    box-shadow:inset 0 0 20px rgba(0,0,0,.8),inset 0 0 40px rgba(0,20,8,.3),0 1px 0 rgba(255,255,255,.03),0 0 1px rgba(0,255,136,.15);
-    text-shadow:0 0 8px rgba(0,255,136,.4),0 0 20px rgba(0,255,136,.15);
+    box-shadow:inset 0 0 30px rgba(0,0,0,.8),inset 0 0 60px rgba(0,20,8,.3),0 1px 0 rgba(255,255,255,.03);
   }
-  .login-field input:focus{border-color:rgba(0,255,136,.3);box-shadow:inset 0 0 20px rgba(0,0,0,.8),inset 0 0 40px rgba(0,20,8,.3),0 0 6px rgba(0,255,136,.15)}
-  .login-field input::placeholder{color:rgba(0,255,136,.15);text-transform:none;letter-spacing:2px;font-size:12px;text-shadow:none}
-  /* CRT scanlines on login input */
-  .login-field{position:relative}
-  .login-field::after{content:'';position:absolute;bottom:0;left:0;right:0;height:calc(100% - 18px);border-radius:4px;
-    background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.15) 1px,rgba(0,0,0,.15) 2px);
-    pointer-events:none;z-index:4}
-  /* Password field same CRT style */
-  .login-pw-field input{width:100%;position:relative;z-index:3;border-radius:4px;padding:16px 18px;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:15px;letter-spacing:4px;outline:none;text-align:center;
-    background:linear-gradient(180deg,#020604,#040a06,#030805);
-    border:1px solid #1a2a1e;
-    box-shadow:inset 0 0 20px rgba(0,0,0,.8),inset 0 0 40px rgba(0,20,8,.3),0 1px 0 rgba(255,255,255,.03),0 0 1px rgba(0,255,136,.15);
-    text-shadow:0 0 8px rgba(0,255,136,.4),0 0 20px rgba(0,255,136,.15);
-  }
-
+  .login-crt-scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.15) 1px,rgba(0,0,0,.15) 2px);pointer-events:none;z-index:2}
+  .login-crt-inner{position:relative;z-index:1}
+  .login-crt-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(0,255,136,.3);text-transform:uppercase;display:block;margin-bottom:6px}
+  .login-crt-field{width:100%;background:transparent;border:none;outline:none;padding:8px 0;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:5px;text-transform:uppercase;text-align:center;text-shadow:0 0 8px rgba(0,255,136,.4),0 0 20px rgba(0,255,136,.15);caret-color:var(--green)}
+  .login-crt-field::placeholder{color:rgba(0,255,136,.12);text-transform:none;letter-spacing:2px;font-size:12px;text-shadow:none}
+  .login-crt-field[type="password"]{text-transform:none;letter-spacing:3px}
+  .login-crt-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,255,136,.12),transparent);margin:10px 0}
+  .login-crt-status{min-height:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--green);text-align:center;text-shadow:0 0 6px rgba(0,255,136,.3);margin-top:4px}
+  .login-crt-status.authenticating{animation:crtPulse 1.2s ease-in-out infinite}
+  .login-crt-status.granted{color:#0f6;text-shadow:0 0 12px rgba(0,255,136,.5);font-weight:700}
+  .login-crt-status.denied{color:var(--red);text-shadow:0 0 12px rgba(255,51,51,.4)}
+  .login-crt-spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(0,255,136,.2);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+  @keyframes crtPulse{0%,100%{opacity:1}50%{opacity:.6}}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  .login-err{font-family:'Chakra Petch',sans-serif;font-size:11px;color:var(--red);min-height:14px;text-align:center;font-weight:600;margin-bottom:4px}
+  .login-submit{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700;position:relative;min-height:48px}
+  .login-submit:hover{background:rgba(0,255,136,.1);box-shadow:0 0 25px rgba(0,255,136,.12)}
+  .login-submit:active{transform:scale(.98)}
+  .login-back-btn{width:100%;background:transparent;border:1px solid rgba(255,170,51,.2);color:var(--amber);font-family:'Saira',sans-serif;font-size:11px;letter-spacing:3px;padding:10px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:600;margin-top:8px}
+  .login-back-btn:hover{background:rgba(255,170,51,.06);border-color:rgba(255,170,51,.35)}
+  .upload-spinner{width:24px;height:24px;border:2px solid rgba(255,170,51,.2);border-top-color:var(--amber);border-radius:50%;animation:btnSpin .6s linear infinite;margin:0 auto}
+  @keyframes btnSpin{to{transform:rotate(360deg)}}
+  .login-register-link{font-family:'Chakra Petch',sans-serif;font-size:13px;color:#aaa;cursor:pointer;transition:color .2s;padding:16px 0 0;letter-spacing:.5px;text-align:center}
+  .login-register-link:hover{color:var(--cyan)}
+  .login-register-link span.lrl-action{color:var(--cyan);text-decoration:underline;text-underline-offset:3px;font-weight:600}
   /* Panel blip buttons — hardware-style close/back/cancel on panel edge */
   .panel-blip{position:absolute;top:-1px;right:20px;z-index:10;padding:5px 14px;border-radius:0 0 4px 4px;cursor:pointer;transition:all .25s;
     background:linear-gradient(180deg,#1a1c22,#12141a);
@@ -212,29 +225,6 @@
   .screen-back-link{position:absolute;top:12px;left:14px;z-index:10;font-family:'Saira',sans-serif;font-size:11px;font-weight:600;letter-spacing:1.5px;color:#666;cursor:pointer;transition:color .2s;padding:4px 0}
   .screen-back-link:hover{color:#aaa}
   @keyframes blipPulse{0%,100%{opacity:.4;box-shadow:0 0 3px rgba(255,60,60,.2)}50%{opacity:1;box-shadow:0 0 8px rgba(255,60,60,.6)}}
-  .login-pw-field input{text-transform:none;color:#ccc;letter-spacing:1px}
-  .login-err{font-family:'Chakra Petch',sans-serif;font-size:11px;color:var(--red);min-height:14px;text-align:center;font-weight:600;margin-bottom:4px}
-  .login-crt-display{min-height:48px;margin:12px 0 8px;padding:12px 16px;background:linear-gradient(180deg,#040806,#060a08);border:1px solid rgba(0,255,136,.12);border-radius:4px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
-  .login-crt-display::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none}
-  .login-crt-display::after{content:'';position:absolute;inset:0;border-radius:4px;box-shadow:inset 0 0 20px rgba(0,0,0,.6),inset 0 0 4px rgba(0,255,136,.05);pointer-events:none}
-  .login-crt-text{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:3px;color:var(--green);text-align:center;text-shadow:0 0 8px rgba(0,255,136,.3);z-index:1}
-  .login-crt-text.authenticating{animation:crtPulse 1.2s ease-in-out infinite}
-  .login-crt-text.granted{color:#0f6;text-shadow:0 0 12px rgba(0,255,136,.5);font-weight:700}
-  .login-crt-text.denied{color:var(--red);text-shadow:0 0 12px rgba(255,51,51,.4)}
-  .login-crt-cursor{animation:blink 1s step-end infinite}
-  .login-crt-spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,255,136,.2);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:8px}
-  @keyframes crtPulse{0%,100%{opacity:1}50%{opacity:.6}}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-  .login-submit{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700;position:relative;min-height:48px}
-  .login-submit.loading{color:transparent;pointer-events:none}
-  .login-submit.loading::after{content:'';position:absolute;inset:0;margin:auto;width:20px;height:20px;border:2px solid rgba(0,255,136,.2);border-top-color:var(--green);border-radius:50%;animation:btnSpin .6s linear infinite}
-  @keyframes btnSpin{to{transform:rotate(360deg)}}
-  .upload-spinner{width:24px;height:24px;border:2px solid rgba(255,170,51,.2);border-top-color:var(--amber);border-radius:50%;animation:btnSpin .6s linear infinite;margin:0 auto}
-  .login-submit:hover{background:rgba(0,255,136,.1);box-shadow:0 0 25px rgba(0,255,136,.12)}
-  .login-status{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.03)}
-  .login-register-link{font-family:'Chakra Petch',sans-serif;font-size:13px;color:#aaa;cursor:pointer;transition:color .2s;padding:16px 0 0;letter-spacing:.5px;text-align:center}
-  .login-register-link:hover{color:var(--cyan)}
-  .login-register-link span.lrl-action{color:var(--cyan);text-decoration:underline;text-underline-offset:3px;font-weight:600}
 
   /* ══════ VAULT PUZZLE (in-console) ══════ */
   .vault-puzzle-layout{display:flex;flex-direction:column;align-items:center;gap:24px;max-width:500px;margin:0 auto}
@@ -445,6 +435,9 @@
   body.player-preview .team-card-notifs{display:block!important}
   .console-team{font-family:'Saira',sans-serif;font-size:11px;color:#888;letter-spacing:2px;font-weight:600;transition:color .2s}
   .console-team:hover{color:#b0e8cc}
+  .team-chevron{font-size:10px;color:#555;margin-left:2px;transition:color .2s}
+  .topbar-identity:hover .team-chevron{color:#888}
+  body.admin-mode .team-chevron{display:none}
   body.admin-mode .console-team{display:none}
   .team-notif-badge{position:absolute;top:-6px;right:-8px;min-width:16px;height:16px;border-radius:8px;background:var(--red);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 0 8px rgba(255,50,50,.4);animation:ledPulse 2s ease-in-out infinite;z-index:5}
   .team-notif-badge.has-notifs{display:flex}
@@ -626,9 +619,9 @@
   .feed-card{border-radius:0;border:none;border-right:1px solid rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.03)}
   .feed-card-cap p{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#bbb;font-weight:500;line-height:1.6}
 
-  .feed-single{display:none;flex-direction:column;align-items:center;gap:16px;max-width:600px;margin:0 auto;width:100%}
+  .feed-single{display:none;flex-direction:column;height:100%;max-width:600px;margin:0 auto;width:100%;overflow:hidden}
   .feed-single.visible{display:flex}
-  .feed-single-img{width:100%;aspect-ratio:1;background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:72px;background-size:cover;background-position:center;touch-action:none;position:relative;overflow:hidden;cursor:zoom-in}
+  .feed-single-img{flex:1;min-height:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:72px;background-size:cover;background-position:center;touch-action:none;position:relative;overflow:hidden;cursor:zoom-in}
   .feed-single-img.zoomed{cursor:grab}
   .feed-single-img.zoomed.dragging{cursor:grabbing}
   .feed-single-img .feed-zoom-wrapper{width:100%;height:100%;transform-origin:0 0;will-change:transform;display:flex;align-items:center;justify-content:center}
@@ -636,9 +629,14 @@
   .feed-single-edit{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
     background:rgba(0,0,0,.7);border:1px solid rgba(0,212,255,.3);color:var(--cyan);font-size:16px;cursor:pointer;z-index:5;transition:all .2s;backdrop-filter:blur(4px)}
   .feed-single-edit:hover{background:rgba(0,212,255,.15);border-color:rgba(0,212,255,.5);box-shadow:0 0 12px rgba(0,212,255,.15)}
-  .feed-single-controls{width:100%;position:sticky;top:0;z-index:5;padding:8px 0}
+  .feed-single-controls{flex-shrink:0;padding:8px 0;z-index:5}
   .feed-single-nav-row{display:flex;align-items:center;justify-content:center;gap:20px}
   .feed-single-counter{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#999;font-weight:600;letter-spacing:2px;min-width:60px;text-align:center}
+  .feed-single-caption{flex-shrink:0;max-height:3.2em;overflow:hidden;position:relative;transition:max-height .3s}
+  .feed-single-caption.expanded{max-height:200px;overflow-y:auto}
+  .feed-single-caption-more{display:none;text-align:center;padding:2px 0;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--cyan);cursor:pointer;opacity:.6;flex-shrink:0}
+  .feed-single-caption-more:hover{opacity:1}
+  .feed-single-caption-more.visible{display:block}
   .feed-single-caption{font-family:'Chakra Petch',sans-serif;font-size:14px;color:#ddd;line-height:1.8;font-weight:500;text-align:center;max-width:500px}
   .feed-single-nav{display:flex;gap:15px}
   .feed-nav-btn,.feed-back-grid{cursor:pointer;border-radius:4px;letter-spacing:2px;transition:all .08s;font-weight:600;
@@ -797,8 +795,7 @@
   .admin-trigger svg{width:19px;height:19px;fill:none;stroke:#8890a0;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
   .admin-trigger:hover{border-color:rgba(150,160,180,.5);box-shadow:0 0 14px rgba(150,160,180,.15)}
   .admin-trigger:hover svg{stroke:#b0b8c8}
-  .admin-trigger::after{content:'';position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px rgba(0,212,255,.6);animation:ledPulse 2s ease-in-out infinite;display:none}
-  body.admin-mode .admin-trigger::after{display:block;background:var(--green);box-shadow:0 0 6px rgba(0,255,136,.6)}
+  .admin-trigger::after{display:none}
   body.player-preview .admin-trigger{display:none!important}
   body.player-preview #adminNavBar{display:none!important}
   body.player-preview #logoutBtn{display:none!important}
@@ -1721,23 +1718,29 @@
     <div style="display:flex;align-items:center;justify-content:center"><div class="login-title" id="loginTitle">Operation Dead Drop</div><button class="admin-edit-inline" onclick="event.stopPropagation();editOperationName()">✎</button></div>
     <div class="login-subtitle">Enter Your Credentials</div>
     <div class="login-panel">
-      <div class="screen-back-link" onclick="showScreen('landingScreen')">← Back</div>
+      <div class="login-led" id="loginLed"></div>
       <div class="rv rv-1"></div><div class="rv rv-2"></div><div class="rv rv-3"></div><div class="rv rv-4"></div>
-      <div class="login-field">
-        <label id="loginIdLabel">Team ID</label>
-        <input type="text" id="loginId" placeholder="e.g. ALPHA-1234" autocomplete="off" spellcheck="false">
-      </div>
-      <div class="login-field login-pw-field" id="loginPwField" style="display:none">
-        <label>Password</label>
-        <input type="password" id="loginPw" placeholder="Enter password">
-      </div>
-      <div class="login-crt-display" id="loginCrtDisplay">
-        <div class="login-crt-text" id="loginCrtText"><span class="login-crt-cursor">_</span></div>
+      <div class="login-crt-unified" id="loginCrt">
+        <div class="login-crt-scanlines"></div>
+        <div class="login-crt-inner">
+          <div class="login-crt-input-zone">
+            <label class="login-crt-label" id="loginCrtLabel">TEAM ID</label>
+            <input type="text" class="login-crt-field" id="loginId" placeholder="e.g. ALPHA-1234" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="login-crt-pw-zone" id="loginCrtPwZone" style="display:none">
+            <div class="login-crt-divider"></div>
+            <label class="login-crt-label">PASSWORD</label>
+            <input type="password" class="login-crt-field" id="loginPw" placeholder="••••••••">
+          </div>
+          <div class="login-crt-divider" id="loginCrtDivider" style="display:none"></div>
+          <div class="login-crt-status" id="loginCrtStatus"></div>
+        </div>
       </div>
       <div class="login-err" id="loginErr"></div>
       <button class="login-submit" id="loginSubmitBtn" onclick="submitLogin()">ENTER</button>
+      <button class="login-back-btn" onclick="showScreen('landingScreen')">← BACK</button>
     </div>
-    <div class="login-register-link" id="loginRegLink" onclick="goToRegistration()"><span id="loginRegText">Don't have an ID?</span> <span class="lrl-action" id="loginRegAction">Register here</span></div>
+    <div class="login-register-link" id="loginRegLink" onclick="goToRegistration()"><span id="loginRegText">Don't have a Team ID?</span> <span class="lrl-action" id="loginRegAction">Register here</span></div>
   </div>
 </div>
 
@@ -2084,6 +2087,7 @@
     </div>
     <div class="topbar-identity" onclick="toggleTeamCard(event)">
       <span class="console-team">—</span>
+      <span class="team-chevron">▾</span>
       <span class="admin-topbar-label">Administrator</span>
       <span class="team-notif-badge" id="teamNotifBadge"></span>
       <div class="team-card" id="teamCard">
@@ -2141,7 +2145,7 @@
 
 <!-- EXPANDED -->
 <div id="panelOverlay">
-  <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter">1 / 12</span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-caption" id="singleCap"></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
+  <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" style="display:flex;flex-direction:column;height:100%"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded" style="flex:1;overflow-y:auto"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter">1 / 12</span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
   <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
   <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area" id="intelForm"></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
   <div class="expanded-panel" id="expVault">
@@ -2644,78 +2648,65 @@ for(let i=0;i<5;i++){const p=document.createElement('div');p.className='dust';p.
 let manualVaultKeys=[];
 let currentVaultTeam=null;
 
+function setLoginLed(state){
+  const led=document.getElementById('loginLed');
+  if(!led)return;
+  led.className='login-led'+(state?' '+state:'');
+}
+function setLoginStatus(text,cls){
+  const el=document.getElementById('loginCrtStatus');
+  if(!el)return;
+  el.className='login-crt-status'+(cls?' '+cls:'');
+  el.innerHTML=text;
+  const div=document.getElementById('loginCrtDivider');
+  if(div)div.style.display=text?'':'none';
+}
 function submitLogin(){
-  // PREVIEW MODE INTERCEPTION — simulate the flow without backend calls
+  // PREVIEW MODE INTERCEPTION
   if(document.body.classList.contains('landing-preview-mode')){
-    const crt=document.getElementById('loginCrtText');
     const btn=document.getElementById('loginSubmitBtn');
-    crt.className='login-crt-text authenticating';
-    crt.innerHTML='<span class="login-crt-spinner"></span>AUTHENTICATING...';
+    setLoginLed('active');
+    setLoginStatus('<span class="login-crt-spinner"></span>AUTHENTICATING...','authenticating');
     btn.style.opacity='.4';btn.style.pointerEvents='none';
     setTimeout(()=>{
-      crt.className='login-crt-text granted';
-      crt.textContent='ACCESS GRANTED';
+      setLoginLed('granted');
+      setLoginStatus('ACCESS GRANTED','granted');
       playSuccess();
     },1500);
-    setTimeout(()=>{
-      // Reset for next preview
-      crt.className='login-crt-text';
-      crt.innerHTML='<span class="login-crt-cursor">_</span>';
-      btn.style.opacity='';btn.style.pointerEvents='';
-      document.getElementById('loginId').value='';
-      const pwField=document.getElementById('loginPwField');
-      pwField.style.display='none';
-      document.getElementById('loginPw').value='';
-      btn.textContent='ENTER';
-    },3500);
+    setTimeout(()=>{resetLoginScreen()},3500);
     return;
   }
-
   const err=document.getElementById('loginErr');
   const idVal=document.getElementById('loginId').value.trim();
   if(!idVal){err.textContent='Please enter your Team ID or username';return}
-
-  const pwField=document.getElementById('loginPwField');
+  const pwZone=document.getElementById('loginCrtPwZone');
   const btn=document.getElementById('loginSubmitBtn');
-  const crt=document.getElementById('loginCrtText');
-
-  // Show authenticating on CRT
-  crt.className='login-crt-text authenticating';
-  crt.innerHTML='<span class="login-crt-spinner"></span>AUTHENTICATING...';
+  setLoginLed('active');
+  setLoginStatus('<span class="login-crt-spinner"></span>AUTHENTICATING...','authenticating');
   btn.style.opacity='.4';btn.style.pointerEvents='none';
-
-  // If password field is visible, this is an admin auth attempt
-  if(pwField.style.display!=='none'){
+  // Admin password phase
+  if(pwZone.style.display!=='none'){
     const pw=document.getElementById('loginPw').value;
-    if(!pw){err.textContent='Please enter password';crt.className='login-crt-text';crt.innerHTML='<span class="login-crt-cursor">_</span>';btn.style.opacity='';btn.style.pointerEvents='';return}
+    if(!pw){err.textContent='Please enter password';setLoginStatus('');setLoginLed('active');btn.style.opacity='';btn.style.pointerEvents='';return}
     err.textContent='';
     apiCall('login',{username:idVal,password:pw}).then(result=>{
       if(result.ok){
         adminSession={username:result.username,role:result.role,adminToken:result.adminToken};
-        err.textContent='';
-        isAdmin=true;document.body.classList.add('admin-mode');
+        err.textContent='';isAdmin=true;document.body.classList.add('admin-mode');
         currentVaultTeam={id:'ADMIN',name:'Administrator',type:'admin',members:['Admin'],memberDetails:[]};
-        updateConsoleForTeam(currentVaultTeam);
-        syncAdminDropdownToggles();
-        saveSession();
-        loginSuccess();
-        loadEventData();
-        document.dispatchEvent(new Event('adminReady'));
+        updateConsoleForTeam(currentVaultTeam);syncAdminDropdownToggles();saveSession();
+        loginSuccess();loadEventData();document.dispatchEvent(new Event('adminReady'));
       }else{
-        crt.className='login-crt-text denied';
-        crt.textContent='ACCESS DENIED';
-        err.textContent='Authentication failed';
-        btn.style.opacity='';btn.style.pointerEvents='';
-        playDenied();
-        document.getElementById('flashR').classList.add('on');
+        setLoginLed('denied');setLoginStatus('ACCESS DENIED','denied');
+        err.textContent='Authentication failed';btn.style.opacity='';btn.style.pointerEvents='';
+        playDenied();document.getElementById('flashR').classList.add('on');
         setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
-        setTimeout(()=>{crt.className='login-crt-text';crt.innerHTML='<span class="login-crt-cursor">_</span>'},2000);
+        setTimeout(()=>{setLoginLed('active');setLoginStatus('')},2000);
       }
     });
     return;
   }
-
-  // First entry — try as Team ID via backend
+  // First entry — try as Team ID
   err.textContent='';
   apiCall('loginTeam',{teamId:idVal}).then(result=>{
     if(result.ok){
@@ -2724,62 +2715,57 @@ function submitLogin(){
         members:(t.members||[]).map(m=>typeof m==='string'?m:m.name),
         memberDetails:t.members||[],lastActive:Date.now(),fieldsCompleted:0,
         submitTime:null,registeredAt:t.registeredAt,submissionResults:null};
-      if(!registeredTeams.find(r=>r.id===t.teamId)){
-        registeredTeams.push(currentVaultTeam);
-      }
-      updateConsoleForTeam(currentVaultTeam);
-      saveSession();
-      loginSuccess();
-      startBroadcastPolling();
-      apiCall('getEventConfig').then(cfg=>{
-        if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
-      });
+      if(!registeredTeams.find(r=>r.id===t.teamId)){registeredTeams.push(currentVaultTeam)}
+      updateConsoleForTeam(currentVaultTeam);saveSession();loginSuccess();startBroadcastPolling();
+      apiCall('getEventConfig').then(cfg=>{if(cfg.ok&&cfg.config)applyEventConfig(cfg.config)});
     }else{
       apiCall('validateUsername',{username:idVal}).then(vResult=>{
         if(vResult.ok&&vResult.found){
-          pwField.style.display='block';
-          document.getElementById('loginPw').focus();
-          btn.textContent='AUTHENTICATE';
-          err.textContent='';
-          crt.className='login-crt-text';
-          crt.textContent='ADMIN — ENTER PASSWORD';
+          pwZone.style.display='';document.getElementById('loginPw').focus();
+          err.textContent='';setLoginStatus('ENTER PASSWORD','');setLoginLed('active');
           btn.style.opacity='';btn.style.pointerEvents='';
         }else{
-          crt.className='login-crt-text denied';
-          crt.textContent='ACCESS DENIED';
-          err.textContent='Invalid Team ID or username';
-          btn.style.opacity='';btn.style.pointerEvents='';
-          playDenied();
-          document.getElementById('flashR').classList.add('on');
+          setLoginLed('denied');setLoginStatus('ACCESS DENIED','denied');
+          err.textContent='Invalid Team ID or username';btn.style.opacity='';btn.style.pointerEvents='';
+          playDenied();document.getElementById('flashR').classList.add('on');
           setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
-          setTimeout(()=>{crt.className='login-crt-text';crt.innerHTML='<span class="login-crt-cursor">_</span>'},2000);
+          setTimeout(()=>{setLoginLed('');setLoginStatus('')},2000);
         }
       });
     }
   });
 }
 function loginSuccess(){
-  playSuccess();
-  if(isAdmin)unlockAdminConsole();
-  const crt=document.getElementById('loginCrtText');
-  crt.className='login-crt-text granted';
-  crt.textContent='ACCESS GRANTED';
+  playSuccess();if(isAdmin)unlockAdminConsole();
+  setLoginLed('granted');setLoginStatus('ACCESS GRANTED','granted');
   document.getElementById('flashG').classList.add('on');
   setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
   const btn=document.getElementById('loginSubmitBtn');
   btn.style.opacity='.4';btn.style.pointerEvents='none';
   setTimeout(()=>openVault(),800);
 }
+function resetLoginScreen(){
+  document.getElementById('loginId').value='';document.getElementById('loginPw').value='';
+  document.getElementById('loginCrtPwZone').style.display='none';
+  document.getElementById('loginErr').textContent='';
+  const btn=document.getElementById('loginSubmitBtn');
+  btn.textContent='ENTER';btn.style.opacity='';btn.style.pointerEvents='';
+  setLoginLed('');setLoginStatus('');
+}
 // Enter key support on login fields
 document.getElementById('loginId')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitLogin()});
 document.getElementById('loginPw')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitLogin()});
-// Detect input changes to reset password field
+// LED flashes on input activity
 document.getElementById('loginId')?.addEventListener('input',function(){
-  const pwField=document.getElementById('loginPwField');
-  if(pwField.style.display!=='none'){
-    pwField.style.display='none';
-    document.getElementById('loginSubmitBtn').textContent='ENTER';
+  const pwZone=document.getElementById('loginCrtPwZone');
+  if(pwZone&&pwZone.style.display!=='none'){
+    pwZone.style.display='none';
+    setLoginStatus('');
   }
+  setLoginLed(this.value.trim()?'active':'');
+});
+document.getElementById('loginPw')?.addEventListener('input',function(){
+  setLoginLed(this.value.trim()||document.getElementById('loginId').value.trim()?'active':'');
 });
 
 function updateConsoleForTeam(team){
@@ -3256,6 +3242,34 @@ function openPanel(t){playTileClick();recordTileAccess(t);['adminPanel','broadca
 function closePanel(){overlay.style.cssText='';overlay.classList.remove('active');setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession()},120)}
 
 // Feed view modes
+function feedClose(){
+  // In focus mode, go back to grid. In grid mode, close panel entirely.
+  if(currentFeedView==='single'){
+    setFeedView('grid');
+  }else{
+    closePanel();
+  }
+}
+function toggleFeedCaption(){
+  const cap=document.getElementById('singleCap');
+  const btn=document.getElementById('feedCapMore');
+  if(cap.classList.contains('expanded')){
+    cap.classList.remove('expanded');
+    btn.textContent='▾ more';
+  }else{
+    cap.classList.add('expanded');
+    btn.textContent='▴ less';
+  }
+}
+function updateFeedCloseBtn(){
+  const btn=document.getElementById('feedCloseBtn');
+  if(!btn)return;
+  if(currentFeedView==='single'){
+    btn.textContent='← GRID';
+  }else{
+    btn.textContent='✕ CLOSE';
+  }
+}
 function setFeedView(mode){
   currentFeedView=mode;
   document.querySelectorAll('.feed-view-btn').forEach(b=>b.classList.remove('active'));
@@ -3270,6 +3284,7 @@ function setFeedView(mode){
     gridEl.style.display='none';singleEl.classList.add('visible');
     toggleEl.style.display='';renderSinglePost();
   }
+  updateFeedCloseBtn();
   saveSession();
 }
 
@@ -3307,8 +3322,14 @@ function renderSinglePost(){
   }
   const capEl=document.getElementById('singleCap');
   capEl.textContent=p.cap;
+  capEl.classList.remove('expanded');
   capEl.style.fontFamily=getFontFamily(resolveFont('feedCap',p.capFont||''));
   document.getElementById('singleCounter').textContent=(currentPost+1)+' / '+posts.length;
+  // Check if caption overflows 2 lines
+  requestAnimationFrame(()=>{
+    const more=document.getElementById('feedCapMore');
+    if(more)more.classList.toggle('visible',capEl.scrollHeight>capEl.clientHeight+2);
+  });
 }
 // ══════ VIDEO EMBED RESOLVER ══════
 function resolveVideoEmbed(url){
@@ -4433,13 +4454,14 @@ function togglePlayerPreview(){
     // Set a placeholder team name for preview
     const teamEl=document.querySelector('.console-team');
     if(teamEl&&teamEl.childNodes[0])teamEl.childNodes[0].textContent='TEAM PREVIEW ';
-    // Show exit bar at top
+    // Show exit button where gear icon normally sits
     let pill=document.getElementById('previewExitPill');
     if(!pill){
       pill=document.createElement('div');
       pill.id='previewExitPill';
-      pill.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;align-items:center;justify-content:center;gap:16px;padding:8px 20px;background:linear-gradient(180deg,rgba(0,0,0,.9) 60%,transparent);pointer-events:none';
-      pill.innerHTML='<span style="font-family:IBM Plex Mono,monospace;font-size:10px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;opacity:.7;pointer-events:none">👁 Player Preview</span><button onclick="togglePlayerPreview()" style="pointer-events:all;font-family:Saira,sans-serif;font-size:10px;letter-spacing:2px;padding:5px 14px;border:1px solid rgba(0,212,255,.3);border-radius:3px;background:rgba(0,212,255,.08);color:var(--cyan);cursor:pointer">✕ Exit Preview</button>';
+      pill.style.cssText='position:fixed;top:8px;right:8px;z-index:9999;display:flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid rgba(0,212,255,.25);border-radius:5px;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);cursor:pointer;transition:all .2s';
+      pill.innerHTML='<span style="font-family:IBM Plex Mono,monospace;font-size:9px;letter-spacing:2px;color:var(--cyan);opacity:.7">👁</span><span style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:1.5px;color:var(--cyan)">Exit Preview</span>';
+      pill.onclick=togglePlayerPreview;
       document.body.appendChild(pill);
     }
     pill.style.display='flex';
@@ -4544,15 +4566,7 @@ function goToRegistration(){
   showScreen('regScreen');
 }
 function goToLogin(){
-  document.getElementById('loginId').value='';
-  document.getElementById('loginPw').value='';
-  document.getElementById('loginPwField').style.display='none';
-  document.getElementById('loginErr').textContent='';
-  document.getElementById('loginSubmitBtn').textContent='ENTER';
-  document.getElementById('loginSubmitBtn').style.opacity='';
-  document.getElementById('loginSubmitBtn').style.pointerEvents='';
-  const crt=document.getElementById('loginCrtText');
-  if(crt){crt.className='login-crt-text';crt.innerHTML='<span class="login-crt-cursor">_</span>'}
+  resetLoginScreen();
   showScreen('loginScreen');
   setTimeout(()=>document.getElementById('loginId').focus(),300);
 }
@@ -4577,21 +4591,22 @@ function updateLandingForMode(){
   const regText=document.getElementById('loginRegText');
   const regAction=document.getElementById('loginRegAction');
   const regLink=document.getElementById('loginRegLink');
-  const idLabel=document.getElementById('loginIdLabel');
+  
   if(!regText)return;
   if(regLink)regLink.style.display=regSettings.registrationOpen===false?'none':'';
+  const crtLabel=document.getElementById('loginCrtLabel');
   if(mode==='team'){
     regText.textContent="Don't have a Team ID?";
     regAction.textContent='Register your team';
-    if(idLabel)idLabel.textContent='Team ID';
+    if(crtLabel)crtLabel.textContent='TEAM ID';
   }else if(mode==='individual'){
-    regText.textContent="Don't have an ID?";
-    regAction.textContent='Register here';
-    if(idLabel)idLabel.textContent='User ID';
+    regText.textContent="Need to register?";
+    regAction.textContent='Sign up here';
+    if(crtLabel)crtLabel.textContent='USER ID';
   }else{
-    regText.textContent="Don't have an ID?";
-    regAction.textContent='Register your team or yourself';
-    if(idLabel)idLabel.textContent='Team / User ID';
+    regText.textContent="Need to register?";
+    regAction.textContent='Sign up here';
+    if(crtLabel)crtLabel.textContent='TEAM / USER ID';
   }
 }
 function updateLandingBanner(){
@@ -6483,12 +6498,8 @@ function closeLandingPreview(){
   document.body.classList.remove('landing-preview-mode');
   showScreen('consoleScreen');
   document.getElementById('notepadTrigger').classList.add('visible');
-  // Reset any preview states on login screen
-  const loginId=document.getElementById('loginId');if(loginId)loginId.value='';
-  const pwField=document.getElementById('loginPwField');if(pwField)pwField.style.display='none';
-  const loginPw=document.getElementById('loginPw');if(loginPw)loginPw.value='';
-  const crt=document.getElementById('loginCrtText');if(crt){crt.className='login-crt-text';crt.innerHTML='<span class="login-crt-cursor">_</span>'}
-  const btn=document.getElementById('loginSubmitBtn');if(btn){btn.textContent='ENTER';btn.style.opacity='';btn.style.pointerEvents=''}
+  // Reset login screen
+  resetLoginScreen();
   // Reset reg form
   const regForm=document.getElementById('regForm');if(regForm)regForm.style.display='';
   const regSuccess=document.getElementById('regSuccess');if(regSuccess)regSuccess.style.display='none';
@@ -7066,7 +7077,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-0900';
+const _BUILD_ID = '20260222-1000';
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
