@@ -31,7 +31,7 @@
   .reg-crt-inner{position:relative;z-index:1}
   .reg-crt .reg-section-title{color:var(--green);border-bottom-color:rgba(0,255,136,.12);text-shadow:0 0 10px rgba(0,255,136,.2)}
   .reg-crt .reg-field label{color:rgba(0,255,136,.5);font-size:10px;letter-spacing:2.5px}
-  .reg-crt .reg-main-label{color:var(--cyan);font-size:11px;letter-spacing:3px;font-weight:700}
+  .reg-crt .reg-field label.reg-main-label{color:var(--cyan);font-size:11px;letter-spacing:3px;font-weight:700}
   .reg-crt .reg-field input{background:rgba(0,255,136,.03);border-color:rgba(0,255,136,.1);color:var(--green);text-shadow:0 0 6px rgba(0,255,136,.2)}
   .reg-crt .reg-field input:focus{border-color:rgba(0,255,136,.25);box-shadow:0 0 8px rgba(0,255,136,.08)}
   .reg-crt .reg-field input::placeholder{color:rgba(0,255,136,.12)}
@@ -1729,7 +1729,7 @@
             <div id="regOperatives"></div>
           </div>
 
-          <div class="reg-err" id="regErr"></div>
+          <div class="reg-err" id="regErr" style="display:none"></div>
         </div>
         <div class="reg-crt-inner" id="regSuccess" style="display:none">
           <div class="reg-section-title" style="text-align:center;border-bottom:none;margin-bottom:8px">◈ Registration Complete</div>
@@ -1776,7 +1776,7 @@
           <div class="login-crt-status" id="loginCrtStatus"></div>
         </div>
       </div>
-      <div class="login-err" id="loginErr"></div>
+      <div class="login-err" id="loginErr" style="display:none"></div>
       <div class="login-btn-row">
         <div class="login-hw-btn esc-key" id="loginEscBtn" onclick="loginBack()"><span>← ESC</span></div>
         <div class="login-hw-btn enter-key" id="loginSubmitBtn" onclick="submitLogin()"><span>ENTER</span></div>
@@ -2297,43 +2297,47 @@ function submitRegistration(){
     },4000);
     return;
   }
-  const err=document.getElementById('regErr');
   const mode=regSettings.participantMode||'team';
   let effectiveType=mode==='individual'?'individual':(mode==='team'?'team':currentRegType);
 
-  if(!regSettings.registrationOpen){err.textContent='Registration is currently closed';return}
+  function regValidationErr(msg){
+    setRegLed('denied');
+    setRegStatus(msg.toUpperCase(),'denied');
+    setTimeout(()=>{setRegLed('');setRegStatus('')},3000);
+  }
+
+  if(!regSettings.registrationOpen){regValidationErr('Registration closed');return}
 
   let entityName='', members=[], email='', phone='', dept='';
 
   if(effectiveType==='team'){
     entityName=document.getElementById('regTeamName')?.value.trim()||'';
-    if(!entityName){err.textContent='Please enter a team name';return}
+    if(!entityName){regValidationErr('Enter team name');return}
     const memberCount=parseInt(document.getElementById('regMemberCount')?.value||regSettings.teamSizeMax);
     for(let m=1;m<=memberCount;m++){
       const name=document.getElementById('reg'+m+'Name')?.value.trim();
       const mdept=document.getElementById('reg'+m+'Dept')?.value.trim()||'';
       const memail=document.getElementById('reg'+m+'Email')?.value.trim()||'';
       const mphone=document.getElementById('reg'+m+'Phone')?.value.trim()||'';
-      if(!name){err.textContent='Please enter name for Team Member '+m;return}
-      if(regSettings.requireEmail&&!memail){err.textContent='Please enter email for Team Member '+m;return}
-      if(regSettings.requirePhone&&!mphone){err.textContent='Please enter phone for Team Member '+m;return}
-      if(regSettings.requireDept&&!mdept){err.textContent='Please enter department for Team Member '+m;return}
+      if(!name){regValidationErr('Enter name — member '+m);return}
+      if(regSettings.requireEmail&&!memail){regValidationErr('Enter email — member '+m);return}
+      if(regSettings.requirePhone&&!mphone){regValidationErr('Enter phone — member '+m);return}
+      if(regSettings.requireDept&&!mdept){regValidationErr('Enter dept — member '+m);return}
       members.push({name,dept:mdept,email:memail,phone:mphone});
     }
     email=members[0]?.email||'';phone=members[0]?.phone||'';dept=members[0]?.dept||'';
   }else{
     entityName=document.getElementById('regIndividualName')?.value.trim()||'';
-    if(!entityName){err.textContent='Please enter your name';return}
+    if(!entityName){regValidationErr('Enter your name');return}
     dept=document.getElementById('regIndDept')?.value.trim()||'';
     email=document.getElementById('regIndEmail')?.value.trim()||'';
     phone=document.getElementById('regIndPhone')?.value.trim()||'';
-    if(regSettings.requireEmail&&!email){err.textContent='Please enter your email';return}
-    if(regSettings.requirePhone&&!phone){err.textContent='Please enter your phone number';return}
-    if(regSettings.requireDept&&!dept){err.textContent='Please enter your department';return}
+    if(regSettings.requireEmail&&!email){regValidationErr('Enter your email');return}
+    if(regSettings.requirePhone&&!phone){regValidationErr('Enter your phone');return}
+    if(regSettings.requireDept&&!dept){regValidationErr('Enter your department');return}
     members=[{name:entityName,dept,email,phone}];
   }
 
-  err.textContent='';
   const btn=document.getElementById('regSubmitBtn');
   btn.style.opacity='.4';btn.style.pointerEvents='none';
   setRegLed('active');
@@ -2345,7 +2349,6 @@ function submitRegistration(){
       // Duplicate found
       setRegLed('denied');
       setRegStatus('NAME ALREADY EXISTS','denied');
-      err.textContent=effectiveType==='individual'?'That name is already registered. Please try a different name.':'A team with that name already exists. Please choose a different name.';
       btn.style.opacity='';btn.style.pointerEvents='';
       playDenied();
       document.getElementById('flashR').classList.add('on');
@@ -2385,13 +2388,11 @@ function submitRegistration(){
       }else{
         setRegLed('denied');
         const errMsg=result.error||'Registration failed';
-        // Handle duplicate from server side as well
         if(errMsg.toLowerCase().includes('exist')||errMsg.toLowerCase().includes('duplicate')){
           setRegStatus('NAME ALREADY EXISTS','denied');
         }else{
           setRegStatus('REGISTRATION FAILED','denied');
         }
-        err.textContent=errMsg;
         btn.style.opacity='';btn.style.pointerEvents='';
         playDenied();
         document.getElementById('flashR').classList.add('on');
@@ -2430,7 +2431,6 @@ function submitRegistration(){
       }else{
         setRegLed('denied');
         setRegStatus('REGISTRATION FAILED','denied');
-        err.textContent=result.error||'Registration failed';
         btn.style.opacity='';btn.style.pointerEvents='';
         playDenied();
         setTimeout(()=>{setRegLed('');setRegStatus('')},3000);
@@ -2788,7 +2788,6 @@ function loginBack(){
   if(pwZone&&pwZone.style.display!=='none'){
     pwZone.style.display='none';
     document.getElementById('loginPw').value='';
-    document.getElementById('loginErr').textContent='';
     setLoginStatus('');
     setLoginLed(document.getElementById('loginId').value.trim()?'active':'');
     return;
@@ -2811,9 +2810,8 @@ function submitLogin(){
     setTimeout(()=>{resetLoginScreen()},3500);
     return;
   }
-  const err=document.getElementById('loginErr');
   const idVal=document.getElementById('loginId').value.trim();
-  if(!idVal){err.textContent='Please enter your Team ID or username';return}
+  if(!idVal){setLoginStatus('ENTER TEAM ID','denied');setTimeout(()=>setLoginStatus(''),2000);return}
   const pwZone=document.getElementById('loginCrtPwZone');
   const btn=document.getElementById('loginSubmitBtn');
   setLoginLed('active');
@@ -2822,27 +2820,25 @@ function submitLogin(){
   // Admin password phase
   if(pwZone.style.display!=='none'){
     const pw=document.getElementById('loginPw').value;
-    if(!pw){err.textContent='Please enter password';setLoginStatus('');setLoginLed('active');btn.style.opacity='';btn.style.pointerEvents='';return}
-    err.textContent='';
+    if(!pw){setLoginStatus('ENTER PASSWORD','denied');setTimeout(()=>setLoginStatus('ENTER PASSWORD',''),1500);btn.style.opacity='';btn.style.pointerEvents='';return}
     apiCall('login',{username:idVal,password:pw}).then(result=>{
       if(result.ok){
         adminSession={username:result.username,role:result.role,adminToken:result.adminToken};
-        err.textContent='';isAdmin=true;document.body.classList.add('admin-mode');
+        isAdmin=true;document.body.classList.add('admin-mode');
         currentVaultTeam={id:'ADMIN',name:'Administrator',type:'admin',members:['Admin'],memberDetails:[]};
         updateConsoleForTeam(currentVaultTeam);syncAdminDropdownToggles();saveSession();
         loginSuccess();loadEventData();document.dispatchEvent(new Event('adminReady'));
       }else{
-        setLoginLed('denied');setLoginStatus('ACCESS DENIED','denied');
-        err.textContent='Authentication failed';btn.style.opacity='';btn.style.pointerEvents='';
+        setLoginLed('denied');setLoginStatus('ACCESS DENIED — AUTH FAILED','denied');
+        btn.style.opacity='';btn.style.pointerEvents='';
         playDenied();document.getElementById('flashR').classList.add('on');
         setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
-        setTimeout(()=>{setLoginLed('active');setLoginStatus('')},2000);
+        setTimeout(()=>{setLoginLed('active');setLoginStatus('ENTER PASSWORD','')},2000);
       }
     });
     return;
   }
   // First entry — try as Team ID
-  err.textContent='';
   apiCall('loginTeam',{teamId:idVal}).then(result=>{
     if(result.ok){
       const t=result;
@@ -2857,11 +2853,11 @@ function submitLogin(){
       apiCall('validateUsername',{username:idVal}).then(vResult=>{
         if(vResult.ok&&vResult.found){
           pwZone.style.display='';document.getElementById('loginPw').focus();
-          err.textContent='';setLoginStatus('ENTER PASSWORD','');setLoginLed('active');
+          setLoginStatus('ENTER PASSWORD','');setLoginLed('active');
           btn.style.opacity='';btn.style.pointerEvents='';
         }else{
-          setLoginLed('denied');setLoginStatus('ACCESS DENIED','denied');
-          err.textContent='Invalid Team ID or username';btn.style.opacity='';btn.style.pointerEvents='';
+          setLoginLed('denied');setLoginStatus('ACCESS DENIED — INVALID ID','denied');
+          btn.style.opacity='';btn.style.pointerEvents='';
           playDenied();document.getElementById('flashR').classList.add('on');
           setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
           setTimeout(()=>{setLoginLed('');setLoginStatus('')},2000);
@@ -2882,7 +2878,6 @@ function loginSuccess(){
 function resetLoginScreen(){
   document.getElementById('loginId').value='';document.getElementById('loginPw').value='';
   document.getElementById('loginCrtPwZone').style.display='none';
-  document.getElementById('loginErr').textContent='';
   const btn=document.getElementById('loginSubmitBtn');
   btn.style.opacity='';btn.style.pointerEvents='';
   setLoginLed('');setLoginStatus('');
