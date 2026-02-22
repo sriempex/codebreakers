@@ -4751,6 +4751,7 @@ function openEventControl(){
   _instantShow(document.getElementById('adminPanel'));
   showAdminTabs('adminPanel');
   syncAdminPanelSettings();
+  initTypographyPanel();
   // Start live timer sync
   if(apTimerInterval)clearInterval(apTimerInterval);
   apTimerInterval=setInterval(()=>{const el=document.getElementById('apTimerDisplay');if(el)el.textContent=document.getElementById('cTimer').textContent},250);
