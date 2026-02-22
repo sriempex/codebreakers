@@ -882,11 +882,11 @@
   .ap-field input:focus{border-color:rgba(0,212,255,.2)}
   .ap-row{display:flex;gap:10px;align-items:flex-end}
   .ap-row .ap-field{flex:1}
-  .ap-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
-  .ap-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 16px}
-  .ap-grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px 16px}
-  .ap-full-row{display:flex;gap:8px;align-items:center;width:100%;flex-wrap:wrap}
-  .ap-field select{width:100%;background:#080a10;border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:9px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;box-sizing:border-box}
+  .ap-two-col{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .ap-two-col .ap-field{flex:1;min-width:160px}
+  .ap-three-col{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+  .ap-three-col .ap-field{flex:1;min-width:100px}
+  .ap-field select{background:#080a10;border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:8px 10px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;box-sizing:border-box}
   .ap-field select:focus{border-color:rgba(0,212,255,.2)}
   .ap-btn{font-family:'Saira',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;cursor:pointer;padding:8px 18px;border-radius:3px;transition:all .2s}
   .ap-btn-cyan{color:#c0e8f8;background:linear-gradient(180deg,rgba(15,30,40,.5),rgba(10,20,30,.6));border:1px solid rgba(0,212,255,.25);border-bottom:2px solid rgba(0,212,255,.12)}
@@ -1741,17 +1741,17 @@
       <p>Configure participant mode, countdown timer, and leaderboard display.</p>
       <div style="margin-bottom:16px">
         <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">⏱ Event Timer</label>
-        <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px;width:100%">
-          <select id="timerMode" onchange="onTimerModeChange()" style="flex:1;background:#080a10;border:1px solid var(--border);border-radius:4px;padding:9px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none">
+        <div style="display:flex;gap:16px;align-items:center;margin-bottom:10px">
+          <select id="timerMode" onchange="onTimerModeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;width:200px">
             <option value="countdown">Manual Countdown</option>
             <option value="event">Event Schedule</option>
           </select>
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:16px;color:var(--red);letter-spacing:3px;font-weight:700;text-shadow:0 0 8px rgba(255,50,50,.3);min-width:100px;text-align:right" id="apTimerDisplay">—</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:16px;color:var(--red);letter-spacing:3px;font-weight:700;text-shadow:0 0 8px rgba(255,50,50,.3)" id="apTimerDisplay">—</span>
         </div>
         <div id="timerCountdownControls">
-          <div style="display:flex;gap:8px;align-items:center;width:100%">
+          <div style="display:flex;gap:8px;align-items:center">
             <button class="admin-timer-btn" id="pauseBtn" onclick="togglePause()">⏸ PAUSE</button>
-            <input class="admin-timer-input" id="timerInput" placeholder="HH:MM:SS" maxlength="8" style="flex:1;min-width:0">
+            <input class="admin-timer-input" id="timerInput" placeholder="HH:MM:SS" maxlength="8" style="width:120px">
             <button class="admin-timer-btn" onclick="setNewTime()">SET</button>
             <button class="admin-timer-btn" onclick="resetTimer()">RESET</button>
           </div>
@@ -1774,28 +1774,31 @@
           </div>
         </div>
       </div>
-      <div class="ap-grid-2" style="margin-bottom:12px">
+      <div class="ap-two-col" style="margin-bottom:12px">
         <div class="ap-field"><label>Participant Mode</label><select id="apParticipantMode" onchange="onParticipantModeChange()"><option value="team">Team Only</option><option value="individual">Individual Only</option><option value="hybrid">Open (Hybrid)</option></select></div>
-        <div class="ap-field"><label>Leaderboard Style</label><select id="apLeaderboardStyle" onchange="onLeaderboardStyleChange()"><option value="mixed">Single Mixed</option><option value="split">Split by Type</option><option value="labeled">Single with Labels</option></select></div>
+</select></div>
+      </div>
+      <div style="margin-top:12px">
+        <label style="font-family:Saira,sans-serif<option value="mixed">Single Mixed</option><option value="split">Split by Type</option><option value="labeled">Single with Labels</option></select></div>
       </div>
       <div style="margin-top:12px">
         <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">🟢 Activity Thresholds <span class="save-blip" id="blipThresholds">✓ Saved</span></label>
         <p style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#666;margin:0 0 8px;letter-spacing:.3px">Controls when console tile status changes from Active → Idle → Silent.</p>
-        <div class="ap-grid-2">
-          <div class="ap-field"><label>Active → Idle (seconds)</label><input type="number" id="apThresholdIdle" value="60" min="10" max="600" onchange="updateThresholds()" style="width:100%"></div>
-          <div class="ap-field"><label>Idle → Silent (seconds)</label><input type="number" id="apThresholdSilent" value="300" min="30" max="3600" onchange="updateThresholds()" style="width:100%"></div>
+        <div class="ap-two-col">
+          <div class="ap-field"><label>Active → Idle (seconds)</label><input type="number" id="apThresholdIdle" value="60" min="10" max="600" onchange="updateThresholds()" style="width:90px"></div>
+          <div class="ap-field"><label>Idle → Silent (seconds)</label><input type="number" id="apThresholdSilent" value="300" min="30" max="3600" onchange="updateThresholds()" style="width:90px"></div>
         </div>
       </div>
     </div>
     <div class="ap-section"><h4>🏠 Landing Page</h4>
       <p>Customize the landing page banner and text.</p>
       <div class="ap-field" style="margin-bottom:10px"><label>Banner Image</label>
-        <div style="display:flex;gap:8px;align-items:center;width:100%">
-          <label style="cursor:pointer;font-size:9px;color:var(--cyan);letter-spacing:1px;padding:9px 14px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.05);white-space:nowrap;font-family:'IBM Plex Mono',monospace;text-align:center;flex:1">
+        <div style="display:flex;gap:8px;align-items:center">
+          <label style="cursor:pointer;font-size:9px;color:var(--cyan);letter-spacing:1px;padding:8px 14px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.05);white-space:nowrap;font-family:'IBM Plex Mono',monospace">
             📁 Upload Banner Image
             <input type="file" accept="image/*" onchange="handleAdminBannerUpload(this)" style="display:none">
           </label>
-          <button class="ap-btn ap-btn-red" onclick="clearLandingBanner()" style="font-size:9px;padding:9px 14px;flex-shrink:0;white-space:nowrap">✕ Clear Banner</button>
+          <button class="ap-btn ap-btn-red" onclick="clearLandingBanner()" style="font-size:9px;padding:8px 12px">✕ Clear</button>
         </div>
       </div>
       <div style="display:flex;gap:20px;align-items:center;margin-bottom:14px;padding:12px 16px;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.04);border-radius:6px">
@@ -1810,17 +1813,17 @@
           <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#555;letter-spacing:.5px" id="apBannerStatus">No image set</div>
         </div>
       </div>
-      <div class="ap-grid-2" style="margin-bottom:12px">
+      <div class="ap-two-col" style="margin-bottom:12px">
         <div class="ap-field"><label>Title <span class="save-blip" id="blipLandingTitle">✓ Saved</span></label><input id="apLandingTitle" value="Code Breakers" onchange="updateLandingTitle()"></div>
         <div class="ap-field"><label>Subtitle <span class="save-blip" id="blipLandingSub">✓ Saved</span></label><input id="apLandingSubtitle" value="Rise to The Challenge" onchange="updateLandingSubtitle()"></div>
       </div>
     </div>
     <div class="ap-section"><h4>📝 Registration Settings</h4>
       <p>Configure team registration parameters. Changes apply immediately.</p>
-      <div class="ap-grid-3" style="margin-bottom:12px">
-        <div class="ap-field"><label>Min Team Size</label><select id="apMinSize" onchange="updateRegSettings()"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
-        <div class="ap-field"><label>Max Team Size</label><select id="apMaxSize" onchange="updateRegSettings()"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></div>
-        <div class="ap-field"><label>Max Teams</label><input type="number" id="apMaxTeams" value="20" min="2" max="100" onchange="updateRegSettings()"></div>
+      <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap">
+        <div class="ap-field"><label>Min Team Size</label><select id="apMinSize" onchange="updateRegSettings()" style="width:100px"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+        <div class="ap-field"><label>Max Team Size</label><select id="apMaxSize" onchange="updateRegSettings()" style="width:100px"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></div>
+        <div class="ap-field"><label>Max Teams</label><input type="number" id="apMaxTeams" value="20" min="2" max="100" onchange="updateRegSettings()" style="width:80px"></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:12px">
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqEmail" checked onchange="updateRegSettings()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999;letter-spacing:.5px">Require Email Address</span></label>
@@ -1833,16 +1836,57 @@
       </div>
     </div>
     <div class="ap-section"><h4>🖋 Typography <span class="save-blip" id="blipTypography">✓ Saved</span></h4>
-      <p>Global font overrides for each content zone. Leave as Default to use the theme font. Per-item fonts are ignored when a global is set.</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-bottom:12px">
-        <div class="ap-field"><label>Feed Captions</label><div id="fc_feedCap_wrap"></div></div>
-        <div class="ap-field"><label>Media Titles</label><div id="fc_mediaName_wrap"></div></div>
-        <div class="ap-field"><label>Media Descriptions</label><div id="fc_mediaDesc_wrap"></div></div>
-        <div class="ap-field"><label>Intel Field Labels</label><div id="fc_intelLabel_wrap"></div></div>
-        <div class="ap-field"><label>Intel Field Inputs</label><div id="fc_intelInput_wrap"></div></div>
-        <div class="ap-field"><label>Vault / Keypad Display</label><div id="fc_vaultDisplay_wrap"></div></div>
+      <p>Global font overrides by content zone. Setting a font here overrides the theme default for that zone across the whole app. Leave as Default to inherit the theme font.</p>
+      <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:14px">
+
+        <div style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;font-weight:600;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.04)">Intelligence Feed</div>
+        <div class="ap-two-col" style="margin-bottom:0">
+          <div class="ap-field">
+            <label>Feed Captions</label>
+            <div id="fc_feedCap_wrap"></div>
+            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">Caption text beneath each image or clip in the Intelligence Feed grid and focus view.</div>
+          </div>
+        </div>
+
+        <div style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;font-weight:600;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.04)">Evidence Locker</div>
+        <div class="ap-two-col" style="margin-bottom:0">
+          <div class="ap-field">
+            <label>Item Titles</label>
+            <div id="fc_mediaName_wrap"></div>
+            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The bold title on each evidence card in the Evidence Locker panel.</div>
+          </div>
+          <div class="ap-field">
+            <label>Item Descriptions</label>
+            <div id="fc_mediaDesc_wrap"></div>
+            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The secondary description line beneath each evidence item title.</div>
+          </div>
+        </div>
+
+        <div style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;font-weight:600;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.04)">Intel Submissions</div>
+        <div class="ap-two-col" style="margin-bottom:0">
+          <div class="ap-field">
+            <label>Field Labels</label>
+            <div id="fc_intelLabel_wrap"></div>
+            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The uppercase question label to the left of each intel answer field.</div>
+          </div>
+          <div class="ap-field">
+            <label>Field Inputs</label>
+            <div id="fc_intelInput_wrap"></div>
+            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The font used inside the answer input boxes across all intel field types.</div>
+          </div>
+        </div>
+
+        <div style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;font-weight:600;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.04)">The Vault</div>
+        <div class="ap-two-col" style="margin-bottom:0">
+          <div class="ap-field">
+            <label>Keypad Display</label>
+            <div id="fc_vaultDisplay_wrap"></div>
+            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The large character display on The Vault keypad as teams type their code.</div>
+          </div>
+        </div>
+
       </div>
-      <button class="ap-btn ap-btn-ghost" onclick="resetFontConfig()" style="font-size:9px;padding:7px 16px;display:block;width:100%;text-align:center">↺ Reset All Typography to Default</button>
+      <div style="text-align:center;padding-top:4px"><button class="ap-btn ap-btn-ghost" onclick="resetFontConfig()" style="font-size:9px;padding:7px 20px">↺ Reset All to Default</button></div>
     </div>
   </div>
 </div>
@@ -1960,7 +2004,7 @@
 <!-- KEYS & CODES PANEL -->
 <div id="keysCodesPanel">
   <div class="kc-container">
-    <div class="kc-header"><h3>🔐 Keys & Codes</h3><button class="ap-btn ap-btn-amber" onclick="openVaultLockPicker()" style="font-size:9px;padding:5px 12px;margin-right:8px">＋ Vault Lock File</button><button class="mv-close" onclick="closeKeysCodes()">✕ CLOSE</button></div>
+    <div class="kc-header"><h3>🔐 Keys & Codes</h3><button class="mv-close" onclick="closeKeysCodes()">✕ CLOSE</button></div>
     <div class="kc-body" id="kcBody"></div>
   </div>
 </div>
@@ -5240,7 +5284,10 @@ function renderKeysCodes(){
   // Vault Locked Items (driven by media items with vaultLocked + vaultCode)
   const vaultLockedMedia=mediaItems.filter(m=>m.vaultLocked);
   html+=`<div class="kc-section">
-    <div class="kc-section-title">🔐 Vault Locked Items (${vaultLockedMedia.length})</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div class="kc-section-title" style="margin-bottom:0">🔐 Vault Locked Items (${vaultLockedMedia.length})</div>
+      <button class="ap-btn ap-btn-amber" onclick="openVaultLockPicker()" style="font-size:9px;padding:5px 12px;flex-shrink:0">＋ Vault Lock Item</button>
+    </div>
     <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#666;margin-bottom:8px">Items marked as Vault-Locked in the Evidence Locker. Edit any item there to set or change its Vault Code — changes sync here automatically.</div>`;
   if(vaultLockedMedia.length){
     vaultLockedMedia.forEach(m=>{
