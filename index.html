@@ -201,11 +201,27 @@
   @keyframes crtPulse{0%,100%{opacity:1}50%{opacity:.6}}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
   .login-err{font-family:'Chakra Petch',sans-serif;font-size:11px;color:var(--red);min-height:14px;text-align:center;font-weight:600;margin-bottom:4px}
-  .login-submit{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700;position:relative;min-height:48px}
-  .login-submit:hover{background:rgba(0,255,136,.1);box-shadow:0 0 25px rgba(0,255,136,.12)}
-  .login-submit:active{transform:scale(.98)}
-  .login-back-btn{width:100%;background:transparent;border:1px solid rgba(255,170,51,.2);color:var(--amber);font-family:'Saira',sans-serif;font-size:11px;letter-spacing:3px;padding:10px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:600;margin-top:8px}
-  .login-back-btn:hover{background:rgba(255,170,51,.06);border-color:rgba(255,170,51,.35)}
+  .login-btn-row{display:flex;gap:8px;margin-top:4px}
+  .login-hw-btn{flex:1;height:46px;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;
+    border-bottom:3px solid #0a0a0e;border-right:2px solid #101014;
+    box-shadow:0 3px 6px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);
+    transition:all .05s ease;border-top:none;border-left:none;outline:none}
+  .login-hw-btn::before{content:'';position:absolute;inset:1px;border-radius:3px;border:1px solid rgba(0,255,136,.04);pointer-events:none}
+  .login-hw-btn::after{content:'';position:absolute;top:1px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);border-radius:50%;pointer-events:none}
+  .login-hw-btn:active{transform:translateY(2px);border-bottom-width:1px;border-right-width:1px;box-shadow:0 0 2px rgba(0,0,0,.4)}
+  .login-hw-btn span{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;letter-spacing:2px;pointer-events:none;text-shadow:0 1px 1px rgba(0,0,0,.6)}
+  .login-hw-btn.enter-key{flex:2;
+    background:linear-gradient(180deg,rgba(20,60,35,.5) 0%,rgba(12,40,24,.6) 50%,rgba(8,30,18,.7) 100%);
+    border-color:rgba(0,255,136,.12);border-bottom-color:#0a1a10}
+  .login-hw-btn.enter-key::before{border-color:rgba(0,255,136,.12)}
+  .login-hw-btn.enter-key span{color:var(--green);text-shadow:0 0 6px rgba(0,255,136,.2)}
+  .login-hw-btn.enter-key:hover{background:linear-gradient(180deg,rgba(25,70,40,.5) 0%,rgba(15,50,28,.6) 50%,rgba(10,35,22,.7) 100%)}
+  .login-hw-btn.esc-key{flex:1;
+    background:linear-gradient(180deg,rgba(60,40,15,.5) 0%,rgba(40,26,10,.6) 50%,rgba(28,18,8,.7) 100%);
+    border-color:rgba(255,170,51,.12);border-bottom-color:#1a1208}
+  .login-hw-btn.esc-key::before{border-color:rgba(255,170,51,.1)}
+  .login-hw-btn.esc-key span{color:var(--amber);font-size:10px;text-shadow:0 0 6px rgba(255,170,51,.2)}
+  .login-hw-btn.esc-key:hover{background:linear-gradient(180deg,rgba(70,48,18,.5) 0%,rgba(50,32,12,.6) 50%,rgba(35,22,10,.7) 100%)}
   .upload-spinner{width:24px;height:24px;border:2px solid rgba(255,170,51,.2);border-top-color:var(--amber);border-radius:50%;animation:btnSpin .6s linear infinite;margin:0 auto}
   @keyframes btnSpin{to{transform:rotate(360deg)}}
   .login-register-link{font-family:'Chakra Petch',sans-serif;font-size:13px;color:#aaa;cursor:pointer;transition:color .2s;padding:16px 0 0;letter-spacing:.5px;text-align:center}
@@ -621,6 +637,8 @@
 
   .feed-single{display:none;flex-direction:column;height:100%;max-width:600px;margin:0 auto;width:100%;overflow:hidden}
   .feed-single.visible{display:flex}
+  #feedExpBody.focus-active{display:flex;flex-direction:column;height:100%;overflow:hidden}
+  #feedExpBody.focus-active #feedGridView{display:none}
   .feed-single-img{flex:1;min-height:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:72px;background-size:cover;background-position:center;touch-action:none;position:relative;overflow:hidden;cursor:zoom-in}
   .feed-single-img.zoomed{cursor:grab}
   .feed-single-img.zoomed.dragging{cursor:grabbing}
@@ -1737,8 +1755,10 @@
         </div>
       </div>
       <div class="login-err" id="loginErr"></div>
-      <button class="login-submit" id="loginSubmitBtn" onclick="submitLogin()">ENTER</button>
-      <button class="login-back-btn" onclick="showScreen('landingScreen')">← BACK</button>
+      <div class="login-btn-row">
+        <div class="login-hw-btn esc-key" id="loginEscBtn" onclick="loginBack()"><span>← ESC</span></div>
+        <div class="login-hw-btn enter-key" id="loginSubmitBtn" onclick="submitLogin()"><span>ENTER</span></div>
+      </div>
     </div>
     <div class="login-register-link" id="loginRegLink" onclick="goToRegistration()"><span id="loginRegText">Don't have a Team ID?</span> <span class="lrl-action" id="loginRegAction">Register here</span></div>
   </div>
@@ -2079,8 +2099,8 @@
 </div>
   <div class="console-topbar">
     <div style="display:flex;flex-direction:column;gap:2px">
-      <span class="console-title" id="consoleTitle">◈ Operation Dead Drop</span><button class="admin-edit-inline" onclick="event.stopPropagation();editOperationName()">✎</button>
-      <span id="buildStamp" style="display:none;font-family:'IBM Plex Mono',monospace;font-size:8px;color:#333;letter-spacing:1px;margin-top:-2px"></span>
+      <div style="display:flex;align-items:center;gap:4px"><span class="console-title" id="consoleTitle">◈ Operation Dead Drop</span><button class="admin-edit-inline" onclick="event.stopPropagation();editOperationName()">✎</button></div>
+      <span id="buildStamp" style="display:none;font-family:'IBM Plex Mono',monospace;font-size:8px;color:#333;letter-spacing:1px"></span>
     </div>
     <div style="display:flex;align-items:center">
       <div class="timer-block"><div class="timer-digits" id="cTimer">01:28:45</div><div class="timer-label">Time Remaining</div></div>
@@ -2145,7 +2165,7 @@
 
 <!-- EXPANDED -->
 <div id="panelOverlay">
-  <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" style="display:flex;flex-direction:column;height:100%"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded" style="flex:1;overflow-y:auto"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter">1 / 12</span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
+  <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter">1 / 12</span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
   <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
   <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area" id="intelForm"></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
   <div class="expanded-panel" id="expVault">
@@ -2661,6 +2681,20 @@ function setLoginStatus(text,cls){
   const div=document.getElementById('loginCrtDivider');
   if(div)div.style.display=text?'':'none';
 }
+function loginBack(){
+  const pwZone=document.getElementById('loginCrtPwZone');
+  // If password zone is visible, go back to ID-only state
+  if(pwZone&&pwZone.style.display!=='none'){
+    pwZone.style.display='none';
+    document.getElementById('loginPw').value='';
+    document.getElementById('loginErr').textContent='';
+    setLoginStatus('');
+    setLoginLed(document.getElementById('loginId').value.trim()?'active':'');
+    return;
+  }
+  // Otherwise go back to landing
+  showScreen('landingScreen');
+}
 function submitLogin(){
   // PREVIEW MODE INTERCEPTION
   if(document.body.classList.contains('landing-preview-mode')){
@@ -2749,7 +2783,7 @@ function resetLoginScreen(){
   document.getElementById('loginCrtPwZone').style.display='none';
   document.getElementById('loginErr').textContent='';
   const btn=document.getElementById('loginSubmitBtn');
-  btn.textContent='ENTER';btn.style.opacity='';btn.style.pointerEvents='';
+  btn.style.opacity='';btn.style.pointerEvents='';
   setLoginLed('');setLoginStatus('');
 }
 // Enter key support on login fields
@@ -3277,12 +3311,15 @@ function setFeedView(mode){
   const gridEl=document.getElementById('feedGridView');
   const singleEl=document.getElementById('feedSingleView');
   const toggleEl=document.getElementById('feedViewToggle');
+  const body=document.getElementById('feedExpBody');
   if(mode==='grid'){
     gridEl.style.display='';
     singleEl.classList.remove('visible');toggleEl.style.display='';
+    if(body)body.classList.remove('focus-active');
   } else {
     gridEl.style.display='none';singleEl.classList.add('visible');
     toggleEl.style.display='';renderSinglePost();
+    if(body)body.classList.add('focus-active');
   }
   updateFeedCloseBtn();
   saveSession();
@@ -4454,13 +4491,14 @@ function togglePlayerPreview(){
     // Set a placeholder team name for preview
     const teamEl=document.querySelector('.console-team');
     if(teamEl&&teamEl.childNodes[0])teamEl.childNodes[0].textContent='TEAM PREVIEW ';
-    // Show exit button where gear icon normally sits
+    // Show exit button where gear icon sits (bottom-right, same size/shape)
     let pill=document.getElementById('previewExitPill');
     if(!pill){
       pill=document.createElement('div');
       pill.id='previewExitPill';
-      pill.style.cssText='position:fixed;top:8px;right:8px;z-index:9999;display:flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid rgba(0,212,255,.25);border-radius:5px;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);cursor:pointer;transition:all .2s';
-      pill.innerHTML='<span style="font-family:IBM Plex Mono,monospace;font-size:9px;letter-spacing:2px;color:var(--cyan);opacity:.7">👁</span><span style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:1.5px;color:var(--cyan)">Exit Preview</span>';
+      pill.style.cssText='position:fixed;bottom:10px;right:10px;z-index:9999;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;background:linear-gradient(180deg,rgba(0,212,255,.12),rgba(0,212,255,.06));border:1px solid rgba(0,212,255,.25);box-shadow:0 2px 10px rgba(0,0,0,.4)';
+      pill.innerHTML='<span style="font-size:16px;line-height:1">👁</span>';
+      pill.title='Exit Player Preview';
       pill.onclick=togglePlayerPreview;
       document.body.appendChild(pill);
     }
@@ -7077,7 +7115,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-1000';
+const _BUILD_ID = '20260222-1100';
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
