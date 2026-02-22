@@ -1500,13 +1500,17 @@
   .media-exp-item.dragging{opacity:.35;pointer-events:none}
   .drag-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.85;transform:scale(.95);box-shadow:0 12px 40px rgba(0,0,0,.5);border-radius:4px;overflow:hidden}
   /* Landing Page Preview */
-  #landingPreviewOverlay{position:fixed;inset:0;z-index:9500;background:#000;display:none;flex-direction:column}
-  #landingPreviewOverlay.active{display:flex}
-  .lp-preview-bar{position:absolute;top:0;left:0;right:0;z-index:9501;display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 20px;background:linear-gradient(180deg,rgba(0,0,0,.85),transparent);pointer-events:none}
-  .lp-preview-bar>*{pointer-events:all}
+  #landingPreviewOverlay{position:fixed;top:0;left:0;right:0;z-index:9500;display:none;pointer-events:none}
+  #landingPreviewOverlay.active{display:block}
+  .lp-preview-bar{display:flex;align-items:center;justify-content:center;gap:16px;padding:12px 20px;background:linear-gradient(180deg,rgba(0,0,0,.9) 60%,transparent);pointer-events:all}
   .lp-preview-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;opacity:.7}
   .lp-preview-close{font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;padding:6px 16px;border:1px solid rgba(0,212,255,.3);border-radius:3px;background:rgba(0,212,255,.08);color:var(--cyan);cursor:pointer;transition:all .2s}
   .lp-preview-close:hover{background:rgba(0,212,255,.15);border-color:rgba(0,212,255,.5)}
+  body.landing-preview-mode .landing-banner-upload,
+  body.landing-preview-mode .admin-edit-inline,
+  body.landing-preview-mode .admin-trigger,
+  body.landing-preview-mode #logoutBtn,
+  body.landing-preview-mode #adminNavBar{display:none!important}
 </style>
 </head>
 <body>
@@ -1532,7 +1536,6 @@
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openChangePassword()"><span class="adm-icon">🔑</span><span class="adm-label">Change Password</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openPortalUsers()"><span class="adm-icon">👥</span><span class="adm-label">Portal Users</span></div>
     <div class="admin-dropdown-sep"></div>
-    <div class="admin-dropdown-toggle" onclick="toggleAllowDownloads()"><span class="adm-icon">⬇</span><span class="adm-label">Allow Downloads</span><span class="adm-toggle off" id="admDlToggle">OFF</span></div>
     <div class="admin-dropdown-toggle pp-toggle" onclick="togglePlayerPreview()"><span class="adm-icon">👁</span><span class="adm-label">View as Player</span><span class="adm-toggle off" id="admPreviewToggle">OFF</span></div>
     <div class="admin-dropdown-toggle" onclick="toggleEditMode()"><span class="adm-icon">✎</span><span class="adm-label">Edit Mode</span><span class="adm-toggle off" id="admEditToggle">OFF</span></div>
   </div>
@@ -1801,6 +1804,10 @@
         <div class="ap-field"><label>Participant Mode</label><select id="apParticipantMode" onchange="onParticipantModeChange()" style="width:auto"><option value="team">Team Only</option><option value="individual">Individual Only</option><option value="hybrid">Open (Hybrid)</option></select></div>
         <div class="ap-field"><label>Leaderboard Style</label><select id="apLeaderboardStyle" onchange="updateRegSettings()" style="width:auto"><option value="mixed">Single Mixed</option><option value="split">Split by Type</option><option value="labeled">Single with Labels</option></select></div>
       </div>
+      <div style="margin-bottom:12px">
+        <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">⬇ Content Downloads</label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apAllowDownloads" onchange="toggleAllowDownloads(this.checked)"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa">Allow players to download files from Intelligence Feed and Evidence Locker</span></label>
+      </div>
       <div style="margin-top:12px">
         <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">🟢 Activity Thresholds <span class="save-blip" id="blipThresholds">✓ Saved</span></label>
         <p style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#666;margin:0 0 8px;letter-spacing:.3px">Controls when console tile status changes from Active → Idle → Silent.</p>
@@ -1808,6 +1815,23 @@
           <div class="ap-field"><label>Active → Idle (seconds)</label><input type="number" id="apThresholdIdle" value="60" min="10" max="600" onchange="updateThresholds()" style="width:90px"></div>
           <div class="ap-field"><label>Idle → Silent (seconds)</label><input type="number" id="apThresholdSilent" value="300" min="30" max="3600" onchange="updateThresholds()" style="width:90px"></div>
         </div>
+      </div>
+    </div>
+    <div class="ap-section"><h4>📝 Registration Settings</h4>
+      <p>Configure team registration parameters. Changes apply immediately.</p>
+      <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap">
+        <div class="ap-field"><label>Min Team Size</label><select id="apMinSize" onchange="updateRegSettings()" style="width:100px"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+        <div class="ap-field"><label>Max Team Size</label><select id="apMaxSize" onchange="updateRegSettings()" style="width:100px"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></div>
+        <div class="ap-field"><label>Max Teams</label><input type="number" id="apMaxTeams" value="20" min="2" max="100" onchange="updateRegSettings()" style="width:80px"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:12px">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqEmail" checked onchange="updateRegSettings()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999;letter-spacing:.5px">Require Email Address</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqPhone" onchange="updateRegSettings()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999;letter-spacing:.5px">Require Phone Number</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqDept" onchange="updateRegSettings()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999;letter-spacing:.5px">Require Department</span></label>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(0,255,136,.1);border-radius:4px;background:rgba(0,255,136,.02)">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;flex:1"><input type="checkbox" id="apRegOpen" checked onchange="updateRegSettings()"><span style="font-family:Saira,sans-serif;font-size:10px;color:var(--green);letter-spacing:1px;font-weight:600">Registration Open</span></label>
+        <span id="apRegStatus" style="font-family:IBM Plex Mono,monospace;font-size:9px;color:var(--green);letter-spacing:1px;font-weight:700">● OPEN</span>
       </div>
     </div>
     <div class="ap-section"><h4>🏠 Landing Page</h4>
@@ -1838,23 +1862,6 @@
         <div class="ap-field"><label>Subtitle <span class="save-blip" id="blipLandingSub">✓ Saved</span></label><input id="apLandingSubtitle" value="Rise to The Challenge" onchange="updateLandingSubtitle()"></div>
       </div>
       <div style="text-align:center;padding-top:4px"><button class="ap-btn ap-btn-cyan" onclick="previewLandingPage()" style="font-size:10px;padding:8px 20px">👁 Preview Landing Page</button></div>
-    </div>
-    <div class="ap-section"><h4>📝 Registration Settings</h4>
-      <p>Configure team registration parameters. Changes apply immediately.</p>
-      <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap">
-        <div class="ap-field"><label>Min Team Size</label><select id="apMinSize" onchange="updateRegSettings()" style="width:100px"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
-        <div class="ap-field"><label>Max Team Size</label><select id="apMaxSize" onchange="updateRegSettings()" style="width:100px"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></div>
-        <div class="ap-field"><label>Max Teams</label><input type="number" id="apMaxTeams" value="20" min="2" max="100" onchange="updateRegSettings()" style="width:80px"></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:12px">
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqEmail" checked onchange="updateRegSettings()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999;letter-spacing:.5px">Require Email Address</span></label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqPhone" onchange="updateRegSettings()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999;letter-spacing:.5px">Require Phone Number</span></label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqDept" onchange="updateRegSettings()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999;letter-spacing:.5px">Require Department</span></label>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(0,255,136,.1);border-radius:4px;background:rgba(0,255,136,.02)">
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;flex:1"><input type="checkbox" id="apRegOpen" checked onchange="updateRegSettings()"><span style="font-family:Saira,sans-serif;font-size:10px;color:var(--green);letter-spacing:1px;font-weight:600">Registration Open</span></label>
-        <span id="apRegStatus" style="font-family:IBM Plex Mono,monospace;font-size:9px;color:var(--green);letter-spacing:1px;font-weight:700">● OPEN</span>
-      </div>
     </div>
     <div class="ap-section"><h4>🖋 Typography <span class="save-blip" id="blipTypography">✓ Saved</span></h4>
       <p>Global font overrides by content zone. Setting a font here overrides the theme default for that zone across the whole app. Leave as Default to inherit the theme font.</p>
@@ -4241,8 +4248,6 @@ function openAdminDropdown(){
 }
 function closeAdminDropdown(){document.getElementById('adminDropdown').classList.remove('open')}
 function syncAdminDropdownToggles(){
-  const dlEl=document.getElementById('admDlToggle');
-  if(dlEl){dlEl.textContent=allowDownloads?'ON':'OFF';dlEl.className='adm-toggle '+(allowDownloads?'on-green':'off')}
   const edEl=document.getElementById('admEditToggle');
   const isEdit=document.body.classList.contains('edit-mode');
   if(edEl){edEl.textContent=isEdit?'ON':'OFF';edEl.className='adm-toggle '+(isEdit?'on-cyan':'off')}
@@ -4250,9 +4255,11 @@ function syncAdminDropdownToggles(){
   const isPreview=document.body.classList.contains('player-preview');
   if(ppEl){ppEl.textContent=isPreview?'ON':'OFF';ppEl.className='adm-toggle '+(isPreview?'on-green':'off')}
 }
-function toggleAllowDownloads(){
-  allowDownloads=!allowDownloads;
-  syncAdminDropdownToggles();
+function toggleAllowDownloads(val){
+  allowDownloads=typeof val==='boolean'?val:!allowDownloads;
+  const cb=document.getElementById('apAllowDownloads');
+  if(cb)cb.checked=allowDownloads;
+  saveEventConfigToBackend();
 }
 // Close dropdown when clicking outside
 document.addEventListener('click',e=>{
@@ -4329,7 +4336,28 @@ document.addEventListener('keydown',e=>{
   }
   // Escape closes expanded panel
   if(overlay.classList.contains('active')&&e.key==='Escape'){
-    e.preventDefault();closePanel();
+    e.preventDefault();closePanel();return;
+  }
+  // Escape closes landing preview
+  if(document.getElementById('landingPreviewOverlay').classList.contains('active')&&e.key==='Escape'){
+    e.preventDefault();closeLandingPreview();return;
+  }
+  // Escape closes active admin panels
+  if(e.key==='Escape'){
+    const adminIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel','portalUsersPanel'];
+    for(const id of adminIds){
+      const el=document.getElementById(id);
+      if(el&&el.classList.contains('active')){
+        e.preventDefault();
+        if(id==='adminPanel')closeEventControl();
+        else if(id==='broadcastPanel')closeBroadcast();
+        else if(id==='leaderboardModule')closeLeaderboard();
+        else if(id==='keysCodesPanel')closeKeysCodes();
+        else if(id==='teamMonitorPanel')closeTeamMonitor();
+        else if(id==='portalUsersPanel')closePortalUsers();
+        return;
+      }
+    }
   }
 });
 document.addEventListener('contextmenu',e=>{
@@ -4701,6 +4729,8 @@ function syncAdminPanelSettings(){
   // Sync banner fallback
   const fbInput=document.getElementById('apBannerFallback');if(fbInput)fbInput.value=regSettings.bannerFallback||'🔐';
   syncManualCreationUI();
+  // Sync downloads checkbox
+  const dlCb=document.getElementById('apAllowDownloads');if(dlCb)dlCb.checked=allowDownloads;
 }
 function _instantShow(el){
   el.style.cssText='opacity:1;pointer-events:all;transition:none';
@@ -4965,12 +4995,16 @@ function renderTeamMonitor(){
     const ghostTag=ghost?`<span class="ap-monitor-ghost-tag">GHOST</span>`:'';
     const removeBtn=ghost?`<span class="ap-monitor-remove" onclick="event.stopPropagation();removeGhostTeam('${t.id}')" title="Remove ghost">✕</span>`:'';
     const msgBtn=!ghost?`<span class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage('${t.id}','${t.name.replace(/'/g,"\\'")}')">💬</span>`:'';
+    const sub=t.submitTime?'✓':'—';
+    const score=t.score||0;
     return `<div class="ap-monitor-row ${rowClass}">
       <div class="ap-monitor-dot ${on?'on':'off'}"></div>
       <span class="ap-monitor-id">${t.id}</span>
       <span class="ap-monitor-name">${t.name} (${t.members.length})</span>
       ${ghostTag}
       <span class="ap-monitor-fields">${t.fieldsCompleted}/${intelFields.length}</span>
+      <span class="ap-monitor-score" style="font-size:9px;color:${score?'var(--green)':'#555'};min-width:40px;text-align:center">${score?score+'pts':'—'}</span>
+      <span style="font-size:10px;color:${t.submitTime?'var(--green)':'#444'};min-width:14px;text-align:center" title="${t.submitTime?'Submitted':'Not submitted'}">${sub}</span>
       <span class="ap-monitor-time">${ghost?'Never active':timeSince(t.lastActive)}</span>
       ${msgBtn}${removeBtn}
     </div>`;
@@ -6269,44 +6303,24 @@ function saveNewMediaItem(){const vl=document.getElementById('em_vaultlock');con
 
 // ══════ LANDING PAGE PREVIEW ══════
 function previewLandingPage(){
-  // Clone the landing screen into a standalone preview
-  const landing=document.getElementById('landingScreen');
-  if(!landing)return;
-  const overlay=document.getElementById('landingPreviewOverlay');
-  const frame=document.getElementById('landingPreviewFrame');
-
-  // Build a standalone HTML doc with just the landing screen
-  const styles=document.querySelectorAll('style');
-  let css='';
-  styles.forEach(s=>css+=s.textContent);
-  // Also grab Google Fonts
-  const fontLinks=[...document.querySelectorAll('link[href*="fonts.googleapis"]')].map(l=>l.outerHTML).join('');
-
-  const landingClone=landing.cloneNode(true);
-  landingClone.style.display='flex';
-  landingClone.style.position='relative';
-  landingClone.style.width='100%';
-  landingClone.style.height='100%';
-  // Remove edit-mode upload buttons
-  landingClone.querySelectorAll('.landing-banner-upload,.admin-edit-inline').forEach(el=>el.remove());
-
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${fontLinks}<style>${css}
-  body{margin:0;overflow:hidden;background:#000}
-  #landingScreen{display:flex!important;position:relative;width:100vw;height:100vh}
-  .landing-banner-upload{display:none!important}
-  </style></head><body>${landingClone.outerHTML}</body></html>`;
-
-  const blob=new Blob([html],{type:'text/html'});
-  frame.src=URL.createObjectURL(blob);
-
-  overlay.classList.add('active');
+  // Close admin panel, show landing screen with preview banner
+  closeEventControl();
+  // Hide console, show landing
+  document.getElementById('consoleScreen').style.display='none';
+  document.getElementById('landingScreen').style.display='flex';
+  // Show preview banner
+  const banner=document.getElementById('landingPreviewOverlay');
+  banner.classList.add('active');
+  // Temporarily hide edit-mode controls on landing
+  document.body.classList.add('landing-preview-mode');
 }
 function closeLandingPreview(){
-  const overlay=document.getElementById('landingPreviewOverlay');
-  const frame=document.getElementById('landingPreviewFrame');
-  overlay.classList.remove('active');
-  if(frame.src.startsWith('blob:'))URL.revokeObjectURL(frame.src);
-  frame.src='about:blank';
+  const banner=document.getElementById('landingPreviewOverlay');
+  banner.classList.remove('active');
+  document.body.classList.remove('landing-preview-mode');
+  // Return to console
+  document.getElementById('landingScreen').style.display='none';
+  document.getElementById('consoleScreen').style.display='flex';
 }
 
 // ══════ DRAG-TO-REORDER ══════
@@ -6875,7 +6889,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-0600';
+const _BUILD_ID = '20260222-0700';
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
@@ -7209,7 +7223,6 @@ function confirmVaultLock(){
     <span class="lp-preview-label">👁 Landing Page Preview</span>
     <button class="lp-preview-close" onclick="closeLandingPreview()">✕ Close Preview</button>
   </div>
-  <iframe id="landingPreviewFrame" style="flex:1;border:none;width:100%;height:100%"></iframe>
 </div>
 
 </body>
