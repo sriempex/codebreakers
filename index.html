@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Staatliches&family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Saira:wght@400;500;600;700&family=Oxanium:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Share+Tech+Mono&family=Russo+One&family=Exo+2:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Teko:wght@400;500;600;700&family=Play:wght@400;700&family=Audiowide&family=Press+Start+2P&family=VT323&family=Silkscreen&family=Major+Mono+Display&family=Nova+Mono&family=Aldrich&family=Electrolize&family=Michroma&family=Quantico:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
-  :root{--green:#00ff88;--green-dim:rgba(0,255,136,.4);--green-glow:rgba(0,255,136,.12);--red:#ff3333;--amber:#ffaa33;--cyan:#00d4ff;--steel-light:#4a4e54;--steel-dark:#22252a;--bg-deep:#08090b;--bg-panel:#10121a;--bg-surface:#171a24;--border:#252830;--op-font:inherit}
+  :root{--green:#00ff88;--green-dim:rgba(0,255,136,.4);--green-glow:rgba(0,255,136,.12);--red:#ff3333;--amber:#ffaa33;--cyan:#00d4ff;--steel-light:#4a4e54;--steel-dark:#22252a;--bg-deep:#08090b;--bg-panel:#10121a;--bg-surface:#171a24;--border:#252830;--op-font:inherit;--fc-vault:inherit;--fc-feed-cap:inherit;--fc-media-name:inherit;--fc-media-desc:inherit}
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--bg-deep);overflow:hidden;width:100vw;height:100vh;font-family:'Chakra Petch',sans-serif;font-weight:500;color:#ccc;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#2a2d35;border-radius:2px}
@@ -122,9 +122,9 @@
   body.edit-mode .landing-banner-upload{display:flex}
   .save-blip{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--green);opacity:0;transition:opacity .2s;margin-left:8px;font-weight:600;vertical-align:middle;pointer-events:none}
   .save-blip.show{opacity:1}
-  .banner-preview{width:100%;max-width:200px;aspect-ratio:1;border-radius:50%;overflow:hidden;border:1px solid var(--border);background:#080a10;display:flex;align-items:center;justify-content:center;margin:10px 0}
+  .banner-preview{width:72px;height:72px;flex-shrink:0;border-radius:50%;overflow:hidden;border:1px solid var(--border);background:#080a10;display:flex;align-items:center;justify-content:center;margin:4px 0}
   .banner-preview img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-  .banner-preview .bp-emoji{font-size:48px}
+  .banner-preview .bp-emoji{font-size:26px}
   .focal-point-container{position:relative;width:100%;max-width:280px;aspect-ratio:1;overflow:hidden;border:1px solid var(--border);border-radius:4px;background:#080a10;cursor:crosshair;margin:8px 0}
   .focal-point-container img{width:100%;height:100%;object-fit:cover}
   .focal-point-marker{position:absolute;width:24px;height:24px;border:2px solid #fff;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 0 1px rgba(0,0,0,.5),0 0 8px rgba(0,0,0,.5),inset 0 0 0 1px rgba(0,0,0,.3)}
@@ -305,7 +305,7 @@
     100%{filter:brightness(1)}
   }
 
-  #vDisp{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--green);font-size:22px;letter-spacing:6px;z-index:3;flex-shrink:0;
+  #vDisp{font-family:var(--fc-vault,'IBM Plex Mono',monospace);font-weight:600;color:var(--green);font-size:22px;letter-spacing:6px;z-index:3;flex-shrink:0;
     text-shadow:0 0 8px rgba(0,255,136,.4),0 0 20px rgba(0,255,136,.15);animation:flick 5s infinite}
   #vCursor{display:inline-block;width:2px;height:20px;background:var(--green);margin-left:4px;vertical-align:middle;animation:blink .8s step-end infinite;box-shadow:0 0 6px rgba(0,255,136,.4);z-index:3}
   .v-disp-row{display:flex;align-items:center;justify-content:center;z-index:3;flex-shrink:0}
@@ -864,6 +864,12 @@
   .ap-monitor-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--border);border-radius:3px;margin-bottom:4px;transition:border-color .3s}
   .ap-monitor-row.active{border-color:rgba(0,255,136,.1)}
   .ap-monitor-row.inactive{border-color:rgba(255,170,51,.08);opacity:.65}
+  .ap-monitor-row.ghost{border-color:rgba(255,51,51,.07);opacity:.38;filter:grayscale(.5)}
+  .ap-monitor-ghost-tag{font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1px;color:rgba(255,80,80,.6);padding:1px 5px;border:1px solid rgba(255,51,51,.2);border-radius:2px;flex-shrink:0}
+  .ap-monitor-remove{width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,51,51,.25);font-size:10px;border-radius:50%;transition:all .2s;flex-shrink:0;margin-left:2px}
+  .ap-monitor-remove:hover{color:var(--red);background:rgba(255,51,51,.1)}
+  .ap-lb-row.ghost{opacity:.32;filter:grayscale(.5)}
+  .ap-lb-ghost-tag{font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1px;color:rgba(255,80,80,.5);padding:1px 5px;border:1px solid rgba(255,51,51,.15);border-radius:2px;margin-left:4px;vertical-align:middle}
   .ap-monitor-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
   .ap-monitor-dot.on{background:var(--green);box-shadow:0 0 6px rgba(0,255,136,.4)}
   .ap-monitor-dot.off{background:var(--amber);opacity:.5}
@@ -1773,6 +1779,18 @@
         <span id="apRegStatus" style="font-family:IBM Plex Mono,monospace;font-size:8px;color:var(--green);letter-spacing:1px">● OPEN</span>
       </div>
     </div>
+    <div class="ap-section"><h4>🖋 Typography <span class="save-blip" id="blipTypography">✓ Saved</span></h4>
+      <p>Global font overrides for each content zone. Leave as Default to use the theme font. Per-item fonts are ignored when a global is set.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-bottom:12px">
+        <div class="ap-field"><label>Feed Captions</label><span id="fc_feedCap_wrap"></span></div>
+        <div class="ap-field"><label>Media Titles</label><span id="fc_mediaName_wrap"></span></div>
+        <div class="ap-field"><label>Media Descriptions</label><span id="fc_mediaDesc_wrap"></span></div>
+        <div class="ap-field"><label>Intel Field Labels</label><span id="fc_intelLabel_wrap"></span></div>
+        <div class="ap-field"><label>Intel Field Inputs</label><span id="fc_intelInput_wrap"></span></div>
+        <div class="ap-field"><label>Vault / Keypad Display</label><span id="fc_vaultDisplay_wrap"></span></div>
+      </div>
+      <button class="ap-btn ap-btn-ghost" onclick="resetFontConfig()" style="font-size:9px;padding:5px 12px">↺ Reset All to Default</button>
+    </div>
   </div>
 </div>
 
@@ -1785,6 +1803,7 @@
       <div style="display:flex;gap:8px;margin-bottom:12px">
         <div class="ap-status-pill active"><span class="ap-status-dot on"></span> Active: <strong id="apActiveCount">0</strong></div>
         <div class="ap-status-pill inactive"><span class="ap-status-dot off"></span> Inactive: <strong id="apInactiveCount">0</strong></div>
+        <div class="ap-status-pill" style="border:1px solid rgba(255,51,51,.15);background:rgba(255,51,51,.04);color:rgba(255,100,100,.7);display:none">Ghost: <strong id="apGhostCount">0</strong></div>
         <div class="ap-status-pill total">Total: <strong id="apTotalCount">0</strong></div>
       </div>
       <div class="ap-team-list" id="apTeamMonitor" style="max-height:none"></div>
@@ -1854,6 +1873,7 @@
         <button class="lb-filter active" data-f="all" onclick="setLbFilter(this,'all')">All</button>
         <button class="lb-filter" data-f="active" onclick="setLbFilter(this,'active')">Active</button>
         <button class="lb-filter" data-f="inactive" onclick="setLbFilter(this,'inactive')">Inactive</button>
+        <button class="lb-filter" data-f="ghost" onclick="setLbFilter(this,'ghost')">Ghosts</button>
         <button class="lb-filter" data-f="submitted" onclick="setLbFilter(this,'submitted')">Submitted</button>
       </div>
       <div class="lb-sort">
@@ -1887,7 +1907,7 @@
 <!-- KEYS & CODES PANEL -->
 <div id="keysCodesPanel">
   <div class="kc-container">
-    <div class="kc-header"><h3>🔐 Keys & Codes</h3><button class="mv-close" onclick="closeKeysCodes()">✕ CLOSE</button></div>
+    <div class="kc-header"><h3>🔐 Keys & Codes</h3><button class="ap-btn ap-btn-amber" onclick="openVaultLockPicker()" style="font-size:9px;padding:5px 12px;margin-right:8px">＋ Vault Lock File</button><button class="mv-close" onclick="closeKeysCodes()">✕ CLOSE</button></div>
     <div class="kc-body" id="kcBody"></div>
   </div>
 </div>
@@ -2788,6 +2808,23 @@ function fontStyle(name){return name?`font-family:${getFontFamily(name)}`:''}
 // ══════ DATA ══════
 let operationName='Operation Dead Drop';
 let operationFont='Staatliches';
+
+// ── Central Typography Config ──
+// Global font overrides per content zone. Empty string = use default theme font.
+let fontConfig={
+  feedCap:'',        // Feed card captions + single post caption
+  mediaName:'',      // Media item titles
+  mediaDesc:'',      // Media item descriptions
+  intelLabel:'',     // Intel field labels (overrides per-field font)
+  intelInput:'',     // Intel field inputs (overrides per-field inputFont)
+  vaultDisplay:''    // Vault keypad display + vault panel codenames
+};
+
+// Resolve: global fontConfig takes precedence over per-item font
+function resolveFont(globalKey,perItemFont){
+  const g=fontConfig[globalKey]||'';
+  return g||perItemFont||'';
+}
 // vault subtitle removed — login screen uses loginTitle
 let gridTiles=[
   {id:'feed',icon:'📡',label:'Intelligence Feed',labelFont:'',sub:'Surveillance imagery & intercepted visuals',subFont:'',badgeId:'feedBadge',dotClass:'silent',status:'SILENT'},
@@ -2908,7 +2945,8 @@ function renderFeed(){
       media=`<span style="opacity:.5">${p.emoji}</span>`;
     }
     const bgStyle=!p.mediaUrl?`background:${p.bg};`:'';
-    return `<div class="feed-card" onclick="openPost(${i})">${isA?`<div class="admin-edit-btn" onclick="event.stopPropagation();editFeedPost(${i})">✎</div>`:''}<div class="feed-card-img" style="${bgStyle}" oncontextmenu="return false">${media}</div><div class="feed-card-cap"><p style="${fontStyle(p.capFont||'')}">${p.cap}</p></div></div>`;
+    const _capFont=resolveFont('feedCap',p.capFont||'');
+    return `<div class="feed-card" onclick="openPost(${i})">${isA?`<div class="admin-edit-btn" onclick="event.stopPropagation();editFeedPost(${i})">✎</div>`:''}<div class="feed-card-img" style="${bgStyle}" oncontextmenu="return false">${media}</div><div class="feed-card-cap"><p style="${fontStyle(_capFont)}">${p.cap}</p></div></div>`;
   }).join('')+(isA?'<div class="admin-add-btn" onclick="addFeedPost()">+ Add Post</div>':'');
   document.getElementById('feedBadge').textContent=posts.length+' FILES';
   // Force-play all grid videos after DOM insertion
@@ -2942,7 +2980,9 @@ function renderMedia(){
     const selStyle=_mediaSelectMode?(isSelected?'border-color:var(--red);background:rgba(255,51,51,.06);':''):'';
     const checkHtml=_mediaSelectMode?`<div onclick="event.stopPropagation();toggleMediaSelect(${realIdx})" style="position:absolute;top:8px;left:8px;width:18px;height:18px;border:2px solid ${isSelected?'var(--red)':'#444'};border-radius:3px;background:${isSelected?'rgba(255,51,51,.3)':'transparent'};display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;font-size:11px">${isSelected?'✓':''}</div>`:'';
     const clickHandler=_mediaSelectMode?`onclick="toggleMediaSelect(${realIdx})"`:(`onclick="openMediaViewer(${realIdx})"`);
-    return `<div class="media-exp-item" style="${lockedStyle}${vlStyle}${selStyle}" ${clickHandler}>${isEdit&&!_mediaSelectMode?`<div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${realIdx})" style="position:absolute;top:8px;right:8px">✎</div>`:''}${checkHtml}${crosshatch}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(m.nameFont||'')}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(m.descFont||'')}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${badge}</span></div>`;
+    const _mNameFont=resolveFont('mediaName',m.nameFont||'');
+    const _mDescFont=resolveFont('mediaDesc',m.descFont||'');
+    return `<div class="media-exp-item" style="${lockedStyle}${vlStyle}${selStyle}" ${clickHandler}>${isEdit&&!_mediaSelectMode?`<div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${realIdx})" style="position:absolute;top:8px;right:8px">✎</div>`:''}${checkHtml}${crosshatch}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(_mNameFont)}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(_mDescFont)}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${badge}</span></div>`;
   }).join('')+(isEdit&&!_mediaSelectMode?'<div class="admin-add-btn" onclick="addMediaItem()">+ Add Media</div>':'');
   const badge=document.getElementById('mediaBadge');if(badge)badge.textContent=visibleItems.length+' FILES';
 }
@@ -3006,7 +3046,7 @@ function renderSinglePost(){
   }
   const capEl=document.getElementById('singleCap');
   capEl.textContent=p.cap;
-  capEl.style.fontFamily=p.capFont?getFontFamily(p.capFont):'';
+  capEl.style.fontFamily=getFontFamily(resolveFont('feedCap',p.capFont||''));
   document.getElementById('singleCounter').textContent=(currentPost+1)+' / '+posts.length;
 }
 // ══════ VIDEO EMBED RESOLVER ══════
@@ -4040,6 +4080,11 @@ function applyEventConfig(cfg){
   if(cfg.eventAutoLock!==undefined){eventSettings.autoLock=cfg.eventAutoLock==='true'||cfg.eventAutoLock===true;const cb=document.getElementById('eventAutoLock');if(cb)cb.checked=eventSettings.autoLock}
   if(cfg.eventShowLeaderboardOnExpiry!==undefined){eventSettings.showLeaderboardOnExpiry=cfg.eventShowLeaderboardOnExpiry==='true'||cfg.eventShowLeaderboardOnExpiry===true;const cb=document.getElementById('eventShowLeaderboard');if(cb)cb.checked=eventSettings.showLeaderboardOnExpiry}
   if(cfg.allowDownloads!==undefined){allowDownloads=cfg.allowDownloads==='true'||cfg.allowDownloads===true}
+  // Typography fontConfig
+  if(cfg.fontConfig&&typeof cfg.fontConfig==='object'){
+    Object.assign(fontConfig,cfg.fontConfig);
+    applyFontConfig();
+  }
   // Sync threshold UI
   const idleInp=document.getElementById('apThresholdIdle');if(idleInp)idleInp.value=activityThresholds.activeToIdle;
   const silentInp=document.getElementById('apThresholdSilent');if(silentInp)silentInp.value=activityThresholds.idleToSilent;
@@ -4324,6 +4369,7 @@ function saveEventConfigToBackend(){
   _saveConfigTimer=setTimeout(()=>{
     apiCall('saveEventConfig',{config:{
       operationName,operationFont,
+      fontConfig:fontConfig,
       participantMode:regSettings.participantMode,
       leaderboardStyle:regSettings.leaderboardStyle,
       landingTitle:regSettings.landingTitle,
@@ -4446,7 +4492,7 @@ function switchAdminTab(panelId){
   _instantShow(document.getElementById(panelId));
   showAdminTabs(panelId);
   // Trigger panel-specific init
-  if(panelId==='adminPanel'){syncAdminPanelSettings()}
+  if(panelId==='adminPanel'){syncAdminPanelSettings();initTypographyPanel()}
   if(panelId==='leaderboardModule'){renderFullLeaderboard()}
   if(panelId==='teamMonitorPanel'){renderTeamMonitor();startTeamMonitor()}
   if(panelId==='keysCodesPanel'){renderKeysCodes()}
@@ -4687,6 +4733,19 @@ function initDemoTeams(){
 initDemoTeams();
 
 function isTeamActive(t){return(Date.now()-t.lastActive)<INACTIVE_THRESHOLD}
+function isTeamGhost(t){
+  // Ghost: registered but never meaningfully engaged — lastActive within 45s of registeredAt
+  if(!t.registeredAt)return false;
+  const regTime=new Date(t.registeredAt).getTime();
+  return(t.lastActive-regTime)<45000;
+}
+function removeGhostTeam(teamId){
+  const idx=registeredTeams.findIndex(t=>t.id===teamId);
+  if(idx===-1)return;
+  if(!confirm('Remove ghost team "'+registeredTeams[idx].name+'"? This only removes them from the local view — use Clear Data in settings to fully purge from the backend.'))return;
+  registeredTeams.splice(idx,1);
+  renderTeamMonitor();renderFullLeaderboard();renderLeaderboard();
+}
 function timeSince(ts){
   const s=Math.floor((Date.now()-ts)/1000);
   if(s<60)return s+'s ago';
@@ -4697,27 +4756,42 @@ function timeSince(ts){
 function renderTeamMonitor(){
   const el=document.getElementById('apTeamMonitor');
   if(!el)return;
-  const active=registeredTeams.filter(isTeamActive);
-  const inactive=registeredTeams.filter(t=>!isTeamActive(t));
+  const active=registeredTeams.filter(t=>isTeamActive(t)&&!isTeamGhost(t));
+  const inactive=registeredTeams.filter(t=>!isTeamActive(t)&&!isTeamGhost(t));
+  const ghosts=registeredTeams.filter(isTeamGhost);
   document.getElementById('apActiveCount').textContent=active.length;
   document.getElementById('apInactiveCount').textContent=inactive.length;
   document.getElementById('apTotalCount').textContent=registeredTeams.length;
+  // Show ghost count if any
+  const ghostEl=document.getElementById('apGhostCount');
+  if(ghostEl){ghostEl.closest('.ap-status-pill').style.display=ghosts.length?'':'none';ghostEl.textContent=ghosts.length}
 
-  const sorted=[...active.sort((a,b)=>b.lastActive-a.lastActive),...inactive.sort((a,b)=>b.lastActive-a.lastActive)];
+  // Sort: active first, then inactive, then ghosts at bottom
+  const sorted=[
+    ...active.sort((a,b)=>b.lastActive-a.lastActive),
+    ...inactive.sort((a,b)=>b.lastActive-a.lastActive),
+    ...ghosts.sort((a,b)=>b.lastActive-a.lastActive)
+  ];
   const totalPages=Math.max(1,Math.ceil(sorted.length/tmPerPage));
   if(tmCurrentPage>=totalPages)tmCurrentPage=totalPages-1;
   const start=tmCurrentPage*tmPerPage;
   const pageTeams=sorted.slice(start,start+tmPerPage);
 
   el.innerHTML=pageTeams.length?pageTeams.map(t=>{
-    const on=isTeamActive(t);
-    return `<div class="ap-monitor-row ${on?'active':'inactive'}">
+    const ghost=isTeamGhost(t);
+    const on=!ghost&&isTeamActive(t);
+    const rowClass=ghost?'ghost':on?'active':'inactive';
+    const ghostTag=ghost?`<span class="ap-monitor-ghost-tag">GHOST</span>`:'';
+    const removeBtn=ghost?`<span class="ap-monitor-remove" onclick="event.stopPropagation();removeGhostTeam('${t.id}')" title="Remove ghost">✕</span>`:'';
+    const msgBtn=!ghost?`<span class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage('${t.id}','${t.name.replace(/'/g,"\\'")}')">💬</span>`:'';
+    return `<div class="ap-monitor-row ${rowClass}">
       <div class="ap-monitor-dot ${on?'on':'off'}"></div>
       <span class="ap-monitor-id">${t.id}</span>
       <span class="ap-monitor-name">${t.name} (${t.members.length})</span>
+      ${ghostTag}
       <span class="ap-monitor-fields">${t.fieldsCompleted}/${intelFields.length}</span>
-      <span class="ap-monitor-time">${timeSince(t.lastActive)}</span>
-      <span class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage('${t.id}','${t.name.replace(/'/g,"\\'")}')">💬</span>
+      <span class="ap-monitor-time">${ghost?'Never active':timeSince(t.lastActive)}</span>
+      ${msgBtn}${removeBtn}
     </div>`;
   }).join(''):'<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:12px 0;text-align:center">No teams registered yet</div>';
 
@@ -4801,7 +4875,8 @@ function getSortedTeams(){
 
   // Filter
   if(lbFilter==='active')teams=teams.filter(isTeamActive);
-  else if(lbFilter==='inactive')teams=teams.filter(t=>!isTeamActive(t));
+  else if(lbFilter==='inactive')teams=teams.filter(t=>!isTeamActive(t)&&!isTeamGhost(t));
+  else if(lbFilter==='ghost')teams=teams.filter(isTeamGhost);
   else if(lbFilter==='submitted')teams=teams.filter(t=>t.submitTime);
 
   // Search
@@ -4902,17 +4977,18 @@ function renderFullLeaderboard(){
 
     const checkbox=isAdmin&&t.submitTime?`<input type="checkbox" class="lb-desubmit-check" data-team="${t.id}" onclick="event.stopPropagation()">`:'';
 
-    return `<div class="lb-row${expanded?' expanded':''}" onclick="toggleLbTeam('${t.id}')">
+    const ghost=isTeamGhost(t);
+    return `<div class="lb-row${expanded?' expanded':''}${ghost?' ghost':''}" onclick="toggleLbTeam('${t.id}')">
       <div class="lb-row-main">
         ${checkbox}
         <div class="lb-rank ${rc}">#${rank}</div>
         <div class="lb-team-status ${on?'on':'off'}"></div>
         <div class="lb-team-info">
-          <div class="lb-team-name">${t.name}</div>
+          <div class="lb-team-name">${t.name}${ghost?'<span class="ap-lb-ghost-tag">GHOST</span>':''}</div>
           <div class="lb-team-meta">
             <span>${t.id}</span>
             <span>${t.fieldsCompleted}/${maxFields} fields</span>
-            <span>${on?'Active':'Inactive '+timeSince(t.lastActive)}</span>
+            <span>${ghost?'Never active':on?'Active':'Inactive '+timeSince(t.lastActive)}</span>
             ${t.submitTime?`<span style="color:var(--green)">✓ Submitted</span>`:''}
           </div>
         </div>
@@ -5524,7 +5600,6 @@ function editGridTile(i){
     </div>
     <div class="edit-field-row">
       <div class="edit-field"><label>Label</label><input id="eg_label" value="${t.label}"></div>
-      <div class="edit-field" style="flex:0 0 140px"><label>Label Font</label>${fontSelect('eg_label_font',t.labelFont)}</div>
     </div>
     <label style="display:flex;align-items:center;gap:6px;margin:-8px 0 10px;cursor:pointer"><input type="checkbox" id="eg_label_all"><span style="font-size:9px;color:#888;letter-spacing:1px">Apply label font to all grid tiles</span></label>
     <div class="edit-font-row"><div class="edit-field"><label>Description</label><input id="eg_sub" value="${t.sub}"></div><div class="edit-field"><label>Desc Font</label>${fontSelect('eg_sub_font',t.subFont)}</div></div>
@@ -5567,8 +5642,10 @@ function renderIntelForm(){
   intelFields.forEach((f,i)=>{
     const num=String(i+1).padStart(2,'0');
     const editBtn=isA?`<div class="admin-row-edit" onclick="event.stopPropagation();editIntelField(${i})">✎</div>`:'';
-    const lStyle=f.font?` style="${fontStyle(f.font)}"`:'';
-    const iStyle=f.inputFont?` style="${fontStyle(f.inputFont)}"`:'';
+    const _lFont=resolveFont('intelLabel',f.font||'');
+    const _iFont=resolveFont('intelInput',f.inputFont||'');
+    const lStyle=_lFont?` style="${fontStyle(_lFont)}"`:'';
+    const iStyle=_iFont?` style="${fontStyle(_iFont)}"`:'';
     const clearBtn=`<div class="intel-exp-clear" onclick="clearIntelSlot(this)" title="Clear">✕</div>`;
     const keyHandler='onkeydown="if(event.key===\'Enter\'){this.blur()}"';
     const ph=f.placeholder||'···';
@@ -6621,6 +6698,143 @@ function unlockAdminConsole(){
     console.warn=window._adminConsole.warn;
     console.error=window._adminConsole.error;
   }
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// TYPOGRAPHY — Central font management
+// ═══════════════════════════════════════════════════════════════
+
+function initTypographyPanel(){
+  const keys=['feedCap','mediaName','mediaDesc','intelLabel','intelInput','vaultDisplay'];
+  keys.forEach(k=>{
+    const wrap=document.getElementById('fc_'+k+'_wrap');
+    if(!wrap)return;
+    const sel=fontSelect('fc_'+k,fontConfig[k]||'');
+    wrap.innerHTML=sel;
+    const el=wrap.querySelector('select');
+    if(el)el.onchange=()=>{ fontConfig[k]=el.value; applyFontConfig(); saveEventConfigToBackend(); blip('blipTypography'); };
+  });
+}
+
+function applyFontConfig(){
+  // Vault keypad display
+  const vDisp=document.getElementById('vDisp');
+  if(vDisp){const fam=getFontFamily(fontConfig.vaultDisplay||'');vDisp.style.fontFamily=fam||'';}
+  // Vault panel codenames — re-render picks up fontConfig.vaultDisplay via CSS var
+  document.documentElement.style.setProperty('--fc-vault',getFontFamily(fontConfig.vaultDisplay||'')||'inherit');
+  document.documentElement.style.setProperty('--fc-feed-cap',getFontFamily(fontConfig.feedCap||'')||'inherit');
+  document.documentElement.style.setProperty('--fc-media-name',getFontFamily(fontConfig.mediaName||'')||'inherit');
+  document.documentElement.style.setProperty('--fc-media-desc',getFontFamily(fontConfig.mediaDesc||'')||'inherit');
+  // Re-render content panels if open
+  const overlay=document.getElementById('mainOverlay');
+  if(overlay&&overlay.style.display!=='none'){
+    renderFeed();renderMedia();renderIntelForm();
+  }
+}
+
+function resetFontConfig(){
+  Object.keys(fontConfig).forEach(k=>fontConfig[k]='');
+  initTypographyPanel();
+  applyFontConfig();
+  saveEventConfigToBackend();
+  blip('blipTypography');
+}
+
+function blip(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.style.opacity='1';
+  setTimeout(()=>el.style.opacity='',2000);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// VAULT LOCK PICKER — add existing media file to vault from KC panel
+// ═══════════════════════════════════════════════════════════════
+
+function openVaultLockPicker(){
+  // Get unlocked media items (not already vault-locked, must have a file/name)
+  const available=mediaItems.map((m,i)=>({m,i})).filter(({m})=>!m.vaultLocked&&m.name);
+  let gridHtml='';
+  if(available.length){
+    gridHtml=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;max-height:240px;overflow-y:auto;margin-bottom:16px">`;
+    available.forEach(({m,i})=>{
+      const typeLabel={image:'IMG',audio:'AUD',video:'VID',document:'DOC',dossier:'DOS'}[m.type]||m.type.toUpperCase().slice(0,3);
+      gridHtml+=`<div class="vlp-item" onclick="selectVlpItem(this,${i})" data-idx="${i}" style="border:1px solid var(--border);border-radius:4px;padding:10px 8px;cursor:pointer;text-align:center;transition:all .15s;background:rgba(255,255,255,.01)">
+        <div style="font-size:22px;margin-bottom:4px">${m.icon}</div>
+        <div style="font-family:'Chakra Petch',sans-serif;font-size:9px;color:#ddd;letter-spacing:.5px;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.name}</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:7px;color:#555;letter-spacing:1px">${typeLabel}</div>
+      </div>`;
+    });
+    gridHtml+=`</div>`;
+  }else{
+    gridHtml=`<div style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:#555;padding:20px 0;text-align:center">All media files are already vault-locked, or no files exist in the Media Lab yet.</div>`;
+  }
+
+  showEditModal(`<h3>🔐 Vault Lock an Existing File</h3>
+    <p style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:#888;margin-bottom:14px;line-height:1.6">Select a Media Lab file to vault-lock. Players will see it as classified until they crack the code.</p>
+    <div style="font-family:'Saira',sans-serif;font-size:9px;letter-spacing:2px;color:var(--amber);text-transform:uppercase;margin-bottom:8px;font-weight:700">Select File</div>
+    ${gridHtml}
+    <div id="vlpCodeFields" style="display:none">
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+        <div style="font-family:'Saira',sans-serif;font-size:9px;letter-spacing:2px;color:var(--amber);text-transform:uppercase;margin-bottom:10px;font-weight:700">Set Vault Code</div>
+        <div class="edit-field-row" style="gap:10px">
+          <div class="edit-field"><label>Vault Code</label><input id="vlpCode" placeholder="e.g. DEADROP7" style="text-transform:uppercase;letter-spacing:2px;font-family:'IBM Plex Mono',monospace" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="edit-field"><label>Codename (shown to players)</label><input id="vlpCodename" placeholder="e.g. OPERATION BLACKOUT" style="text-transform:uppercase;letter-spacing:1px;font-family:'IBM Plex Mono',monospace" oninput="this.value=this.value.toUpperCase()"></div>
+        </div>
+        <div style="font-family:'Chakra Petch',sans-serif;font-size:9px;color:#555;margin-top:6px">Players see the codename but not the file — it appears as a locked entry in the Vault panel.</div>
+      </div>
+    </div>
+    <input type="hidden" id="vlpSelectedIdx" value="">
+    <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
+      <button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button>
+      <button class="btn-standard btn-amber" onclick="confirmVaultLock()">🔐 Lock to Vault</button>
+    </div>`);
+
+  // Add hover styles dynamically
+  document.querySelectorAll('.vlp-item').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{if(!el.classList.contains('selected'))el.style.borderColor='rgba(255,170,51,.3)'});
+    el.addEventListener('mouseleave',()=>{if(!el.classList.contains('selected'))el.style.borderColor='var(--border)'});
+  });
+}
+
+function selectVlpItem(el,idx){
+  document.querySelectorAll('.vlp-item').forEach(x=>{
+    x.classList.remove('selected');
+    x.style.borderColor='var(--border)';
+    x.style.background='rgba(255,255,255,.01)';
+  });
+  el.classList.add('selected');
+  el.style.borderColor='rgba(255,170,51,.5)';
+  el.style.background='rgba(255,170,51,.05)';
+  document.getElementById('vlpSelectedIdx').value=idx;
+  document.getElementById('vlpCodeFields').style.display='block';
+  // Pre-fill codename from file name
+  const codenameInp=document.getElementById('vlpCodename');
+  if(codenameInp&&!codenameInp.value&&mediaItems[idx]){
+    codenameInp.value=mediaItems[idx].name.toUpperCase().replace(/[^A-Z0-9 ]/g,'');
+  }
+  document.getElementById('vlpCode').focus();
+}
+
+function confirmVaultLock(){
+  const idxStr=document.getElementById('vlpSelectedIdx').value;
+  if(idxStr===''){alert('Please select a file first.');return;}
+  const idx=parseInt(idxStr);
+  const code=(document.getElementById('vlpCode').value||'').trim().toUpperCase();
+  const codename=(document.getElementById('vlpCodename').value||'').trim().toUpperCase();
+  if(!code){alert('Please set a vault code.');document.getElementById('vlpCode').focus();return;}
+  if(!mediaItems[idx]){alert('File not found.');return;}
+  // Check for duplicate code
+  const duplicate=mediaItems.some((m,i)=>i!==idx&&m.vaultLocked&&m.vaultCode===code);
+  if(duplicate){alert('That code is already in use by another vault item. Please choose a different code.');return;}
+  mediaItems[idx].vaultLocked=true;
+  mediaItems[idx].vaultCode=code;
+  mediaItems[idx].vaultCodename=codename||code;
+  hideEditModal();
+  syncVaultCodesFromMedia();
+  renderMedia();renderGrid();renderVaultPanel();renderKeysCodes();
+  saveMediaItemsToBackend();
 }
 
 </script>
