@@ -878,15 +878,18 @@
   .ap-section p{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#aaa;letter-spacing:.3px;margin:0 0 12px;line-height:1.6;font-weight:500}
   .ap-field{margin-bottom:10px}
   .ap-field label{display:block;font-family:'Chakra Petch',sans-serif;font-size:10px;letter-spacing:2px;color:#bbb;text-transform:uppercase;margin-bottom:4px;font-weight:600}
-  .ap-field input{width:100%;background:#080a10;border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:9px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;box-sizing:border-box}
+  .ap-field input{background:#080a10;border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:9px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;box-sizing:border-box;max-width:100%}
   .ap-field input:focus{border-color:rgba(0,212,255,.2)}
+  .ap-two-col-even .ap-field input,.ap-two-col-even .ap-field select{width:100%}
   .ap-row{display:flex;gap:10px;align-items:flex-end}
   .ap-row .ap-field{flex:1}
   .ap-two-col{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
-  .ap-two-col .ap-field{flex:1;min-width:160px}
+  .ap-two-col .ap-field{min-width:140px}
+  .ap-two-col-even{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .ap-two-col-even .ap-field{flex:1;min-width:140px}
   .ap-three-col{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
   .ap-three-col .ap-field{flex:1;min-width:100px}
-  .ap-field select{background:#080a10;border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:8px 10px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;box-sizing:border-box}
+  .ap-field select{background:#080a10;border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:8px 10px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;box-sizing:border-box;width:auto;max-width:100%}
   .ap-field select:focus{border-color:rgba(0,212,255,.2)}
   .ap-btn{font-family:'Saira',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;cursor:pointer;padding:8px 18px;border-radius:3px;transition:all .2s}
   .ap-btn-cyan{color:#c0e8f8;background:linear-gradient(180deg,rgba(15,30,40,.5),rgba(10,20,30,.6));border:1px solid rgba(0,212,255,.25);border-bottom:2px solid rgba(0,212,255,.12)}
@@ -1774,12 +1777,9 @@
           </div>
         </div>
       </div>
-      <div class="ap-two-col" style="margin-bottom:12px">
-        <div class="ap-field"><label>Participant Mode</label><select id="apParticipantMode" onchange="onParticipantModeChange()"><option value="team">Team Only</option><option value="individual">Individual Only</option><option value="hybrid">Open (Hybrid)</option></select></div>
-</select></div>
-      </div>
-      <div style="margin-top:12px">
-        <label style="font-family:Saira,sans-serif<option value="mixed">Single Mixed</option><option value="split">Split by Type</option><option value="labeled">Single with Labels</option></select></div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px">
+        <div class="ap-field"><label>Participant Mode</label><select id="apParticipantMode" onchange="onParticipantModeChange()" style="width:auto"><option value="team">Team Only</option><option value="individual">Individual Only</option><option value="hybrid">Open (Hybrid)</option></select></div>
+        <div class="ap-field"><label>Leaderboard Style</label><select id="apLeaderboardStyle" onchange="updateRegSettings()" style="width:auto"><option value="mixed">Single Mixed</option><option value="split">Split by Type</option><option value="labeled">Single with Labels</option></select></div>
       </div>
       <div style="margin-top:12px">
         <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">🟢 Activity Thresholds <span class="save-blip" id="blipThresholds">✓ Saved</span></label>
@@ -1794,11 +1794,11 @@
       <p>Customize the landing page banner and text.</p>
       <div class="ap-field" style="margin-bottom:10px"><label>Banner Image</label>
         <div style="display:flex;gap:8px;align-items:center">
-          <label style="cursor:pointer;font-size:9px;color:var(--cyan);letter-spacing:1px;padding:8px 14px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.05);white-space:nowrap;font-family:'IBM Plex Mono',monospace">
-            📁 Upload Banner Image
+          <label style="cursor:pointer;font-size:9px;color:var(--cyan);letter-spacing:1px;padding:8px 14px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.05);white-space:nowrap;font-family:'IBM Plex Mono',monospace;flex-shrink:0">
+            📁 Upload Image
             <input type="file" accept="image/*" onchange="handleAdminBannerUpload(this)" style="display:none">
           </label>
-          <button class="ap-btn ap-btn-red" onclick="clearLandingBanner()" style="font-size:9px;padding:8px 12px">✕ Clear</button>
+          <button class="ap-btn ap-btn-red" onclick="clearLandingBanner()" style="font-size:9px;padding:6px 10px;flex-shrink:0">✕ Clear</button>
         </div>
       </div>
       <div style="display:flex;gap:20px;align-items:center;margin-bottom:14px;padding:12px 16px;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.04);border-radius:6px">
@@ -1813,7 +1813,7 @@
           <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#555;letter-spacing:.5px" id="apBannerStatus">No image set</div>
         </div>
       </div>
-      <div class="ap-two-col" style="margin-bottom:12px">
+      <div class="ap-two-col-even" style="margin-bottom:12px">
         <div class="ap-field"><label>Title <span class="save-blip" id="blipLandingTitle">✓ Saved</span></label><input id="apLandingTitle" value="Code Breakers" onchange="updateLandingTitle()"></div>
         <div class="ap-field"><label>Subtitle <span class="save-blip" id="blipLandingSub">✓ Saved</span></label><input id="apLandingSubtitle" value="Rise to The Challenge" onchange="updateLandingSubtitle()"></div>
       </div>
@@ -1840,7 +1840,7 @@
       <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:14px">
 
         <div style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;font-weight:600;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.04)">Intelligence Feed</div>
-        <div class="ap-two-col" style="margin-bottom:0">
+        <div class="ap-two-col-even" style="margin-bottom:0">
           <div class="ap-field">
             <label>Feed Captions</label>
             <div id="fc_feedCap_wrap"></div>
@@ -1849,7 +1849,7 @@
         </div>
 
         <div style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;font-weight:600;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.04)">Evidence Locker</div>
-        <div class="ap-two-col" style="margin-bottom:0">
+        <div class="ap-two-col-even" style="margin-bottom:0">
           <div class="ap-field">
             <label>Item Titles</label>
             <div id="fc_mediaName_wrap"></div>
@@ -1862,26 +1862,26 @@
           </div>
         </div>
 
-        <div style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;font-weight:600;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.04)">Intel Submissions</div>
-        <div class="ap-two-col" style="margin-bottom:0">
-          <div class="ap-field">
-            <label>Field Labels</label>
-            <div id="fc_intelLabel_wrap"></div>
-            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The uppercase question label to the left of each intel answer field.</div>
-          </div>
-          <div class="ap-field">
-            <label>Field Inputs</label>
-            <div id="fc_intelInput_wrap"></div>
-            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The font used inside the answer input boxes across all intel field types.</div>
-          </div>
-        </div>
-
         <div style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;font-weight:600;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.04)">The Vault</div>
-        <div class="ap-two-col" style="margin-bottom:0">
+        <div class="ap-two-col-even" style="margin-bottom:0">
           <div class="ap-field">
             <label>Keypad Display</label>
             <div id="fc_vaultDisplay_wrap"></div>
             <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The large character display on The Vault keypad as teams type their code.</div>
+          </div>
+        </div>
+
+        <div style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#555;text-transform:uppercase;font-weight:600;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.04)">Intel Submissions</div>
+        <div class="ap-two-col-even" style="margin-bottom:0">
+          <div class="ap-field">
+            <label>Field Labels</label>
+            <div id="fc_intelLabel_wrap"></div>
+            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The question label to the left of each intel answer field.</div>
+          </div>
+          <div class="ap-field">
+            <label>Answer Inputs</label>
+            <div id="fc_intelInput_wrap"></div>
+            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The typed text inside answer input boxes across all intel field types.</div>
           </div>
         </div>
 
@@ -5284,11 +5284,9 @@ function renderKeysCodes(){
   // Vault Locked Items (driven by media items with vaultLocked + vaultCode)
   const vaultLockedMedia=mediaItems.filter(m=>m.vaultLocked);
   html+=`<div class="kc-section">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div class="kc-section-title" style="margin-bottom:0">🔐 Vault Locked Items (${vaultLockedMedia.length})</div>
-      <button class="ap-btn ap-btn-amber" onclick="openVaultLockPicker()" style="font-size:9px;padding:5px 12px;flex-shrink:0">＋ Vault Lock Item</button>
-    </div>
-    <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#666;margin-bottom:8px">Items marked as Vault-Locked in the Evidence Locker. Edit any item there to set or change its Vault Code — changes sync here automatically.</div>`;
+    <div class="kc-section-title" style="margin-bottom:4px">🔐 Vault Locked Items (${vaultLockedMedia.length})</div>
+    <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#666;margin-bottom:8px">Items marked as Vault-Locked in the Evidence Locker. Edit any item there to set or change its Vault Code.</div>
+    <button class="ap-btn ap-btn-amber" onclick="openVaultLockPicker()" style="font-size:9px;padding:5px 12px;margin-bottom:10px">＋ Vault Lock Item</button>`;
   if(vaultLockedMedia.length){
     vaultLockedMedia.forEach(m=>{
       const idx=mediaItems.indexOf(m);
@@ -6746,7 +6744,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-0330';
+const _BUILD_ID = '20260222-0430';
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
