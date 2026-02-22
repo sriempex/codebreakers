@@ -209,9 +209,22 @@
   .panel-blip:hover span{color:#aaa;text-shadow:0 0 6px rgba(255,255,255,.1)}
   .panel-blip::before{content:'';position:absolute;top:4px;left:6px;width:4px;height:4px;border-radius:50%;background:#f44;box-shadow:0 0 6px rgba(255,60,60,.4);animation:blipPulse 1.5s ease-in-out infinite;transition:all .25s}
   .panel-blip:hover::before{background:#f44;box-shadow:0 0 8px rgba(255,60,60,.6);animation:none}
+  .screen-back-link{position:absolute;top:12px;left:14px;z-index:10;font-family:'Saira',sans-serif;font-size:11px;font-weight:600;letter-spacing:1.5px;color:#666;cursor:pointer;transition:color .2s;padding:4px 0}
+  .screen-back-link:hover{color:#aaa}
   @keyframes blipPulse{0%,100%{opacity:.4;box-shadow:0 0 3px rgba(255,60,60,.2)}50%{opacity:1;box-shadow:0 0 8px rgba(255,60,60,.6)}}
   .login-pw-field input{text-transform:none;color:#ccc;letter-spacing:1px}
   .login-err{font-family:'Chakra Petch',sans-serif;font-size:11px;color:var(--red);min-height:14px;text-align:center;font-weight:600;margin-bottom:4px}
+  .login-crt-display{min-height:48px;margin:12px 0 8px;padding:12px 16px;background:linear-gradient(180deg,#040806,#060a08);border:1px solid rgba(0,255,136,.12);border-radius:4px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .login-crt-display::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.015) 2px,rgba(0,255,136,.015) 4px);pointer-events:none}
+  .login-crt-display::after{content:'';position:absolute;inset:0;border-radius:4px;box-shadow:inset 0 0 20px rgba(0,0,0,.6),inset 0 0 4px rgba(0,255,136,.05);pointer-events:none}
+  .login-crt-text{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:3px;color:var(--green);text-align:center;text-shadow:0 0 8px rgba(0,255,136,.3);z-index:1}
+  .login-crt-text.authenticating{animation:crtPulse 1.2s ease-in-out infinite}
+  .login-crt-text.granted{color:#0f6;text-shadow:0 0 12px rgba(0,255,136,.5);font-weight:700}
+  .login-crt-text.denied{color:var(--red);text-shadow:0 0 12px rgba(255,51,51,.4)}
+  .login-crt-cursor{animation:blink 1s step-end infinite}
+  .login-crt-spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,255,136,.2);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:8px}
+  @keyframes crtPulse{0%,100%{opacity:1}50%{opacity:.6}}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
   .login-submit{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:14px;letter-spacing:5px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700;position:relative;min-height:48px}
   .login-submit.loading{color:transparent;pointer-events:none}
   .login-submit.loading::after{content:'';position:absolute;inset:0;margin:auto;width:20px;height:20px;border:2px solid rgba(0,255,136,.2);border-top-color:var(--green);border-radius:50%;animation:btnSpin .6s linear infinite}
@@ -438,6 +451,9 @@
   .team-card-notifs{border-top:1px solid rgba(255,255,255,.06);padding-top:8px}
   .team-card-notif-list{max-height:120px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
   .team-card-notif-item{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#aaa;padding:5px 8px;background:rgba(255,255,255,.02);border-radius:3px;border-left:2px solid var(--amber)}
+  .team-card-logout{display:flex;align-items:center;gap:6px;padding:10px 12px;margin-top:8px;border-top:1px solid rgba(255,255,255,.06);cursor:pointer;transition:all .2s}
+  .team-card-logout span{font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;color:var(--red);font-weight:600;text-transform:uppercase}
+  .team-card-logout:hover{background:rgba(255,50,50,.05)}
   .team-card-notif-item .notif-time{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#555;margin-right:6px}
   .notif-voice-row{display:inline-flex;align-items:center;gap:8px}
   .notif-play-btn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);color:var(--cyan);font-size:9px;cursor:pointer;transition:all .2s}
@@ -830,7 +846,7 @@
   .admin-dropdown-toggle .adm-toggle.on-green{color:var(--green);background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15)}
   .admin-dropdown-toggle .adm-toggle.off{color:#666;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
 
-  .logout-btn{position:fixed;bottom:20px;left:20px;z-index:400;display:none;align-items:center;gap:6px;border-radius:5px;padding:10px 20px;cursor:pointer;transition:all .25s;
+  .logout-btn{display:none!important}
     background:linear-gradient(180deg,rgba(255,50,50,.1),rgba(255,50,50,.05));border:1px solid rgba(255,50,50,.35);
     box-shadow:0 0 10px rgba(255,50,50,.06)}
   .logout-btn.visible{display:flex}
@@ -1529,6 +1545,7 @@
   .lp-preview-close:hover{background:rgba(0,212,255,.15);border-color:rgba(0,212,255,.5)}
   .lp-preview-nav{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;padding:5px 12px;border:1px solid rgba(255,255,255,.12);border-radius:3px;background:rgba(255,255,255,.04);color:#888;cursor:pointer;transition:all .15s}
   .lp-preview-nav:hover{background:rgba(255,255,255,.08);color:#ccc;border-color:rgba(255,255,255,.2)}
+  .lp-preview-nav.active{background:rgba(0,212,255,.1);border-color:rgba(0,212,255,.3);color:var(--cyan)}
   body.landing-preview-mode .landing-banner-upload,
   body.landing-preview-mode .admin-edit-inline,
   body.landing-preview-mode .admin-trigger,
@@ -1563,7 +1580,7 @@
   </div>
 </div>
 
-<div class="notepad-trigger" id="notepadTrigger" onclick="toggleNotepad()"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg><span>Field Notes</span><div class="notepad-dot" id="notepadDot"></div></div>
+<div class="notepad-trigger" id="notepadTrigger" onclick="toggleNotepad()"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg><span>Notepad</span><div class="notepad-dot" id="notepadDot"></div></div>
 
 <div id="logoutModal"><div class="logout-box" id="logoutBoxContent"></div></div>
 
@@ -1653,7 +1670,7 @@
     <div class="reg-title" id="regScreenTitle">Operation Dead Drop</div>
     <div class="reg-subtitle" id="regScreenSubtitle">Team Registration Portal</div>
     <div class="reg-panel">
-      <div class="panel-blip" onclick="showScreen('landingScreen')"><span>cancel</span></div>
+      <div class="screen-back-link" onclick="showScreen('landingScreen')">← Back</div>
       <div id="regForm">
         <!-- Hybrid mode type choice (hidden unless hybrid) -->
         <div class="reg-type-choice" id="regTypeChoice" style="display:none">
@@ -1704,7 +1721,7 @@
     <div style="display:flex;align-items:center;justify-content:center"><div class="login-title" id="loginTitle">Operation Dead Drop</div><button class="admin-edit-inline" onclick="event.stopPropagation();editOperationName()">✎</button></div>
     <div class="login-subtitle">Enter Your Credentials</div>
     <div class="login-panel">
-      <div class="panel-blip" onclick="showScreen('landingScreen')"><span>back</span></div>
+      <div class="screen-back-link" onclick="showScreen('landingScreen')">← Back</div>
       <div class="rv rv-1"></div><div class="rv rv-2"></div><div class="rv rv-3"></div><div class="rv rv-4"></div>
       <div class="login-field">
         <label id="loginIdLabel">Team ID</label>
@@ -1714,12 +1731,11 @@
         <label>Password</label>
         <input type="password" id="loginPw" placeholder="Enter password">
       </div>
+      <div class="login-crt-display" id="loginCrtDisplay">
+        <div class="login-crt-text" id="loginCrtText"><span class="login-crt-cursor">_</span></div>
+      </div>
       <div class="login-err" id="loginErr"></div>
       <button class="login-submit" id="loginSubmitBtn" onclick="submitLogin()">ENTER</button>
-      <div class="login-status">
-        <div class="v-dot" id="loginDot"></div>
-        <span class="v-lbl" id="loginLbl">AWAITING INPUT</span>
-      </div>
     </div>
     <div class="login-register-link" id="loginRegLink" onclick="goToRegistration()"><span id="loginRegText">Don't have an ID?</span> <span class="lrl-action" id="loginRegAction">Register here</span></div>
   </div>
@@ -2083,12 +2099,16 @@
             <div class="team-card-label">Mission Status</div>
             <div class="team-card-stats">
               <div class="team-card-stat"><div class="team-card-stat-val" id="tcElapsed">00:00</div><div class="team-card-stat-lbl">Elapsed</div></div>
-              <div class="team-card-stat"><div class="team-card-stat-val" id="tcIntel">0 / 10</div><div class="team-card-stat-lbl">Intel Marked</div></div>
+              <div class="team-card-stat"><div class="team-card-stat-val" id="tcIntel">0 / 10</div><div class="team-card-stat-lbl">Intel Entered</div></div>
             </div>
           </div>
           <div class="team-card-notifs" id="teamCardNotifs">
             <div class="team-card-label" style="display:flex;align-items:center;justify-content:space-between">Notifications <span class="notif-clear-link" onclick="event.stopPropagation();clearNotifications()">Clear all</span></div>
             <div class="team-card-notif-list" id="teamNotifList"><div class="notif-empty">No notifications yet</div></div>
+          </div>
+          <div class="team-card-logout" onclick="event.stopPropagation();showLogout()">
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="15 18 9 12 15 6"/></svg>
+            <span>Logout</span>
           </div>
         </div>
       </div>
@@ -2104,7 +2124,7 @@
 <div id="notepadPanel">
   <div class="notepad-header">
     <span class="notepad-header-icon">📝</span>
-    <span class="notepad-header-title">Field Notes</span>
+    <span class="notepad-header-title">Notepad</span>
     <div class="notepad-header-actions">
       <button class="btn-standard btn-ghost" style="padding:5px 14px;font-size:9px" onclick="toggleNotepad()">✕ CLOSE</button>
     </div>
@@ -2122,7 +2142,7 @@
 <!-- EXPANDED -->
 <div id="panelOverlay">
   <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter">1 / 12</span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-caption" id="singleCap"></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
-  <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
+  <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
   <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area" id="intelForm"></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
   <div class="expanded-panel" id="expVault">
     <div class="exp-header"><span class="panel-icon">🔐</span><span class="exp-title">The Vault</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div>
@@ -2203,6 +2223,23 @@ function generateTeamId(name){
   return id;
 }
 function submitRegistration(){
+  // PREVIEW MODE INTERCEPTION
+  if(document.body.classList.contains('landing-preview-mode')){
+    const btn=document.getElementById('regSubmitBtn');
+    btn.textContent='REGISTERING...';btn.disabled=true;
+    setTimeout(()=>{
+      document.getElementById('regForm').style.display='none';
+      document.getElementById('regSuccess').style.display='block';
+      document.getElementById('regTeamId').textContent='PREVIEW-0000';
+    },1200);
+    setTimeout(()=>{
+      // Reset for next preview
+      document.getElementById('regForm').style.display='';
+      document.getElementById('regSuccess').style.display='none';
+      btn.textContent='◈ REGISTER ◈';btn.disabled=false;
+    },4000);
+    return;
+  }
   const err=document.getElementById('regErr');
   const mode=regSettings.participantMode||'team';
   let effectiveType=mode==='individual'?'individual':(mode==='team'?'team':currentRegType);
@@ -2544,6 +2581,39 @@ function playSuccess(){
   ping.start(now+.3);ping.stop(now+.8);
 }
 function playDenied(){const c=getAudio();[0,.15].forEach(off=>{const t=c.currentTime+off,buf=c.createBuffer(1,c.sampleRate*.1,c.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++){const s=i/c.sampleRate;d[i]=((Math.sin(s*100*Math.PI*2)>0?1:-1)*.12+(Math.random()*2-1)*.04)*(1-i/d.length)}const src=c.createBufferSource();src.buffer=buf;const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=400;const g=c.createGain();g.gain.setValueAtTime(.5,t);src.connect(lp);lp.connect(g);g.connect(c.destination);src.start(t)})}
+function playVaultUnlock(){
+  const c=getAudio(),now=c.currentTime;
+  // Deep mechanical "clunk" — bolt unlocking
+  const clunk=c.createBuffer(1,c.sampleRate*.15,c.sampleRate),cd=clunk.getChannelData(0);
+  for(let i=0;i<cd.length;i++){const t=i/cd.length;cd[i]=(Math.random()*2-1)*.6*Math.pow(1-t,3)*Math.sin(t*80)}
+  const cs=c.createBufferSource();cs.buffer=clunk;
+  const cf=c.createBiquadFilter();cf.type='lowpass';cf.frequency.value=300;
+  const cg=c.createGain();cg.gain.setValueAtTime(.6,now);
+  cs.connect(cf);cf.connect(cg);cg.connect(c.destination);cs.start(now);
+  // Rising shimmer — vault opening
+  const riseLen=c.sampleRate*.6,rise=c.createBuffer(1,riseLen,c.sampleRate),rd=rise.getChannelData(0);
+  for(let i=0;i<riseLen;i++){const t=i/riseLen;rd[i]=(Math.sin(t*t*4000)+Math.sin(t*t*6000)*.5)*.03*Math.sin(t*Math.PI)}
+  const rs=c.createBufferSource();rs.buffer=rise;
+  const rg=c.createGain();rg.gain.setValueAtTime(.4,now+.1);
+  rs.connect(rg);rg.connect(c.destination);rs.start(now+.1);
+  // Satisfying chord: C4 E4 G4 C5 — major resolved
+  [262,330,392,523].forEach((f,i)=>{
+    const o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);o.type='sine';
+    const t=now+.15+i*.06;
+    o.frequency.setValueAtTime(f,t);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.06,t+.02);
+    g.gain.setValueAtTime(.06,t+.3);g.gain.exponentialRampToValueAtTime(.001,t+.8);
+    o.start(t);o.stop(t+.8);
+  });
+  // High sparkle at the end
+  const sp=c.createOscillator(),sg=c.createGain();
+  sp.connect(sg);sg.connect(c.destination);sp.type='sine';
+  sp.frequency.setValueAtTime(1568,now+.5);sp.frequency.exponentialRampToValueAtTime(2093,now+.7);
+  sg.gain.setValueAtTime(0,now+.5);sg.gain.linearRampToValueAtTime(.04,now+.52);
+  sg.gain.exponentialRampToValueAtTime(.001,now+1);
+  sp.start(now+.5);sp.stop(now+1);
+}
 function playPanelOpen(){
   // Soft tactile thud + subtle hi freq air
   const c=getAudio();
@@ -2575,21 +2645,51 @@ let manualVaultKeys=[];
 let currentVaultTeam=null;
 
 function submitLogin(){
+  // PREVIEW MODE INTERCEPTION — simulate the flow without backend calls
+  if(document.body.classList.contains('landing-preview-mode')){
+    const crt=document.getElementById('loginCrtText');
+    const btn=document.getElementById('loginSubmitBtn');
+    crt.className='login-crt-text authenticating';
+    crt.innerHTML='<span class="login-crt-spinner"></span>AUTHENTICATING...';
+    btn.style.opacity='.4';btn.style.pointerEvents='none';
+    setTimeout(()=>{
+      crt.className='login-crt-text granted';
+      crt.textContent='ACCESS GRANTED';
+      playSuccess();
+    },1500);
+    setTimeout(()=>{
+      // Reset for next preview
+      crt.className='login-crt-text';
+      crt.innerHTML='<span class="login-crt-cursor">_</span>';
+      btn.style.opacity='';btn.style.pointerEvents='';
+      document.getElementById('loginId').value='';
+      const pwField=document.getElementById('loginPwField');
+      pwField.style.display='none';
+      document.getElementById('loginPw').value='';
+      btn.textContent='ENTER';
+    },3500);
+    return;
+  }
+
   const err=document.getElementById('loginErr');
   const idVal=document.getElementById('loginId').value.trim();
   if(!idVal){err.textContent='Please enter your Team ID or username';return}
 
   const pwField=document.getElementById('loginPwField');
   const btn=document.getElementById('loginSubmitBtn');
+  const crt=document.getElementById('loginCrtText');
+
+  // Show authenticating on CRT
+  crt.className='login-crt-text authenticating';
+  crt.innerHTML='<span class="login-crt-spinner"></span>AUTHENTICATING...';
+  btn.style.opacity='.4';btn.style.pointerEvents='none';
 
   // If password field is visible, this is an admin auth attempt
   if(pwField.style.display!=='none'){
     const pw=document.getElementById('loginPw').value;
-    if(!pw){err.textContent='Please enter password';return}
+    if(!pw){err.textContent='Please enter password';crt.className='login-crt-text';crt.innerHTML='<span class="login-crt-cursor">_</span>';btn.style.opacity='';btn.style.pointerEvents='';return}
     err.textContent='';
-    btn.classList.add('loading');
     apiCall('login',{username:idVal,password:pw}).then(result=>{
-      btn.classList.remove('loading');
       if(result.ok){
         adminSession={username:result.username,role:result.role,adminToken:result.adminToken};
         err.textContent='';
@@ -2602,10 +2702,14 @@ function submitLogin(){
         loadEventData();
         document.dispatchEvent(new Event('adminReady'));
       }else{
+        crt.className='login-crt-text denied';
+        crt.textContent='ACCESS DENIED';
         err.textContent='Authentication failed';
+        btn.style.opacity='';btn.style.pointerEvents='';
         playDenied();
         document.getElementById('flashR').classList.add('on');
         setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
+        setTimeout(()=>{crt.className='login-crt-text';crt.innerHTML='<span class="login-crt-cursor">_</span>'},2000);
       }
     });
     return;
@@ -2613,11 +2717,8 @@ function submitLogin(){
 
   // First entry — try as Team ID via backend
   err.textContent='';
-  btn.classList.add('loading');
   apiCall('loginTeam',{teamId:idVal}).then(result=>{
     if(result.ok){
-      // Team found — log in directly
-      btn.classList.remove('loading');
       const t=result;
       currentVaultTeam={id:t.teamId,name:t.teamName,type:t.type,
         members:(t.members||[]).map(m=>typeof m==='string'?m:m.name),
@@ -2630,25 +2731,28 @@ function submitLogin(){
       saveSession();
       loginSuccess();
       startBroadcastPolling();
-      // Load event timer for players
       apiCall('getEventConfig').then(cfg=>{
         if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
       });
     }else{
       apiCall('validateUsername',{username:idVal}).then(vResult=>{
-        btn.classList.remove('loading');
         if(vResult.ok&&vResult.found){
-          // Valid admin username — show password field
           pwField.style.display='block';
           document.getElementById('loginPw').focus();
           btn.textContent='AUTHENTICATE';
           err.textContent='';
+          crt.className='login-crt-text';
+          crt.textContent='ADMIN — ENTER PASSWORD';
+          btn.style.opacity='';btn.style.pointerEvents='';
         }else{
-          // Nothing found
+          crt.className='login-crt-text denied';
+          crt.textContent='ACCESS DENIED';
           err.textContent='Invalid Team ID or username';
+          btn.style.opacity='';btn.style.pointerEvents='';
           playDenied();
           document.getElementById('flashR').classList.add('on');
           setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
+          setTimeout(()=>{crt.className='login-crt-text';crt.innerHTML='<span class="login-crt-cursor">_</span>'},2000);
         }
       });
     }
@@ -2657,11 +2761,13 @@ function submitLogin(){
 function loginSuccess(){
   playSuccess();
   if(isAdmin)unlockAdminConsole();
-  const dot=document.getElementById('loginDot');
-  const lbl=document.getElementById('loginLbl');
-  dot.classList.add('ok');lbl.classList.add('ok');lbl.textContent='ACCESS GRANTED';
+  const crt=document.getElementById('loginCrtText');
+  crt.className='login-crt-text granted';
+  crt.textContent='ACCESS GRANTED';
   document.getElementById('flashG').classList.add('on');
   setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
+  const btn=document.getElementById('loginSubmitBtn');
+  btn.style.opacity='.4';btn.style.pointerEvents='none';
   setTimeout(()=>openVault(),800);
 }
 // Enter key support on login fields
@@ -2737,9 +2843,10 @@ function vkSubmit(){
     let releasedName='Classified File';
     if(match.linkedMediaIdx!==null&&match.linkedMediaIdx!==undefined&&mediaItems[match.linkedMediaIdx]){
       mediaItems[match.linkedMediaIdx].vaultLocked=false;
+      mediaItems[match.linkedMediaIdx]._isNew=true;
       releasedName=mediaItems[match.linkedMediaIdx].name||match.label;
     }
-    playSuccess();
+    playVaultUnlock();
     vkDisp.textContent='✓ UNLOCKED';vkDisp.style.color='#00ff88';vkDisp.style.fontSize='13px';vkDisp.style.letterSpacing='2px';
     document.getElementById('flashG').classList.add('on');
     setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
@@ -3112,12 +3219,15 @@ function renderMedia(){
   const isEdit=document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview');
   const isAdmin=document.body.classList.contains('admin-mode');
   const isPreview=document.body.classList.contains('player-preview');
-  // Players and preview: hide vault-locked. Admin (edit or not): show all
   const showAll=isAdmin&&!isPreview;
   const visibleItems=showAll?mediaItems:mediaItems.filter(m=>!m.vaultLocked||vaultCodes.find(c=>c.linkedMediaIdx===mediaItems.indexOf(m)&&c.unlocked));
-  // Select button in edit mode header area — only show when items exist
-  const selectBtnHtml=isEdit&&!_mediaSelectMode&&visibleItems.length>0?`<div style="text-align:right;margin-bottom:8px"><button onclick="enterMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 12px;color:#666;cursor:pointer">☑ SELECT</button></div>`:'';
-  list.innerHTML=selectBtnHtml+visibleItems.map((m,i)=>{
+  // Search filter
+  const searchVal=(document.getElementById('mediaSearchFilter')?.value||'').toLowerCase().trim();
+  const filtered=searchVal?visibleItems.filter(m=>(m.name||'').toLowerCase().includes(searchVal)||(m.desc||'').toLowerCase().includes(searchVal)||(m.type||'').toLowerCase().includes(searchVal)):visibleItems;
+  // Count indicator
+  const mci=document.getElementById('mediaCountIndicator');if(mci)mci.textContent=filtered.length+(searchVal?' of '+visibleItems.length:'')+' items';
+  const selectBtnHtml=isEdit&&!_mediaSelectMode&&filtered.length>0?`<div style="text-align:right;margin-bottom:8px"><button onclick="enterMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 12px;color:#666;cursor:pointer">☑ SELECT</button></div>`:'';
+  list.innerHTML=selectBtnHtml+filtered.map((m,i)=>{
     const realIdx=mediaItems.indexOf(m);
     const isVL=m.vaultLocked&&showAll;
     const vlStyle=isVL?'position:relative;border-color:rgba(255,170,51,.2);':'';
@@ -3130,9 +3240,12 @@ function renderMedia(){
     const clickHandler=_mediaSelectMode?`onclick="toggleMediaSelect(${realIdx})"`:(`onclick="openMediaViewer(${realIdx})"`);
     const _mNameFont=resolveFont('mediaName',m.nameFont||'');
     const _mDescFont=resolveFont('mediaDesc',m.descFont||'');
-    return `<div class="media-exp-item" data-idx="${realIdx}" style="${lockedStyle}${vlStyle}${selStyle}" ${clickHandler}>${isEdit&&!_mediaSelectMode?`<div class="drag-handle" onpointerdown="startDrag(event,'media',${realIdx})" onclick="event.stopPropagation()">⋮⋮</div><div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${realIdx})" style="position:absolute;top:8px;right:8px">✎</div>`:''}${checkHtml}${crosshatch}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(_mNameFont)}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(_mDescFont)}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${badge}</span></div>`;
+    // New item glow — items marked as _isNew
+    const newGlow=m._isNew?'box-shadow:0 0 12px rgba(0,212,255,.25);border-color:rgba(0,212,255,.3);':'';
+    const newBadge=m._isNew?'<span style="position:absolute;top:6px;right:40px;font-family:IBM Plex Mono,monospace;font-size:8px;letter-spacing:1.5px;color:var(--cyan);background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);border-radius:2px;padding:1px 6px">NEW</span>':'';
+    return `<div class="media-exp-item" data-idx="${realIdx}" style="${lockedStyle}${vlStyle}${selStyle}${newGlow}" ${clickHandler}>${isEdit&&!_mediaSelectMode?`<div class="drag-handle" onpointerdown="startDrag(event,'media',${realIdx})" onclick="event.stopPropagation()">⋮⋮</div><div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${realIdx})" style="position:absolute;top:8px;right:8px">✎</div>`:''}${checkHtml}${crosshatch}${newBadge}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(_mNameFont)}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(_mDescFont)}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${badge}</span></div>`;
   }).join('')+(isEdit&&!_mediaSelectMode?'<div class="admin-add-btn" onclick="addMediaItem()">+ Add Item</div>':'');
-  const badge=document.getElementById('mediaBadge');if(badge)badge.textContent=visibleItems.length+' ITEMS';
+  const mbadge=document.getElementById('mediaBadge');if(mbadge)mbadge.textContent=visibleItems.length+' ITEMS';
 }
 
 // ══════ PANELS ══════
@@ -3668,16 +3781,36 @@ function gradeAllSubmissions(){
 }
 function updateIntelBadge(){const filled=document.querySelectorAll('.intel-exp-input');let n=0;filled.forEach(inp=>{if(inp.value.trim())n++});const badge=document.getElementById('intelBadge');if(badge)badge.textContent=n+' / '+filled.length+' ENTERED'}
 document.addEventListener('input',e=>{if(e.target.classList.contains('intel-exp-input'))updateIntelBadge()});
-function showConfirm(){if(isSubmitted)return;playConfirmPrompt();const inputs=document.querySelectorAll('.intel-exp-input'),body=document.getElementById('confirmBody');body.innerHTML='';
+function showConfirm(){
+  if(isSubmitted)return;
+  // Player preview dry-run — show confirm then simulate
+  playConfirmPrompt();const inputs=document.querySelectorAll('.intel-exp-input'),body=document.getElementById('confirmBody');body.innerHTML='';
   syncIntelLabels();let li=0;
   inputs.forEach((inp)=>{let v=inp.value.trim();const idx=inp.dataset.idx;
-    // Find matching field for money prefix
     const fi=parseInt(idx);if(!isNaN(fi)&&intelFields[fi]&&intelFields[fi].type==='money'&&v)v='$'+v;
     const label=intelLabels[li]||'Field '+(li+1);li++;
     body.innerHTML+=`<div class="confirm-row"><span class="confirm-label">${label}</span><span class="confirm-value ${v?'':'empty'}">${v||'— empty —'}</span></div>`});
   document.getElementById('confirmModal').classList.add('active')}
 function hideConfirm(){document.getElementById('confirmModal').classList.remove('active')}
 function finalSubmit(){
+  // Player preview dry-run — full visual feedback, then reset
+  if(document.body.classList.contains('player-preview')){
+    document.getElementById('confirmModal').classList.remove('active');
+    document.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});
+    const btn=document.getElementById('intelSubmitBtn');if(btn){btn.textContent='◈ TRANSMITTED ◈';btn.disabled=true}
+    document.getElementById('intelBadge').textContent='SUBMITTED';
+    playSuccess();
+    document.getElementById('flashG').classList.add('on');
+    setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
+    // Reset after 3 seconds
+    setTimeout(()=>{
+      document.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=false;inp.value=''});
+      if(btn){btn.textContent='◈ TRANSMIT ◈';btn.disabled=false}
+      updateIntelBadge();
+    },3000);
+    return;
+  }
+
   isSubmitted=true;
   // Grade all answers locally — results stored for admin/leaderboard
   submissionResults=gradeAllSubmissions();
@@ -3720,6 +3853,7 @@ let mvAudioInterval=null;
 
 function openMediaViewer(i){
   const m=mediaItems[i];
+  if(m._isNew){m._isNew=false;renderMedia()}
   if(m.type==='locked'&&!m.unlocked){renderLockedView(i);showViewer(i);return}
   currentMediaIdx=i;
   showViewer(i);
@@ -4299,17 +4433,16 @@ function togglePlayerPreview(){
     // Set a placeholder team name for preview
     const teamEl=document.querySelector('.console-team');
     if(teamEl&&teamEl.childNodes[0])teamEl.childNodes[0].textContent='TEAM PREVIEW ';
-    // Show exit pill
+    // Show exit bar at top
     let pill=document.getElementById('previewExitPill');
     if(!pill){
       pill=document.createElement('div');
       pill.id='previewExitPill';
-      pill.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9999;font-family:Saira,sans-serif;font-size:10px;letter-spacing:2px;color:var(--cyan);padding:8px 20px;border:1px solid rgba(0,212,255,.3);border-radius:20px;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(0,0,0,.5)';
-      pill.textContent='👁 EXIT PLAYER PREVIEW';
-      pill.onclick=togglePlayerPreview;
+      pill.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;align-items:center;justify-content:center;gap:16px;padding:8px 20px;background:linear-gradient(180deg,rgba(0,0,0,.9) 60%,transparent);pointer-events:none';
+      pill.innerHTML='<span style="font-family:IBM Plex Mono,monospace;font-size:10px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;opacity:.7;pointer-events:none">👁 Player Preview</span><button onclick="togglePlayerPreview()" style="pointer-events:all;font-family:Saira,sans-serif;font-size:10px;letter-spacing:2px;padding:5px 14px;border:1px solid rgba(0,212,255,.3);border-radius:3px;background:rgba(0,212,255,.08);color:var(--cyan);cursor:pointer">✕ Exit Preview</button>';
       document.body.appendChild(pill);
     }
-    pill.style.display='';
+    pill.style.display='flex';
   }else{
     document.body.classList.remove('player-preview');
     // Restore admin display
@@ -4416,9 +4549,10 @@ function goToLogin(){
   document.getElementById('loginPwField').style.display='none';
   document.getElementById('loginErr').textContent='';
   document.getElementById('loginSubmitBtn').textContent='ENTER';
-  document.getElementById('loginDot').classList.remove('ok');
-  document.getElementById('loginLbl').classList.remove('ok');
-  document.getElementById('loginLbl').textContent='AWAITING INPUT';
+  document.getElementById('loginSubmitBtn').style.opacity='';
+  document.getElementById('loginSubmitBtn').style.pointerEvents='';
+  const crt=document.getElementById('loginCrtText');
+  if(crt){crt.className='login-crt-text';crt.innerHTML='<span class="login-crt-cursor">_</span>'}
   showScreen('loginScreen');
   setTimeout(()=>document.getElementById('loginId').focus(),300);
 }
@@ -5813,7 +5947,7 @@ function renderGrid(){
         <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
         <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
         <div class="tile-badge${badgeCls}" id="${t.badgeId}">${t.id==='feed'?posts.length+' ITEMS':t.id==='media'?(isAdmin?mediaItems.length:mediaItems.filter(m=>!m.vaultLocked||vaultCodes.find(c=>c.linkedMediaIdx===mediaItems.indexOf(m)&&c.unlocked)).length)+' ITEMS':t.id==='vault'?vaultBadgeText():'0 / '+intelFields.length+' ENTERED'}</div>
-        <div class="tile-status"><div class="tile-dot ${t.dotClass}"></div><span class="tile-status-label ${t.dotClass}">${t.status}</span></div>
+        <div class="tile-status" title="${t.dotClass==='active'?'Activity detected recently':t.dotClass==='idle'?'No recent activity':'No activity recorded yet'}"><div class="tile-dot ${t.dotClass}"></div><span class="tile-status-label ${t.dotClass}">${t.status}</span></div>
       </div>
     </div>`;
   }).join('');
@@ -5915,8 +6049,9 @@ function renderIntelForm(){
   // Render transmit button into sticky dock
   const dock=document.getElementById('intelTransmitDock');
   const isAdminUser=document.body.classList.contains('admin-mode');
+  const isPreview=document.body.classList.contains('player-preview');
   if(dock){
-    if(isAdminUser&&!document.body.classList.contains('player-preview')){
+    if(isAdminUser&&!isPreview){
       dock.innerHTML=`<button class="intel-submit-btn" id="intelSubmitBtn" style="background:rgba(255,170,51,.1);border-color:rgba(255,170,51,.3);color:var(--amber);cursor:default" disabled>⚠ ADMIN — Test Only</button>`;
     }else{
       dock.innerHTML=`<button class="intel-submit-btn" id="intelSubmitBtn" onclick="showConfirm()">◈ TRANSMIT ◈</button>`;
@@ -6336,6 +6471,8 @@ function previewLandingPage(){
   showScreen('landingScreen');
   // Show preview banner
   document.getElementById('landingPreviewOverlay').classList.add('active');
+  // Set landing tab as active
+  document.querySelectorAll('.lp-preview-nav').forEach((b,i)=>b.classList.toggle('active',i===0));
   // Add preview mode class to hide admin controls
   document.body.classList.add('landing-preview-mode');
   // Hide logout btn during preview
@@ -6344,9 +6481,23 @@ function previewLandingPage(){
 function closeLandingPreview(){
   document.getElementById('landingPreviewOverlay').classList.remove('active');
   document.body.classList.remove('landing-preview-mode');
-  // Return to console using proper screen switching
   showScreen('consoleScreen');
   document.getElementById('notepadTrigger').classList.add('visible');
+  // Reset any preview states on login screen
+  const loginId=document.getElementById('loginId');if(loginId)loginId.value='';
+  const pwField=document.getElementById('loginPwField');if(pwField)pwField.style.display='none';
+  const loginPw=document.getElementById('loginPw');if(loginPw)loginPw.value='';
+  const crt=document.getElementById('loginCrtText');if(crt){crt.className='login-crt-text';crt.innerHTML='<span class="login-crt-cursor">_</span>'}
+  const btn=document.getElementById('loginSubmitBtn');if(btn){btn.textContent='ENTER';btn.style.opacity='';btn.style.pointerEvents=''}
+  // Reset reg form
+  const regForm=document.getElementById('regForm');if(regForm)regForm.style.display='';
+  const regSuccess=document.getElementById('regSuccess');if(regSuccess)regSuccess.style.display='none';
+  const regBtn=document.getElementById('regSubmitBtn');if(regBtn){regBtn.textContent='◈ REGISTER ◈';regBtn.disabled=false}
+}
+function previewNav(screenId,btn){
+  showScreen(screenId);
+  document.querySelectorAll('.lp-preview-nav').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
 }
 
 // ══════ DRAG-TO-REORDER ══════
@@ -6915,7 +7066,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-0800';
+const _BUILD_ID = '20260222-0900';
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
@@ -7247,9 +7398,9 @@ function confirmVaultLock(){
 <div id="landingPreviewOverlay">
   <div class="lp-preview-bar">
     <span class="lp-preview-label">👁 Player View Preview</span>
-    <button class="lp-preview-nav" onclick="showScreen('landingScreen')">Landing</button>
-    <button class="lp-preview-nav" onclick="showScreen('regScreen')">Register</button>
-    <button class="lp-preview-nav" onclick="showScreen('loginScreen')">Login</button>
+    <button class="lp-preview-nav" onclick="previewNav('landingScreen',this)">Landing</button>
+    <button class="lp-preview-nav" onclick="previewNav('regScreen',this)">Register</button>
+    <button class="lp-preview-nav" onclick="previewNav('loginScreen',this)">Login</button>
     <button class="lp-preview-close" onclick="closeLandingPreview()">✕ Close</button>
   </div>
 </div>
