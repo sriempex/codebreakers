@@ -136,7 +136,7 @@
   #landingBannerFile{display:none}
 
   /* Admin Choice Modal */
-  #adminChoiceModal{position:fixed;inset:0;z-index:8500;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #adminChoiceModal{position:fixed;inset:0;z-index:8500;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #adminChoiceModal.active{opacity:1;pointer-events:all}
   .admin-choice-box{width:380px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:28px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
   .admin-choice-box h3{font-family:'Staatliches',cursive;font-size:14px;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;margin-bottom:8px}
@@ -550,7 +550,7 @@
   .crt-monitor .admin-edit-btn{top:4px;right:4px;z-index:10}
 
   /* ══════ EXPANDED OVERLAY ══════ */
-  #panelOverlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #panelOverlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #panelOverlay.active{opacity:1;pointer-events:all}
   .expanded-panel{width:92vw;height:88vh;border-radius:6px;display:none;flex-direction:column;overflow:hidden;
     background:
@@ -846,7 +846,7 @@
   .logout-box h3{font-family:'Staatliches',cursive;font-size:14px;letter-spacing:4px;color:var(--red);text-transform:uppercase;margin-bottom:10px}
   .logout-box p{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#bbb;line-height:1.7;font-weight:500;margin-bottom:20px}
 
-  #adminLogin{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #adminLogin{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #adminLogin.active{opacity:1;pointer-events:all}
   .admin-login-box{width:340px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
   .admin-login-box h3{font-family:'Staatliches',cursive;font-size:12px;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;margin-bottom:4px}
@@ -861,11 +861,11 @@
   /* Admin bar — REMOVED, replaced by dropdown menu */
 
   /* Admin Profile Panel */
-  #adminPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #adminPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #adminPanel.active{opacity:1;pointer-events:all}
-  #teamMonitorPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #teamMonitorPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #teamMonitorPanel.active{opacity:1;pointer-events:all}
-  #portalUsersPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #portalUsersPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #portalUsersPanel.active{opacity:1;pointer-events:all}
   .ap-container{width:600px;max-width:92vw;max-height:85vh;overflow-y:auto;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
@@ -945,7 +945,7 @@
   .ap-lb-empty{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#555;padding:20px 0;text-align:center}
 
   /* ══════ FULL LEADERBOARD MODULE ══════ */
-  #leaderboardModule{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.95);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #leaderboardModule{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.95);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #leaderboardModule.active{opacity:1;pointer-events:all}
   .lb-container{width:680px;max-width:96vw;height:85vh;display:flex;flex-direction:column;border-radius:8px;overflow:hidden;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
@@ -1010,7 +1010,7 @@
   .lb-field-status.correct{color:var(--green)}.lb-field-status.wrong{color:var(--red)}.lb-field-status.empty{color:#444}.lb-field-status.pending{color:var(--amber)}
 
   /* ══════ KEYS & CODES PANEL ══════ */
-  #keysCodesPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #keysCodesPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #keysCodesPanel.active{opacity:1;pointer-events:all}
   .kc-container{width:520px;max-width:96vw;max-height:85vh;overflow-y:auto;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
@@ -1030,7 +1030,7 @@
   .kc-empty{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#666;letter-spacing:1px;font-style:italic}
 
   /* Broadcast Panel */
-  #broadcastPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;justify-content:center}
+  #broadcastPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #broadcastPanel.active{opacity:1;pointer-events:all}
   .bc-container{width:500px;max-width:96vw;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
@@ -1503,7 +1503,7 @@
     <span class="admin-dropdown-label">Admin Menu</span>
   </div>
   <div class="admin-dropdown-body">
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openEventControl()"><span class="adm-icon">🎛</span><span class="adm-label">Event Control</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openEventControl()"><span class="adm-icon">🎛</span><span class="adm-label">Mission Control</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openKeysCodes()"><span class="adm-icon">🔐</span><span class="adm-label">Keys & Codes</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openLeaderboard()"><span class="adm-icon">🏆</span><span class="adm-label">Leaderboard</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openTeamMonitor()"><span class="adm-icon">📡</span><span class="adm-label">Team Monitor</span></div>
@@ -1739,7 +1739,7 @@
 <!-- EVENT CONTROL PANEL -->
 <div id="adminPanel">
   <div class="ap-container">
-    <div class="ap-header"><h3>🎛 Event Control</h3><button class="mv-close" onclick="closeEventControl()">✕ CLOSE</button></div>
+    <div class="ap-header"><h3>🎛 Mission Control</h3><button class="mv-close" onclick="closeEventControl()">✕ CLOSE</button></div>
     <div class="ap-section"><h4>🎮 Event Settings <span class="save-blip" id="blipEventSettings">✓ Saved</span></h4>
       <p>Configure participant mode, countdown timer, and leaderboard display.</p>
       <div style="margin-bottom:16px">
@@ -3089,7 +3089,7 @@ const overlay=document.getElementById('panelOverlay');
 let currentFeedView='grid';
 function openPanel(t){playTileClick();recordTileAccess(t);['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel','portalUsersPanel'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);saveSession();
   if(t==='feed'){renderFeed();setFeedView('grid')}if(t==='media')renderMedia();if(t==='intel')renderIntelForm();if(t==='vault')renderVaultPanel()}
-function closePanel(){overlay.style.cssText='';overlay.classList.remove('active');setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession()},300)}
+function closePanel(){overlay.style.cssText='';overlay.classList.remove('active');setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession()},120)}
 
 // Feed view modes
 function setFeedView(mode){
@@ -4645,7 +4645,7 @@ function hideAdminTabs(){
 function switchAdminTab(panelId){
   adminPanelIds.forEach(id=>{
     const el=document.getElementById(id);
-    if(el){el.classList.remove('active');el.style.cssText=''}
+    if(el){el.style.cssText='opacity:0;pointer-events:none;transition:none';el.classList.remove('active')}
   });
   if(teamMonitorInterval){clearInterval(teamMonitorInterval);teamMonitorInterval=null}
   _instantShow(document.getElementById(panelId));
@@ -5764,7 +5764,7 @@ function editGridTile(i){
     <label style="display:flex;align-items:center;gap:6px;margin:-8px 0 10px;cursor:pointer"><input type="checkbox" id="eg_label_all"><span style="font-size:9px;color:#888;letter-spacing:1px">Apply label font to all grid tiles</span></label>
     <div class="edit-font-row"><div class="edit-field"><label>Description</label><input id="eg_sub" value="${t.sub}"></div><div class="edit-field"><label>Desc Font</label>${fontSelect('eg_sub_font',t.subFont)}</div></div>
     <label style="display:flex;align-items:center;gap:6px;margin:-8px 0 10px;cursor:pointer"><input type="checkbox" id="eg_sub_all"><span style="font-size:9px;color:#888;letter-spacing:1px">Apply description font to all grid tiles</span></label>
-    <div style="font-size:9px;color:#555;letter-spacing:.5px;padding:6px 0;border-top:1px solid var(--border);margin-top:4px">🟢 Status orb is auto-managed by activity thresholds (configurable in Event Control)</div>
+    <div style="font-size:9px;color:#555;letter-spacing:.5px;padding:6px 0;border-top:1px solid var(--border);margin-top:4px">🟢 Status orb is auto-managed by activity thresholds (configurable in Mission Control)</div>
     <div style="display:flex;gap:10px;margin-top:6px;justify-content:flex-end"><button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button><button class="btn-standard btn-cyan" onclick="saveGridTile(${i})">Save</button></div>`);
   // If image icon, store URL in hidden state
   if(isImgIcon)document.getElementById('eg_icon').value=t.icon;
@@ -6744,7 +6744,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-0430';
+const _BUILD_ID = '20260222-0500';
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
@@ -6899,9 +6899,27 @@ function initTypographyPanel(){
     selHtml+=`</select>`;
     wrap.innerHTML=selHtml;
     const sel=wrap.querySelector('select');
+    // Add live font preview below the dropdown
+    const preview=document.createElement('div');
+    preview.id=id+'_preview';
+    preview.style.cssText='margin-top:6px;padding:6px 10px;border:1px solid rgba(255,255,255,.04);border-radius:3px;background:rgba(255,255,255,.015);font-size:13px;color:#aaa;letter-spacing:.5px;min-height:20px;transition:font-family .15s';
+    preview.textContent='The quick brown fox jumps over the lazy dog';
+    wrap.appendChild(preview);
+    function updatePreview(){
+      const fontName=sel.value;
+      if(fontName){
+        preview.style.fontFamily="'"+fontName+"',sans-serif";
+        preview.style.color='#ccc';
+      }else{
+        preview.style.fontFamily='inherit';
+        preview.style.color='#666';
+      }
+    }
+    updatePreview();
     if(sel){
       sel.onchange=function(){
         fontConfig[key]=this.value;
+        updatePreview();
         applyFontConfig();
         saveEventConfigToBackend();
         blip('blipTypography');
@@ -7034,7 +7052,7 @@ function confirmVaultLock(){
 </script>
 
 <div id="adminNavBar">
-  <div class="anb-btn" id="anb-adminPanel" onclick="switchAdminTab('adminPanel')" title="Event Control">
+  <div class="anb-btn" id="anb-adminPanel" onclick="switchAdminTab('adminPanel')" title="Mission Control">
     <span class="anb-icon">🎛</span><span class="anb-label">Control</span>
   </div>
   <div class="anb-btn" id="anb-teamMonitorPanel" onclick="switchAdminTab('teamMonitorPanel')" title="Team Monitor">
