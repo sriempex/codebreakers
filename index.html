@@ -22,7 +22,22 @@
   .reg-container{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;max-width:580px;padding:20px}
   .reg-title{font-family:'Staatliches',cursive;font-size:18px;letter-spacing:2px;color:#e0f0e8;text-transform:uppercase}
   .reg-subtitle{font-family:'Chakra Petch',sans-serif;font-size:12px;letter-spacing:4px;color:#999;font-weight:600;text-transform:uppercase;margin-top:-8px}
-  .reg-panel{position:relative;width:100%;background:linear-gradient(175deg,#262930,#1c1e24 40%,#141620);border:1px solid #3a3d44;border-radius:10px;padding:28px 28px 24px;box-shadow:0 0 0 1px rgba(255,255,255,.015),0 2px 0 #0a0a0a,0 4px 0 #1a1a1a,0 25px 60px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.03);max-height:80vh;overflow-y:auto}
+  .reg-panel{position:relative;width:100%;background:linear-gradient(175deg,#262930,#1c1e24 40%,#141620);border:1px solid #3a3d44;border-radius:10px;padding:28px 28px 24px;box-shadow:0 0 0 1px rgba(255,255,255,.015),0 2px 0 #0a0a0a,0 4px 0 #1a1a1a,0 25px 60px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.03)}
+  .reg-crt{border-radius:5px;padding:20px 18px;position:relative;overflow:hidden;margin-bottom:12px;max-height:60vh;overflow-y:auto;
+    background:linear-gradient(180deg,#020604,#040a06,#030805);
+    border:1px solid #1a2a1e;
+    box-shadow:inset 0 0 30px rgba(0,0,0,.8),inset 0 0 60px rgba(0,20,8,.3),0 1px 0 rgba(255,255,255,.03);
+  }
+  .reg-crt-inner{position:relative;z-index:1}
+  .reg-crt .reg-section-title{color:var(--green);border-bottom-color:rgba(0,255,136,.12);text-shadow:0 0 10px rgba(0,255,136,.2)}
+  .reg-crt .reg-field label{color:rgba(0,255,136,.4);font-size:10px;letter-spacing:2.5px}
+  .reg-crt .reg-field input{background:rgba(0,255,136,.03);border-color:rgba(0,255,136,.1);color:var(--green);text-shadow:0 0 6px rgba(0,255,136,.2)}
+  .reg-crt .reg-field input:focus{border-color:rgba(0,255,136,.25);box-shadow:0 0 8px rgba(0,255,136,.08)}
+  .reg-crt .reg-field input::placeholder{color:rgba(0,255,136,.12)}
+  .reg-crt .reg-field select{background:rgba(0,255,136,.03);border-color:rgba(0,255,136,.1);color:var(--green)}
+  .reg-crt .reg-member-block{background:rgba(0,255,136,.015);border-color:rgba(0,255,136,.06)}
+  .reg-crt .reg-member-label{color:var(--cyan);border-bottom-color:rgba(0,212,255,.06)}
+  .reg-crt .reg-err{color:var(--red);text-shadow:0 0 6px rgba(255,51,51,.2)}
   .reg-section{margin-bottom:22px}
   .reg-section-title{font-family:'Saira',sans-serif;font-size:11px;font-weight:700;letter-spacing:4px;color:var(--green);text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(0,255,136,.15);text-shadow:0 0 12px rgba(0,255,136,.15)}
   .reg-row{display:flex;gap:12px;margin-bottom:10px}
@@ -42,14 +57,7 @@
   .login-back-link{text-align:center;margin-top:16px;cursor:pointer;transition:opacity .2s}
   .login-back-link span{font-family:'Saira',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:#666;text-transform:uppercase;transition:color .2s}
   .login-back-link:hover span{color:#aaa}
-  .reg-cancel-link{text-align:center;margin-top:16px;cursor:pointer;transition:opacity .2s}
-  .reg-cancel-link span{font-family:'Saira',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:#666;text-transform:uppercase;transition:color .2s}
-  .reg-cancel-link:hover span{color:#aaa}
-  .reg-submit{width:auto;min-width:240px;display:block;margin:12px auto 0;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:12px;letter-spacing:4px;padding:12px 32px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700;position:relative;min-height:46px}
-  .reg-submit.loading{color:transparent;pointer-events:none}
-  .reg-submit.loading::after{content:'';position:absolute;inset:0;margin:auto;width:20px;height:20px;border:2px solid rgba(0,255,136,.2);border-top-color:var(--green);border-radius:50%;animation:btnSpin .6s linear infinite}
-  .reg-submit:hover{background:rgba(0,255,136,.1);box-shadow:0 0 25px rgba(0,255,136,.12)}
-  .reg-err{font-family:'Chakra Petch',sans-serif;font-size:11px;color:var(--red);min-height:14px;margin-top:4px;text-align:center;font-weight:600}
+  .reg-err{font-family:'Chakra Petch',sans-serif;font-size:12px;color:var(--red);min-height:16px;text-align:center;font-weight:600;margin:4px 0}
 
   /* Team ID reveal */
   #regSuccess{display:none;text-align:center}
@@ -176,7 +184,7 @@
     border:1px solid #3a3d44;
     box-shadow:inset 0 1px 0 rgba(255,255,255,.04),inset 0 -1px 0 rgba(0,0,0,.3),0 2px 0 #0a0a0c,0 4px 0 #151518,0 8px 0 #0a0a0c,0 30px 70px rgba(0,0,0,.9)}
   /* ══════ UNIFIED LOGIN CRT ══════ */
-  .login-led{position:absolute;top:10px;left:18px;width:8px;height:8px;border-radius:50%;background:#2a2a2a;box-shadow:inset 0 1px 2px rgba(0,0,0,.6);z-index:10;transition:all .3s}
+  .login-led{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:#2a2a2a;box-shadow:inset 0 1px 2px rgba(0,0,0,.6);z-index:10;transition:all .3s}
   .login-led.active{background:#ffaa33;box-shadow:0 0 6px rgba(255,170,51,.5),inset 0 1px 2px rgba(0,0,0,.2);animation:ledFlash .8s ease-in-out infinite}
   .login-led.granted{background:#00ff88;box-shadow:0 0 8px rgba(0,255,136,.6),inset 0 1px 2px rgba(0,0,0,.2);animation:none}
   .login-led.denied{background:#ff3333;box-shadow:0 0 8px rgba(255,51,51,.6);animation:ledFlash .3s ease-in-out 3}
@@ -650,12 +658,19 @@
   .feed-single-controls{flex-shrink:0;padding:8px 0;z-index:5}
   .feed-single-nav-row{display:flex;align-items:center;justify-content:center;gap:20px}
   .feed-single-counter{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#999;font-weight:600;letter-spacing:2px;min-width:60px;text-align:center}
-  .feed-single-caption{flex-shrink:0;max-height:3.2em;overflow:hidden;position:relative;transition:max-height .3s}
-  .feed-single-caption.expanded{max-height:200px;overflow-y:auto}
-  .feed-single-caption-more{display:none;text-align:center;padding:2px 0;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--cyan);cursor:pointer;opacity:.6;flex-shrink:0}
+  .feed-single-cap-zone{flex-shrink:0;height:3.4em;position:relative;overflow:visible}
+  .feed-single-caption{height:100%;overflow:hidden;position:relative}
+  .feed-single-caption{font-family:'Chakra Petch',sans-serif;font-size:14px;color:#ddd;line-height:1.7;font-weight:500;text-align:center;max-width:500px;margin:0 auto}
+  .feed-single-caption-more{display:none;position:absolute;bottom:-2px;left:0;right:0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--cyan);cursor:pointer;opacity:.6;z-index:6;background:linear-gradient(transparent,var(--bg-deep) 40%);padding:6px 0 0}
   .feed-single-caption-more:hover{opacity:1}
   .feed-single-caption-more.visible{display:block}
-  .feed-single-caption{font-family:'Chakra Petch',sans-serif;font-size:14px;color:#ddd;line-height:1.8;font-weight:500;text-align:center;max-width:500px}
+  .feed-single-cap-overlay{display:none;position:absolute;bottom:0;left:0;right:0;z-index:20;max-height:200px;overflow-y:auto;padding:12px 16px;border-radius:5px 5px 0 0;
+    background:rgba(6,8,12,.95);border:1px solid var(--border);border-bottom:none;
+    backdrop-filter:blur(8px);box-shadow:0 -4px 20px rgba(0,0,0,.5)}
+  .feed-single-cap-overlay.visible{display:block}
+  .feed-single-cap-overlay-text{font-family:'Chakra Petch',sans-serif;font-size:14px;color:#ddd;line-height:1.7;font-weight:500;text-align:center}
+  .feed-single-cap-overlay-close{text-align:center;margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--cyan);cursor:pointer;opacity:.6}
+  .feed-single-cap-overlay-close:hover{opacity:1}
   .feed-single-nav{display:flex;gap:15px}
   .feed-nav-btn,.feed-back-grid{cursor:pointer;border-radius:4px;letter-spacing:2px;transition:all .08s;font-weight:600;
     background:linear-gradient(180deg,rgba(40,42,48,.6),rgba(26,28,32,.7));
@@ -1685,46 +1700,52 @@
     <div class="reg-title" id="regScreenTitle">Operation Dead Drop</div>
     <div class="reg-subtitle" id="regScreenSubtitle">Team Registration Portal</div>
     <div class="reg-panel">
-      <div class="screen-back-link" onclick="showScreen('landingScreen')">← Back</div>
-      <div id="regForm">
-        <!-- Hybrid mode type choice (hidden unless hybrid) -->
-        <div class="reg-type-choice" id="regTypeChoice" style="display:none">
-          <div class="reg-type-btn selected" data-type="team" onclick="selectRegType(this)">
-            <div class="rtype-icon">👥</div>
-            <div class="rtype-label">Team</div>
+      <div class="login-led" id="regLed"></div>
+      <div class="rv rv-1"></div><div class="rv rv-2"></div><div class="rv rv-3"></div><div class="rv rv-4"></div>
+      <div class="reg-crt" id="regCrt">
+        <div class="login-crt-scanlines"></div>
+        <div class="reg-crt-inner" id="regForm">
+          <!-- Hybrid mode type choice (hidden unless hybrid) -->
+          <div class="reg-type-choice" id="regTypeChoice" style="display:none">
+            <div class="reg-type-btn selected" data-type="team" onclick="selectRegType(this)">
+              <div class="rtype-icon">👥</div>
+              <div class="rtype-label">Team</div>
+            </div>
+            <div class="reg-type-btn" data-type="individual" onclick="selectRegType(this)">
+              <div class="rtype-icon">👤</div>
+              <div class="rtype-label">Individual</div>
+            </div>
           </div>
-          <div class="reg-type-btn" data-type="individual" onclick="selectRegType(this)">
-            <div class="rtype-icon">👤</div>
-            <div class="rtype-label">Individual</div>
+
+          <div class="reg-section">
+            <div class="reg-section-title">◈ Team Identity</div>
+            <div class="reg-field full">
+              <label>Team Name</label>
+              <input type="text" id="regTeamName" placeholder="Enter your team name" maxlength="30">
+            </div>
           </div>
-        </div>
 
-        <div class="reg-section">
-          <div class="reg-section-title">◈ Team Identity</div>
-          <div class="reg-field full">
-            <label>Team Name</label>
-            <input type="text" id="regTeamName" placeholder="Enter your team name" maxlength="30">
+          <div class="reg-section">
+            <div class="reg-section-title">◈ Operatives</div>
+            <div id="regOperatives"></div>
           </div>
-        </div>
 
-        <div class="reg-section">
-          <div class="reg-section-title">◈ Operatives</div>
-          <div id="regOperatives"></div>
+          <div class="reg-err" id="regErr"></div>
         </div>
-
-        <div class="reg-err" id="regErr"></div>
-        <button class="reg-submit" id="regSubmitBtn" onclick="submitRegistration()">◈ REGISTER ◈</button>
+        <div class="reg-crt-inner" id="regSuccess" style="display:none">
+          <div class="reg-section-title" style="text-align:center;border-bottom:none;margin-bottom:8px">◈ Registration Complete</div>
+          <div class="reg-id-display">
+            <div class="reg-id-label">Your Team ID</div>
+            <div class="reg-id-value" id="regTeamId">—</div>
+          </div>
+          <div class="reg-id-warn">⚠ Save this ID — you'll need it to resume your session</div>
+          <div class="reg-id-note">Share this ID with your team members. Any member can access and continue the mission using this code on any device.</div>
+          <button class="reg-proceed" onclick="proceedToLogin()">Proceed to Mission ▸</button>
+        </div>
       </div>
-
-      <div id="regSuccess">
-        <div class="reg-section-title" style="text-align:center;border-bottom:none;margin-bottom:8px">◈ Registration Complete</div>
-        <div class="reg-id-display">
-          <div class="reg-id-label">Your Team ID</div>
-          <div class="reg-id-value" id="regTeamId">—</div>
-        </div>
-        <div class="reg-id-warn">⚠ Save this ID — you'll need it to resume your session</div>
-        <div class="reg-id-note">Share this ID with your team members. Any member can access and continue the mission using this code on any device.</div>
-        <button class="reg-proceed" onclick="proceedToLogin()">Proceed to Mission ▸</button>
+      <div class="login-btn-row" id="regBtnRow">
+        <div class="login-hw-btn esc-key" onclick="regBack()"><span>← ESC</span></div>
+        <div class="login-hw-btn enter-key" id="regSubmitBtn" onclick="submitRegistration()"><span>◈ REGISTER</span></div>
       </div>
     </div>
   </div>
@@ -2165,7 +2186,7 @@
 
 <!-- EXPANDED -->
 <div id="panelOverlay">
-  <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter">1 / 12</span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
+  <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter">1 / 12</span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
   <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
   <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area" id="intelForm"></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
   <div class="expanded-panel" id="expVault">
@@ -2250,17 +2271,21 @@ function submitRegistration(){
   // PREVIEW MODE INTERCEPTION
   if(document.body.classList.contains('landing-preview-mode')){
     const btn=document.getElementById('regSubmitBtn');
-    btn.textContent='REGISTERING...';btn.disabled=true;
+    const btnSpan=btn.querySelector('span');
+    if(btnSpan)btnSpan.textContent='REGISTERING...';
+    btn.style.opacity='.4';btn.style.pointerEvents='none';
     setTimeout(()=>{
       document.getElementById('regForm').style.display='none';
       document.getElementById('regSuccess').style.display='block';
+      document.getElementById('regBtnRow').style.display='none';
       document.getElementById('regTeamId').textContent='PREVIEW-0000';
     },1200);
     setTimeout(()=>{
-      // Reset for next preview
       document.getElementById('regForm').style.display='';
       document.getElementById('regSuccess').style.display='none';
-      btn.textContent='◈ REGISTER ◈';btn.disabled=false;
+      document.getElementById('regBtnRow').style.display='';
+      if(btnSpan)btnSpan.textContent='◈ REGISTER';
+      btn.style.opacity='';btn.style.pointerEvents='';
     },4000);
     return;
   }
@@ -2302,7 +2327,7 @@ function submitRegistration(){
 
   err.textContent='';
   const btn=document.getElementById('regSubmitBtn');
-  btn.classList.add('loading');
+  btn.style.opacity='.4';btn.style.pointerEvents='none';
 
   apiCall('registerTeam',{
     teamName:entityName,
@@ -2312,7 +2337,7 @@ function submitRegistration(){
     phone:phone,
     dept:dept
   }).then(result=>{
-    btn.classList.remove('loading');
+    btn.style.opacity='';btn.style.pointerEvents='';
     if(result.ok){
       const teamId=result.teamId;
       document.getElementById('regTeamId').textContent=teamId;
@@ -2324,8 +2349,9 @@ function submitRegistration(){
         registeredAt:new Date().toISOString(),submissionResults:null
       });
 
-      document.getElementById('regForm').classList.add('hidden');
-      document.getElementById('regSuccess').classList.add('active');
+      document.getElementById('regForm').style.display='none';
+      document.getElementById('regSuccess').style.display='block';
+      document.getElementById('regBtnRow').style.display='none';
       playSuccess();
       document.getElementById('flashG').classList.add('on');
       setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
@@ -3285,15 +3311,20 @@ function feedClose(){
   }
 }
 function toggleFeedCaption(){
+  const overlay=document.getElementById('feedCapOverlay');
   const cap=document.getElementById('singleCap');
-  const btn=document.getElementById('feedCapMore');
-  if(cap.classList.contains('expanded')){
-    cap.classList.remove('expanded');
-    btn.textContent='▾ more';
-  }else{
-    cap.classList.add('expanded');
-    btn.textContent='▴ less';
-  }
+  const text=document.getElementById('feedCapOverlayText');
+  text.textContent=cap.textContent;
+  text.style.fontFamily=cap.style.fontFamily;
+  overlay.classList.add('visible');
+  document.getElementById('feedCapMore').classList.remove('visible');
+}
+function closeFeedCapOverlay(){
+  document.getElementById('feedCapOverlay').classList.remove('visible');
+  // Re-check if more button needed
+  const cap=document.getElementById('singleCap');
+  const more=document.getElementById('feedCapMore');
+  if(more&&cap)more.classList.toggle('visible',cap.scrollHeight>cap.clientHeight+2);
 }
 function updateFeedCloseBtn(){
   const btn=document.getElementById('feedCloseBtn');
@@ -3359,13 +3390,15 @@ function renderSinglePost(){
   }
   const capEl=document.getElementById('singleCap');
   capEl.textContent=p.cap;
-  capEl.classList.remove('expanded');
   capEl.style.fontFamily=getFontFamily(resolveFont('feedCap',p.capFont||''));
+  // Close any open overlay
+  const overlay=document.getElementById('feedCapOverlay');
+  if(overlay)overlay.classList.remove('visible');
   document.getElementById('singleCounter').textContent=(currentPost+1)+' / '+posts.length;
-  // Check if caption overflows 2 lines
+  // Check if caption overflows fixed zone
   requestAnimationFrame(()=>{
     const more=document.getElementById('feedCapMore');
-    if(more)more.classList.toggle('visible',capEl.scrollHeight>capEl.clientHeight+2);
+    if(more&&capEl)more.classList.toggle('visible',capEl.scrollHeight>capEl.clientHeight+2);
   });
 }
 // ══════ VIDEO EMBED RESOLVER ══════
@@ -4557,6 +4590,10 @@ document.addEventListener('keydown',e=>{
   }
   // Escape closes active admin panels
   if(e.key==='Escape'){
+    // Login screen — contextual back
+    const curScreen=document.querySelector('.screen.active')?.id||'';
+    if(curScreen==='loginScreen'){e.preventDefault();loginBack();return}
+    if(curScreen==='regScreen'){e.preventDefault();regBack();return}
     const adminIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel','portalUsersPanel'];
     for(const id of adminIds){
       const el=document.getElementById(id);
@@ -4605,6 +4642,11 @@ function goToRegistration(){
 }
 function goToLogin(){
   resetLoginScreen();
+  showScreen('loginScreen');
+  setTimeout(()=>document.getElementById('loginId').focus(),300);
+}
+function regBack(){
+  // ESC on registration goes back to login screen
   showScreen('loginScreen');
   setTimeout(()=>document.getElementById('loginId').focus(),300);
 }
@@ -6541,7 +6583,9 @@ function closeLandingPreview(){
   // Reset reg form
   const regForm=document.getElementById('regForm');if(regForm)regForm.style.display='';
   const regSuccess=document.getElementById('regSuccess');if(regSuccess)regSuccess.style.display='none';
-  const regBtn=document.getElementById('regSubmitBtn');if(regBtn){regBtn.textContent='◈ REGISTER ◈';regBtn.disabled=false}
+  const regBtnRow=document.getElementById('regBtnRow');if(regBtnRow)regBtnRow.style.display='';
+  const regBtn=document.getElementById('regSubmitBtn');
+  if(regBtn){const s=regBtn.querySelector('span');if(s)s.textContent='◈ REGISTER';regBtn.style.opacity='';regBtn.style.pointerEvents=''}
 }
 function previewNav(screenId,btn){
   showScreen(screenId);
@@ -7115,7 +7159,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-1100';
+const _BUILD_ID = '20260222-1200';
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
