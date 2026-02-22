@@ -119,7 +119,7 @@
   /* Banner upload button (admin) */
   .landing-banner-upload{position:absolute;bottom:-8px;right:-8px;width:28px;height:28px;border-radius:50%;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.3);display:none;align-items:center;justify-content:center;cursor:pointer;z-index:10;transition:all .2s;font-size:12px;color:var(--cyan)}
   .landing-banner-upload:hover{background:rgba(0,212,255,.25);border-color:rgba(0,212,255,.5)}
-  body.edit-mode .landing-banner-upload{display:flex}
+  body.admin-mode .landing-banner-upload{display:flex}
   .save-blip{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--green);opacity:0;transition:opacity .2s;margin-left:8px;font-weight:600;vertical-align:middle;pointer-events:none}
   .save-blip.show{opacity:1}
   .banner-preview{width:72px;height:72px;flex-shrink:0;border-radius:50%;overflow:hidden;border:1px solid var(--border);background:#080a10;display:flex;align-items:center;justify-content:center;margin:4px 0}
@@ -782,17 +782,22 @@
   .admin-trigger:hover{border-color:rgba(150,160,180,.5);box-shadow:0 0 14px rgba(150,160,180,.15)}
   .admin-trigger:hover svg{stroke:#b0b8c8}
   .admin-trigger::after{content:'';position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px rgba(0,212,255,.6);animation:ledPulse 2s ease-in-out infinite;display:none}
-  body.edit-mode .admin-trigger::after{display:block;background:var(--cyan);box-shadow:0 0 6px rgba(0,212,255,.6)}
-  body.player-preview .admin-trigger::after{display:block;background:var(--green)!important;box-shadow:0 0 6px rgba(0,255,136,.6)!important}
+  body.admin-mode .admin-trigger::after{display:block;background:var(--green);box-shadow:0 0 6px rgba(0,255,136,.6)}
+  body.player-preview .admin-trigger{display:none!important}
+  body.player-preview #adminNavBar{display:none!important}
+  body.player-preview #logoutBtn{display:none!important}
   body.player-preview .admin-topbar-label{display:none!important}
-  body.player-preview .admin-dropdown-item,
-  body.player-preview .admin-dropdown-toggle:not(.pp-toggle){opacity:.3;pointer-events:none}
-  body.player-preview .console-team{display:inline!important;cursor:pointer!important;color:#888!important}
-  body.player-preview .console-team:hover{color:#b0e8cc!important}
+  body.player-preview .admin-dropdown{display:none!important}
+  body.player-preview .console-team{display:inline!important;cursor:default!important;color:#888!important}
   body.player-preview .notepad-trigger.visible{display:flex!important}
   body.player-preview .admin-edit-btn{display:none!important}
+  body.player-preview .admin-edit-inline{display:none!important}
+  body.player-preview .admin-add-btn{display:none!important}
+  body.player-preview .admin-row-edit{display:none!important}
+  body.player-preview .drag-handle{display:none!important}
   body.player-preview .feed-single-edit{display:none!important}
   body.player-preview .vui-admin-hint{display:none!important}
+  body.player-preview .landing-banner-upload{display:none!important}
   body.admin-mode .admin-trigger{display:flex}
 
   /* Admin dropdown menu */
@@ -1076,20 +1081,33 @@
   .admin-timer-btn:hover{background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.4)}
   .admin-timer-input{width:70px;background:#080a10;border:1px solid var(--border);border-radius:2px;padding:3px 6px;color:var(--cyan);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;outline:none;text-align:center}
 
-  .admin-edit-btn{display:none;position:absolute;top:6px;right:6px;width:24px;height:24px;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);border-radius:3px;color:var(--cyan);font-size:11px;cursor:pointer;align-items:center;justify-content:center;z-index:10;transition:all .2s}
+  .admin-edit-btn{display:none;position:absolute;top:6px;right:6px;width:24px;height:24px;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);border-radius:3px;color:var(--cyan);font-size:11px;cursor:pointer;align-items:center;justify-content:center;z-index:10;transition:all .15s}
   .admin-edit-btn:hover{background:rgba(0,212,255,.25)}
-  body.edit-mode .admin-edit-btn{display:flex}
-  .admin-edit-inline{display:none;width:18px;height:18px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);border-radius:3px;color:var(--cyan);font-size:9px;cursor:pointer;align-items:center;justify-content:center;margin-left:8px;vertical-align:middle;transition:all .2s;flex-shrink:0}
+  /* Admin mode: hover-reveal edit controls */
+  body.admin-mode:not(.player-preview) .admin-edit-btn{display:flex;opacity:0;pointer-events:none}
+  body.admin-mode:not(.player-preview) .feed-card:hover .admin-edit-btn,
+  body.admin-mode:not(.player-preview) .media-exp-item:hover .admin-edit-btn,
+  body.admin-mode:not(.player-preview) .intel-exp-row:hover .admin-edit-btn,
+  body.admin-mode:not(.player-preview) .crt-monitor:hover .admin-edit-btn{opacity:1;pointer-events:all}
+  .admin-edit-inline{display:none;width:18px;height:18px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);border-radius:3px;color:var(--cyan);font-size:9px;cursor:pointer;align-items:center;justify-content:center;margin-left:8px;vertical-align:middle;transition:all .15s;flex-shrink:0}
   .admin-edit-inline:hover{background:rgba(0,212,255,.25)}
-  body.edit-mode .admin-edit-inline{display:inline-flex}
+  body.admin-mode:not(.player-preview) .admin-edit-inline{display:inline-flex;opacity:0;pointer-events:none}
+  body.admin-mode:not(.player-preview) *:hover>.admin-edit-inline{opacity:1;pointer-events:all}
   .admin-add-btn{display:none;background:var(--bg-surface);border:2px dashed rgba(0,212,255,.15);border-radius:5px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;color:#777;font-size:10px;letter-spacing:2px}
   .admin-add-btn:hover{border-color:var(--cyan);color:var(--cyan)}
-  body.edit-mode .admin-add-btn{display:block}
-  .admin-row-edit{display:none;width:18px;height:18px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:3px;color:var(--cyan);font-size:8px;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+  body.admin-mode:not(.player-preview) .admin-add-btn{display:block}
+  .admin-row-edit{display:none;width:18px;height:18px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:3px;color:var(--cyan);font-size:8px;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
   .admin-row-edit:hover{background:rgba(0,212,255,.2)}
-  body.edit-mode .admin-row-edit{display:flex}
+  body.admin-mode:not(.player-preview) .admin-row-edit{display:flex;opacity:0;pointer-events:none}
+  body.admin-mode:not(.player-preview) *:hover>.admin-row-edit{opacity:1;pointer-events:all}
+  /* Touch devices — always show edit controls since no hover */
+  @media(hover:none){
+    body.admin-mode:not(.player-preview) .admin-edit-btn,
+    body.admin-mode:not(.player-preview) .admin-edit-inline,
+    body.admin-mode:not(.player-preview) .admin-row-edit{opacity:1!important;pointer-events:all!important}
+  }
 
-  /* Team View mode — removed, replaced by edit-mode approach */
+  /* Team View mode — removed, replaced by admin-mode hover approach */
   .edit-field-row{display:flex;gap:10px}.edit-field-row .edit-field{flex:1}
   #em_ico_select{width:52px;overflow:hidden;text-overflow:'';transition:width .15s}
   #em_ico_select.ico-expanded,#em_ico_select:focus{width:100%}
@@ -1493,7 +1511,10 @@
   .drag-handle{display:none;cursor:grab;padding:2px 4px;color:#444;font-size:14px;letter-spacing:-2px;user-select:none;-webkit-user-select:none;touch-action:none;flex-shrink:0;align-self:center}
   .drag-handle:hover{color:#888}
   .drag-handle:active{cursor:grabbing}
-  body.edit-mode .drag-handle{display:flex}
+  body.admin-mode:not(.player-preview) .drag-handle{display:flex;opacity:0;transition:opacity .15s}
+  body.admin-mode:not(.player-preview) .feed-card:hover .drag-handle,
+  body.admin-mode:not(.player-preview) .media-exp-item:hover .drag-handle{opacity:1}
+  @media(hover:none){body.admin-mode:not(.player-preview) .drag-handle{opacity:1!important}}
   .feed-card.drag-over{border-color:var(--cyan)!important;box-shadow:0 0 12px rgba(0,212,255,.2)!important}
   .feed-card.dragging{opacity:.35;pointer-events:none}
   .media-exp-item.drag-over{border-color:var(--cyan)!important;box-shadow:0 0 12px rgba(0,212,255,.2)!important}
@@ -1506,6 +1527,8 @@
   .lp-preview-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;opacity:.7}
   .lp-preview-close{font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;padding:6px 16px;border:1px solid rgba(0,212,255,.3);border-radius:3px;background:rgba(0,212,255,.08);color:var(--cyan);cursor:pointer;transition:all .2s}
   .lp-preview-close:hover{background:rgba(0,212,255,.15);border-color:rgba(0,212,255,.5)}
+  .lp-preview-nav{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;padding:5px 12px;border:1px solid rgba(255,255,255,.12);border-radius:3px;background:rgba(255,255,255,.04);color:#888;cursor:pointer;transition:all .15s}
+  .lp-preview-nav:hover{background:rgba(255,255,255,.08);color:#ccc;border-color:rgba(255,255,255,.2)}
   body.landing-preview-mode .landing-banner-upload,
   body.landing-preview-mode .admin-edit-inline,
   body.landing-preview-mode .admin-trigger,
@@ -1537,7 +1560,6 @@
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openPortalUsers()"><span class="adm-icon">👥</span><span class="adm-label">Portal Users</span></div>
     <div class="admin-dropdown-sep"></div>
     <div class="admin-dropdown-toggle pp-toggle" onclick="togglePlayerPreview()"><span class="adm-icon">👁</span><span class="adm-label">View as Player</span><span class="adm-toggle off" id="admPreviewToggle">OFF</span></div>
-    <div class="admin-dropdown-toggle" onclick="toggleEditMode()"><span class="adm-icon">✎</span><span class="adm-label">Edit Mode</span><span class="adm-toggle off" id="admEditToggle">OFF</span></div>
   </div>
 </div>
 
@@ -2099,7 +2121,7 @@
 
 <!-- EXPANDED -->
 <div id="panelOverlay">
-  <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter">1 / 12</span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-caption" id="singleCap"></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
+  <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter">1 / 12</span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-caption" id="singleCap"></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
   <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
   <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area" id="intelForm"></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
   <div class="expanded-panel" id="expVault">
@@ -2445,7 +2467,7 @@ function doLogout(){
   // Stop broadcast polling
   if(_broadcastPollInterval){clearInterval(_broadcastPollInterval);_broadcastPollInterval=null}
   // Clear admin state on logout
-  if(isAdmin){isAdmin=false;document.body.classList.remove('admin-mode');document.body.classList.remove('edit-mode');closeAdminDropdown()}
+  if(isAdmin){isAdmin=false;document.body.classList.remove('admin-mode');closeAdminDropdown()}
   showScreen('landingScreen');
 }
 
@@ -3051,7 +3073,7 @@ let mediaItems=[];
 // ══════ RENDER ══════
 
 function renderFeed(){
-  const grid=document.getElementById('feedGridView'),isA=document.body.classList.contains('edit-mode');
+  const grid=document.getElementById('feedGridView'),isA=document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview');
   grid.innerHTML=posts.map((p,i)=>{
     const resolved=(p.mediaUrl&&(p.mediaType==='video'||isVideoUrl(p.mediaUrl)))?resolveVideoEmbed(p.mediaUrl):null;
     const isVid=resolved&&resolved.type==='direct';
@@ -3074,6 +3096,7 @@ function renderFeed(){
     return `<div class="feed-card" data-idx="${i}" onclick="openPost(${i})">${isA?`<div class="drag-handle" onpointerdown="startDrag(event,'feed',${i})" onclick="event.stopPropagation()">⋮⋮</div><div class="admin-edit-btn" onclick="event.stopPropagation();editFeedPost(${i})">✎</div>`:''}<div class="feed-card-img" style="${bgStyle}" oncontextmenu="return false">${media}</div><div class="feed-card-cap"><p style="${fontStyle(_capFont)}">${p.cap}</p></div></div>`;
   }).join('')+(isA?'<div class="admin-add-btn" onclick="addFeedPost()">+ Add Post</div>':'');
   document.getElementById('feedBadge').textContent=posts.length+' ITEMS';
+  const fci=document.getElementById('feedCountIndicator');if(fci)fci.textContent=posts.length+' posts';
   // Force-play all grid videos after DOM insertion
   setTimeout(()=>{grid.querySelectorAll('video.feed-card-video').forEach(v=>{v.muted=true;v.play().catch(()=>{})})},50);
 }
@@ -3086,7 +3109,7 @@ function selectAllMedia(){const isEdit=document.body.classList.contains('admin-m
 function deleteSelectedMedia(){if(!_mediaSelected.size)return;if(!confirm('Delete '+_mediaSelected.size+' selected item(s)?'))return;const idxs=Array.from(_mediaSelected).sort((a,b)=>b-a);idxs.forEach(i=>{const m=mediaItems[i];if(m&&m.fileUrl)deleteFromR2(m.fileUrl);mediaItems.splice(i,1)});exitMediaSelectMode();renderMedia();renderGrid();saveMediaItemsToBackend()}
 function renderMedia(){
   const list=document.getElementById('mediaList');
-  const isEdit=document.body.classList.contains('edit-mode');
+  const isEdit=document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview');
   const isAdmin=document.body.classList.contains('admin-mode');
   const isPreview=document.body.classList.contains('player-preview');
   // Players and preview: hide vault-locked. Admin (edit or not): show all
@@ -3144,7 +3167,7 @@ function renderSinglePost(){
   if(currentPost>=posts.length)currentPost=0;
   const p=posts[currentPost],img=document.getElementById('singleImg');
   const resolved=(p.mediaUrl&&(p.mediaType==='video'||isVideoUrl(p.mediaUrl)))?resolveVideoEmbed(p.mediaUrl):null;
-  const editBtn=document.body.classList.contains('edit-mode')?`<div class="feed-single-edit" onclick="event.stopPropagation();editFeedPost(${currentPost})" title="Edit this post">✎</div>`:'';
+  const editBtn=document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview')?`<div class="feed-single-edit" onclick="event.stopPropagation();editFeedPost(${currentPost})" title="Edit this post">✎</div>`:'';
   const muted=isPostMuted(currentPost);
 
   if(resolved&&resolved.type==='direct'){
@@ -3643,7 +3666,7 @@ function gradeAllSubmissions(){
 
   return{results,totalScore,totalPossible,correctCount,totalFields:intelFields.length,percentage:totalPossible?Math.round((totalScore/totalPossible)*100):0};
 }
-function updateIntelBadge(){const filled=document.querySelectorAll('.intel-exp-input');let n=0;filled.forEach(inp=>{if(inp.value.trim())n++});const badge=document.getElementById('intelBadge');if(badge)badge.textContent=n+' / '+filled.length+' MARKED'}
+function updateIntelBadge(){const filled=document.querySelectorAll('.intel-exp-input');let n=0;filled.forEach(inp=>{if(inp.value.trim())n++});const badge=document.getElementById('intelBadge');if(badge)badge.textContent=n+' / '+filled.length+' ENTERED'}
 document.addEventListener('input',e=>{if(e.target.classList.contains('intel-exp-input'))updateIntelBadge()});
 function showConfirm(){if(isSubmitted)return;playConfirmPrompt();const inputs=document.querySelectorAll('.intel-exp-input'),body=document.getElementById('confirmBody');body.innerHTML='';
   syncIntelLabels();let li=0;
@@ -4248,9 +4271,6 @@ function openAdminDropdown(){
 }
 function closeAdminDropdown(){document.getElementById('adminDropdown').classList.remove('open')}
 function syncAdminDropdownToggles(){
-  const edEl=document.getElementById('admEditToggle');
-  const isEdit=document.body.classList.contains('edit-mode');
-  if(edEl){edEl.textContent=isEdit?'ON':'OFF';edEl.className='adm-toggle '+(isEdit?'on-cyan':'off')}
   const ppEl=document.getElementById('admPreviewToggle');
   const isPreview=document.body.classList.contains('player-preview');
   if(ppEl){ppEl.textContent=isPreview?'ON':'OFF';ppEl.className='adm-toggle '+(isPreview?'on-green':'off')}
@@ -4269,37 +4289,37 @@ document.addEventListener('click',e=>{
 });
 
 function toggleEditMode(){
-  const isEdit=document.body.classList.contains('edit-mode');
-  if(!isEdit){
-    // Disable player preview if active
-    document.body.classList.remove('player-preview');
-    document.body.classList.add('edit-mode');
-  }else{
-    document.body.classList.remove('edit-mode');
-  }
-  renderGrid();renderFeed();renderMedia();renderIntelForm();
-  // Re-render focus view if currently visible
-  if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
-  syncAdminDropdownToggles();
-  closeAdminDropdown();
+  // Edit mode removed — admin always has edit power via hover-reveal
+  // Kept for backward compatibility
 }
 function togglePlayerPreview(){
   const isPreview=document.body.classList.contains('player-preview');
   if(!isPreview){
-    // Disable edit mode if active
-    document.body.classList.remove('edit-mode');
     document.body.classList.add('player-preview');
     // Set a placeholder team name for preview
     const teamEl=document.querySelector('.console-team');
     if(teamEl&&teamEl.childNodes[0])teamEl.childNodes[0].textContent='TEAM PREVIEW ';
+    // Show exit pill
+    let pill=document.getElementById('previewExitPill');
+    if(!pill){
+      pill=document.createElement('div');
+      pill.id='previewExitPill';
+      pill.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:9999;font-family:Saira,sans-serif;font-size:10px;letter-spacing:2px;color:var(--cyan);padding:8px 20px;border:1px solid rgba(0,212,255,.3);border-radius:20px;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(0,0,0,.5)';
+      pill.textContent='👁 EXIT PLAYER PREVIEW';
+      pill.onclick=togglePlayerPreview;
+      document.body.appendChild(pill);
+    }
+    pill.style.display='';
   }else{
     document.body.classList.remove('player-preview');
     // Restore admin display
     const teamEl=document.querySelector('.console-team');
     if(teamEl&&teamEl.childNodes[0])teamEl.childNodes[0].textContent='ADMINISTRATOR ';
+    // Hide exit pill
+    const pill=document.getElementById('previewExitPill');
+    if(pill)pill.style.display='none';
   }
   renderGrid();renderFeed();renderMedia();renderIntelForm();renderVaultPanel();
-  // Re-render focus view if currently visible
   if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
   syncAdminDropdownToggles();
   closeAdminDropdown();
@@ -4363,7 +4383,7 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('contextmenu',e=>{
   if(e.target.closest('.feed-card-img')||e.target.closest('.feed-single-img')||e.target.closest('.mv-body')||e.target.closest('.no-download-shield'))e.preventDefault();
 });
-function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');document.body.classList.remove('edit-mode');closeAdminDropdown();closeAdminPanel();closeBroadcast();closeLeaderboard();closeKeysCodes();renderGrid();renderIntelForm()}
+function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');closeAdminDropdown();closeAdminPanel();closeBroadcast();closeLeaderboard();closeKeysCodes();renderGrid();renderIntelForm()}
 
 // ══════ SCREEN NAVIGATION ══════
 let _currentScreen='landingScreen';
@@ -5777,7 +5797,7 @@ function updateVaultBadgeColor(){
 }
 function renderGrid(){
   updateTileStates(); // Always recalculate orb states before rendering
-  const isA=document.body.classList.contains('edit-mode');
+  const isA=document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview');
   const g=document.getElementById('consoleGrid');
   g.innerHTML=gridTiles.map((t,i)=>{
     const isIntel=t.id==='intel';
@@ -5792,7 +5812,7 @@ function renderGrid(){
         <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:48px;height:48px;object-fit:contain">`:t.icon}</div>
         <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
         <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
-        <div class="tile-badge${badgeCls}" id="${t.badgeId}">${t.id==='feed'?posts.length+' ITEMS':t.id==='media'?(isAdmin?mediaItems.length:mediaItems.filter(m=>!m.vaultLocked||vaultCodes.find(c=>c.linkedMediaIdx===mediaItems.indexOf(m)&&c.unlocked)).length)+' ITEMS':t.id==='vault'?vaultBadgeText():'0 / '+intelFields.length+' MARKED'}</div>
+        <div class="tile-badge${badgeCls}" id="${t.badgeId}">${t.id==='feed'?posts.length+' ITEMS':t.id==='media'?(isAdmin?mediaItems.length:mediaItems.filter(m=>!m.vaultLocked||vaultCodes.find(c=>c.linkedMediaIdx===mediaItems.indexOf(m)&&c.unlocked)).length)+' ITEMS':t.id==='vault'?vaultBadgeText():'0 / '+intelFields.length+' ENTERED'}</div>
         <div class="tile-status"><div class="tile-dot ${t.dotClass}"></div><span class="tile-status-label ${t.dotClass}">${t.status}</span></div>
       </div>
     </div>`;
@@ -5849,7 +5869,7 @@ function saveGridTile(i){
 
 // ── Intel Fields ──
 function renderIntelForm(){
-  const isA=document.body.classList.contains('edit-mode');
+  const isA=document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview');
   const form=document.getElementById('intelForm');
   // Preserve existing input values
   const prevVals={};
@@ -5894,7 +5914,14 @@ function renderIntelForm(){
   form.innerHTML=html;
   // Render transmit button into sticky dock
   const dock=document.getElementById('intelTransmitDock');
-  if(dock)dock.innerHTML=`<button class="intel-submit-btn" id="intelSubmitBtn" onclick="showConfirm()">◈ TRANSMIT ◈</button>`;
+  const isAdminUser=document.body.classList.contains('admin-mode');
+  if(dock){
+    if(isAdminUser&&!document.body.classList.contains('player-preview')){
+      dock.innerHTML=`<button class="intel-submit-btn" id="intelSubmitBtn" style="background:rgba(255,170,51,.1);border-color:rgba(255,170,51,.3);color:var(--amber);cursor:default" disabled>⚠ ADMIN — Test Only</button>`;
+    }else{
+      dock.innerHTML=`<button class="intel-submit-btn" id="intelSubmitBtn" onclick="showConfirm()">◈ TRANSMIT ◈</button>`;
+    }
+  }
   // Restore values
   form.querySelectorAll('.intel-exp-input').forEach(inp=>{if(prevVals[inp.dataset.idx])inp.value=prevVals[inp.dataset.idx]});
   if(isSubmitted){form.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});const btn=document.getElementById('intelSubmitBtn');if(btn){btn.disabled=true;btn.textContent='◈ TRANSMITTED ◈'}}
@@ -6305,22 +6332,21 @@ function saveNewMediaItem(){const vl=document.getElementById('em_vaultlock');con
 function previewLandingPage(){
   // Close admin panel, show landing screen with preview banner
   closeEventControl();
-  // Hide console, show landing
-  document.getElementById('consoleScreen').style.display='none';
-  document.getElementById('landingScreen').style.display='flex';
+  // Use proper screen switching
+  showScreen('landingScreen');
   // Show preview banner
-  const banner=document.getElementById('landingPreviewOverlay');
-  banner.classList.add('active');
-  // Temporarily hide edit-mode controls on landing
+  document.getElementById('landingPreviewOverlay').classList.add('active');
+  // Add preview mode class to hide admin controls
   document.body.classList.add('landing-preview-mode');
+  // Hide logout btn during preview
+  const lb=document.getElementById('logoutBtn');if(lb)lb.classList.remove('visible');
 }
 function closeLandingPreview(){
-  const banner=document.getElementById('landingPreviewOverlay');
-  banner.classList.remove('active');
+  document.getElementById('landingPreviewOverlay').classList.remove('active');
   document.body.classList.remove('landing-preview-mode');
-  // Return to console
-  document.getElementById('landingScreen').style.display='none';
-  document.getElementById('consoleScreen').style.display='flex';
+  // Return to console using proper screen switching
+  showScreen('consoleScreen');
+  document.getElementById('notepadTrigger').classList.add('visible');
 }
 
 // ══════ DRAG-TO-REORDER ══════
@@ -6889,7 +6915,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-0700';
+const _BUILD_ID = '20260222-0800';
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
@@ -7220,8 +7246,11 @@ function confirmVaultLock(){
 
 <div id="landingPreviewOverlay">
   <div class="lp-preview-bar">
-    <span class="lp-preview-label">👁 Landing Page Preview</span>
-    <button class="lp-preview-close" onclick="closeLandingPreview()">✕ Close Preview</button>
+    <span class="lp-preview-label">👁 Player View Preview</span>
+    <button class="lp-preview-nav" onclick="showScreen('landingScreen')">Landing</button>
+    <button class="lp-preview-nav" onclick="showScreen('regScreen')">Register</button>
+    <button class="lp-preview-nav" onclick="showScreen('loginScreen')">Login</button>
+    <button class="lp-preview-close" onclick="closeLandingPreview()">✕ Close</button>
   </div>
 </div>
 
