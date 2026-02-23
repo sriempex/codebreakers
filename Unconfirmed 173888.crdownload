@@ -7615,3 +7615,1826 @@ function startDrag(e,type,idx){
 
   window.addEventListener('pointermove',onMove);
   window.addEventListener('pointerup',onEnd);
+  window.addEventListener('pointercancel',onEnd);
+}
+
+// ══════ TIMER ══════
+let timerSec=5325,timerPaused=false,timerOriginal=5325;
+let timerMode='countdown'; // 'countdown' or 'event'
+let eventSettings={
+  startTime:null, // ISO string
+  endTime:null,   // ISO string
+  autoLock:true,
+  showLeaderboardOnExpiry:true,
+  expired:false
+};
+
+function onTimerModeChange(){
+  timerMode=document.getElementById('timerMode').value;
+  document.getElementById('timerCountdownControls').style.display=timerMode==='countdown'?'':'none';
+  document.getElementById('timerEventControls').style.display=timerMode==='event'?'':'none';
+  if(timerMode==='event')updateEventStatus();
+}
+function onEventTimeChange(){
+  const startVal=document.getElementById('eventStartInput').value;
+  const endVal=document.getElementById('eventEndInput').value;
+  eventSettings.startTime=startVal?new Date(startVal).toISOString():null;
+  eventSettings.endTime=endVal?new Date(endVal).toISOString():null;
+  eventSettings.expired=false;
+  updateEventStatus();
+  startGlobalEventTimer();
+  saveEventConfigToBackend();
+}
+
+let _globalTimerInterval=null;
+function startGlobalEventTimer(){
+  if(_globalTimerInterval)clearInterval(_globalTimerInterval);
+  if(!eventSettings.startTime||!eventSettings.endTime)return;
+  
+  _globalTimerInterval=setInterval(()=>{
+    const timerEl=document.getElementById('cTimer');
+    
+    // Paused — show frozen time
+    if(eventPaused&&_pausedTimeRemaining!==null){
+      const diff=_pausedTimeRemaining;
+      const h=Math.floor(diff/3600000);
+      const m=Math.floor((diff%3600000)/60000);
+      const s=Math.floor((diff%60000)/1000);
+      if(timerEl){
+        timerEl.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+        timerEl.style.color='var(--amber)';
+      }
+      return;
+    }
+    
+    const now=Date.now();
+    const start=new Date(eventSettings.startTime).getTime();
+    const end=new Date(eventSettings.endTime).getTime();
+    
+    if(now<start){
+      const diff=start-now;
+      const h=Math.floor(diff/3600000);
+      const m=Math.floor((diff%3600000)/60000);
+      const s=Math.floor((diff%60000)/1000);
+      if(timerEl)timerEl.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    }else if(now>=start&&now<end){
+      const diff=end-now;
+      const h=Math.floor(diff/3600000);
+      const m=Math.floor((diff%3600000)/60000);
+      const s=Math.floor((diff%60000)/1000);
+      if(timerEl){
+        timerEl.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+        timerEl.style.color=(diff<300000)?'var(--red)':'';
+      }
+    }else if(!eventSettings.expired){
+      eventSettings.expired=true;
+      if(timerEl){timerEl.textContent='00:00:00';timerEl.style.color='var(--red)'}
+      onTimerExpired();
+    }
+    updateEventStatus();
+  },1000);
+}
+
+// handleEventExpiry — now handled by onTimerExpired + showEventLockOverlay
+
+function showPublicLeaderboard(){
+  // Build and show a player-facing leaderboard
+  const teams=getSortedTeams();
+  const maxFields=intelFields.length||1;
+  
+  let html='<div style="width:90%;max-width:600px;max-height:80vh;overflow-y:auto">';
+  html+='<div style="text-align:center;margin-bottom:24px"><div style="font-family:Russo One,sans-serif;font-size:22px;color:var(--green);letter-spacing:4px">FINAL STANDINGS</div><div style="font-family:Saira,sans-serif;font-size:10px;color:#666;letter-spacing:2px;margin-top:4px">'+teams.length+' teams competed</div></div>';
+  
+  teams.slice(0,20).forEach((t,i)=>{
+    const rank=i+1;
+    const medal=rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':'';
+    const score=t.submissionResults?t.submissionResults.totalScore:0;
+    const possible=t.submissionResults?t.submissionResults.totalPossible:(maxFields*10);
+    const pct=possible?Math.round((score/possible)*100):0;
+    const barColor=rank===1?'#ffd700':rank===2?'#c0c0c0':rank===3?'#cd7f32':'#333';
+    const submitted=t.submitTime?'Submitted':'Not submitted';
+    
+    html+=`<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.05);${rank<=3?'background:rgba(255,255,255,.02)':''}">
+      <div style="font-family:Russo One,sans-serif;font-size:${rank<=3?'18':'14'}px;color:${rank===1?'#ffd700':rank===2?'#c0c0c0':rank===3?'#cd7f32':'#555'};min-width:36px;text-align:center">${medal||'#'+rank}</div>
+      <div style="flex:1">
+        <div style="font-family:Saira,sans-serif;font-size:13px;color:#ddd;font-weight:600">${t.name}</div>
+        <div style="height:3px;background:#111;border-radius:2px;margin-top:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${barColor};border-radius:2px"></div></div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:Oxanium,sans-serif;font-size:16px;font-weight:700;color:${rank<=3?'#fff':'#aaa'}">${pct}%</div>
+        <div style="font-family:IBM Plex Mono,monospace;font-size:8px;color:#555">${submitted}</div>
+      </div>
+    </div>`;
+  });
+  
+  html+='<div style="text-align:center;margin-top:20px"><button onclick="closePublicLeaderboard()" style="padding:10px 24px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#888;font-family:Saira,sans-serif;font-size:10px;letter-spacing:2px;cursor:pointer;border-radius:4px;text-transform:uppercase">Close</button></div>';
+  html+='</div>';
+  
+  const overlay=document.createElement('div');
+  overlay.id='publicLeaderboard';
+  overlay.style.cssText='position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center';
+  overlay.innerHTML=html;
+  document.body.appendChild(overlay);
+}
+function closePublicLeaderboard(){
+  const el=document.getElementById('publicLeaderboard');
+  if(el)el.remove();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ADMIN EVENT ACTIONS
+// ═══════════════════════════════════════════════════════════════
+
+let eventPaused=false;
+let _pausedTimeRemaining=null;
+
+function toggleEventPause(){
+  if(!eventSettings.startTime||!eventSettings.endTime)return;
+  const btn=document.getElementById('eventPauseBtn');
+  if(!eventPaused){
+    // Pause — save remaining time, stop countdown
+    const now=Date.now();
+    const end=new Date(eventSettings.endTime).getTime();
+    _pausedTimeRemaining=Math.max(0,end-now);
+    eventPaused=true;
+    if(btn)btn.innerHTML='▶ Resume Timer';
+    // Broadcast pause to players
+    apiCall('sendBroadcast',{message:'⏸ Event timer has been paused by the administrator.',type:'text'});
+  }else{
+    // Resume — set new end time based on remaining time
+    const newEnd=new Date(Date.now()+_pausedTimeRemaining);
+    eventSettings.endTime=newEnd.toISOString();
+    const inp=document.getElementById('eventEndInput');
+    if(inp)inp.value=eventSettings.endTime.substring(0,16);
+    eventSettings.expired=false;
+    eventPaused=false;
+    _pausedTimeRemaining=null;
+    if(btn)btn.innerHTML='⏸ Pause Timer';
+    startGlobalEventTimer();
+    saveEventConfigToBackend();
+    apiCall('sendBroadcast',{message:'▶ Event timer has been resumed.',type:'text'});
+  }
+}
+
+function forceEndEvent(){
+  if(!confirm('Force end the event NOW? This will lock all players and reveal the leaderboard immediately.'))return;
+  // Set end time to now
+  eventSettings.endTime=new Date().toISOString();
+  eventSettings.expired=false;
+  const inp=document.getElementById('eventEndInput');
+  if(inp)inp.value=eventSettings.endTime.substring(0,16);
+  eventPaused=false;
+  _pausedTimeRemaining=null;
+  startGlobalEventTimer();
+  saveEventConfigToBackend();
+  apiCall('sendBroadcast',{message:'⛔ The event has been ended by the administrator.',type:'text'});
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function exportResults(){
+  const teams=getSortedTeams();
+  const maxFields=intelFields.length||1;
+  const totalPossible=intelFields.reduce((s,f)=>(s+(f.answer?.points||10)),0);
+  const eventName=operationName||'Code Breakers';
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const timeStr=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+
+  let rows='';
+  teams.forEach((t,i)=>{
+    const rank=i+1;
+    const sr=t.submissionResults;
+    const score=sr?sr.totalScore:0;
+    const correct=sr?sr.correctCount:0;
+    const pct=totalPossible?Math.round((score/totalPossible)*100):0;
+    const members=(t.members||[]).join(', ');
+    const submitted=t.submitTime?new Date(t.submitTime).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}):'—';
+    const medal=rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':'';
+    const rowBg=rank<=3?'background:#f8f9fa':'';
+    const rankColor=rank===1?'#d4a017':rank===2?'#757575':rank===3?'#a0522d':'#333';
+    rows+=`<tr style="${rowBg}">
+      <td style="padding:10px 12px;text-align:center;font-weight:700;color:${rankColor};font-size:${rank<=3?'16':'13'}px">${medal||'#'+rank}</td>
+      <td style="padding:10px 12px"><div style="font-weight:600;font-size:13px;color:#1a1a1a">${esc(t.name)}</div><div style="font-size:10px;color:#888;margin-top:2px">${esc(members)}</div></td>
+      <td style="padding:10px 12px;text-align:center;font-weight:700;font-size:15px;color:#1a1a1a">${score}<span style="font-size:10px;color:#999;font-weight:400">/${totalPossible}</span></td>
+      <td style="padding:10px 12px;text-align:center"><div style="background:#eee;border-radius:10px;height:8px;overflow:hidden;min-width:80px"><div style="height:100%;width:${pct}%;background:${rank===1?'#d4a017':rank===2?'#757575':rank===3?'#a0522d':'#4CAF50'};border-radius:10px"></div></div><div style="font-size:10px;color:#888;margin-top:3px">${pct}%</div></td>
+      <td style="padding:10px 12px;text-align:center;color:#666;font-size:11px">${correct}/${maxFields}</td>
+      <td style="padding:10px 12px;text-align:center;color:#666;font-size:11px">${submitted}</td>
+    </tr>`;
+  });
+
+  let fieldRows='';
+  intelFields.forEach((f,i)=>{
+    const pts=f.answer?.points||10;
+    const hasKey=f.answer?.expected?.filter(e=>e.trim()).length>0;
+    fieldRows+=`<tr>
+      <td style="padding:6px 12px;font-size:11px;color:#555">${i+1}</td>
+      <td style="padding:6px 12px;font-size:11px">${esc(f.label)}</td>
+      <td style="padding:6px 12px;text-align:center;font-size:11px">${f.type}</td>
+      <td style="padding:6px 12px;text-align:center;font-weight:600">${pts}</td>
+      <td style="padding:6px 12px;text-align:center;font-size:11px">${f.answer?.matchMode||'exact'}</td>
+      <td style="padding:6px 12px;text-align:center">${hasKey?'<span style="color:#4CAF50">✓</span>':'<span style="color:#999">—</span>'}</td>
+    </tr>`;
+  });
+
+  const report=`<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>${esc(eventName)} — Results Report</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#333;background:#fff;padding:40px}
+@media print{body{padding:20px}.toolbar{display:none!important}.page-break{page-break-before:always}}
+.header{text-align:center;margin-bottom:40px;padding-bottom:20px;border-bottom:3px solid #1a1a1a}
+.header h1{font-size:28px;font-weight:800;letter-spacing:1px;margin-bottom:4px}
+.header .sub{font-size:12px;color:#888;letter-spacing:2px;text-transform:uppercase}
+.header .meta{font-size:11px;color:#aaa;margin-top:8px}
+.section{margin-bottom:32px}
+.section h2{font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1a1a1a;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #eee}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:#1a1a1a;color:#fff;padding:10px 12px;text-align:left;font-size:10px;letter-spacing:1px;text-transform:uppercase}
+tbody tr{border-bottom:1px solid #eee}
+tbody tr:hover{background:#f5f5f5}
+.stats{display:flex;gap:20px;margin-bottom:24px;flex-wrap:wrap}
+.stat{flex:1;min-width:120px;padding:16px;background:#f8f9fa;border-radius:8px;text-align:center}
+.stat .val{font-size:28px;font-weight:800;color:#1a1a1a}
+.stat .lbl{font-size:10px;color:#888;letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.footer{text-align:center;margin-top:40px;padding-top:20px;border-top:1px solid #eee;font-size:10px;color:#ccc}
+.toolbar{position:fixed;top:10px;right:10px;display:flex;gap:8px;z-index:100}
+.toolbar button{padding:8px 16px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:11px}
+.toolbar button:hover{background:#f5f5f5}
+</style></head><body>
+<div class="toolbar">
+  <button onclick="window.print()">🖨 Print / Save as PDF</button>
+</div>
+<div class="header">
+  <h1>${esc(eventName)}</h1>
+  <div class="sub">Final Results Report</div>
+  <div class="meta">Generated ${dateStr} at ${timeStr}</div>
+</div>
+<div class="stats">
+  <div class="stat"><div class="val">${teams.length}</div><div class="lbl">Teams</div></div>
+  <div class="stat"><div class="val">${teams.filter(t=>t.submitTime).length}</div><div class="lbl">Submitted</div></div>
+  <div class="stat"><div class="val">${maxFields}</div><div class="lbl">Intel Fields</div></div>
+  <div class="stat"><div class="val">${totalPossible}</div><div class="lbl">Max Score</div></div>
+  <div class="stat"><div class="val">${teams.length>0&&teams[0].submissionResults?teams[0].submissionResults.totalScore:0}</div><div class="lbl">Top Score</div></div>
+</div>
+<div class="section">
+  <h2>🏆 Final Standings</h2>
+  <table><thead><tr><th style="width:60px;text-align:center">Rank</th><th>Team</th><th style="text-align:center;width:100px">Score</th><th style="text-align:center;width:120px">Progress</th><th style="text-align:center;width:80px">Correct</th><th style="text-align:center;width:100px">Submitted</th></tr></thead>
+  <tbody>${rows}</tbody></table>
+</div>
+<div class="section page-break">
+  <h2>📋 Scoring Configuration</h2>
+  <table><thead><tr><th style="width:40px">#</th><th>Field</th><th style="text-align:center;width:80px">Type</th><th style="text-align:center;width:60px">Points</th><th style="text-align:center;width:80px">Match</th><th style="text-align:center;width:60px">Key Set</th></tr></thead>
+  <tbody>${fieldRows}</tbody></table>
+</div>
+<div class="footer">
+  <p>${esc(eventName)} — Code Breakers Platform</p>
+  <p style="margin-top:4px">Confidential — For internal use only</p>
+</div>
+</body></html>`;
+
+  const blob=new Blob([report],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  window.open(url,'_blank');
+  setTimeout(()=>URL.revokeObjectURL(url),10000);
+}
+
+// ══════ SCORING EDITOR ══════
+let scoringConfig={timeBonus:false,timeBonusMax:50,timeBonusDecay:'linear'};
+
+function renderScoringEditor(){
+  const list=document.getElementById('seFieldList');
+  if(!list)return;
+  let html='',totalPts=0;
+  intelFields.forEach((f,i)=>{
+    const pts=f.answer?.points||10;
+    totalPts+=pts;
+    const mode=f.answer?.matchMode||'exact';
+    const fuzzy=f.answer?.fuzzyThreshold||85;
+    html+=`<div style="display:grid;grid-template-columns:2fr 80px 100px 80px;gap:0;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center">
+      <div style="font-family:Chakra Petch,sans-serif;font-size:11px;color:#ddd">${f.emoji||''} ${esc(f.label)}<span style="font-size:9px;color:#555;margin-left:6px">(${f.type})</span></div>
+      <div style="text-align:center"><input type="number" value="${pts}" min="1" max="1000" onchange="seUpdateField(${i},'points',parseInt(this.value))" style="width:54px;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:4px 6px;color:var(--green);font-family:Oxanium,sans-serif;font-size:11px;text-align:center;outline:none"></div>
+      <div style="text-align:center"><select onchange="seUpdateField(${i},'matchMode',this.value)" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:4px 6px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:9px;outline:none">
+        <option value="exact"${mode==='exact'?' selected':''}>Exact</option>
+        <option value="contains"${mode==='contains'?' selected':''}>Contains</option>
+        <option value="fuzzy"${mode==='fuzzy'?' selected':''}>Fuzzy</option>
+      </select></div>
+      <div style="text-align:center"><input type="number" value="${fuzzy}" min="50" max="100" onchange="seUpdateField(${i},'fuzzyThreshold',parseInt(this.value))" style="width:48px;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:4px 6px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:9px;text-align:center;outline:none" ${mode!=='fuzzy'?'disabled':''}></div>
+    </div>`;
+  });
+  list.innerHTML=html||'<div style="padding:16px;text-align:center;font-size:10px;color:#555">No intel fields configured yet.</div>';
+  const total=document.getElementById('seTotalPossible');
+  if(total)total.textContent=totalPts;
+}
+
+function seUpdateField(idx,prop,val){
+  if(!intelFields[idx])return;
+  if(!intelFields[idx].answer)intelFields[idx].answer={expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10};
+  intelFields[idx].answer[prop]=val;
+  renderScoringEditor();
+  saveIntelFieldsToBackend();
+  showSaveBlip('blipScoring');
+}
+
+function seApplyDefaultPoints(){
+  const pts=parseInt(document.getElementById('seDefaultPoints')?.value||10);
+  const mode=document.getElementById('seDefaultMode')?.value||'exact';
+  intelFields.forEach(f=>{
+    if(!f.answer)f.answer={expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10};
+    f.answer.points=pts;
+    f.answer.matchMode=mode;
+  });
+  renderScoringEditor();
+  saveIntelFieldsToBackend();
+  showSaveBlip('blipScoring');
+}
+
+function seApplyDefaultMode(){
+  const mode=document.getElementById('seDefaultMode')?.value||'exact';
+  intelFields.forEach(f=>{
+    if(!f.answer)f.answer={expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10};
+    f.answer.matchMode=mode;
+  });
+  renderScoringEditor();
+  saveIntelFieldsToBackend();
+  showSaveBlip('blipScoring');
+}
+
+function updateScoringConfig(){
+  scoringConfig.timeBonus=document.getElementById('seTimeBonus')?.checked||false;
+  scoringConfig.timeBonusMax=parseInt(document.getElementById('seTimeBonusMax')?.value||50);
+  scoringConfig.timeBonusDecay=document.getElementById('seTimeBonusDecay')?.value||'linear';
+  const cfg=document.getElementById('seTimeBonusConfig');
+  if(cfg)cfg.style.display=scoringConfig.timeBonus?'flex':'none';
+  saveEventConfigToBackend();
+}
+
+function clearAllData(){
+  if(!confirm('⚠ NUCLEAR RESET\n\nThis will permanently delete:\n• All registered teams\n• All submissions & scores\n• All broadcast messages\n\nFeed posts, media items, intel fields, and vault codes will NOT be affected.\n\nThis cannot be undone. Continue?'))return;
+  if(!confirm('Are you absolutely sure? Type thinking...'))return;
+  
+  apiCall('clearAllData',{scope:'all'}).then(r=>{
+    if(r.ok){
+      // Clear local state
+      registeredTeams.length=0;
+      manualTeams.length=0;
+      eventSettings.expired=false;
+      renderLeaderboard();
+      renderFullLeaderboard();
+      renderTeamMonitor();
+      showPlayerBanner('text','All event data has been cleared.');
+    }
+  });
+}
+
+function updateEventStatus(){
+  const msg=document.getElementById('eventStatusMsg');
+  if(!msg)return;
+  if(!eventSettings.startTime||!eventSettings.endTime){
+    msg.textContent='Set both start and end times to activate event timer';msg.style.color='#666';return;
+  }
+  if(eventPaused){msg.textContent='⏸ Event is PAUSED';msg.style.color='var(--amber)';return}
+  const now=Date.now();
+  const start=new Date(eventSettings.startTime).getTime();
+  const end=new Date(eventSettings.endTime).getTime();
+  if(now<start){msg.textContent='⏳ Event has not started yet';msg.style.color='var(--amber)'}
+  else if(now>=start&&now<end){msg.textContent='🟢 Event is LIVE';msg.style.color='var(--green)'}
+  else{msg.textContent='🔴 Event has ended';msg.style.color='var(--red)'}
+}
+
+// Countdown mode functions
+function togglePause(){timerPaused=!timerPaused;document.getElementById('pauseBtn').textContent=timerPaused?'▶ RESUME':'⏸ PAUSE';document.getElementById('cTimer').classList.toggle('paused',timerPaused)}
+function setNewTime(){const v=document.getElementById('timerInput').value.trim();const parts=v.split(':');if(parts.length===3){timerSec=parseInt(parts[0])*3600+parseInt(parts[1])*60+parseInt(parts[2]);timerOriginal=timerSec;renderTimer()}else if(parts.length===2){timerSec=parseInt(parts[0])*60+parseInt(parts[1]);timerOriginal=timerSec;renderTimer()}}
+function resetTimer(){timerSec=timerOriginal;timerPaused=false;document.getElementById('pauseBtn').textContent='⏸ PAUSE';document.getElementById('cTimer').classList.remove('paused');renderTimer()}
+function renderTimer(){
+  const el=document.getElementById('cTimer');
+  const h=Math.floor(timerSec/3600),m=Math.floor((timerSec%3600)/60),s=timerSec%60;
+  el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function renderTimerLabel(label){
+  const labelEl=document.querySelector('.timer-label');
+  if(labelEl)labelEl.textContent=label;
+}
+
+function tickTimer(){
+  if(timerMode==='countdown'){
+    if(timerPaused||timerSec<=0)return;
+    timerSec--;renderTimer();
+    if(timerSec<=0)onTimerExpired();
+  }else if(timerMode==='event'){
+    if(!eventSettings.startTime||!eventSettings.endTime)return;
+    const now=Date.now();
+    const start=new Date(eventSettings.startTime).getTime();
+    const end=new Date(eventSettings.endTime).getTime();
+    const el=document.getElementById('cTimer');
+    if(now<start){
+      // Pre-event: count down to start
+      const diff=Math.max(0,Math.floor((start-now)/1000));
+      const h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60),s=diff%60;
+      el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+      el.classList.add('paused');
+      renderTimerLabel('Starts In');
+    }else if(now>=start&&now<end){
+      // Live: count down to end
+      const diff=Math.max(0,Math.floor((end-now)/1000));
+      const h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60),s=diff%60;
+      el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+      el.classList.remove('paused');
+      renderTimerLabel('Time Remaining');
+    }else{
+      // Expired
+      el.textContent='00:00:00';
+      el.classList.remove('paused');
+      renderTimerLabel('Event Ended');
+      if(!eventSettings.expired)onTimerExpired();
+    }
+  }
+}
+function onTimerExpired(){
+  eventSettings.expired=true;
+  updateEventStatus();
+  if(eventSettings.autoLock&&!isAdmin){
+    showEventLockOverlay();
+  }
+  if(eventSettings.showLeaderboardOnExpiry&&!isAdmin){
+    // Auto-show leaderboard after short delay
+    setTimeout(()=>openLeaderboard(),2000);
+  }
+}
+function showEventLockOverlay(){
+  let overlay=document.getElementById('eventLockOverlay');
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id='eventLockOverlay';
+    overlay.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;animation:fadeIn .5s ease';
+    overlay.innerHTML=`
+      <div style="font-family:Staatliches,cursive;font-size:32px;color:var(--red);letter-spacing:6px;text-transform:uppercase">⏱ Time's Up</div>
+      <div style="font-family:Chakra Petch,sans-serif;font-size:14px;color:#888;letter-spacing:1px">The event has ended. All submissions are now locked.</div>
+      <div style="font-family:IBM Plex Mono,monospace;font-size:11px;color:#555;letter-spacing:2px;margin-top:8px">Final results are being compiled...</div>
+      <button onclick="removeEventLockShowResults()" style="margin-top:20px;padding:10px 24px;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:var(--green);font-family:Saira,sans-serif;font-size:11px;letter-spacing:3px;cursor:pointer;border-radius:4px;text-transform:uppercase;font-weight:700">View Results</button>
+    `;
+    document.body.appendChild(overlay);
+    // Lock all interactive elements for players
+    document.querySelectorAll('.intel-exp-input,.v-key,.login-hw-btn,.intel-submit-btn').forEach(el=>{el.disabled=true;el.style.pointerEvents='none';el.style.opacity='.4'});
+    document.body.classList.add('event-locked');
+  }
+}
+function removeEventLockShowResults(){
+  const ov=document.getElementById('eventLockOverlay');
+  if(ov)ov.remove();
+  showPublicLeaderboard();
+}
+function getEventState(){
+  if(!eventSettings.startTime||!eventSettings.endTime)return'setup';
+  const now=Date.now();
+  const start=new Date(eventSettings.startTime).getTime();
+  const end=new Date(eventSettings.endTime).getTime();
+  if(eventPaused)return'paused';
+  if(now<start)return'pre-event';
+  if(now>=start&&now<end)return'live';
+  return'ended';
+}
+
+
+// ══════ SESSION MANAGEMENT ══════
+function openSessionMgmt(){closeAllAdminPanels();_instantShow(document.getElementById('sessionMgmtPanel'));showAdminTabs('sessionMgmtPanel')}
+function closeSessionMgmt(){const el=document.getElementById('sessionMgmtPanel');el.classList.remove('active');el.style.cssText='';hideAdminTabs()}
+function destroySessions(mode){
+  const labels={all:'DESTROY ALL SESSIONS (including yours)',teams:'DESTROY ALL TEAM SESSIONS',exceptMe:'DESTROY ALL SESSIONS EXCEPT YOURS'};
+  if(!confirm(labels[mode]+'?\n\nAffected users will be kicked to the login screen immediately.')){return}
+  const msg=document.getElementById('sessionMgmtMsg');
+  msg.className='ap-msg';msg.textContent='Destroying sessions...';
+  apiCall('destroySessions',{mode}).then(r=>{
+    if(r.ok){
+      msg.className='ap-msg ok';msg.textContent='✓ '+r.message;
+      if(mode==='exceptMe'&&r.newToken){
+        adminSession.adminToken=r.newToken;
+        saveSession();
+      }else if(mode==='all'){
+        setTimeout(()=>{localStorage.removeItem('cb_session');location.reload()},1500);
+      }
+    }else{
+      msg.className='ap-msg err';msg.textContent='✗ '+(r.error||'Failed');
+    }
+  });
+}
+
+// ══════ TUTORIAL SYSTEM ══════
+const TUTORIAL_STEPS_DEFAULT=[
+  {id:'grid',selector:'.console-grid',icon:'🖥️',title:'Mission Console',body:'These are your mission panels. Each one contains different intelligence and tools. Tap any panel to open it.',enabled:true},
+  {id:'feed',selector:'.crt-monitor[data-tile="feed"]',icon:'📡',title:'Intelligence Feed',body:'Surveillance imagery and intercepted visuals from the field. Check here for visual clues.',enabled:true},
+  {id:'media',selector:'.crt-monitor[data-tile="media"]',icon:'📁',title:'Evidence Locker',body:'Classified files and documents. Some may be vault-locked and require a code to access.',enabled:true},
+  {id:'intel',selector:'.crt-monitor[data-tile="intel"]',icon:'🔍',title:'Intel Submissions',body:'Enter your answers here. Fill in each field with the intelligence you\'ve gathered, then hit TRANSMIT.',enabled:true},
+  {id:'vault',selector:'.crt-monitor[data-tile="vault"]',icon:'🔐',title:'Vault',body:'Enter secret codes to unlock classified evidence. Codes can be found hidden throughout the mission.',enabled:true},
+  {id:'timer',selector:'.timer-block',icon:'⏱️',title:'Mission Timer',body:'Keep an eye on the clock. When time runs out, the mission is over.',enabled:true},
+  {id:'identity',selector:'.topbar-identity',icon:'🪪',title:'Your Identity',body:'Your team name and details. Tap to see your team card with member info and notifications.',enabled:true},
+  {id:'notepad',selector:'#notepadTrigger',icon:'📝',title:'Notepad',body:'Your personal scratchpad. Jot down clues, codes, or anything you need to remember.',enabled:true}
+];
+let tutorialSteps=JSON.parse(JSON.stringify(TUTORIAL_STEPS_DEFAULT));
+let tutorialEnabled=true;
+let _tutCurrentStep=0;
+let _tutIsPreview=false;
+
+function openTutorialConfig(){
+  closeAllAdminPanels();_instantShow(document.getElementById('tutorialConfigPanel'));showAdminTabs('tutorialConfigPanel');
+  renderTutorialStepList();
+  const tg=document.getElementById('tutGlobalToggle');
+  tg.classList.toggle('on',tutorialEnabled);
+  const bg=document.getElementById('briefingGlobalToggle');
+  bg.classList.toggle('on',!!briefingConfig.enabled);
+  // Restore briefing form
+  const st=document.getElementById('briefingSourceType');
+  st.value=briefingConfig.sourceType||'upload';
+  onBriefingTypeChange();
+  document.getElementById('briefingTitle').value=briefingConfig.title||'';
+  document.getElementById('briefingSubtitle').value=briefingConfig.subtitle||'';
+  if(briefingConfig.sourceType==='upload'){document.getElementById('briefingFileUrl').value=briefingConfig.videoUrl||''}
+  else{document.getElementById('briefingVideoUrl').value=briefingConfig.videoUrl||''}
+}
+function closeTutorialConfig(){const el=document.getElementById('tutorialConfigPanel');el.classList.remove('active');el.style.cssText='';hideAdminTabs()}
+
+function renderTutorialStepList(){
+  const list=document.getElementById('tutStepList');
+  list.innerHTML=tutorialSteps.map((s,i)=>{
+    const escaped=s.body.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return `<div class="tut-step-card" data-tut-idx="${i}">
+    <div class="tut-drag" onpointerdown="startTutDrag(event,${i})">⋮⋮</div>
+    <span class="tut-icon">${s.icon}</span>
+    <div class="tut-text"><textarea onchange="updateTutStep(${i},this.value)" onblur="updateTutStep(${i},this.value)">${escaped}</textarea></div>
+    <div class="tut-step-toggle${s.enabled?' on':''}" onclick="toggleTutStep(${i})"></div>
+  </div>`}).join('');
+}
+
+function toggleTutorialGlobal(){tutorialEnabled=!tutorialEnabled;document.getElementById('tutGlobalToggle').classList.toggle('on',tutorialEnabled);saveTutorialConfig()}
+function toggleTutStep(i){tutorialSteps[i].enabled=!tutorialSteps[i].enabled;renderTutorialStepList();saveTutorialConfig()}
+function updateTutStep(i,text){tutorialSteps[i].body=text;saveTutorialConfig()}
+
+// Tutorial step drag reorder
+let _tutDrag={active:false,fromIdx:null,ghost:null,overIdx:null};
+function startTutDrag(e,idx){
+  e.preventDefault();e.stopPropagation();
+  const target=e.target.closest('.tut-step-card');
+  if(!target)return;
+  _tutDrag={active:true,fromIdx:idx,ghost:null,overIdx:null};
+  const rect=target.getBoundingClientRect();
+  const ghost=target.cloneNode(true);ghost.className='drag-ghost';
+  ghost.style.width=rect.width+'px';ghost.style.height=rect.height+'px';
+  ghost.style.left=rect.left+'px';ghost.style.top=rect.top+'px';
+  document.body.appendChild(ghost);_tutDrag.ghost=ghost;
+  target.classList.add('dragging');
+  const ox=e.clientX-rect.left,oy=e.clientY-rect.top;
+  function onMove(ev){
+    const cx=ev.clientX||0,cy=ev.clientY||0;
+    ghost.style.left=(cx-ox)+'px';ghost.style.top=(cy-oy)+'px';
+    ghost.style.display='none';const el=document.elementFromPoint(cx,cy);ghost.style.display='';
+    document.querySelectorAll('.tut-step-card').forEach(c=>c.classList.remove('drag-over'));
+    if(el){const dt=el.closest('.tut-step-card');if(dt){const di=parseInt(dt.dataset.tutIdx);if(!isNaN(di)&&di!==idx){dt.classList.add('drag-over');_tutDrag.overIdx=di}}}
+  }
+  function onEnd(){
+    window.removeEventListener('pointermove',onMove);window.removeEventListener('pointerup',onEnd);
+    if(ghost)ghost.remove();
+    document.querySelectorAll('.tut-step-card').forEach(c=>c.classList.remove('dragging','drag-over'));
+    if(_tutDrag.overIdx!==null&&_tutDrag.overIdx!==_tutDrag.fromIdx){
+      const item=tutorialSteps.splice(_tutDrag.fromIdx,1)[0];
+      tutorialSteps.splice(_tutDrag.overIdx,0,item);
+      renderTutorialStepList();saveTutorialConfig();
+    }
+    _tutDrag={active:false,fromIdx:null,ghost:null,overIdx:null};
+  }
+  window.addEventListener('pointermove',onMove);window.addEventListener('pointerup',onEnd);
+}
+
+function saveTutorialConfig(){
+  apiCall('saveEventConfig',{config:{
+    tutorialEnabled:tutorialEnabled,
+    tutorialSteps:JSON.stringify(tutorialSteps),
+    briefingConfig:JSON.stringify(briefingConfig)
+  }});
+}
+
+function resetTutorialForAll(){
+  if(!confirm('Reset tutorial for all teams? Everyone will see the tutorial again on their next login.'))return;
+  apiCall('saveEventConfig',{config:{tutorialGen:String(Date.now())}}).then(r=>{
+    if(r.ok){const msg=document.getElementById('briefingMsg');if(msg){msg.className='ap-msg ok';msg.textContent='✓ Tutorial reset for all teams';setTimeout(()=>msg.textContent='',3000)}}
+  });
+}
+
+let _tutFromConfig=false;
+function previewTutorial(){
+  closeTutorialConfig();
+  _tutFromConfig=true;
+  _tutIsPreview=true;
+  if(isAdmin&&!document.body.classList.contains('player-preview')){
+    _tutWasAdmin=true;
+    togglePlayerPreview();
+    setTimeout(()=>startTutorial(),300);
+  }else{
+    startTutorial();
+  }
+}
+
+// Tutorial spotlight engine
+function startTutorial(){
+  const enabled=tutorialSteps.filter(s=>s.enabled);
+  if(!enabled.length)return;
+  // Ensure notepad is collapsed so the trigger spotlight is correct
+  if(typeof notepadOpen!=='undefined'&&notepadOpen){notepadOpen=false;document.getElementById('notepadPanel').classList.remove('open')}
+  _tutCurrentStep=0;
+  document.getElementById('tutorialOverlay').classList.add('active');
+  showTutorialStep();
+}
+
+function showTutorialStep(){
+  const enabled=tutorialSteps.filter(s=>s.enabled);
+  if(_tutCurrentStep<0||_tutCurrentStep>=enabled.length){endTutorial();return}
+  const step=enabled[_tutCurrentStep];
+  const el=document.querySelector(step.selector);
+  const spotlight=document.getElementById('tutSpotlight');
+  const tooltip=document.getElementById('tutTooltip');
+  const title=document.getElementById('tutTooltipTitle');
+  const body=document.getElementById('tutTooltipBody');
+  const dots=document.getElementById('tutDots');
+  const backBtn=document.getElementById('tutBtnBack');
+  const nextBtn=document.getElementById('tutBtnNext');
+
+  title.textContent=step.title;
+  body.textContent=step.body;
+  dots.innerHTML=enabled.map((_,i)=>`<div class="tut-tooltip-dot${i===_tutCurrentStep?' active':''}"></div>`).join('');
+  backBtn.style.display=_tutCurrentStep===0?'none':'';
+  nextBtn.textContent=_tutCurrentStep===enabled.length-1?'DONE':'NEXT';
+
+  // Reset tooltip transform in case it was centered previously
+  tooltip.style.transform='';
+
+  const isVisible=el&&(el.offsetParent!==null||getComputedStyle(el).position==='fixed')&&getComputedStyle(el).display!=='none'&&el.getBoundingClientRect().width>0;
+  if(isVisible){
+    // Scroll into view if needed
+    el.scrollIntoView({behavior:'smooth',block:'nearest'});
+    // Wait for scroll to settle then position
+    setTimeout(()=>{
+      const rect=el.getBoundingClientRect();
+      const pad=8;
+      // Clamp spotlight within viewport
+      const top=Math.max(4,rect.top-pad);
+      const left=Math.max(4,rect.left-pad);
+      const w=Math.min(rect.width+pad*2,window.innerWidth-left-4);
+      const h=Math.min(rect.height+pad*2,window.innerHeight-top-4);
+      spotlight.style.left=left+'px';
+      spotlight.style.top=top+'px';
+      spotlight.style.width=w+'px';
+      spotlight.style.height=h+'px';
+      spotlight.style.display='block';
+
+      // Position tooltip below or above element
+      const tipH=180;
+      if(top+h+tipH+20<window.innerHeight){
+        tooltip.style.top=(top+h+12)+'px';
+        tooltip.style.bottom='auto';
+      }else if(top-tipH-12>0){
+        tooltip.style.top=(top-tipH-12)+'px';
+        tooltip.style.bottom='auto';
+      }else{
+        tooltip.style.top='auto';
+        tooltip.style.bottom='20px';
+      }
+      tooltip.style.left=Math.max(16,Math.min(left,window.innerWidth-340))+'px';
+    },150);
+  }else{
+    // Element not visible or not found — show tooltip centered
+    spotlight.style.display='none';
+    tooltip.style.top='50%';tooltip.style.left='50%';
+    tooltip.style.transform='translate(-50%,-50%)';
+  }
+}
+
+function tutorialStep(dir){
+  const enabled=tutorialSteps.filter(s=>s.enabled);
+  _tutCurrentStep+=dir;
+  if(_tutCurrentStep>=enabled.length){endTutorial();return}
+  if(_tutCurrentStep<0)_tutCurrentStep=0;
+  showTutorialStep();
+}
+
+let _tutWasAdmin=false;
+function replayTutorial(){
+  _tutWasAdmin=false;
+  if(isAdmin&&!document.body.classList.contains('player-preview')){
+    _tutWasAdmin=true;
+    togglePlayerPreview();
+    setTimeout(()=>{_tutIsPreview=true;startTutorial()},300);
+  }else{
+    _tutIsPreview=true;
+    startTutorial();
+  }
+}
+
+function endTutorial(){
+  document.getElementById('tutorialOverlay').classList.remove('active');
+  document.getElementById('tutSpotlight').style.display='none';
+  if(!_tutIsPreview){
+    const teamId=currentVaultTeam?.id||'unknown';
+    try{localStorage.setItem('cb_tutSeen_'+teamId,localStorage.getItem('cb_tutorialGen')||'1')}catch(e){}
+    checkShowBriefing();
+  }
+  if(_tutWasAdmin){
+    _tutWasAdmin=false;
+    togglePlayerPreview();
+  }
+  const wasFromConfig=_tutFromConfig;
+  _tutIsPreview=false;
+  _tutFromConfig=false;
+  if(wasFromConfig){setTimeout(()=>openTutorialConfig(),200)}
+}
+
+function shouldShowTutorial(){
+  if(!tutorialEnabled)return false;
+  if(isAdmin&&!document.body.classList.contains('player-preview'))return false;
+  const teamId=currentVaultTeam?.id;
+  if(!teamId)return false;
+  const seen=localStorage.getItem('cb_tutSeen_'+teamId)||'';
+  const gen=localStorage.getItem('cb_tutorialGen')||'1';
+  return seen!==gen;
+}
+
+// ══════ MISSION BRIEFING ══════
+let briefingConfig={enabled:false,sourceType:'upload',videoUrl:'',title:'',subtitle:''};
+
+function toggleBriefingGlobal(){briefingConfig.enabled=!briefingConfig.enabled;document.getElementById('briefingGlobalToggle').classList.toggle('on',briefingConfig.enabled);saveTutorialConfig()}
+
+function onBriefingTypeChange(){
+  const type=document.getElementById('briefingSourceType').value;
+  briefingConfig.sourceType=type;
+  document.getElementById('briefingUploadZone').style.display=type==='upload'?'':'none';
+  document.getElementById('briefingUrlZone').style.display=type!=='upload'?'':'none';
+  saveTutorialConfig();
+}
+
+function saveBriefingConfig(){
+  const type=document.getElementById('briefingSourceType').value;
+  briefingConfig.sourceType=type;
+  briefingConfig.title=document.getElementById('briefingTitle').value.trim();
+  briefingConfig.subtitle=document.getElementById('briefingSubtitle').value.trim();
+  if(type==='upload'){briefingConfig.videoUrl=document.getElementById('briefingFileUrl').value.trim()}
+  else{briefingConfig.videoUrl=document.getElementById('briefingVideoUrl').value.trim()}
+  saveTutorialConfig();
+}
+
+function uploadBriefingVideo(input){
+  if(!input.files||!input.files[0])return;
+  const file=input.files[0];
+  const msg=document.getElementById('briefingMsg');
+  msg.className='ap-msg';msg.textContent='Uploading video...';
+  // Use the same upload ticket system as media
+  apiCall('getUploadUrl',{filename:file.name,contentType:file.type}).then(r=>{
+    if(!r.ok){msg.className='ap-msg err';msg.textContent='✗ '+r.error;return}
+    const formData=new FormData();formData.append('file',file);
+    fetch(r.uploadUrl,{method:'POST',headers:{'X-Upload-Ticket':r.ticket},body:formData}).then(resp=>resp.json()).then(u=>{
+      if(u.ok){
+        briefingConfig.videoUrl=u.url;
+        document.getElementById('briefingFileUrl').value=u.url;
+        msg.className='ap-msg ok';msg.textContent='✓ Video uploaded';
+        saveBriefingConfig();
+      }else{msg.className='ap-msg err';msg.textContent='✗ Upload failed'}
+    }).catch(()=>{msg.className='ap-msg err';msg.textContent='✗ Upload error'});
+  });
+}
+
+function resetBriefingForAll(){
+  if(!confirm('Reset briefing for all teams? Everyone will see the briefing again on their next login.'))return;
+  apiCall('saveEventConfig',{config:{briefingGen:String(Date.now())}}).then(r=>{
+    if(r.ok){const msg=document.getElementById('briefingMsg');if(msg){msg.className='ap-msg ok';msg.textContent='✓ Briefing reset for all teams';setTimeout(()=>msg.textContent='',3000)}}
+  });
+}
+
+function previewBriefing(){
+  closeTutorialConfig();
+  showBriefingModal();
+}
+
+function checkShowBriefing(){
+  if(!briefingConfig.enabled||!briefingConfig.videoUrl)return;
+  if(isAdmin&&!document.body.classList.contains('player-preview'))return;
+  const teamId=currentVaultTeam?.id;
+  if(!teamId)return;
+  const seen=localStorage.getItem('cb_briefSeen_'+teamId)||'';
+  const gen=localStorage.getItem('cb_briefingGen')||'1';
+  if(seen===gen)return;
+  showBriefingModal();
+}
+
+function showBriefingModal(){
+  const modal=document.getElementById('briefingModal');
+  const container=document.getElementById('briefingVideoContainer');
+  const titleEl=document.getElementById('briefingModalTitle');
+  const subEl=document.getElementById('briefingModalSubtitle');
+  titleEl.textContent=briefingConfig.title||'Mission Briefing';
+  subEl.textContent=briefingConfig.subtitle||'';
+  // Render video based on source type
+  const url=briefingConfig.videoUrl||'';
+  if(briefingConfig.sourceType==='youtube'||url.includes('youtube.com')||url.includes('youtu.be')||url.includes('vimeo.com')){
+    let embedUrl=url;
+    const ytMatch=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+    if(ytMatch)embedUrl='https://www.youtube.com/embed/'+ytMatch[1]+'?autoplay=1';
+    const vimeoMatch=url.match(/vimeo\.com\/(\d+)/);
+    if(vimeoMatch)embedUrl='https://player.vimeo.com/video/'+vimeoMatch[1]+'?autoplay=1';
+    container.innerHTML=`<iframe src="${embedUrl}" allow="autoplay;fullscreen" allowfullscreen></iframe>`;
+  }else{
+    container.innerHTML=`<video src="${url}" controls autoplay playsinline></video>`;
+  }
+  modal.classList.add('active');
+}
+
+function dismissBriefing(){
+  const modal=document.getElementById('briefingModal');
+  modal.classList.remove('active');
+  // Stop video
+  const container=document.getElementById('briefingVideoContainer');
+  container.innerHTML='';
+  // Mark seen
+  const teamId=currentVaultTeam?.id;
+  if(teamId){
+    try{localStorage.setItem('cb_briefSeen_'+teamId,localStorage.getItem('cb_briefingGen')||'1')}catch(e){}
+  }
+}
+
+// ══════ INTEL DRAG REORDER ══════
+// Extend the existing drag system to support intel fields
+function startIntelDrag(e,idx){
+  e.preventDefault();e.stopPropagation();
+  const target=e.target.closest('.intel-exp-row');
+  if(!target)return;
+  _drag={active:true,type:'intel',fromIdx:idx,ghost:null,overIdx:null};
+  const rect=target.getBoundingClientRect();
+  const ghost=target.cloneNode(true);ghost.className='drag-ghost';
+  ghost.style.width=rect.width+'px';ghost.style.height=rect.height+'px';
+  ghost.style.left=rect.left+'px';ghost.style.top=rect.top+'px';
+  document.body.appendChild(ghost);_drag.ghost=ghost;
+  target.classList.add('dragging');
+  const ox=e.clientX-rect.left,oy=e.clientY-rect.top;
+  function onMove(ev){
+    const cx=ev.clientX||0,cy=ev.clientY||0;
+    ghost.style.left=(cx-ox)+'px';ghost.style.top=(cy-oy)+'px';
+    ghost.style.display='none';const el=document.elementFromPoint(cx,cy);ghost.style.display='';
+    document.querySelectorAll('.intel-exp-row[data-idx]').forEach(c=>c.classList.remove('drag-over'));
+    if(el){const dt=el.closest('.intel-exp-row[data-idx]');if(dt){const di=parseInt(dt.dataset.idx);if(!isNaN(di)&&di!==idx){dt.classList.add('drag-over');_drag.overIdx=di}}}
+  }
+  function onEnd(){
+    window.removeEventListener('pointermove',onMove);window.removeEventListener('pointerup',onEnd);
+    if(ghost)ghost.remove();
+    document.querySelectorAll('.intel-exp-row').forEach(c=>c.classList.remove('dragging','drag-over'));
+    if(_drag.overIdx!==null&&_drag.overIdx!==_drag.fromIdx){
+      const item=intelFields.splice(_drag.fromIdx,1)[0];
+      intelFields.splice(_drag.overIdx,0,item);
+      renderIntelForm();renderGrid();saveIntelFieldsToBackend();
+    }
+    _drag={active:false,type:null,fromIdx:null,ghost:null,overIdx:null};
+  }
+  window.addEventListener('pointermove',onMove);window.addEventListener('pointerup',onEnd);
+}
+
+// ══════ APPLY TUTORIAL/BRIEFING CONFIG FROM BACKEND ══════
+function applyTutorialBriefingConfig(cfg){
+  if(cfg.tutorialEnabled!==undefined)tutorialEnabled=(cfg.tutorialEnabled==='true'||cfg.tutorialEnabled===true);
+  if(cfg.tutorialSteps){try{tutorialSteps=JSON.parse(cfg.tutorialSteps)}catch(e){}}
+  if(cfg.tutorialGen){try{localStorage.setItem('cb_tutorialGen',String(cfg.tutorialGen))}catch(e){}}
+  if(cfg.briefingGen){try{localStorage.setItem('cb_briefingGen',String(cfg.briefingGen))}catch(e){}}
+  if(cfg.briefingConfig){try{briefingConfig=JSON.parse(cfg.briefingConfig)}catch(e){}}
+}
+
+// ══════ FUTURE UPGRADES (NOTED) ══════
+// TODO: Pre-event Lobby — Holding screen with countdown for teams before event starts
+// TODO: Hint System — Timed or purchasable hints per puzzle, configurable in admin
+// TODO: Analytics Dashboard — Team activity heatmaps, completion rates, time-per-puzzle
+// TODO: Puzzle Builder — Multi-stage puzzle flow with progression gating
+// ══════ END FUTURE NOTES ══════
+setInterval(tickTimer,1000);
+// Initial dynamic renders — defer renderGrid to after restoreSession
+// so cached posts/media/intel are in memory when the grid first paints.
+// renderGrid() will be called by restoreSession → applyScreenAndPanel,
+// or by loadEventData if no session exists.
+renderIntelForm();
+buildRegForm();
+updateLandingForMode();
+
+// ═══════════════════════════════════════════════════════════════
+// SESSION PERSISTENCE
+// ═══════════════════════════════════════════════════════════════
+
+function saveSession(){
+  try{
+    // Only save when user is authenticated on the console screen
+    if(_currentScreen!=='consoleScreen')return;
+    if(!currentVaultTeam)return;
+    const data={type:isAdmin?'admin':'team',team:currentVaultTeam};
+    if(isAdmin)data.adminSession=adminSession;
+    // Save which panel is open so refresh restores exactly where the user was
+    const openPanelEl=document.querySelector('.expanded-panel.visible');
+    if(openPanelEl)data.panel=openPanelEl.id;
+    // Save feed view state so focus mode + post index survive refresh
+    data.feedView=currentFeedView;
+    data.feedPost=currentPost;
+    localStorage.setItem('cb_session',JSON.stringify(data));
+  }catch(e){}
+}
+
+// ── Game State Persistence ──
+// Persists vault progress, intel answers, cooldown, and elapsed timer
+// so browser close / refresh doesn't lose gameplay progress.
+// Keyed per team to prevent cross-team bleed.
+
+function _gsKey(suffix){
+  const tid=currentVaultTeam?.id||'UNKNOWN';
+  return 'cb_gs_'+tid+'_'+suffix;
+}
+
+function saveGameState(){
+  try{
+    if(!currentVaultTeam)return;
+
+    // 1. Vault unlock progress — which codes have been cracked
+    const unlocks={};
+    vaultCodes.forEach(c=>{if(c.unlocked)unlocks[c.code]={at:c.unlockedAt}});
+    localStorage.setItem(_gsKey('vaultUnlocks'),JSON.stringify(unlocks));
+
+    // 2. Vault fail counters
+    localStorage.setItem(_gsKey('vaultFails'),JSON.stringify({
+      failCount:vkFailCount,
+      totalFails:vkTotalFails
+    }));
+
+    // 3. Vault cooldown — store absolute end time so it survives browser close
+    // _vaultLockoutEnd is set by triggerVaultLockout()
+    if(_vaultLockoutEnd){
+      localStorage.setItem(_gsKey('vaultLockout'),JSON.stringify({endTime:_vaultLockoutEnd}));
+    }else{
+      localStorage.removeItem(_gsKey('vaultLockout'));
+    }
+
+    // 4. Intel form answers (typed but not yet submitted)
+    const intelAnswers={};
+    document.querySelectorAll('.intel-exp-input').forEach(inp=>{
+      const idx=inp.dataset.idx;
+      if(idx!==undefined&&inp.value.trim())intelAnswers[idx]=inp.value;
+    });
+    localStorage.setItem(_gsKey('intelDraft'),JSON.stringify(intelAnswers));
+
+    // 5. Submission status
+    localStorage.setItem(_gsKey('isSubmitted'),isSubmitted?'1':'0');
+
+    // 6. Elapsed timer — store session start time (absolute) so we can compute elapsed on restore
+    if(!_sessionStartTime)_sessionStartTime=Date.now()-elapsedSec*1000;
+    localStorage.setItem(_gsKey('sessionStart'),String(_sessionStartTime));
+
+  }catch(e){console.warn('saveGameState error:',e)}
+}
+
+function restoreGameState(){
+  try{
+    if(!currentVaultTeam)return;
+
+    // 1. Vault unlock progress
+    const unlockRaw=localStorage.getItem(_gsKey('vaultUnlocks'));
+    if(unlockRaw){
+      const unlocks=JSON.parse(unlockRaw);
+      vaultCodes.forEach(c=>{
+        const u=unlocks[c.code];
+        if(u){c.unlocked=true;c.unlockedAt=u.at||new Date().toISOString();
+          // Also unlock the linked media item
+          if(typeof c.linkedMediaIdx==='number'&&mediaItems[c.linkedMediaIdx]){
+            mediaItems[c.linkedMediaIdx].vaultLocked=false;
+          }
+        }
+      });
+    }
+
+    // 2. Vault fail counters
+    const failRaw=localStorage.getItem(_gsKey('vaultFails'));
+    if(failRaw){
+      const f=JSON.parse(failRaw);
+      vkFailCount=f.failCount||0;
+      vkTotalFails=f.totalFails||0;
+    }
+
+    // 3. Vault cooldown — check if lockout is still active
+    const lockoutRaw=localStorage.getItem(_gsKey('vaultLockout'));
+    if(lockoutRaw){
+      const l=JSON.parse(lockoutRaw);
+      const remaining=Math.ceil((l.endTime-Date.now())/1000);
+      if(remaining>0){
+        // Cooldown still active — resume it
+        _vaultLockoutEnd=l.endTime;
+        triggerVaultLockout(remaining,'SECURITY LOCKOUT','Cooldown in progress · '+remaining+'s remaining');
+      }else{
+        // Cooldown expired while browser was closed — clear it
+        localStorage.removeItem(_gsKey('vaultLockout'));
+        _vaultLockoutEnd=null;
+        vkFailCount=0;vkTotalFails=0;
+        localStorage.setItem(_gsKey('vaultFails'),JSON.stringify({failCount:0,totalFails:0}));
+      }
+    }
+
+    // 4. Submission status
+    const subRaw=localStorage.getItem(_gsKey('isSubmitted'));
+    if(subRaw==='1')isSubmitted=true;
+
+    // 5. Elapsed timer — compute from stored start time
+    const startRaw=localStorage.getItem(_gsKey('sessionStart'));
+    if(startRaw){
+      _sessionStartTime=parseInt(startRaw);
+      elapsedSec=Math.floor((Date.now()-_sessionStartTime)/1000);
+    }
+
+  }catch(e){console.warn('restoreGameState error:',e)}
+}
+
+function restoreIntelDraft(){
+  // Called after renderIntelForm to restore typed answers
+  try{
+    if(!currentVaultTeam)return;
+    const raw=localStorage.getItem(_gsKey('intelDraft'));
+    if(!raw)return;
+    const answers=JSON.parse(raw);
+    document.querySelectorAll('.intel-exp-input').forEach(inp=>{
+      const idx=inp.dataset.idx;
+      if(idx!==undefined&&answers[idx]){inp.value=answers[idx]}
+    });
+  }catch(e){}
+}
+
+function clearGameState(){
+  try{
+    if(!currentVaultTeam)return;
+    const prefixes=['vaultUnlocks','vaultFails','vaultLockout','intelDraft','isSubmitted','sessionStart'];
+    prefixes.forEach(p=>localStorage.removeItem(_gsKey(p)));
+  }catch(e){}
+}
+
+// Auto-save game state periodically and on visibility change
+setInterval(()=>{if(currentVaultTeam&&_currentScreen==='consoleScreen')saveGameState()},5000);
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'&&currentVaultTeam&&_currentScreen==='consoleScreen'){
+    saveGameState();saveSession();
+  }
+});
+
+function clearSession(){
+  try{
+    clearGameState();
+    localStorage.removeItem('cb_session');
+    localStorage.removeItem('cb_posts');
+    localStorage.removeItem('cb_media');
+    localStorage.removeItem('cb_intel');
+    _vaultLockoutEnd=null;
+    _sessionStartTime=null;
+  }catch(e){}
+}
+
+function restoreSession(){
+  try{
+    const raw=localStorage.getItem('cb_session');
+    if(!raw)return false;
+    const data=JSON.parse(raw);
+    if(!data||!data.team)return false;
+
+    const targetScreen='consoleScreen';
+    const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
+
+    // Restore cached content (posts/media/intel) from localStorage BEFORE rendering
+    // This makes images appear instantly instead of waiting 3-5s for backend API
+    _restoreContentCache();
+
+    // Detect mobile for conditional panel restore
+    const _isMobileRestore=window.innerWidth<=768;
+
+    function applyScreenAndPanel(){
+      // Set up screen first (hidden — opacity:0 via .screen default)
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+      document.getElementById(targetScreen).classList.add('active');
+      _currentScreen=targetScreen;
+      const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',true);
+      document.getElementById('notepadTrigger').classList.add('visible');
+
+      // Open panel SYNCHRONOUSLY before any paint if one was saved
+      // On mobile: skip panel restore — land on console grid so user has context
+      // On desktop: restore exactly where they were (prevents flash)
+      if(data.panel&&panelMap[data.panel]&&!_isMobileRestore){
+        const panelEl=document.getElementById(data.panel);
+        if(panelEl){
+          document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));
+          panelEl.classList.add('visible');
+          // Show overlay immediately, no transition
+          overlay.style.cssText='opacity:1;pointer-events:all;transition:none';
+          overlay.classList.add('active');
+          // Render panel content immediately with whatever is in memory
+          // Backend refresh will update it in the background
+          const t=panelMap[data.panel];
+          if(t==='feed'){
+            renderFeed();
+            // Restore exact feed view state — grid or focus mode + post index
+            if(data.feedView==='single'&&typeof data.feedPost==='number'){
+              currentPost=data.feedPost;
+              setFeedView('single');
+            }else{
+              setFeedView('grid');
+            }
+          }
+          if(t==='media')renderMedia();
+          if(t==='intel'){renderIntelForm();restoreIntelDraft()}
+          if(t==='vault')renderVaultPanel();
+        }
+      }
+    }
+
+    if(data.type==='admin'&&data.adminSession){
+      adminSession=data.adminSession;
+      isAdmin=true;
+      document.body.classList.add('admin-mode');
+      currentVaultTeam=data.team;
+      updateConsoleForTeam(currentVaultTeam);
+      syncAdminDropdownToggles();
+      restoreGameState();
+      applyScreenAndPanel();
+      // Apply cached theme + operation name BEFORE first renderGrid
+      try{
+        const ct=localStorage.getItem('cb_gridTheme');
+        if(ct){_currentGridTheme=ct;applyGridTheme(ct)}
+        const cn=localStorage.getItem('cb_opName');
+        if(cn){operationName=cn;const el=document.getElementById('consoleTitle');if(el)el.textContent='◈ '+cn;document.title=cn+' — Console'}
+        const cf=localStorage.getItem('cb_opFont');
+        if(cf){operationFont=cf;applyOperationFont(cf)}
+      }catch(e){}
+      renderGrid(); // Render grid with cached data + theme immediately
+      startElapsedTimer();
+      // Load fresh data from backend in background — UI already showing
+      loadEventData();
+      return true;
+    }else if(data.type==='team'&&data.team.id){
+      currentVaultTeam=data.team;
+      if(!registeredTeams.find(r=>r.id===data.team.id))registeredTeams.push(currentVaultTeam);
+      updateConsoleForTeam(currentVaultTeam);
+      restoreGameState();
+      applyScreenAndPanel();
+      // Apply cached theme + operation name BEFORE first renderGrid
+      try{
+        const ct=localStorage.getItem('cb_gridTheme');
+        if(ct){_currentGridTheme=ct;applyGridTheme(ct)}
+        const cn=localStorage.getItem('cb_opName');
+        if(cn){operationName=cn;const el=document.getElementById('consoleTitle');if(el)el.textContent='◈ '+cn;document.title=cn+' — Console'}
+        const cf=localStorage.getItem('cb_opFont');
+        if(cf){operationFont=cf;applyOperationFont(cf)}
+      }catch(e){}
+      renderGrid(); // Render grid with cached data + theme immediately
+      startElapsedTimer();
+      // Load config and fresh content in background — UI already showing
+      apiCall('getEventConfig').then(cfg=>{
+        if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
+        // Re-sync vault codes after fresh data arrives, then re-apply unlock state
+        syncVaultCodesFromMedia();
+        restoreGameState();
+        // Re-render panel with fresh backend data once it arrives
+        // On mobile: skip — user is on console grid
+        if(data.panel&&panelMap[data.panel]&&!_isMobileRestore){
+          const t=panelMap[data.panel];
+          if(t==='feed'){
+            renderFeed();
+            if(data.feedView==='single'&&typeof data.feedPost==='number'){
+              currentPost=data.feedPost;
+              setFeedView('single');
+            }else{
+              setFeedView(currentFeedView);
+            }
+          }
+          if(t==='media')renderMedia();
+          if(t==='intel'){renderIntelForm();restoreIntelDraft()}
+          if(t==='vault')renderVaultPanel();
+        }
+        // Also update grid badges after vault state is restored
+        renderGrid();
+      });
+      startBroadcastPolling();
+      return true;
+    }
+  }catch(e){console.error('restoreSession error:',e);}
+  return false;
+}
+
+// Auto-restore on page load
+if(!restoreSession()){
+  renderGrid(); // No session — render default grid
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BROWSER HISTORY — Back button / gesture support (Fix #3)
+// ═══════════════════════════════════════════════════════════════
+// Push history states when navigating so Android back gesture / iOS
+// swipe-back and browser back button work instead of leaving the site.
+(function(){
+  let _navDepth=0; // track how deep we are to avoid over-popping
+  const _historyEnabled=true;
+
+  // Push a state when navigating deeper
+  window._histPush=function(stateType){
+    if(!_historyEnabled)return;
+    _navDepth++;
+    history.pushState({type:stateType,depth:_navDepth},'');
+  };
+
+  // Pop handler — reverse the last navigation
+  window.addEventListener('popstate',function(e){
+    if(!_historyEnabled)return;
+    const state=e.state;
+    _navDepth=Math.max(0,_navDepth-1);
+
+    // Determine what to close based on current UI state
+    // Priority: media viewer > feed focus > expanded panel > admin panel > screen nav
+
+    // 1. Media viewer open?
+    const mv=document.getElementById('mediaViewer');
+    if(mv&&mv.classList.contains('active')){
+      closeMediaViewer();return;
+    }
+
+    // 2. Feed in focus/single mode?
+    const feedPanel=document.getElementById('expFeed');
+    if(feedPanel&&feedPanel.classList.contains('visible')&&currentFeedView==='single'){
+      setFeedView('grid');return;
+    }
+
+    // 3. Any expanded panel open?
+    const openExpPanel=document.querySelector('.expanded-panel.visible');
+    if(openExpPanel){
+      closePanel();return;
+    }
+
+    // 4. Any admin panel open?
+    const adminIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','dashboardPanel','portalUsersPanel','scoringPanel','registrationPanel','appearancePanel','sessionMgmtPanel','tutorialConfigPanel'];
+    for(const id of adminIds){
+      const el=document.getElementById(id);
+      if(el&&el.classList.contains('active')){
+        if(id==='adminPanel')closeEventSettings();
+        else if(id==='broadcastPanel')closeBroadcast();
+        else if(id==='leaderboardModule')closeLeaderboard();
+        else if(id==='keysCodesPanel')closeKeysCodes();
+        else if(id==='dashboardPanel')closeDashboard();
+        else if(id==='portalUsersPanel')closePortalUsers();
+        else if(id==='scoringPanel')closeScoringPanel();
+        else if(id==='registrationPanel')closeRegistrationPanel();
+        else if(id==='appearancePanel')closeAppearancePanel();
+        return;
+      }
+    }
+
+    // 5. On console screen — go back to landing
+    const curScreen=document.querySelector('.screen.active')?.id||'';
+    if(curScreen==='consoleScreen'&&!isAdmin){
+      // Don't actually log out — just show landing. User can log back in easily.
+      showScreen('landingScreen');return;
+    }
+    if(curScreen==='loginScreen'){loginBack();return}
+    if(curScreen==='regScreen'){regBack();return}
+
+    // 6. Nothing to go back to — push a state so we don't leave the site
+    if(_navDepth<=0){
+      history.pushState({type:'root'},'');
+      _navDepth=1;
+    }
+  });
+
+  // Seed initial state so first back press doesn't leave the site
+  if(!history.state){
+    history.replaceState({type:'root',depth:0},'');
+  }
+})();
+
+// ── Build stamp & cache staleness check (admin only) ──
+// BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
+// file, this value won't change even after you push a new version.
+const _BUILD_ID = '20260223-0730';
+// Security: HTML sanitizer to prevent XSS
+function sanitizeHTML(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')}
+(function(){
+  function showBuildStamp(status,hint){
+    if(!document.body.classList.contains('admin-mode'))return;
+    const el=document.getElementById('buildStamp');
+    if(!el)return;
+    el.style.display='block';
+    el.textContent='BUILD '+_BUILD_ID+' · '+status;
+    el.style.color=status.startsWith('✓')?'#2a6a3a':status.startsWith('⚠')?'#8a6a10':'#333';
+    if(hint)el.title=hint;
+  }
+
+  function checkCache(){
+    if(!document.body.classList.contains('admin-mode'))return;
+    // Fetch the page HEAD with cache-bypass to get current server ETag
+    fetch(window.location.pathname+'?_v='+Date.now(),{method:'HEAD',cache:'no-store'})
+      .then(r=>{
+        const etag=r.headers.get('etag')||r.headers.get('cf-cache-status')||'';
+        const lastEtag=localStorage.getItem('cb_last_etag');
+        if(!lastEtag){
+          // First visit — store it
+          localStorage.setItem('cb_last_etag',etag);
+          showBuildStamp('✓ Cache OK','ETag stored. Future refreshes will detect stale cache.');
+        } else if(etag && etag!==lastEtag){
+          // ETag changed — new file on server, update stored value
+          localStorage.setItem('cb_last_etag',etag);
+          showBuildStamp('✓ Fresh deploy detected','Server returned a new ETag. You are running the latest version.');
+        } else {
+          // ETag unchanged — either truly fresh or Cloudflare cached
+          const cfStatus=r.headers.get('cf-cache-status')||'';
+          if(cfStatus==='HIT'){
+            showBuildStamp('⚠ Cloudflare cache HIT','Cloudflare is serving a cached version. Go to Cloudflare Pages → your project → Purge Cache, then hard-refresh.');
+          } else {
+            showBuildStamp('✓ Cache OK'+(cfStatus?' · CF: '+cfStatus:''),'File appears current.');
+          }
+        }
+      })
+      .catch(()=>showBuildStamp('· '+_BUILD_ID,'Could not verify cache status.'));
+  }
+
+  setTimeout(()=>checkCache(),1200);
+  document.addEventListener('adminReady',()=>setTimeout(checkCache,800));
+})();
+
+// Apply stored operation font via centralized helper
+if(operationFont)applyOperationFont(operationFont);
+
+// ═══════════════════════════════════════════════════════════════
+// SECURITY HARDENING
+// ═══════════════════════════════════════════════════════════════
+
+// Block right-click context menu (non-admin)
+document.addEventListener('contextmenu',e=>{
+  if(!isAdmin){e.preventDefault();return false}
+});
+
+// Block keyboard shortcuts for dev tools & view source (non-admin)
+document.addEventListener('keydown',e=>{
+  if(isAdmin)return; // Admins bypass all restrictions
+  // F12
+  if(e.key==='F12'){e.preventDefault();return false}
+  // Ctrl+Shift+I (Dev tools)
+  if(e.ctrlKey&&e.shiftKey&&e.key==='I'){e.preventDefault();return false}
+  // Ctrl+Shift+J (Console)
+  if(e.ctrlKey&&e.shiftKey&&e.key==='J'){e.preventDefault();return false}
+  // Ctrl+Shift+C (Element inspector)
+  if(e.ctrlKey&&e.shiftKey&&e.key==='C'){e.preventDefault();return false}
+  // Ctrl+U (View source)
+  if(e.ctrlKey&&e.key==='u'){e.preventDefault();return false}
+  // Ctrl+S (Save page)
+  if(e.ctrlKey&&e.key==='s'){e.preventDefault();return false}
+  // Ctrl+P (Print)
+  if(e.ctrlKey&&e.key==='p'){e.preventDefault();return false}
+});
+
+// Block drag on images (prevents drag-to-desktop saving)
+document.addEventListener('dragstart',e=>{
+  if(!isAdmin&&(e.target.tagName==='IMG'||e.target.tagName==='VIDEO')){e.preventDefault()}
+});
+
+// Disable text selection on feed & media content (non-admin)
+document.addEventListener('selectstart',e=>{
+  if(!isAdmin&&(e.target.closest('.feed-grid')||e.target.closest('#mvBody'))){e.preventDefault()}
+});
+
+// Clear console periodically to discourage snooping
+if(!isAdmin){
+  const _cc=()=>{try{console.clear()}catch(e){}};
+  setInterval(_cc,3000);
+  // Override console methods for non-admin
+  const _noop=()=>{};
+  if(!window._adminConsole){
+    window._adminConsole={log:console.log,warn:console.warn,error:console.error};
+  }
+}
+
+// Detect dev tools open (debugger pause — non-admin only)
+// Softened: shows overlay warning instead of destroying the page
+let _devtoolsWarned=false;
+setInterval(()=>{
+  if(isAdmin||_devtoolsWarned)return;
+  const t=performance.now();
+  debugger;
+  if(performance.now()-t>100){
+    _devtoolsWarned=true;
+    const overlay=document.createElement('div');
+    overlay.id='devtoolsOverlay';
+    overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-family:monospace';
+    overlay.innerHTML='<div style="color:#ff3333;font-size:18px;letter-spacing:3px">⚠ DEVELOPER TOOLS DETECTED</div><div style="color:#888;font-size:13px;max-width:400px;text-align:center;line-height:1.6">Please close developer tools to continue the experience.</div><button onclick="this.parentElement.remove();_devtoolsWarned=false" style="margin-top:12px;padding:10px 28px;background:none;border:1px solid #555;color:#aaa;cursor:pointer;font-family:monospace;letter-spacing:2px;border-radius:4px">DISMISS</button>';
+    document.body.appendChild(overlay);
+  }
+},4000);
+
+// Restore console for admin after login
+function unlockAdminConsole(){
+  if(window._adminConsole){
+    console.log=window._adminConsole.log;
+    console.warn=window._adminConsole.warn;
+    console.error=window._adminConsole.error;
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// CONSOLE GRID THEMES
+// ═══════════════════════════════════════════════════════════════
+
+const _gridThemes=[
+  {id:'crt',       name:'CRT Monitor'},
+  {id:'glass',     name:'Glass Morphism'},
+  {id:'cyberpunk', name:'Neon Cyberpunk'},
+  {id:'military',  name:'Military Ops'},
+  {id:'holo',      name:'Holographic'},
+  {id:'brutalist', name:'Brutalist Tech'},
+  {id:'minimal',   name:'Sleek Minimal'},
+  {id:'hud',       name:'HUD Overlay'},
+  {id:'cards',     name:'Card Stack'},
+  {id:'terminal',  name:'Terminal'}
+];
+let _currentGridTheme='crt';
+let _previewThemeIdx=0;
+let _previewOriginalTheme='crt';
+
+function updateThemeLabel(){
+  const el=document.getElementById('currentThemeLabel');
+  const t=_gridThemes.find(t=>t.id===_currentGridTheme);
+  if(el&&t)el.textContent='Current: '+t.name;
+}
+
+function openThemePreview(){
+  _previewOriginalTheme=_currentGridTheme;
+  _previewThemeIdx=_gridThemes.findIndex(t=>t.id===_currentGridTheme);
+  if(_previewThemeIdx<0)_previewThemeIdx=0;
+  closeAppearancePanel();
+  const overlay=document.getElementById('themePreviewOverlay');
+  overlay.style.display='flex';
+  renderThemePreviewGrid();
+  applyThemeToPreviewGrid(_gridThemes[_previewThemeIdx].id);
+  updateThemePreviewUI();
+}
+
+function closeThemePreview(){
+  document.getElementById('themePreviewOverlay').style.display='none';
+  // Restore original theme (user cancelled)
+  applyGridTheme(_previewOriginalTheme);
+  _currentGridTheme=_previewOriginalTheme;
+  // Return to appearance panel
+  setTimeout(()=>openAppearancePanel(),120);
+}
+
+function cycleThemePreview(dir){
+  _previewThemeIdx=(_previewThemeIdx+dir+_gridThemes.length)%_gridThemes.length;
+  applyThemeToPreviewGrid(_gridThemes[_previewThemeIdx].id);
+  // Also apply to real grid behind the overlay so it updates live
+  applyGridTheme(_gridThemes[_previewThemeIdx].id);
+  updateThemePreviewUI();
+}
+
+function applyThemeFromPreview(){
+  _currentGridTheme=_gridThemes[_previewThemeIdx].id;
+  applyGridTheme(_currentGridTheme);
+  try{localStorage.setItem('cb_gridTheme',_currentGridTheme)}catch(e){}
+  document.getElementById('themePreviewOverlay').style.display='none';
+  updateThemeLabel();
+  const blip=document.getElementById('blipGridTheme');
+  if(blip){blip.style.opacity='1';setTimeout(()=>blip.style.opacity='',1500)}
+  saveEventConfigToBackend();
+  // Return to appearance panel
+  setTimeout(()=>openAppearancePanel(),120);
+}
+
+function updateThemePreviewUI(){
+  const t=_gridThemes[_previewThemeIdx];
+  document.getElementById('themePreviewName').textContent=t.name;
+  document.getElementById('themePreviewCounter').textContent=(_previewThemeIdx+1)+' / '+_gridThemes.length;
+}
+
+function renderThemePreviewGrid(){
+  // Render a copy of the current grid tiles into the preview
+  const pg=document.getElementById('themePreviewGrid');
+  pg.innerHTML=gridTiles.map(t=>{
+    const isIntel=t.id==='intel';
+    const isVault=t.id==='vault';
+    const badgeCls=isVault?' crimson':isIntel?' violet':'';
+    return `<div class="crt-monitor">
+      <div class="crt-screw s1"></div><div class="crt-screw s2"></div><div class="crt-screw s3"></div><div class="crt-screw s4"></div>
+      <div class="crt-led"></div>
+      <div class="crt-screen">
+        <div class="tile-glow"></div>
+        <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:48px;height:48px;object-fit:contain">`:t.icon}</div>
+        <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
+        <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
+        <div class="tile-badge${badgeCls}">SAMPLE DATA</div>
+        <div class="tile-status"><div class="tile-dot active"></div><span class="tile-status-label active">ACTIVE</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function applyThemeToPreviewGrid(id){
+  const pg=document.getElementById('themePreviewGrid');
+  _gridThemes.forEach(t=>pg.classList.remove('grid-theme-'+t.id));
+  if(id&&id!=='crt')pg.classList.add('grid-theme-'+id);
+}
+
+function selectGridTheme(id){
+  _currentGridTheme=id;
+  applyGridTheme(id);
+  updateThemeLabel();
+  const blip=document.getElementById('blipGridTheme');
+  if(blip){blip.style.opacity='1';setTimeout(()=>blip.style.opacity='',1500)}
+  saveEventConfigToBackend();
+}
+
+function applyGridTheme(id){
+  const grid=document.getElementById('consoleGrid');
+  if(!grid)return;
+  // Remove all existing theme classes
+  _gridThemes.forEach(t=>grid.classList.remove('grid-theme-'+t.id));
+  // Apply new one (crt = default, no class needed)
+  if(id&&id!=='crt'){
+    grid.classList.add('grid-theme-'+id);
+  }
+}
+
+// ══════ INTEL DISPLAY THEME ══════
+let _currentIntelTheme='standard';
+function setIntelTheme(id){
+  _currentIntelTheme=id;
+  applyIntelTheme(id);
+  // Save to backend
+  apiCall('saveEventConfig',{config:{intelTheme:id}});
+  // Flash save blip
+  const blip=document.getElementById('blipIntelTheme');
+  if(blip){blip.classList.add('show');setTimeout(()=>blip.classList.remove('show'),1500)}
+}
+function applyIntelTheme(id){
+  _currentIntelTheme=id||'standard';
+  const panel=document.getElementById('expIntel');
+  if(!panel)return;
+  panel.classList.remove('intel-theme-crt');
+  if(id==='crt')panel.classList.add('intel-theme-crt');
+  // Update appearance panel UI
+  const sel=document.getElementById('intelThemeSelect');
+  if(sel)sel.value=_currentIntelTheme;
+  const lbl=document.getElementById('currentIntelThemeLabel');
+  if(lbl)lbl.textContent='Current: '+(_currentIntelTheme==='crt'?'CRT Terminal':'Standard');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TYPOGRAPHY — Central font management
+// ═══════════════════════════════════════════════════════════════
+
+function initTypographyPanel(){
+  const zones=[
+    {key:'feedCap',   id:'fc_feedCap_wrap'},
+    {key:'mediaName', id:'fc_mediaName_wrap'},
+    {key:'mediaDesc', id:'fc_mediaDesc_wrap'},
+    {key:'intelLabel',id:'fc_intelLabel_wrap'},
+    {key:'intelInput',id:'fc_intelInput_wrap'},
+    {key:'vaultDisplay',id:'fc_vaultDisplay_wrap'}
+  ];
+  zones.forEach(({key,id})=>{
+    const wrap=document.getElementById(id);
+    if(!wrap){return;}
+    // Build styled select inline
+    const groups=[
+      {label:'Default',fonts:[]},
+      {label:'Military / Industrial',fonts:['Russo One','Black Ops One','Quantico','Aldrich','Staatliches']},
+      {label:'Sci-Fi / Tech',fonts:['Orbitron','Oxanium','Audiowide','Electrolize','Michroma','Chakra Petch']},
+      {label:'Clean / UI',fonts:['Saira','Exo 2','Play','Rajdhani','Teko']},
+      {label:'Monospace / Terminal',fonts:['IBM Plex Mono','JetBrains Mono','Share Tech Mono','Nova Mono','Major Mono Display']},
+      {label:'Retro / Pixel',fonts:['Press Start 2P','VT323','Silkscreen']},
+    ];
+    let selHtml=`<select id="${id}_sel" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:6px 10px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;outline:none">`;
+    selHtml+=`<option value=""${!fontConfig[key]?' selected':''}>— Default —</option>`;
+    groups.slice(1).forEach(g=>{
+      selHtml+=`<optgroup label="${g.label}">`;
+      g.fonts.forEach(fn=>{
+        const f=availableFonts.find(x=>x.name===fn);
+        if(f)selHtml+=`<option value="${f.name}"${f.name===fontConfig[key]?' selected':''}>${f.name}</option>`;
+      });
+      selHtml+=`</optgroup>`;
+    });
+    selHtml+=`</select>`;
+    wrap.innerHTML=selHtml;
+    const sel=wrap.querySelector('select');
+    // Add live font preview below the dropdown
+    const preview=document.createElement('div');
+    preview.id=id+'_preview';
+    preview.style.cssText='margin-top:6px;padding:6px 10px;border:1px solid rgba(255,255,255,.04);border-radius:3px;background:rgba(255,255,255,.015);font-size:13px;color:#aaa;letter-spacing:.5px;min-height:20px;transition:font-family .15s';
+    preview.textContent='The quick brown fox jumps over the lazy dog';
+    wrap.appendChild(preview);
+    function updatePreview(){
+      const fontName=sel.value;
+      if(fontName){
+        preview.style.fontFamily="'"+fontName+"',sans-serif";
+        preview.style.color='#ccc';
+      }else{
+        preview.style.fontFamily='inherit';
+        preview.style.color='#666';
+      }
+    }
+    updatePreview();
+    if(sel){
+      sel.onchange=function(){
+        fontConfig[key]=this.value;
+        updatePreview();
+        applyFontConfig();
+        saveEventConfigToBackend();
+        blip('blipTypography');
+      };
+    }
+  });
+}
+
+function applyFontConfig(){
+  // Vault keypad display
+  const vDisp=document.getElementById('vDisp');
+  if(vDisp){const fam=getFontFamily(fontConfig.vaultDisplay||'');vDisp.style.fontFamily=fam||'';}
+  // Vault panel codenames — re-render picks up fontConfig.vaultDisplay via CSS var
+  document.documentElement.style.setProperty('--fc-vault',getFontFamily(fontConfig.vaultDisplay||'')||'inherit');
+  document.documentElement.style.setProperty('--fc-feed-cap',getFontFamily(fontConfig.feedCap||'')||'inherit');
+  document.documentElement.style.setProperty('--fc-media-name',getFontFamily(fontConfig.mediaName||'')||'inherit');
+  document.documentElement.style.setProperty('--fc-media-desc',getFontFamily(fontConfig.mediaDesc||'')||'inherit');
+  // Re-render content panels if open
+  const overlay=document.getElementById('panelOverlay');
+  if(overlay&&overlay.style.display!=='none'){
+    renderFeed();renderMedia();renderIntelForm();
+  }
+}
+
+function resetFontConfig(){
+  Object.keys(fontConfig).forEach(k=>fontConfig[k]='');
+  initTypographyPanel();
+  applyFontConfig();
+  saveEventConfigToBackend();
+  blip('blipTypography');
+}
+
+function blip(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.style.opacity='1';
+  setTimeout(()=>el.style.opacity='',2000);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// VAULT LOCK PICKER — add existing media file to vault from KC panel
+// ═══════════════════════════════════════════════════════════════
+
+function openVaultLockPicker(){
+  // Get unlocked media items (not already vault-locked, must have a file/name)
+  const available=mediaItems.map((m,i)=>({m,i})).filter(({m})=>!m.vaultLocked&&m.name);
+  let gridHtml='';
+  if(available.length){
+    gridHtml=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;max-height:240px;overflow-y:auto;margin-bottom:16px">`;
+    available.forEach(({m,i})=>{
+      const typeLabel={image:'IMG',audio:'AUD',video:'VID',document:'DOC',dossier:'DOS'}[m.type]||m.type.toUpperCase().slice(0,3);
+      gridHtml+=`<div class="vlp-item" onclick="selectVlpItem(this,${i})" data-idx="${i}" style="border:1px solid var(--border);border-radius:4px;padding:10px 8px;cursor:pointer;text-align:center;transition:all .15s;background:rgba(255,255,255,.01)">
+        <div style="font-size:22px;margin-bottom:4px">${m.icon}</div>
+        <div style="font-family:'Chakra Petch',sans-serif;font-size:9px;color:#ddd;letter-spacing:.5px;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.name}</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:7px;color:#555;letter-spacing:1px">${typeLabel}</div>
+      </div>`;
+    });
+    gridHtml+=`</div>`;
+  }else{
+    gridHtml=`<div style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:#555;padding:20px 0;text-align:center">All items are already vault-locked, or no items exist in the Evidence Locker yet.</div>`;
+  }
+
+  showEditModal(`<h3>🔐 Vault Lock an Existing File</h3>
+    <p style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:#888;margin-bottom:14px;line-height:1.6">Select an Evidence Locker item to vault-lock. Players will see it as classified until they crack the code.</p>
+    <div style="font-family:'Saira',sans-serif;font-size:9px;letter-spacing:2px;color:var(--amber);text-transform:uppercase;margin-bottom:8px;font-weight:700">Select File</div>
+    ${gridHtml}
+    <div id="vlpCodeFields" style="display:none">
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+        <div style="font-family:'Saira',sans-serif;font-size:9px;letter-spacing:2px;color:var(--amber);text-transform:uppercase;margin-bottom:10px;font-weight:700">Set Vault Code</div>
+        <div class="edit-field-row" style="gap:10px">
+          <div class="edit-field"><label>Vault Code</label><input id="vlpCode" placeholder="e.g. DEADROP7" style="text-transform:uppercase;letter-spacing:2px;font-family:'IBM Plex Mono',monospace" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="edit-field"><label>Codename (shown to players)</label><input id="vlpCodename" placeholder="e.g. OPERATION BLACKOUT" style="text-transform:uppercase;letter-spacing:1px;font-family:'IBM Plex Mono',monospace" oninput="this.value=this.value.toUpperCase()"></div>
+        </div>
+        <div style="font-family:'Chakra Petch',sans-serif;font-size:9px;color:#555;margin-top:6px">Players see the codename but not the file — it appears as a locked entry in the Vault panel.</div>
+      </div>
+    </div>
+    <input type="hidden" id="vlpSelectedIdx" value="">
+    <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
+      <button class="btn-standard btn-ghost" onclick="hideEditModal()">Cancel</button>
+      <button class="btn-standard btn-amber" onclick="confirmVaultLock()">🔐 Lock to Vault</button>
+    </div>`);
+
+  // Add hover styles dynamically
+  document.querySelectorAll('.vlp-item').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{if(!el.classList.contains('selected'))el.style.borderColor='rgba(255,170,51,.3)'});
+    el.addEventListener('mouseleave',()=>{if(!el.classList.contains('selected'))el.style.borderColor='var(--border)'});
+  });
+}
+
+function selectVlpItem(el,idx){
+  document.querySelectorAll('.vlp-item').forEach(x=>{
+    x.classList.remove('selected');
+    x.style.borderColor='var(--border)';
+    x.style.background='rgba(255,255,255,.01)';
+  });
+  el.classList.add('selected');
+  el.style.borderColor='rgba(255,170,51,.5)';
+  el.style.background='rgba(255,170,51,.05)';
+  document.getElementById('vlpSelectedIdx').value=idx;
+  document.getElementById('vlpCodeFields').style.display='block';
+  // Pre-fill codename from file name
+  const codenameInp=document.getElementById('vlpCodename');
+  if(codenameInp&&!codenameInp.value&&mediaItems[idx]){
+    codenameInp.value=mediaItems[idx].name.toUpperCase().replace(/[^A-Z0-9 ]/g,'');
+  }
+  document.getElementById('vlpCode').focus();
+}
+
+function confirmVaultLock(){
+  const idxStr=document.getElementById('vlpSelectedIdx').value;
+  if(idxStr===''){alert('Please select a file first.');return;}
+  const idx=parseInt(idxStr);
+  const code=(document.getElementById('vlpCode').value||'').trim().toUpperCase();
+  const codename=(document.getElementById('vlpCodename').value||'').trim().toUpperCase();
+  if(!code){alert('Please set a vault code.');document.getElementById('vlpCode').focus();return;}
+  if(!mediaItems[idx]){alert('File not found.');return;}
+  // Check for duplicate code
+  const duplicate=mediaItems.some((m,i)=>i!==idx&&m.vaultLocked&&m.vaultCode===code);
+  if(duplicate){alert('That code is already in use by another vault item. Please choose a different code.');return;}
+  mediaItems[idx].vaultLocked=true;
+  mediaItems[idx].vaultCode=code;
+  mediaItems[idx].vaultCodename=codename||code;
+  hideEditModal();
+  syncVaultCodesFromMedia();
+  renderMedia();renderGrid();renderVaultPanel();renderKeysCodes();
+  saveMediaItemsToBackend();
+}
+
+
+</script>
+
+<div id="adminNavBar">
+  <div class="anb-btn" id="anb-dashboardPanel" onclick="switchAdminTab('dashboardPanel')" title="Dashboard">
+    <span class="anb-icon">📊</span><span class="anb-label">Dashboard</span>
+  </div>
+  <div class="anb-btn" id="anb-broadcastPanel" onclick="switchAdminTab('broadcastPanel')" title="Broadcast">
+    <span class="anb-icon">📢</span><span class="anb-label">Broadcast</span>
+  </div>
+  <div class="anb-btn" id="anb-keysCodesPanel" onclick="switchAdminTab('keysCodesPanel')" title="Keys & Codes">
+    <span class="anb-icon">🔐</span><span class="anb-label">Keys</span>
+  </div>
+  <div class="anb-sep"></div>
+  <div class="anb-btn" id="anb-adminPanel" onclick="switchAdminTab('adminPanel')" title="Event Settings">
+    <span class="anb-icon">⚙️</span><span class="anb-label">Event</span>
+  </div>
+  <div class="anb-btn" id="anb-scoringPanel" onclick="switchAdminTab('scoringPanel')" title="Scoring">
+    <span class="anb-icon">🎯</span><span class="anb-label">Scoring</span>
+  </div>
+  <div class="anb-btn" id="anb-registrationPanel" onclick="switchAdminTab('registrationPanel')" title="Registration">
+    <span class="anb-icon">📝</span><span class="anb-label">Reg</span>
+  </div>
+  <div class="anb-sep"></div>
+  <div class="anb-btn" id="anb-appearancePanel" onclick="switchAdminTab('appearancePanel')" title="Appearance">
+    <span class="anb-icon">🎨</span><span class="anb-label">Theme</span>
+  </div>
+  <div class="anb-btn" id="anb-portalUsersPanel" onclick="switchAdminTab('portalUsersPanel')" title="Users">
+    <span class="anb-icon">👥</span><span class="anb-label">Users</span>
+  </div>
+</div>
+
+<div id="landingPreviewOverlay">
+  <div class="lp-preview-bar">
+    <span class="lp-preview-label">👁 Player View Preview</span>
+    <button class="lp-preview-nav" onclick="previewNav('landingScreen',this)">Landing</button>
+    <button class="lp-preview-nav" onclick="previewNav('regScreen',this)">Register</button>
+    <button class="lp-preview-nav" onclick="previewNav('loginScreen',this)">Login</button>
+    <button class="lp-preview-close" onclick="closeLandingPreview()">✕ Close</button>
+  </div>
+</div>
+
+<!-- THEME PREVIEW OVERLAY -->
+<div id="themePreviewOverlay" style="position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,.96);display:none;flex-direction:column">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(0,0,0,.8);border-bottom:1px solid rgba(0,255,136,.1);flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-family:'Saira',sans-serif;font-size:11px;letter-spacing:3px;color:var(--green);font-weight:700">CONSOLE THEME PREVIEW</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#666" id="themePreviewName">CRT Monitor</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onclick="cycleThemePreview(-1)" style="padding:6px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:#ccc;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s" onmouseenter="this.style.borderColor='rgba(0,212,255,.3)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.1)'">◀ Prev</button>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;min-width:40px;text-align:center" id="themePreviewCounter">1 / 10</span>
+      <button onclick="cycleThemePreview(1)" style="padding:6px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:#ccc;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s" onmouseenter="this.style.borderColor='rgba(0,212,255,.3)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.1)'">Next ▶</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="applyThemeFromPreview()" style="padding:7px 18px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.25);border-radius:4px;color:var(--green);font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:all .15s" onmouseenter="this.style.background='rgba(0,255,136,.15)'" onmouseleave="this.style.background='rgba(0,255,136,.08)'">✓ SELECT</button>
+      <button onclick="closeThemePreview()" style="padding:7px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:#999;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .15s" onmouseenter="this.style.borderColor='rgba(255,50,50,.3)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.1)'">✕ CANCEL</button>
+    </div>
+  </div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:20px">
+    <div style="width:100%;max-width:800px">
+      <div class="console-grid" id="themePreviewGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2.5vh,28px);padding:clamp(14px,2.5vh,28px);align-content:center"></div>
+    </div>
+  </div>
+  <div style="padding:8px 20px;text-align:center;flex-shrink:0;border-top:1px solid rgba(255,255,255,.04)">
+    <span style="font-family:'Chakra Petch',sans-serif;font-size:9px;color:#444;letter-spacing:1px">Use ◀ ▶ to cycle through themes · Press SELECT to apply · ESC to cancel</span>
+  </div>
+</div>
+
+</body>
+</html>
