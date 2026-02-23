@@ -1878,10 +1878,10 @@
   /* ══════ TUTORIAL SPOTLIGHT OVERLAY ══════ */
   #tutorialOverlay{position:fixed;inset:0;z-index:9500;pointer-events:none;opacity:0;transition:opacity .3s}
   #tutorialOverlay.active{opacity:1;pointer-events:all}
-  .tut-spotlight{position:absolute;border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.75);z-index:1;transition:all .3s ease}
-  .tut-tooltip{position:absolute;z-index:2;max-width:320px;background:#0d0f14;border:1px solid rgba(0,212,255,.25);border-radius:8px;padding:16px 20px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
-  .tut-tooltip-title{font-family:'Saira',sans-serif;font-size:13px;letter-spacing:2px;color:var(--cyan);font-weight:700;margin-bottom:6px}
-  .tut-tooltip-body{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#bbb;line-height:1.6;margin-bottom:14px}
+  .tut-spotlight{position:absolute;border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.88),0 0 30px 8px rgba(0,212,255,.15);z-index:1;transition:all .3s ease;border:1px solid rgba(0,212,255,.25)}
+  .tut-tooltip{position:absolute;z-index:2;max-width:360px;background:#0d1018;border:1px solid rgba(0,212,255,.3);border-radius:10px;padding:22px 26px;box-shadow:0 12px 40px rgba(0,0,0,.6),0 0 20px rgba(0,212,255,.06)}
+  .tut-tooltip-title{font-family:'Saira',sans-serif;font-size:15px;letter-spacing:2.5px;color:var(--cyan);font-weight:700;margin-bottom:8px}
+  .tut-tooltip-body{font-family:'Chakra Petch',sans-serif;font-size:13px;color:#d0d0d0;line-height:1.7;margin-bottom:16px;letter-spacing:.2px}
   .tut-tooltip-nav{display:flex;align-items:center;justify-content:space-between}
   .tut-tooltip-dots{display:flex;gap:6px}
   .tut-tooltip-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15)}
