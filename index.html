@@ -512,7 +512,7 @@
   .team-card-stat-lbl{font-family:'Saira',sans-serif;font-size:8px;color:#999;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-top:3px}
 
   /* Console grid */
-  .console-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:28px;padding:28px;min-height:0;align-content:center;position:relative;z-index:1}
+  .console-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2.5vh,28px);padding:clamp(14px,2.5vh,28px);min-height:0;align-content:center;position:relative;z-index:1}
 
   /* ── CRT Monitor Bezel ── */
   .crt-monitor{position:relative;border-radius:18px;cursor:pointer;transition:all .35s cubic-bezier(.25,.46,.45,.94);
@@ -520,7 +520,7 @@
     background:
       repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.006) 1px,rgba(255,255,255,.006) 2px,transparent 2px,transparent 4px),
       linear-gradient(170deg,#1e2028 0%,#16181e 30%,#111318 60%,#0c0e14 100%);
-    padding:14px;
+    padding:clamp(8px,1.2vh,14px);
     border:1px solid rgba(255,255,255,.04);
     box-shadow:
       0 4px 20px rgba(0,0,0,.5),
@@ -554,7 +554,7 @@
     /* Subtle CRT curvature via perspective */
     transform:perspective(800px) rotateX(.5deg);
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    padding:40px 24px 32px}
+    padding:clamp(20px,3.5vh,40px) clamp(14px,2vw,24px) clamp(16px,2.8vh,32px)}
   /* Screen curvature highlight — glass bulge */
   .crt-screen::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:3;
     background:
@@ -571,11 +571,11 @@
   /* ── Tile content inside screen ── */
   .tile-glow{position:absolute;top:25%;left:50%;transform:translate(-50%,-50%);width:100px;height:100px;background:radial-gradient(circle,rgba(0,255,136,.02) 0%,transparent 70%);pointer-events:none;transition:all .4s}
   .crt-monitor:hover .tile-glow{width:160px;height:160px;background:radial-gradient(circle,rgba(0,255,136,.05) 0%,transparent 70%)}
-  .tile-icon{font-size:48px;margin-bottom:20px;position:relative;z-index:2;filter:grayscale(.3) brightness(.85);transition:filter .3s,transform .3s}
+  .tile-icon{font-size:clamp(28px,4.5vh,48px);margin-bottom:clamp(8px,1.5vh,20px);position:relative;z-index:2;filter:grayscale(.3) brightness(.85);transition:filter .3s,transform .3s}
   .crt-monitor:hover .tile-icon{filter:grayscale(0) brightness(1);transform:scale(1.06)}
-  .tile-label{font-family:'Saira',sans-serif;font-weight:700;font-size:16px;letter-spacing:4px;color:#c8c8c8;text-transform:uppercase;text-align:center;margin-bottom:10px;z-index:2;text-shadow:0 2px 3px rgba(0,0,0,.7)}
-  .tile-sub{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#777;letter-spacing:1px;font-weight:500;text-align:center;margin-bottom:22px;z-index:2}
-  .tile-badge{font-family:'Saira',sans-serif;font-size:10px;letter-spacing:3px;font-weight:700;color:#e0e0e0;border:1px solid rgba(255,255,255,.1);padding:6px 18px;border-radius:3px;margin-bottom:16px;z-index:2;background:rgba(255,255,255,.04)}
+  .tile-label{font-family:'Saira',sans-serif;font-weight:700;font-size:clamp(11px,1.4vh,16px);letter-spacing:clamp(2px,.4vw,4px);color:#c8c8c8;text-transform:uppercase;text-align:center;margin-bottom:clamp(4px,.8vh,10px);z-index:2;text-shadow:0 2px 3px rgba(0,0,0,.7)}
+  .tile-sub{font-family:'Chakra Petch',sans-serif;font-size:clamp(8px,1vh,10px);color:#777;letter-spacing:1px;font-weight:500;text-align:center;margin-bottom:clamp(10px,1.8vh,22px);z-index:2}
+  .tile-badge{font-family:'Saira',sans-serif;font-size:clamp(8px,1vh,10px);letter-spacing:3px;font-weight:700;color:#e0e0e0;border:1px solid rgba(255,255,255,.1);padding:clamp(3px,.5vh,6px) clamp(10px,1.2vw,18px);border-radius:3px;margin-bottom:clamp(8px,1.4vh,16px);z-index:2;background:rgba(255,255,255,.04)}
   .tile-badge.amber{color:#f0c878;border-color:rgba(255,170,51,.2);background:rgba(255,170,51,.05)}
   .tile-badge.crimson{color:#e8667a;border-color:rgba(204,68,85,.25);background:rgba(204,68,85,.06)}
   .tile-badge.violet{color:#b088ee;border-color:rgba(153,119,221,.25);background:rgba(153,119,221,.06)}
@@ -715,30 +715,6 @@
   .grid-theme-terminal .tile-badge.violet{border-color:rgba(0,255,136,.15);color:rgba(0,255,136,.4);background:transparent}
   .grid-theme-terminal .tile-dot.active{background:var(--green)!important}
   .grid-theme-terminal .tile-status-label.active{color:rgba(0,255,136,.5)!important}
-
-  /* Theme picker card previews */
-  .theme-picker{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
-  @media(max-width:768px){.theme-picker{grid-template-columns:repeat(3,1fr)}}
-  .theme-card{position:relative;cursor:pointer;border-radius:6px;padding:10px 6px 8px;text-align:center;transition:all .2s;border:2px solid rgba(255,255,255,.04);background:rgba(255,255,255,.015)}
-  .theme-card:hover{border-color:rgba(0,212,255,.2);background:rgba(0,212,255,.03)}
-  .theme-card.selected{border-color:var(--green);background:rgba(0,255,136,.04);box-shadow:0 0 12px rgba(0,255,136,.08)}
-  .theme-card.selected::after{content:'✓';position:absolute;top:4px;right:6px;font-size:10px;color:var(--green);font-weight:700}
-  .theme-card-preview{width:100%;aspect-ratio:1.2;border-radius:3px;margin-bottom:6px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:3px}
-  .theme-card-mini{border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:10px}
-  .theme-card-name{font-family:'Saira',sans-serif;font-size:8px;letter-spacing:1.5px;color:#aaa;text-transform:uppercase;font-weight:600}
-  .theme-card.selected .theme-card-name{color:var(--green)}
-
-  /* Mini tile styles for previews */
-  .tc-mini-crt .theme-card-mini{background:linear-gradient(170deg,#1e2028,#0c0e14);border:1px solid rgba(255,255,255,.04);border-radius:4px}
-  .tc-mini-glass .theme-card-mini{background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:4px}
-  .tc-mini-cyberpunk .theme-card-mini{background:linear-gradient(180deg,#0a0a12,#060610);border:1px solid rgba(0,255,136,.2);clip-path:polygon(0 3px,3px 0,100% 0,100% calc(100% - 3px),calc(100% - 3px) 100%,0 100%)}
-  .tc-mini-military .theme-card-mini{background:linear-gradient(180deg,#14160e,#0a0c08);border:2px solid #2a2e1e;border-radius:1px}
-  .tc-mini-holo .theme-card-mini{background:linear-gradient(135deg,rgba(0,212,255,.04),rgba(136,0,255,.03),rgba(0,255,136,.03));border:1px solid rgba(255,255,255,.06);border-radius:3px}
-  .tc-mini-brutalist .theme-card-mini{background:#0a0a0a;border:2px solid #444;box-shadow:2px 2px 0 #111;border-radius:0}
-  .tc-mini-minimal .theme-card-mini{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:3px}
-  .tc-mini-hud .theme-card-mini{background:linear-gradient(180deg,rgba(0,255,136,.02),transparent);border:1px solid rgba(0,255,136,.12);border-radius:1px}
-  .tc-mini-cards .theme-card-mini{background:linear-gradient(170deg,#161820,#0c0e14);border:1px solid rgba(255,255,255,.05);border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,.3)}
-  .tc-mini-terminal .theme-card-mini{background:#020604;border:1px solid rgba(0,255,136,.15);border-radius:0}
 
   /* ══════ EXPANDED OVERLAY ══════ */
   #panelOverlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
@@ -981,7 +957,7 @@
   .btn-red:hover{background:linear-gradient(180deg,rgba(70,25,25,.5),rgba(50,15,15,.6))}
 
   /* ══════ ADMIN ══════ */
-  .admin-trigger{position:fixed;bottom:10px;right:10px;z-index:800;width:40px;height:40px;border-radius:50%;display:none;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;
+  .admin-trigger{position:fixed;bottom:calc(10px + env(safe-area-inset-bottom,0));right:10px;z-index:800;width:40px;height:40px;border-radius:50%;display:none;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;
     background:linear-gradient(180deg,rgba(150,160,180,.12),rgba(120,130,150,.06));border:1px solid rgba(150,160,180,.3);box-shadow:0 0 10px rgba(150,160,180,.08)}
   .admin-trigger svg{width:19px;height:19px;fill:none;stroke:#8890a0;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
   .admin-trigger:hover{border-color:rgba(150,160,180,.5);box-shadow:0 0 14px rgba(150,160,180,.15)}
@@ -1088,6 +1064,7 @@
   body.event-locked .intel-submit-btn{pointer-events:none;opacity:.4}
   body.player-preview .landing-banner-upload{display:none!important}
   body.admin-mode .admin-trigger{display:flex}
+  body.admin-mode .console-grid{padding-bottom:clamp(56px,7vh,70px)}
 
   /* Admin dropdown menu */
   .admin-dropdown{position:fixed;bottom:52px;right:10px;z-index:810;width:220px;border-radius:6px;
@@ -2275,7 +2252,10 @@
     </div>
     <div class="ap-section"><h4>🖥️ Console Theme <span class="save-blip" id="blipGridTheme">✓ Saved</span></h4>
       <p>Choose the visual style for the console grid tiles. Content, badges, and activity indicators remain unchanged — only the frame and aesthetic changes.</p>
-      <div class="theme-picker" id="themePickerGrid"></div>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:8px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--green);letter-spacing:1px" id="currentThemeLabel">Current: CRT Monitor</div>
+        <button class="ap-btn ap-btn-cyan" onclick="openThemePreview()" style="font-size:10px;padding:8px 20px">👁 Preview & Select Theme</button>
+      </div>
     </div>
     <div class="ap-section"><h4>🖋 Typography <span class="save-blip" id="blipTypography">✓ Saved</span></h4>
       <p>Global font overrides by content zone. Setting a font here overrides the theme default for that zone across the whole app. Leave as Default to inherit the theme font.</p>
@@ -4876,7 +4856,7 @@ async function loadEventData(){
 function applyEventConfig(cfg){
   if(cfg.operationName){operationName=cfg.operationName;const ct=document.getElementById('consoleTitle');if(ct)ct.textContent='◈ '+operationName;document.title=operationName+' — Console'}
   if(cfg.operationFont){operationFont=cfg.operationFont;applyOperationFont(operationFont)}
-  if(cfg.gridTheme){_currentGridTheme=cfg.gridTheme;applyGridTheme(cfg.gridTheme)}
+  if(cfg.gridTheme){_currentGridTheme=cfg.gridTheme;applyGridTheme(cfg.gridTheme);updateThemeLabel()}
   if(cfg.participantMode){regSettings.participantMode=cfg.participantMode;const sel=document.getElementById('apParticipantMode');if(sel)sel.value=cfg.participantMode}
   if(cfg.leaderboardStyle){regSettings.leaderboardStyle=cfg.leaderboardStyle;const sel=document.getElementById('apLeaderboardStyle');if(sel)sel.value=cfg.leaderboardStyle}
   if(cfg.landingTitle){regSettings.landingTitle=cfg.landingTitle;const el=document.getElementById('landingTitleEl');if(el)el.textContent=cfg.landingTitle;const inp=document.getElementById('apLandingTitle');if(inp)inp.value=cfg.landingTitle}
@@ -4923,13 +4903,14 @@ function applyEventConfig(cfg){
       if(tile){
         if(saved.icon)tile.icon=saved.icon;
         if(saved.label)tile.label=saved.label;
-        if(saved.sub)tile.sub=saved.sub;
+        if(saved.sub!==undefined)tile.sub=saved.sub;
         tile.labelFont=saved.labelFont||'';
         tile.subFont=saved.subFont||'';
       }
     });
-    renderGrid();
   }
+  // Always render grid after config — even with defaults
+  renderGrid();
   // Sync threshold UI
   const idleInp=document.getElementById('apThresholdIdle');if(idleInp)idleInp.value=activityThresholds.activeToIdle;
   const silentInp=document.getElementById('apThresholdSilent');if(silentInp)silentInp.value=activityThresholds.idleToSilent;
@@ -5046,6 +5027,16 @@ document.addEventListener('keydown',e=>{
   if(document.getElementById('landingPreviewOverlay').classList.contains('active')&&e.key==='Escape'){
     e.preventDefault();closeLandingPreview();return;
   }
+  // Escape closes theme preview
+  if(document.getElementById('themePreviewOverlay').style.display==='flex'&&e.key==='Escape'){
+    e.preventDefault();closeThemePreview();return;
+  }
+  // Arrow keys cycle themes in preview
+  if(document.getElementById('themePreviewOverlay').style.display==='flex'){
+    if(e.key==='ArrowLeft'){e.preventDefault();cycleThemePreview(-1);return}
+    if(e.key==='ArrowRight'){e.preventDefault();cycleThemePreview(1);return}
+    if(e.key==='Enter'){e.preventDefault();applyThemeFromPreview();return}
+  }
   // Escape closes active admin panels
   if(e.key==='Escape'){
     // Login screen — contextual back
@@ -5130,6 +5121,7 @@ function regBack(){
 function goToConsole(){
   if(window._histPush)window._histPush('console');
   showScreen('consoleScreen');document.getElementById('notepadTrigger').classList.add('visible');startElapsedTimer();
+  renderGrid(); // Ensure grid renders even if config hasn't loaded yet
   // If no team loaded (admin direct entry), show admin identity
   if(!currentVaultTeam&&isAdmin){
     currentVaultTeam={id:'ADMIN',name:'Administrator',type:'admin',members:['Admin'],memberDetails:[]};
@@ -5436,7 +5428,7 @@ function switchAdminTab(panelId){
   if(panelId==='broadcastPanel'){/* nothing extra */}
   if(panelId==='scoringPanel'){renderScoringEditor()}
   if(panelId==='registrationPanel'){syncRegistrationSettings()}
-  if(panelId==='appearancePanel'){renderThemePicker();initTypographyPanel()}
+  if(panelId==='appearancePanel'){updateThemeLabel();initTypographyPanel()}
 }
 function syncAdminPanelSettings(){
   renderScoringEditor();
@@ -5590,7 +5582,7 @@ function syncRegistrationSettings(){
   if(st){st.textContent=regSettings.registrationOpen?'● OPEN':'● CLOSED';st.style.color=regSettings.registrationOpen?'var(--green)':'var(--red)'}
 }
 
-function openAppearancePanel(){closeAllAdminPanels();_instantShow(document.getElementById('appearancePanel'));showAdminTabs('appearancePanel');renderThemePicker();initTypographyPanel()}
+function openAppearancePanel(){closeAllAdminPanels();_instantShow(document.getElementById('appearancePanel'));showAdminTabs('appearancePanel');updateThemeLabel();initTypographyPanel()}
 function closeAppearancePanel(){const el=document.getElementById('appearancePanel');if(el){el.classList.remove('active');el.style.cssText=''}hideAdminTabs()}
 function openTeamMonitor(){openDashboard()}
 function closeTeamMonitor(){closeDashboard()}
@@ -7703,8 +7695,9 @@ function getEventState(){
 // TODO: Puzzle Builder — Multi-stage puzzle flow with progression gating
 // ══════ END FUTURE NOTES ══════
 setInterval(tickTimer,1000);
-// Initial dynamic renders
-renderGrid();
+// Initial dynamic renders — grid deferred until config loads to prevent default flash
+// renderGrid() will be called by applyEventConfig() or restoreSession()
+document.getElementById('consoleGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;font-family:IBM Plex Mono,monospace;font-size:10px;color:#333;letter-spacing:2px">LOADING CONSOLE...</div>';
 renderIntelForm();
 buildRegForm();
 updateLandingForMode();
@@ -8215,41 +8208,106 @@ function unlockAdminConsole(){
 // ═══════════════════════════════════════════════════════════════
 
 const _gridThemes=[
-  {id:'crt',       name:'CRT Monitor',     mini:'tc-mini-crt',       desc:'Bezel, screws, scanlines'},
-  {id:'glass',     name:'Glass Morphism',   mini:'tc-mini-glass',     desc:'Frosted glass, soft blur'},
-  {id:'cyberpunk', name:'Neon Cyberpunk',   mini:'tc-mini-cyberpunk', desc:'Clipped corners, neon glow'},
-  {id:'military',  name:'Military Ops',     mini:'tc-mini-military',  desc:'Olive drab, stencil, utilitarian'},
-  {id:'holo',      name:'Holographic',      mini:'tc-mini-holo',      desc:'Prismatic shimmer, airy'},
-  {id:'brutalist', name:'Brutalist Tech',   mini:'tc-mini-brutalist', desc:'Hard shadows, monospace'},
-  {id:'minimal',   name:'Sleek Minimal',    mini:'tc-mini-minimal',   desc:'Barely there, content first'},
-  {id:'hud',       name:'HUD Overlay',      mini:'tc-mini-hud',       desc:'Corner brackets, scan line'},
-  {id:'cards',     name:'Card Stack',       mini:'tc-mini-cards',     desc:'Layered depth, floating'},
-  {id:'terminal',  name:'Terminal',         mini:'tc-mini-terminal',  desc:'Green phosphor monochrome'}
+  {id:'crt',       name:'CRT Monitor'},
+  {id:'glass',     name:'Glass Morphism'},
+  {id:'cyberpunk', name:'Neon Cyberpunk'},
+  {id:'military',  name:'Military Ops'},
+  {id:'holo',      name:'Holographic'},
+  {id:'brutalist', name:'Brutalist Tech'},
+  {id:'minimal',   name:'Sleek Minimal'},
+  {id:'hud',       name:'HUD Overlay'},
+  {id:'cards',     name:'Card Stack'},
+  {id:'terminal',  name:'Terminal'}
 ];
 let _currentGridTheme='crt';
+let _previewThemeIdx=0;
+let _previewOriginalTheme='crt';
 
-function renderThemePicker(){
-  const grid=document.getElementById('themePickerGrid');
-  if(!grid)return;
-  grid.innerHTML=_gridThemes.map(t=>{
-    const sel=t.id===_currentGridTheme?'selected':'';
-    return `<div class="theme-card ${sel}" data-theme="${t.id}" onclick="selectGridTheme('${t.id}')">
-      <div class="theme-card-preview ${t.mini}">
-        <div class="theme-card-mini">📡</div>
-        <div class="theme-card-mini">🗂️</div>
-        <div class="theme-card-mini">🔐</div>
-        <div class="theme-card-mini">🎯</div>
+function updateThemeLabel(){
+  const el=document.getElementById('currentThemeLabel');
+  const t=_gridThemes.find(t=>t.id===_currentGridTheme);
+  if(el&&t)el.textContent='Current: '+t.name;
+}
+
+function openThemePreview(){
+  _previewOriginalTheme=_currentGridTheme;
+  _previewThemeIdx=_gridThemes.findIndex(t=>t.id===_currentGridTheme);
+  if(_previewThemeIdx<0)_previewThemeIdx=0;
+  closeAppearancePanel();
+  const overlay=document.getElementById('themePreviewOverlay');
+  overlay.style.display='flex';
+  renderThemePreviewGrid();
+  applyThemeToPreviewGrid(_gridThemes[_previewThemeIdx].id);
+  updateThemePreviewUI();
+}
+
+function closeThemePreview(){
+  document.getElementById('themePreviewOverlay').style.display='none';
+  // Restore original theme (user cancelled)
+  applyGridTheme(_previewOriginalTheme);
+  _currentGridTheme=_previewOriginalTheme;
+  // Return to appearance panel
+  setTimeout(()=>openAppearancePanel(),120);
+}
+
+function cycleThemePreview(dir){
+  _previewThemeIdx=(_previewThemeIdx+dir+_gridThemes.length)%_gridThemes.length;
+  applyThemeToPreviewGrid(_gridThemes[_previewThemeIdx].id);
+  // Also apply to real grid behind the overlay so it updates live
+  applyGridTheme(_gridThemes[_previewThemeIdx].id);
+  updateThemePreviewUI();
+}
+
+function applyThemeFromPreview(){
+  _currentGridTheme=_gridThemes[_previewThemeIdx].id;
+  applyGridTheme(_currentGridTheme);
+  document.getElementById('themePreviewOverlay').style.display='none';
+  updateThemeLabel();
+  const blip=document.getElementById('blipGridTheme');
+  if(blip){blip.style.opacity='1';setTimeout(()=>blip.style.opacity='',1500)}
+  saveEventConfigToBackend();
+  // Return to appearance panel
+  setTimeout(()=>openAppearancePanel(),120);
+}
+
+function updateThemePreviewUI(){
+  const t=_gridThemes[_previewThemeIdx];
+  document.getElementById('themePreviewName').textContent=t.name;
+  document.getElementById('themePreviewCounter').textContent=(_previewThemeIdx+1)+' / '+_gridThemes.length;
+}
+
+function renderThemePreviewGrid(){
+  // Render a copy of the current grid tiles into the preview
+  const pg=document.getElementById('themePreviewGrid');
+  pg.innerHTML=gridTiles.map(t=>{
+    const isIntel=t.id==='intel';
+    const isVault=t.id==='vault';
+    const badgeCls=isVault?' crimson':isIntel?' violet':'';
+    return `<div class="crt-monitor">
+      <div class="crt-screw s1"></div><div class="crt-screw s2"></div><div class="crt-screw s3"></div><div class="crt-screw s4"></div>
+      <div class="crt-led"></div>
+      <div class="crt-screen">
+        <div class="tile-glow"></div>
+        <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:48px;height:48px;object-fit:contain">`:t.icon}</div>
+        <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
+        <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
+        <div class="tile-badge${badgeCls}">SAMPLE DATA</div>
+        <div class="tile-status"><div class="tile-dot active"></div><span class="tile-status-label active">ACTIVE</span></div>
       </div>
-      <div class="theme-card-name">${t.name}</div>
     </div>`;
   }).join('');
+}
+
+function applyThemeToPreviewGrid(id){
+  const pg=document.getElementById('themePreviewGrid');
+  _gridThemes.forEach(t=>pg.classList.remove('grid-theme-'+t.id));
+  if(id&&id!=='crt')pg.classList.add('grid-theme-'+id);
 }
 
 function selectGridTheme(id){
   _currentGridTheme=id;
   applyGridTheme(id);
-  renderThemePicker();
-  // Show save blip
+  updateThemeLabel();
   const blip=document.getElementById('blipGridTheme');
   if(blip){blip.style.opacity='1';setTimeout(()=>blip.style.opacity='',1500)}
   saveEventConfigToBackend();
@@ -8492,6 +8550,33 @@ function confirmVaultLock(){
     <button class="lp-preview-nav" onclick="previewNav('regScreen',this)">Register</button>
     <button class="lp-preview-nav" onclick="previewNav('loginScreen',this)">Login</button>
     <button class="lp-preview-close" onclick="closeLandingPreview()">✕ Close</button>
+  </div>
+</div>
+
+<!-- THEME PREVIEW OVERLAY -->
+<div id="themePreviewOverlay" style="position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,.96);display:none;flex-direction:column">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(0,0,0,.8);border-bottom:1px solid rgba(0,255,136,.1);flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-family:'Saira',sans-serif;font-size:11px;letter-spacing:3px;color:var(--green);font-weight:700">CONSOLE THEME PREVIEW</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#666" id="themePreviewName">CRT Monitor</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onclick="cycleThemePreview(-1)" style="padding:6px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:#ccc;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s" onmouseenter="this.style.borderColor='rgba(0,212,255,.3)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.1)'">◀ Prev</button>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;min-width:40px;text-align:center" id="themePreviewCounter">1 / 10</span>
+      <button onclick="cycleThemePreview(1)" style="padding:6px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:#ccc;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s" onmouseenter="this.style.borderColor='rgba(0,212,255,.3)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.1)'">Next ▶</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="applyThemeFromPreview()" style="padding:7px 18px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.25);border-radius:4px;color:var(--green);font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:all .15s" onmouseenter="this.style.background='rgba(0,255,136,.15)'" onmouseleave="this.style.background='rgba(0,255,136,.08)'">✓ SELECT</button>
+      <button onclick="closeThemePreview()" style="padding:7px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:#999;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .15s" onmouseenter="this.style.borderColor='rgba(255,50,50,.3)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.1)'">✕ CANCEL</button>
+    </div>
+  </div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:20px">
+    <div style="width:100%;max-width:800px">
+      <div class="console-grid" id="themePreviewGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2.5vh,28px);padding:clamp(14px,2.5vh,28px);align-content:center"></div>
+    </div>
+  </div>
+  <div style="padding:8px 20px;text-align:center;flex-shrink:0;border-top:1px solid rgba(255,255,255,.04)">
+    <span style="font-family:'Chakra Petch',sans-serif;font-size:9px;color:#444;letter-spacing:1px">Use ◀ ▶ to cycle through themes · Press SELECT to apply · ESC to cancel</span>
   </div>
 </div>
 
