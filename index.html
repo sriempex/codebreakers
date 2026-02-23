@@ -2743,7 +2743,7 @@
             <div class="kb-row"><div class="kb-key" onclick="vkType('A')"><span>A</span></div><div class="kb-key" onclick="vkType('S')"><span>S</span></div><div class="kb-key" onclick="vkType('D')"><span>D</span></div><div class="kb-key" onclick="vkType('F')"><span>F</span></div><div class="kb-key" onclick="vkType('G')"><span>G</span></div><div class="kb-key" onclick="vkType('H')"><span>H</span></div><div class="kb-key" onclick="vkType('J')"><span>J</span></div><div class="kb-key" onclick="vkType('K')"><span>K</span></div><div class="kb-key" onclick="vkType('L')"><span>L</span></div></div>
             <div class="kb-row"><div class="kb-key fn clr-key" onclick="vkClear()"><span>CLR</span></div><div class="kb-key" onclick="vkType('Z')"><span>Z</span></div><div class="kb-key" onclick="vkType('X')"><span>X</span></div><div class="kb-key" onclick="vkType('C')"><span>C</span></div><div class="kb-key" onclick="vkType('V')"><span>V</span></div><div class="kb-key" onclick="vkType('B')"><span>B</span></div><div class="kb-key" onclick="vkType('N')"><span>N</span></div><div class="kb-key" onclick="vkType('M')"><span>M</span></div><div class="kb-key fn del-key" onclick="vkDel()"><span>⌫</span></div></div>
             <div class="kb-row"><div class="kb-key fn sym-key" onclick="vkToggleSymbols()"><span id="vkSymLabel">SYM</span></div><div class="kb-key enter-key" style="flex:3" onclick="vkSubmit()"><span>ENTER</span></div></div>
-            <div class="v-status"><div class="v-dot" id="vkDot"></div><span class="v-lbl" id="vkLbl">AWAITING INPUT</span></div>
+            <div class="v-status" id="vkStatus" style="display:none"><div class="v-dot" id="vkDot"></div><span class="v-lbl" id="vkLbl"></span></div>
           </div>
         </div>
         <div class="vault-unlock-section">
@@ -3622,9 +3622,10 @@ function renderVaultPanel(){
   const dot=document.getElementById('vkDot');
   const lbl=document.getElementById('vkLbl');
   if(dot&&lbl){
-    if(unlocked===vaultCodes.length&&vaultCodes.length>0){dot.classList.add('ok');lbl.classList.add('ok');lbl.textContent='ALL UNLOCKED'}
-    else if(unlocked>0){dot.className='v-dot';dot.style.background='radial-gradient(circle at 40% 35%,#ffcc44,#cc8811)';dot.style.boxShadow='0 0 6px rgba(255,170,51,.5)';lbl.textContent=unlocked+' UNLOCKED'}
-    else{dot.className='v-dot';dot.style.background='';dot.style.boxShadow='';lbl.textContent='AWAITING INPUT'}
+    const statusEl=document.getElementById('vkStatus');
+    if(unlocked===vaultCodes.length&&vaultCodes.length>0){if(statusEl)statusEl.style.display='';dot.classList.add('ok');lbl.classList.add('ok');lbl.textContent='ALL UNLOCKED'}
+    else if(unlocked>0){if(statusEl)statusEl.style.display='';dot.className='v-dot';dot.style.background='radial-gradient(circle at 40% 35%,#ffcc44,#cc8811)';dot.style.boxShadow='0 0 6px rgba(255,170,51,.5)';lbl.textContent=unlocked+' UNLOCKED'}
+    else{if(statusEl)statusEl.style.display='none'}
   }
   if(vaultCodes.length===0){
     list.innerHTML='<div class="vault-unlock-empty">No vault codes configured yet. The admin can add codes in the Keys & Codes panel.</div>';
