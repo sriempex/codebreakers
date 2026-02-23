@@ -4764,6 +4764,15 @@ function _cacheContent(key,data){
 }
 function _restoreContentCache(){
   let restored=false;
+  // If no content version stamp exists, this cache is from a pre-versioned build — nuke it
+  try{
+    if(!localStorage.getItem('cb_contentVersion')){
+      localStorage.removeItem('cb_posts');
+      localStorage.removeItem('cb_media');
+      localStorage.removeItem('cb_intel');
+      return false;
+    }
+  }catch(e){}
   try{
     const cp=localStorage.getItem('cb_posts');
     if(cp){const arr=JSON.parse(cp);posts.length=0;arr.forEach(p=>posts.push(p));restored=true;}
@@ -4854,20 +4863,25 @@ async function loadEventData(){
 
 function applyEventConfig(cfg){
   // Content version check — if server version differs from cached, clear stale content
-  if(cfg.contentVersion){
-    try{
-      const cachedVer=localStorage.getItem('cb_contentVersion')||'';
-      if(cachedVer&&cachedVer!==String(cfg.contentVersion)){
-        // Server content changed — purge content cache (NOT game state)
-        localStorage.removeItem('cb_posts');
-        localStorage.removeItem('cb_media');
-        localStorage.removeItem('cb_intel');
-        // Reset in-memory arrays to empty so stale cache doesn't persist
-        posts.length=0;mediaItems.length=0;intelFields.length=0;
-      }
-      localStorage.setItem('cb_contentVersion',String(cfg.contentVersion));
-    }catch(e){}
-  }
+  // Also: if server has no contentVersion yet, nuke any pre-existing cache (legacy data)
+  try{
+    const cachedVer=localStorage.getItem('cb_contentVersion')||'';
+    const serverVer=cfg.contentVersion?String(cfg.contentVersion):'';
+    if(!serverVer){
+      // Server has no version stamp yet — wipe any legacy cache
+      localStorage.removeItem('cb_posts');
+      localStorage.removeItem('cb_media');
+      localStorage.removeItem('cb_intel');
+      localStorage.removeItem('cb_contentVersion');
+    }else if(cachedVer!==serverVer){
+      // Version mismatch — purge content cache (NOT game state)
+      localStorage.removeItem('cb_posts');
+      localStorage.removeItem('cb_media');
+      localStorage.removeItem('cb_intel');
+      posts.length=0;mediaItems.length=0;intelFields.length=0;
+      localStorage.setItem('cb_contentVersion',serverVer);
+    }
+  }catch(e){}
   if(cfg.operationName){operationName=cfg.operationName;const ct=document.getElementById('consoleTitle');if(ct)ct.textContent='◈ '+operationName;document.title=operationName+' — Console'}
   if(cfg.operationFont){operationFont=cfg.operationFont;applyOperationFont(operationFont)}
   if(cfg.gridTheme){_currentGridTheme=cfg.gridTheme;applyGridTheme(cfg.gridTheme);updateThemeLabel()}
@@ -5562,7 +5576,7 @@ function closeEventControl(){
 }
 function closeAdminPanel(){closeEventControl()} // backward compat alias
 
-// ══════ REORGANIZED ADMIN PANEL FUNCTIONS (BUILD 20260223-0400) ══════
+// ══════ REORGANIZED ADMIN PANEL FUNCTIONS (BUILD 20260223-0500) ══════
 let _previewReturnPanel=null;
 
 function openDashboard(){closeAllAdminPanels();_instantShow(document.getElementById('dashboardPanel'));showAdminTabs('dashboardPanel');renderTeamMonitor();startTeamMonitor()}
@@ -8094,7 +8108,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260223-0400';
+const _BUILD_ID = '20260223-0500';
 // Security: HTML sanitizer to prevent XSS
 function sanitizeHTML(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')}
 // Security: Rate limiter for API calls
