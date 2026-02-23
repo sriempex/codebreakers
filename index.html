@@ -2293,7 +2293,7 @@
     <div class="tut-tooltip-nav">
       <div class="tut-tooltip-dots" id="tutDots"></div>
       <div class="tut-tooltip-btns">
-        <div class="tut-btn tut-btn-skip" id="tutBtnSkip" onclick="endTutorial()">SKIP</div>
+        <div class="tut-btn tut-btn-skip" id="tutBtnSkip" onclick="endTutorial()">EXIT</div>
         <div class="tut-btn tut-btn-back" id="tutBtnBack" onclick="tutorialStep(-1)">BACK</div>
         <div class="tut-btn tut-btn-next" id="tutBtnNext" onclick="tutorialStep(1)">NEXT</div>
       </div>
@@ -2687,7 +2687,7 @@
             <div class="team-card-notif-list" id="teamNotifList"><div class="notif-empty">No notifications yet</div></div>
           </div>
           <div style="padding:4px 16px 0;border-top:1px solid rgba(255,255,255,.04)">
-            <div onclick="event.stopPropagation();toggleTeamCard();replayTutorial()" style="display:flex;align-items:center;gap:8px;padding:8px 0;cursor:pointer;opacity:.6;transition:opacity .15s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.6'">
+            <div onclick="event.stopPropagation();toggleTeamCard();setTimeout(replayTutorial,200)" style="display:flex;align-items:center;gap:8px;padding:8px 0;cursor:pointer;opacity:.6;transition:opacity .15s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.6'">
               <span style="font-size:12px">📖</span><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa;letter-spacing:.5px">Replay Tutorial</span>
             </div>
           </div>
@@ -7995,7 +7995,7 @@ function getEventState(){
 
 // ══════ SESSION MANAGEMENT ══════
 function openSessionMgmt(){closeAllAdminPanels();_instantShow(document.getElementById('sessionMgmtPanel'));showAdminTabs('sessionMgmtPanel')}
-function closeSessionMgmt(){const el=document.getElementById('sessionMgmtPanel');el.classList.remove('active');el.style.cssText=''}
+function closeSessionMgmt(){const el=document.getElementById('sessionMgmtPanel');el.classList.remove('active');el.style.cssText='';hideAdminTabs()}
 function destroySessions(mode){
   const labels={all:'DESTROY ALL SESSIONS (including yours)',teams:'DESTROY ALL TEAM SESSIONS',exceptMe:'DESTROY ALL SESSIONS EXCEPT YOURS'};
   if(!confirm(labels[mode]+'?\n\nAffected users will be kicked to the login screen immediately.')){return}
@@ -8048,7 +8048,7 @@ function openTutorialConfig(){
   if(briefingConfig.sourceType==='upload'){document.getElementById('briefingFileUrl').value=briefingConfig.videoUrl||''}
   else{document.getElementById('briefingVideoUrl').value=briefingConfig.videoUrl||''}
 }
-function closeTutorialConfig(){const el=document.getElementById('tutorialConfigPanel');el.classList.remove('active');el.style.cssText=''}
+function closeTutorialConfig(){const el=document.getElementById('tutorialConfigPanel');el.classList.remove('active');el.style.cssText='';hideAdminTabs()}
 
 function renderTutorialStepList(){
   const list=document.getElementById('tutStepList');
