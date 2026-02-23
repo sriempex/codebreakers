@@ -8238,7 +8238,9 @@ function saveTutorialConfig(){
     tutorialEnabled:tutorialEnabled,
     tutorialSteps:JSON.stringify(tutorialSteps),
     briefingConfig:JSON.stringify(briefingConfig)
-  }});
+  }}).then(r=>{
+    if(!r||!r.ok)console.error('Tutorial config save failed:',r);
+  });
 }
 
 function resetTutorialForAll(){
@@ -8524,10 +8526,16 @@ function startIntelDrag(e,idx){
 // ══════ APPLY TUTORIAL/BRIEFING CONFIG FROM BACKEND ══════
 function applyTutorialBriefingConfig(cfg){
   if(cfg.tutorialEnabled!==undefined)tutorialEnabled=(cfg.tutorialEnabled==='true'||cfg.tutorialEnabled===true);
-  if(cfg.tutorialSteps){try{tutorialSteps=JSON.parse(cfg.tutorialSteps)}catch(e){}}
+  if(cfg.tutorialSteps){
+    if(typeof cfg.tutorialSteps==="string"){try{tutorialSteps=JSON.parse(cfg.tutorialSteps)}catch(e){}}
+    else if(Array.isArray(cfg.tutorialSteps)){tutorialSteps=cfg.tutorialSteps}
+  }
   if(cfg.tutorialGen){try{localStorage.setItem('cb_tutorialGen',String(cfg.tutorialGen))}catch(e){}}
   if(cfg.briefingGen){try{localStorage.setItem('cb_briefingGen',String(cfg.briefingGen))}catch(e){}}
-  if(cfg.briefingConfig){try{briefingConfig=JSON.parse(cfg.briefingConfig)}catch(e){}}
+  if(cfg.briefingConfig){
+    if(typeof cfg.briefingConfig==="string"){try{briefingConfig=JSON.parse(cfg.briefingConfig)}catch(e){}}
+    else if(typeof cfg.briefingConfig==="object"){briefingConfig=cfg.briefingConfig}
+  }
 }
 
 // ══════ FUTURE UPGRADES (NOTED) ══════
