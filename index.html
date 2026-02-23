@@ -850,6 +850,10 @@
   body.event-locked .intel-exp-input{pointer-events:none;opacity:.4}
   body.event-locked .v-key{pointer-events:none;opacity:.4}
   body.event-locked .intel-submit-btn{pointer-events:none;opacity:.4}
+  body.player-preview #scoringPanel,
+  body.player-preview #registrationPanel,
+  body.player-preview #appearancePanel,
+  body.player-preview #dashboardPanel{display:none!important}
   body.player-preview #adminNavBar{display:none!important}
 
   body.event-locked .console-tile{pointer-events:none;opacity:.5}
@@ -956,6 +960,8 @@
   .admin-dropdown-item.adm-danger .adm-label{color:#ff6655}
   .admin-dropdown-item.adm-danger:hover{background:rgba(255,50,50,.06)}
   .admin-dropdown-item.adm-danger:hover .adm-label{color:#ff4433}
+  .adm-tier-label{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:3px;color:rgba(0,212,255,.4);text-transform:uppercase;padding:10px 16px 4px;font-weight:700;user-select:none}
+  .adm-tier-label:not(:first-child){border-top:1px solid rgba(255,255,255,.04);margin-top:4px;padding-top:10px}
   .admin-dropdown-sep{height:1px;background:rgba(255,255,255,.04);margin:4px 12px}
   .admin-dropdown-toggle{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left}
   .admin-dropdown-toggle:hover{background:rgba(255,255,255,.04)}
@@ -1005,8 +1011,10 @@
   /* Admin Profile Panel */
   #adminPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #adminPanel.active{opacity:1;pointer-events:all}
-  #teamMonitorPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
-  #teamMonitorPanel.active{opacity:1;pointer-events:all}
+  #dashboardPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
+  #dashboardPanel.active{opacity:1;pointer-events:all}
+  #scoringPanel,#registrationPanel,#appearancePanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
+  #scoringPanel.active,#registrationPanel.active,#appearancePanel.active{opacity:1;pointer-events:all}
   #portalUsersPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #portalUsersPanel.active{opacity:1;pointer-events:all}
   .ap-container{width:600px;max-width:92vw;max-height:85vh;overflow-y:auto;border-radius:8px;
@@ -1671,6 +1679,10 @@
   body.landing-preview-mode .admin-edit-inline,
   body.landing-preview-mode .admin-trigger,
   body.landing-preview-mode #logoutBtn,
+  body.landing-preview-mode #scoringPanel,
+  body.landing-preview-mode #registrationPanel,
+  body.landing-preview-mode #appearancePanel,
+  body.landing-preview-mode #dashboardPanel{display:none!important}
   body.landing-preview-mode #adminNavBar{display:none!important}
 </style>
 </head>
@@ -1688,14 +1700,18 @@
     <span class="admin-dropdown-label">Admin Menu</span>
   </div>
   <div class="admin-dropdown-body">
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openEventControl()"><span class="adm-icon">🎛</span><span class="adm-label">Mission Control</span></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openKeysCodes()"><span class="adm-icon">🔐</span><span class="adm-label">Keys & Codes</span></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openLeaderboard()"><span class="adm-icon">🏆</span><span class="adm-label">Leaderboard</span></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openTeamMonitor()"><span class="adm-icon">📡</span><span class="adm-label">Team Monitor</span></div>
+    <div class="adm-tier-label">LIVE</div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openDashboard()"><span class="adm-icon">📊</span><span class="adm-label">Dashboard</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openBroadcast()"><span class="adm-icon">📢</span><span class="adm-label">Broadcast</span></div>
-    <div class="admin-dropdown-sep"></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openChangePassword()"><span class="adm-icon">🔑</span><span class="adm-label">Change Password</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openKeysCodes()"><span class="adm-icon">🔐</span><span class="adm-label">Keys & Codes</span></div>
+    <div class="adm-tier-label">SETUP</div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openEventSettings()"><span class="adm-icon">⚙️</span><span class="adm-label">Event Settings</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openScoringPanel()"><span class="adm-icon">🎯</span><span class="adm-label">Scoring</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openRegistrationPanel()"><span class="adm-icon">📝</span><span class="adm-label">Registration</span></div>
+    <div class="adm-tier-label">SYSTEM</div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openAppearancePanel()"><span class="adm-icon">🎨</span><span class="adm-label">Appearance</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openPortalUsers()"><span class="adm-icon">👥</span><span class="adm-label">Portal Users</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openChangePassword()"><span class="adm-icon">🔑</span><span class="adm-label">Change Password</span></div>
     <div class="admin-dropdown-sep"></div>
     <div class="admin-dropdown-toggle pp-toggle" onclick="togglePlayerPreview()"><span class="adm-icon">👁</span><span class="adm-label">View as Player</span><span class="adm-toggle off" id="admPreviewToggle">OFF</span></div>
   </div>
@@ -1932,10 +1948,10 @@
   </div>
 </div>
 
-<!-- EVENT CONTROL PANEL -->
+<!-- EVENT SETTINGS PANEL -->
 <div id="adminPanel">
   <div class="ap-container">
-    <div class="ap-header"><h3>🎛 Mission Control</h3><button class="mv-close" onclick="closeEventControl()">✕ CLOSE</button></div>
+    <div class="ap-header"><h3>⚙️ Event Settings</h3><button class="mv-close" onclick="closeEventSettings()">✕ CLOSE</button></div>
     <div class="ap-section"><h4>🎮 Event Settings <span class="save-blip" id="blipEventSettings">✓ Saved</span></h4>
       <p>Configure participant mode, countdown timer, and leaderboard display.</p>
       <div style="margin-bottom:16px">
@@ -1990,6 +2006,44 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- SCORING PANEL -->
+<div id="scoringPanel">
+  <div class="ap-container">
+    <div class="ap-header"><h3>🎯 Scoring</h3><button class="mv-close" onclick="closeScoringPanel()">✕ CLOSE</button></div>
+    <div class="ap-section"><h4>🎯 Scoring Editor <span class="save-blip" id="blipScoring">✓ Saved</span></h4>
+      <p>Configure point values and matching rules for each intel field. Changes auto-save and affect grading immediately.</p>
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <div class="ap-field"><label>Default Points Per Field</label><input type="number" id="seDefaultPoints" value="10" min="1" max="1000" onchange="seApplyDefaultPoints()" style="width:80px"></div>
+        <div class="ap-field"><label>Default Match Mode</label><select id="seDefaultMode" onchange="seApplyDefaultMode()" style="width:auto"><option value="exact">Exact</option><option value="contains">Contains</option><option value="fuzzy">Fuzzy</option></select></div>
+        <div class="ap-field"><label>Time Bonus</label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:4px"><input type="checkbox" id="seTimeBonus" onchange="updateScoringConfig()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999">Award bonus points for early submission</span></label>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap" id="seTimeBonusConfig" style="display:none">
+        <div class="ap-field"><label>Max Time Bonus</label><input type="number" id="seTimeBonusMax" value="50" min="0" max="500" onchange="updateScoringConfig()" style="width:80px"></div>
+        <div class="ap-field"><label>Bonus Decay</label><select id="seTimeBonusDecay" onchange="updateScoringConfig()" style="width:auto"><option value="linear">Linear</option><option value="exponential">Exponential</option></select></div>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:12px">
+        <div style="display:grid;grid-template-columns:2fr 80px 100px 80px;gap:0;font-family:Saira,sans-serif;font-size:9px;letter-spacing:1px;color:#888;font-weight:700;text-transform:uppercase;padding:8px 12px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border)">
+          <div>Field</div><div style="text-align:center">Points</div><div style="text-align:center">Match Mode</div><div style="text-align:center">Fuzzy %</div>
+        </div>
+        <div id="seFieldList" style="max-height:400px;overflow-y:auto"></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;font-family:IBM Plex Mono,monospace;font-size:11px;color:var(--green);letter-spacing:1px">Total Possible: <strong id="seTotalPossible">0</strong> pts</div>
+        <button class="ap-btn ap-btn-cyan" onclick="seApplyDefaultPoints()" style="font-size:9px;padding:5px 12px">Apply Defaults to All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTRATION PANEL -->
+<div id="registrationPanel">
+  <div class="ap-container">
+    <div class="ap-header"><h3>📝 Registration</h3><button class="mv-close" onclick="closeRegistrationPanel()">✕ CLOSE</button></div>
     <div class="ap-section"><h4>📝 Registration Settings</h4>
       <p>Configure team registration parameters. Changes apply immediately.</p>
       <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap">
@@ -2007,6 +2061,13 @@
         <span id="apRegStatus" style="font-family:IBM Plex Mono,monospace;font-size:9px;color:var(--green);letter-spacing:1px;font-weight:700">● OPEN</span>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- APPEARANCE PANEL -->
+<div id="appearancePanel">
+  <div class="ap-container">
+    <div class="ap-header"><h3>🎨 Appearance</h3><button class="mv-close" onclick="closeAppearancePanel()">✕ CLOSE</button></div>
     <div class="ap-section"><h4>🏠 Landing Page</h4>
       <p>Customize the landing page banner and text.</p>
       <div class="ap-field" style="margin-bottom:10px"><label>Banner Image</label>
@@ -2089,37 +2150,18 @@
       </div>
       <div style="text-align:center;padding-top:4px"><button class="ap-btn ap-btn-ghost" onclick="resetFontConfig()" style="font-size:9px;padding:7px 20px">↺ Reset All to Default</button></div>
     </div>
-    <div class="ap-section"><h4>🎯 Scoring Editor <span class="save-blip" id="blipScoring">✓ Saved</span></h4>
-      <p>Configure point values and matching rules for each intel field. Changes auto-save and affect grading immediately.</p>
-      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
-        <div class="ap-field"><label>Default Points Per Field</label><input type="number" id="seDefaultPoints" value="10" min="1" max="1000" onchange="seApplyDefaultPoints()" style="width:80px"></div>
-        <div class="ap-field"><label>Default Match Mode</label><select id="seDefaultMode" onchange="seApplyDefaultMode()" style="width:auto"><option value="exact">Exact</option><option value="contains">Contains</option><option value="fuzzy">Fuzzy</option></select></div>
-        <div class="ap-field"><label>Time Bonus</label>
-          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:4px"><input type="checkbox" id="seTimeBonus" onchange="updateScoringConfig()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999">Award bonus points for early submission</span></label>
-        </div>
-      </div>
-      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap" id="seTimeBonusConfig" style="display:none">
-        <div class="ap-field"><label>Max Time Bonus</label><input type="number" id="seTimeBonusMax" value="50" min="0" max="500" onchange="updateScoringConfig()" style="width:80px"></div>
-        <div class="ap-field"><label>Bonus Decay</label><select id="seTimeBonusDecay" onchange="updateScoringConfig()" style="width:auto"><option value="linear">Linear</option><option value="exponential">Exponential</option></select></div>
-      </div>
-      <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:12px">
-        <div style="display:grid;grid-template-columns:2fr 80px 100px 80px;gap:0;font-family:Saira,sans-serif;font-size:9px;letter-spacing:1px;color:#888;font-weight:700;text-transform:uppercase;padding:8px 12px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border)">
-          <div>Field</div><div style="text-align:center">Points</div><div style="text-align:center">Match Mode</div><div style="text-align:center">Fuzzy %</div>
-        </div>
-        <div id="seFieldList" style="max-height:400px;overflow-y:auto"></div>
-      </div>
-      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-        <div style="flex:1;font-family:IBM Plex Mono,monospace;font-size:11px;color:var(--green);letter-spacing:1px">Total Possible: <strong id="seTotalPossible">0</strong> pts</div>
-        <button class="ap-btn ap-btn-cyan" onclick="seApplyDefaultPoints()" style="font-size:9px;padding:5px 12px">Apply Defaults to All</button>
-      </div>
-    </div>
   </div>
 </div>
 
 <!-- TEAM MONITOR PANEL -->
-<div id="teamMonitorPanel">
-  <div class="ap-container" style="width:640px">
-    <div class="ap-header"><h3>📡 Team Monitor</h3><button class="mv-close" onclick="closeTeamMonitor()">✕ CLOSE</button></div>
+<div id="dashboardPanel">
+  <div class="ap-container" style="width:700px">
+    <div class="ap-header"><h3>📊 Dashboard</h3><button class="mv-close" onclick="closeDashboard()">✕ CLOSE</button></div>
+    <div style="display:flex;gap:2px;margin-bottom:16px;background:rgba(255,255,255,.02);border-radius:6px;padding:3px;border:1px solid var(--border)">
+      <button class="dash-tab active" id="dashTabMonitor" onclick="switchDashTab('monitor')" style="flex:1;padding:8px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15);border-radius:4px;color:var(--green);font-family:Saira,sans-serif;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .15s;font-weight:700">📡 TEAMS</button>
+      <button class="dash-tab" id="dashTabLeaderboard" onclick="switchDashTab('leaderboard')" style="flex:1;padding:8px;background:transparent;border:1px solid transparent;border-radius:4px;color:#666;font-family:Saira,sans-serif;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .15s;font-weight:700">🏆 LEADERBOARD</button>
+    </div>
+    <div id="dashMonitorView">
     <div class="ap-section">
       <p>Real-time view of all registered teams and their activity status. Teams inactive for 5+ minutes are flagged.</p>
       <div style="display:flex;gap:8px;margin-bottom:12px">
@@ -2136,6 +2178,10 @@
           <option value="15" selected>15</option><option value="20">20</option><option value="25">25</option><option value="50">50</option>
         </select>
       </div>
+    </div>
+    </div>
+    <div id="dashLeaderboardView" style="display:none">
+      <div id="dashLbContent"></div>
     </div>
   </div>
 </div>
@@ -3485,7 +3531,7 @@ function renderMedia(){
 // ══════ PANELS ══════
 const overlay=document.getElementById('panelOverlay');
 let currentFeedView='grid';
-function openPanel(t){playTileClick();recordTileAccess(t);['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel','portalUsersPanel'].forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);saveSession();
+function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);saveSession();
   if(t==='feed'){renderFeed();setFeedView('grid')}if(t==='media')renderMedia();if(t==='intel')renderIntelForm();if(t==='vault')renderVaultPanel()}
 function closePanel(){overlay.style.cssText='';overlay.classList.remove('active');setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession()},120)}
 
@@ -4807,17 +4853,20 @@ document.addEventListener('keydown',e=>{
     const curScreen=document.querySelector('.screen.active')?.id||'';
     if(curScreen==='loginScreen'){e.preventDefault();loginBack();return}
     if(curScreen==='regScreen'){e.preventDefault();regBack();return}
-    const adminIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel','portalUsersPanel'];
+    const adminIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','dashboardPanel','portalUsersPanel','scoringPanel','registrationPanel','appearancePanel'];
     for(const id of adminIds){
       const el=document.getElementById(id);
       if(el&&el.classList.contains('active')){
         e.preventDefault();
-        if(id==='adminPanel')closeEventControl();
+        if(id==='adminPanel')closeEventSettings();
         else if(id==='broadcastPanel')closeBroadcast();
         else if(id==='leaderboardModule')closeLeaderboard();
         else if(id==='keysCodesPanel')closeKeysCodes();
-        else if(id==='teamMonitorPanel')closeTeamMonitor();
+        else if(id==='dashboardPanel')closeDashboard();
         else if(id==='portalUsersPanel')closePortalUsers();
+        else if(id==='scoringPanel')closeScoringPanel();
+        else if(id==='registrationPanel')closeRegistrationPanel();
+        else if(id==='appearancePanel')closeAppearancePanel();
         return;
       }
     }
@@ -5138,7 +5187,7 @@ function onLeaderboardStyleChange(){
 }
 
 // ── Admin Panel ──
-const adminPanelIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','teamMonitorPanel','portalUsersPanel'];
+const adminPanelIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','dashboardPanel','portalUsersPanel','scoringPanel','registrationPanel','appearancePanel'];
 function closeAllAdminPanels(){
   adminPanelIds.forEach(id=>{
     const el=document.getElementById(id);
@@ -5176,12 +5225,15 @@ function switchAdminTab(panelId){
   if(teamMonitorInterval){clearInterval(teamMonitorInterval);teamMonitorInterval=null}
   _instantShow(document.getElementById(panelId));
   showAdminTabs(panelId);
-  if(panelId==='adminPanel'){syncAdminPanelSettings();initTypographyPanel()}
+  if(panelId==='adminPanel'){syncAdminPanelSettings()}
   if(panelId==='leaderboardModule'){renderFullLeaderboard()}
-  if(panelId==='teamMonitorPanel'){renderTeamMonitor();startTeamMonitor()}
+  if(panelId==='dashboardPanel'){renderTeamMonitor();startTeamMonitor()}
   if(panelId==='keysCodesPanel'){renderKeysCodes()}
   if(panelId==='portalUsersPanel'){renderPortalUsersList()}
   if(panelId==='broadcastPanel'){/* nothing extra */}
+  if(panelId==='scoringPanel'){renderScoringEditor()}
+  if(panelId==='registrationPanel'){syncRegistrationSettings()}
+  if(panelId==='appearancePanel'){initTypographyPanel()}
 }
 function syncAdminPanelSettings(){
   renderScoringEditor();
@@ -5292,17 +5344,53 @@ function closeEventControl(){
   if(apTimerInterval){clearInterval(apTimerInterval);apTimerInterval=null}
 }
 function closeAdminPanel(){closeEventControl()} // backward compat alias
-function openTeamMonitor(){
-  closeAllAdminPanels();
-  _instantShow(document.getElementById('teamMonitorPanel'));
-  showAdminTabs('teamMonitorPanel');
-  renderTeamMonitor();startTeamMonitor();
+
+// ══════ REORGANIZED ADMIN PANEL FUNCTIONS (BUILD 20260222-1600) ══════
+let _previewReturnPanel=null;
+
+function openDashboard(){closeAllAdminPanels();_instantShow(document.getElementById('dashboardPanel'));showAdminTabs('dashboardPanel');renderTeamMonitor();startTeamMonitor()}
+function closeDashboard(){const el=document.getElementById('dashboardPanel');if(el){el.classList.remove('active');el.style.cssText=''}if(teamMonitorInterval){clearInterval(teamMonitorInterval);teamMonitorInterval=null}hideAdminTabs()}
+
+function switchDashTab(tab){
+  const monView=document.getElementById('dashMonitorView');
+  const lbView=document.getElementById('dashLeaderboardView');
+  const tabMon=document.getElementById('dashTabMonitor');
+  const tabLb=document.getElementById('dashTabLeaderboard');
+  if(!monView||!lbView)return;
+  const isLb=tab==='leaderboard';
+  monView.style.display=isLb?'none':'';
+  lbView.style.display=isLb?'':'none';
+  [tabMon,tabLb].forEach((btn,i)=>{
+    const active=(i===0&&!isLb)||(i===1&&isLb);
+    if(btn){btn.style.background=active?'rgba(0,255,136,.08)':'transparent';btn.style.borderColor=active?'rgba(0,255,136,.15)':'transparent';btn.style.color=active?'var(--green)':'#666'}
+  });
+  if(isLb){renderFullLeaderboard();const src=document.getElementById('lbBody');const dst=document.getElementById('dashLbContent');if(src&&dst)dst.innerHTML=src.innerHTML}
+  else{renderTeamMonitor();startTeamMonitor()}
 }
-function closeTeamMonitor(){
-  const el=document.getElementById('teamMonitorPanel');
-  el.style.cssText='';el.classList.remove('active');hideAdminTabs();
-  if(teamMonitorInterval){clearInterval(teamMonitorInterval);teamMonitorInterval=null}
+
+function openEventSettings(){closeAllAdminPanels();_instantShow(document.getElementById('adminPanel'));showAdminTabs('adminPanel');syncAdminPanelSettings()}
+function closeEventSettings(){closeEventControl()}
+
+function openScoringPanel(){closeAllAdminPanels();_instantShow(document.getElementById('scoringPanel'));showAdminTabs('scoringPanel');renderScoringEditor()}
+function closeScoringPanel(){const el=document.getElementById('scoringPanel');if(el){el.classList.remove('active');el.style.cssText=''}hideAdminTabs()}
+
+function openRegistrationPanel(){closeAllAdminPanels();_instantShow(document.getElementById('registrationPanel'));showAdminTabs('registrationPanel');syncRegistrationSettings()}
+function closeRegistrationPanel(){const el=document.getElementById('registrationPanel');if(el){el.classList.remove('active');el.style.cssText=''}hideAdminTabs()}
+function syncRegistrationSettings(){
+  const minEl=document.getElementById('apMinSize');const maxEl=document.getElementById('apMaxSize');const maxTEl=document.getElementById('apMaxTeams');
+  if(minEl)minEl.value=regSettings.teamSizeMin;if(maxEl)maxEl.value=regSettings.teamSizeMax;if(maxTEl)maxTEl.value=regSettings.maxTeams;
+  const reqE=document.getElementById('apReqEmail');if(reqE)reqE.checked=regSettings.requireEmail;
+  const reqP=document.getElementById('apReqPhone');if(reqP)reqP.checked=regSettings.requirePhone;
+  const reqD=document.getElementById('apReqDept');if(reqD)reqD.checked=regSettings.requireDept;
+  const regO=document.getElementById('apRegOpen');if(regO)regO.checked=regSettings.registrationOpen;
+  const st=document.getElementById('apRegStatus');
+  if(st){st.textContent=regSettings.registrationOpen?'● OPEN':'● CLOSED';st.style.color=regSettings.registrationOpen?'var(--green)':'var(--red)'}
 }
+
+function openAppearancePanel(){closeAllAdminPanels();_instantShow(document.getElementById('appearancePanel'));showAdminTabs('appearancePanel');initTypographyPanel()}
+function closeAppearancePanel(){const el=document.getElementById('appearancePanel');if(el){el.classList.remove('active');el.style.cssText=''}hideAdminTabs()}
+function openTeamMonitor(){openDashboard()}
+function closeTeamMonitor(){closeDashboard()}
 
 function changeAdminPw(){
   const cur=document.getElementById('apCurPw').value;
@@ -5529,7 +5617,7 @@ function renderLeaderboard(){
 function startTeamMonitor(){
   if(teamMonitorInterval)clearInterval(teamMonitorInterval);
   teamMonitorInterval=setInterval(()=>{
-    if(document.getElementById('teamMonitorPanel').classList.contains('active')){
+    if(document.getElementById('dashboardPanel').classList.contains('active')){
       renderTeamMonitor();
     }
     if(document.getElementById('leaderboardModule').classList.contains('active')){
@@ -6789,8 +6877,8 @@ function saveNewMediaItem(){const vl=document.getElementById('em_vaultlock');con
 
 // ══════ LANDING PAGE PREVIEW ══════
 function previewLandingPage(){
-  // Close admin panel, show landing screen with preview banner
-  closeEventControl();
+  _previewReturnPanel='appearancePanel';
+  closeAppearancePanel();
   // Use proper screen switching
   showScreen('landingScreen');
   // Show preview banner
@@ -6815,6 +6903,8 @@ function closeLandingPreview(){
   const regBtnRow=document.getElementById('regBtnRow');if(regBtnRow)regBtnRow.style.display='';
   const regBtn=document.getElementById('regSubmitBtn');
   if(regBtn){const s=regBtn.querySelector('span');if(s)s.textContent='REGISTER';regBtn.style.opacity='';regBtn.style.pointerEvents=''}
+  // Return to the panel that launched preview
+  if(_previewReturnPanel){setTimeout(()=>openAppearancePanel(),120);_previewReturnPanel=null}
 }
 function previewNav(screenId,btn){
   showScreen(screenId);
@@ -7537,7 +7627,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-1500';
+const _BUILD_ID = '20260222-1600';
 // Security: HTML sanitizer to prevent XSS
 function sanitizeHTML(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')}
 // Security: Rate limiter for API calls
@@ -7858,21 +7948,28 @@ function confirmVaultLock(){
 </script>
 
 <div id="adminNavBar">
-  <div class="anb-btn" id="anb-adminPanel" onclick="switchAdminTab('adminPanel')" title="Mission Control">
-    <span class="anb-icon">🎛</span><span class="anb-label">Control</span>
+  <div class="anb-btn" id="anb-dashboardPanel" onclick="switchAdminTab('dashboardPanel')" title="Dashboard">
+    <span class="anb-icon">📊</span><span class="anb-label">Dashboard</span>
+  </div>
+  <div class="anb-btn" id="anb-broadcastPanel" onclick="switchAdminTab('broadcastPanel')" title="Broadcast">
+    <span class="anb-icon">📢</span><span class="anb-label">Broadcast</span>
   </div>
   <div class="anb-btn" id="anb-keysCodesPanel" onclick="switchAdminTab('keysCodesPanel')" title="Keys & Codes">
     <span class="anb-icon">🔐</span><span class="anb-label">Keys</span>
   </div>
-  <div class="anb-btn" id="anb-leaderboardModule" onclick="switchAdminTab('leaderboardModule')" title="Leaderboard">
-    <span class="anb-icon">🏆</span><span class="anb-label">Leaderboard</span>
+  <div class="anb-sep"></div>
+  <div class="anb-btn" id="anb-adminPanel" onclick="switchAdminTab('adminPanel')" title="Event Settings">
+    <span class="anb-icon">⚙️</span><span class="anb-label">Event</span>
+  </div>
+  <div class="anb-btn" id="anb-scoringPanel" onclick="switchAdminTab('scoringPanel')" title="Scoring">
+    <span class="anb-icon">🎯</span><span class="anb-label">Scoring</span>
+  </div>
+  <div class="anb-btn" id="anb-registrationPanel" onclick="switchAdminTab('registrationPanel')" title="Registration">
+    <span class="anb-icon">📝</span><span class="anb-label">Reg</span>
   </div>
   <div class="anb-sep"></div>
-  <div class="anb-btn" id="anb-teamMonitorPanel" onclick="switchAdminTab('teamMonitorPanel')" title="Team Monitor">
-    <span class="anb-icon">📡</span><span class="anb-label">Monitor</span>
-  </div>
-  <div class="anb-btn" id="anb-broadcastPanel" onclick="switchAdminTab('broadcastPanel')" title="Broadcast">
-    <span class="anb-icon">📢</span><span class="anb-label">Broadcast</span>
+  <div class="anb-btn" id="anb-appearancePanel" onclick="switchAdminTab('appearancePanel')" title="Appearance">
+    <span class="anb-icon">🎨</span><span class="anb-label">Theme</span>
   </div>
   <div class="anb-btn" id="anb-portalUsersPanel" onclick="switchAdminTab('portalUsersPanel')" title="Users">
     <span class="anb-icon">👥</span><span class="anb-label">Users</span>
