@@ -4704,8 +4704,7 @@ let isAdmin=false;
 // ═══════ BACKEND API ═══════
 const API_URL='https://script.google.com/macros/s/AKfycbxRjOpiRs1jMpIt8obpexJBZDRtoOI1KPLhyFe0dd7SFx_YbWOjTa0DyjLBssRaEJbK/exec';
 const R2_URL='https://cb-media.sriempex.workers.dev';
-const _r2k=[65,108,112,104,97,36,75,120,57,45,82,109,51,81,118,55,87,110,50,90,112,56];
-const R2_SECRET=_r2k.map(c=>String.fromCharCode(c)).join('');
+// R2_SECRET removed — uploads now proxied through backend for security
 let adminSession=null; // {username, role, adminToken}
 let adminUsers=[]; // populated from backend on admin list fetch
 let manualTeams=[];
@@ -4735,22 +4734,26 @@ async function apiCall(action,data={}){
     return{ok:false,error:'Too many requests. Please slow down.'};
   }
   try{
-    const params=new URLSearchParams({action});
-    if(adminSession)params.set('adminToken',adminSession.adminToken);
-    // For complex data (arrays/objects), encode as JSON in a 'payload' param
+    // Build POST body — no sensitive data in URL query strings
+    const body=new URLSearchParams({action});
+    if(adminSession)body.set('adminToken',adminSession.adminToken);
     const simpleKeys=['username','password','currentPassword','newPassword',
       'newUsername','newPassword','targetUsername','teamId','teamName','type',
       'code','recoveryKey'];
     let hasComplex=false;
     Object.entries(data).forEach(([k,v])=>{
       if(typeof v==='object'){hasComplex=true}
-      else if(simpleKeys.includes(k)){params.set(k,String(v))}
+      else if(simpleKeys.includes(k)){body.set(k,String(v))}
       else{hasComplex=true}
     });
     if(hasComplex){
-      params.set('payload',JSON.stringify(data));
+      body.set('payload',JSON.stringify(data));
     }
-    const resp=await fetch(API_URL+'?'+params.toString());
+    const resp=await fetch(API_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:body.toString()
+    });
     const text=await resp.text();
     try{return JSON.parse(text)}
     catch(e){console.error('Parse error:',text.substring(0,200));return {ok:false,error:'Invalid response from server'}}
@@ -6475,16 +6478,20 @@ let pendingMediaFileUrl='';
 let _uploadingIndicator=null;
 
 async function uploadFileToDrive(file,subfolder){
-  // Upload file to Cloudflare R2 via Worker
+  // Step 1: Get an upload ticket from backend (secret stays server-side)
+  const ticketResult=await apiCall('getUploadUrl',{subfolder:subfolder||''});
+  if(!ticketResult.ok)throw new Error(ticketResult.error||'Failed to get upload authorization');
+  
+  // Step 2: Upload to R2 Worker with the one-time ticket
   const formData=new FormData();
   formData.append('file',file);
   formData.append('fileName',file.name||'upload_'+Date.now());
   formData.append('mimeType',file.type||'application/octet-stream');
   formData.append('subfolder',subfolder||'');
   
-  const resp=await fetch(R2_URL+'/upload',{
+  const resp=await fetch(ticketResult.uploadUrl,{
     method:'POST',
-    headers:{'X-Upload-Secret':R2_SECRET},
+    headers:{'X-Upload-Ticket':ticketResult.ticket},
     body:formData
   });
   
@@ -6974,16 +6981,12 @@ function saveFeedPost(i){
   saveFeedPostsToBackend();
 }
 
-// ── R2 Cleanup — delete file from R2 when removed from portal ──
+// ── R2 Cleanup — delete file from R2 via backend proxy ──
 function deleteFromR2(url){
   if(!url||!url.includes('.workers.dev/file/'))return;
   const key=url.split('/file/')[1];
   if(!key)return;
-  fetch(R2_URL+'/delete',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','X-Upload-Secret':R2_SECRET},
-    body:JSON.stringify({key:key})
-  }).catch(e=>{});
+  apiCall('proxyDeleteFile',{fileKey:key}).catch(e=>{});
 }
 
 function deleteFeedPost(i){const delPost=posts[i];if(delPost&&delPost.imageUrl)deleteFromR2(delPost.imageUrl);posts.splice(i,1);if(currentPost>=posts.length)currentPost=Math.max(0,posts.length-1);hideEditModal();renderFeed();renderGrid();
@@ -8216,14 +8219,20 @@ if(!isAdmin){
   }
 }
 
-// Detect dev tools open (debugger trap — non-admin only)
+// Detect dev tools open (debugger pause — non-admin only)
+// Softened: shows overlay warning instead of destroying the page
+let _devtoolsWarned=false;
 setInterval(()=>{
-  if(isAdmin)return;
+  if(isAdmin||_devtoolsWarned)return;
   const t=performance.now();
   debugger;
   if(performance.now()-t>100){
-    // Dev tools detected — redirect or blank
-    document.body.innerHTML='<div style="background:#000;color:#f00;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;font-size:20px;letter-spacing:3px">ACCESS VIOLATION DETECTED</div>';
+    _devtoolsWarned=true;
+    const overlay=document.createElement('div');
+    overlay.id='devtoolsOverlay';
+    overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-family:monospace';
+    overlay.innerHTML='<div style="color:#ff3333;font-size:18px;letter-spacing:3px">⚠ DEVELOPER TOOLS DETECTED</div><div style="color:#888;font-size:13px;max-width:400px;text-align:center;line-height:1.6">Please close developer tools to continue the experience.</div><button onclick="this.parentElement.remove();_devtoolsWarned=false" style="margin-top:12px;padding:10px 28px;background:none;border:1px solid #555;color:#aaa;cursor:pointer;font-family:monospace;letter-spacing:2px;border-radius:4px">DISMISS</button>';
+    document.body.appendChild(overlay);
   }
 },4000);
 
