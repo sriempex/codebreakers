@@ -839,6 +839,7 @@
   .intel-exp-body{display:flex;flex-direction:column;overflow:hidden;padding:0!important}
   .intel-scroll-area{flex:1;overflow-y:auto;padding:20px 20px 0;display:flex;flex-direction:column;gap:8px;align-items:center;max-width:100%}
   .intel-expanded,.intel-scroll-area>*{max-width:900px;width:100%}
+  #intelForm{display:flex;flex-direction:column;align-items:center;gap:8px}
   .intel-transmit-dock{flex-shrink:0;padding:14px 20px;background:linear-gradient(0deg,rgba(0,0,0,.6) 60%,transparent);border-top:1px solid rgba(0,255,136,.08);display:flex;justify-content:center;align-items:center}
   .intel-transmit-dock::before{content:'';position:absolute;left:0;right:0;top:-20px;height:20px;background:linear-gradient(0deg,rgba(8,9,11,.3),transparent);pointer-events:none}
   .intel-exp-row{display:flex;align-items:center;gap:10px;padding:10px 14px;overflow:hidden;position:relative;border-radius:2px;
@@ -896,7 +897,7 @@
     pointer-events:none;z-index:3;
   }
   /* CRT header bar inside scroll area */
-  .intel-crt-header{display:none;font-family:'Saira',sans-serif;font-size:11px;letter-spacing:4px;color:var(--green);font-weight:700;text-transform:uppercase;padding:16px 20px 10px;border-bottom:1px solid rgba(0,255,136,.12);text-shadow:0 0 10px rgba(0,255,136,.2);align-items:center;gap:10px}
+  .intel-crt-header{display:none;font-family:'Saira',sans-serif;font-size:11px;letter-spacing:4px;color:var(--green);font-weight:700;text-transform:uppercase;padding:16px 20px 10px;border-bottom:1px solid rgba(0,255,136,.12);text-shadow:0 0 10px rgba(0,255,136,.2);align-items:center;gap:10px;width:100%;max-width:600px}
   .intel-theme-crt .intel-crt-header{display:flex}
   .intel-crt-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(0,255,136,.5);animation:intelCrtPulse 2s ease-in-out infinite}
   @keyframes intelCrtPulse{0%,100%{opacity:1}50%{opacity:.5}}
