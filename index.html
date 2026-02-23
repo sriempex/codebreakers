@@ -497,13 +497,6 @@
     box-shadow:0 12px 40px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.02)}
   .team-card.open{opacity:1;pointer-events:all;transform:translateY(0)}
   .team-card-header{padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,.04)}
-  .team-card-admin-console{display:none;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;
-    background:linear-gradient(90deg,rgba(0,212,255,.04),transparent);
-    border-bottom:1px solid rgba(0,212,255,.08);
-    font-family:'Saira',sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;color:var(--cyan);text-transform:uppercase;
-    transition:background .2s}
-  .team-card-admin-console:hover{background:linear-gradient(90deg,rgba(0,212,255,.08),rgba(0,212,255,.02))}
-  body.admin-mode:not(.player-preview) .team-card-admin-console{display:flex}
   .team-card-name{font-family:'Staatliches',cursive;font-size:15px;color:#b0e8cc;letter-spacing:2px;text-transform:uppercase}
   .team-card-id{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#666;font-weight:500;letter-spacing:2px;margin-top:4px}
   .team-card-body{padding:12px 16px}
@@ -1119,15 +1112,15 @@
   body.event-locked .v-key{pointer-events:none;opacity:.4}
   body.event-locked .intel-submit-btn{pointer-events:none;opacity:.4}
   body.player-preview .landing-banner-upload{display:none!important}
-  body.admin-mode .admin-trigger{display:none}
+  body.admin-mode .admin-trigger{display:flex}
   body.admin-mode .console-grid{padding-bottom:clamp(56px,7vh,70px)}
 
   /* Admin dropdown menu */
-  .admin-dropdown{position:fixed;top:52px;right:10px;z-index:810;width:220px;border-radius:6px;
+  .admin-dropdown{position:fixed;bottom:52px;right:10px;z-index:810;width:220px;border-radius:6px;
     background:linear-gradient(180deg,#1e2028,#14161c 40%,#10121a);
     border:1px solid rgba(255,170,51,.15);
     box-shadow:0 8px 40px rgba(0,0,0,.7),0 0 1px rgba(255,170,51,.2),inset 0 1px 0 rgba(255,255,255,.03);
-    opacity:0;pointer-events:none;transform:translateY(-8px) scale(.96);transition:all .2s cubic-bezier(.25,.46,.45,.94);overflow:hidden}
+    opacity:0;pointer-events:none;transform:translateY(8px) scale(.96);transition:all .2s cubic-bezier(.25,.46,.45,.94);overflow:hidden}
   .admin-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}
   .admin-dropdown-header{padding:12px 16px;border-bottom:1px solid rgba(255,170,51,.1);display:flex;align-items:center;gap:8px}
   .admin-dropdown-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);box-shadow:0 0 4px rgba(255,170,51,.5);animation:ledPulse 2s ease-in-out infinite;flex-shrink:0}
@@ -1772,7 +1765,7 @@
     .bc-container{width:96vw}
     .pb-inner{padding:10px 14px}
     .pb-text{font-size:11px}
-    .admin-dropdown{width:200px;top:calc(48px + env(safe-area-inset-top,0));right:8px}
+    .admin-dropdown{width:200px;bottom:calc(48px + env(safe-area-inset-bottom,0));right:8px}
     .lb-container{width:100vw;height:100vh;border-radius:0}
     .lb-toolbar{flex-direction:column;align-items:stretch}
     .lb-search{width:100%}
@@ -2783,11 +2776,6 @@
           <div class="team-card-name">—</div>
           <div class="team-card-id">ID: —</div>
         </div>
-        <div class="team-card-admin-console" id="tcAdminConsole" onclick="event.stopPropagation();toggleTeamCard();openAdminDropdown()">
-          <span style="font-size:13px">🛡️</span>
-          <span>Admin Console</span>
-          <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:#8890a0;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-left:auto"><polyline points="9 6 15 12 9 18"/></svg>
-        </div>
         <div class="team-card-body">
           <div class="team-card-section">
             <div class="team-card-label">Operatives</div>
@@ -3198,9 +3186,6 @@ function proceedToLogin(){
 let teamCardOpen=false,elapsedSec=0,elapsedInterval=null;
 function toggleTeamCard(e){
   if(e)e.stopPropagation();
-  // If admin dropdown is open, close it first and show team card
-  const dd=document.getElementById('adminDropdown');
-  if(dd&&dd.classList.contains('open')){closeAdminDropdown()}
   teamCardOpen=!teamCardOpen;
   document.getElementById('teamCard').classList.toggle('open',teamCardOpen);
   if(teamCardOpen){
@@ -5363,8 +5348,8 @@ function toggleAllowDownloads(val){
 // Close dropdown when clicking outside
 document.addEventListener('click',e=>{
   const dd=document.getElementById('adminDropdown');
-  const identity=document.querySelector('.topbar-identity');
-  if(dd.classList.contains('open')&&!dd.contains(e.target)&&(!identity||!identity.contains(e.target))){closeAdminDropdown()}
+  const trigger=document.getElementById('adminTrigger');
+  if(dd.classList.contains('open')&&!dd.contains(e.target)&&!trigger.contains(e.target)){closeAdminDropdown()}
 });
 
 function toggleEditMode(){
