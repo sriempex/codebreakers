@@ -468,9 +468,9 @@
   body.event-locked .v-key{pointer-events:none;opacity:.4}
   body.event-locked .intel-submit-btn{pointer-events:none;opacity:.4}
   body.player-preview .team-card-notifs{display:block!important}
-  .console-team{font-family:'Saira',sans-serif;font-size:11px;color:var(--cyan);letter-spacing:2px;font-weight:600;transition:color .2s;padding:4px 10px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.04)}
+  .console-team{font-family:'Saira',sans-serif;font-size:13px;color:var(--cyan);letter-spacing:2.5px;font-weight:600;transition:color .2s;padding:6px 14px;border:1px solid rgba(0,212,255,.25);border-radius:3px;background:rgba(0,212,255,.04)}
   .console-team:hover{color:#b0e8cc;border-color:rgba(0,212,255,.3)}
-  .team-chevron{font-size:14px;color:#555;margin-left:4px;transition:color .2s;line-height:1}
+  .team-chevron{font-size:18px;color:#555;margin-left:6px;transition:color .2s;line-height:1}
   .topbar-identity:hover .team-chevron{color:#999}
   body.admin-mode .console-team{display:none}
   .team-notif-badge{position:absolute;top:-6px;right:-8px;min-width:16px;height:16px;border-radius:8px;background:var(--red);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 0 8px rgba(255,50,50,.4);animation:ledPulse 2s ease-in-out infinite;z-index:5}
@@ -1109,7 +1109,7 @@
   .logout-btn span{font-family:'Saira',sans-serif;font-size:12px;letter-spacing:3px;color:var(--red);font-weight:700;text-transform:uppercase}
 
   /* Notification bell */
-  .admin-topbar-label{display:none;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--amber);font-weight:600;text-transform:uppercase;padding:4px 10px;border:1px solid rgba(255,170,51,.2);border-radius:3px;background:rgba(255,170,51,.06)}
+  .admin-topbar-label{display:none;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:2.5px;color:var(--amber);font-weight:600;text-transform:uppercase;padding:6px 14px;border:1px solid rgba(255,170,51,.25);border-radius:3px;background:rgba(255,170,51,.06)}
   body.admin-mode .admin-topbar-label{display:inline-flex}
   .notif-empty{padding:12px 8px;text-align:center;font-family:'Chakra Petch',sans-serif;font-size:10px;color:#555}
 
@@ -1572,7 +1572,7 @@
     .timer-block{position:relative;left:auto;transform:none}
     .timer-digits{font-size:18px;letter-spacing:3px}
     .timer-label{font-size:7px;letter-spacing:2px}
-    .console-team{font-size:9px;letter-spacing:2px;padding:3px 8px}
+    .console-team{font-size:11px;letter-spacing:2px;padding:4px 10px}
 
     /* Grid — 2 columns, centered */
     .console-grid{gap:16px;padding:16px;align-content:start;padding-top:20px}
@@ -1619,7 +1619,7 @@
     .console-title{font-size:9px;letter-spacing:3px}
     .timer-digits{font-size:16px;letter-spacing:2px}
     .timer-label{font-size:7px}
-    .console-team{font-size:8px}
+    .console-team{font-size:10px}
 
     /* Grid — 2x2 on mobile so all 4 tiles visible without scrolling */
     .console-grid{grid-template-columns:1fr 1fr;gap:10px;padding:12px;align-content:center;padding-top:16px}
@@ -2478,8 +2478,8 @@
     </div>
     <div class="topbar-identity" onclick="toggleTeamCard(event)">
       <span class="console-team">—</span>
-      <span class="team-chevron">▾</span>
       <span class="admin-topbar-label">ADMIN</span>
+      <span class="team-chevron">▾</span>
       <span class="team-notif-badge" id="teamNotifBadge"></span>
       <div class="team-card" id="teamCard">
         <div class="team-card-header">
