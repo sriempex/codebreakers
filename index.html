@@ -9,7 +9,7 @@
 <style>
   :root{--green:#00ff88;--green-dim:rgba(0,255,136,.4);--green-glow:rgba(0,255,136,.12);--red:#ff3333;--amber:#ffaa33;--cyan:#00d4ff;--steel-light:#4a4e54;--steel-dark:#22252a;--bg-deep:#08090b;--bg-panel:#10121a;--bg-surface:#171a24;--border:#252830;--op-font:inherit;--fc-vault:inherit;--fc-feed-cap:inherit;--fc-media-name:inherit;--fc-media-desc:inherit}
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--bg-deep);overflow:hidden;width:100vw;height:100vh;font-family:'Chakra Petch',sans-serif;font-weight:500;color:#ccc;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+  body{background:var(--bg-deep);overflow:hidden;width:100vw;height:100vh;font-family:'Chakra Petch',sans-serif;font-weight:500;color:#ccc;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overscroll-behavior:none}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#2a2d35;border-radius:2px}
 
   .screen{position:fixed;inset:0;transition:opacity .3s;opacity:0;pointer-events:none;z-index:1;will-change:opacity;transform:translateZ(0)}
@@ -66,7 +66,7 @@
   #regForm.hidden{display:none}
   .reg-id-display{background:#080a10;border:2px solid rgba(0,255,136,.2);border-radius:6px;padding:20px;margin:20px 0;position:relative}
   .reg-id-label{font-family:'Oxanium',sans-serif;font-weight:700;font-size:10px;letter-spacing:3px;color:#999;text-transform:uppercase;margin-bottom:8px}
-  .reg-id-value{font-family:'Oxanium',sans-serif;font-weight:700;font-size:26px;letter-spacing:8px;color:#d0f0d8}
+  .reg-id-value{font-family:'Oxanium',sans-serif;font-weight:700;font-size:26px;letter-spacing:8px;color:#d0f0d8;-webkit-user-select:text;user-select:text}
   .reg-id-note{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#aaa;line-height:1.8;margin:16px 0;font-weight:500}
   .reg-id-warn{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#f0c878;letter-spacing:1px;margin-bottom:16px;font-weight:600}
   .reg-proceed{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:13px;letter-spacing:4px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700}
@@ -628,7 +628,7 @@
   .feed-expanded{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;max-width:900px;margin:0 auto}
   .feed-card-img{aspect-ratio:1;overflow:hidden}
   .feed-card-img img{width:100%;height:100%;object-fit:cover}
-  .feed-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:3px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative}
+  .feed-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:3px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;touch-action:pan-y}
   .feed-card:hover{border-color:var(--green-dim);box-shadow:0 6px 20px rgba(0,0,0,.3)}
   .feed-card-img{width:100%;display:flex;align-items:center;justify-content:center;font-size:40px;background-size:cover;background-position:center;position:relative;min-height:120px}
   .feed-card-img img{width:100%;display:block;pointer-events:none;-webkit-user-drag:none;user-select:none}
@@ -1488,15 +1488,15 @@
     .kb-key span{font-size:12px}
 
     /* Console */
-    #consoleScreen{height:auto;min-height:100vh}
+    #consoleScreen{height:auto;min-height:100vh;min-height:100dvh}
     .console-topbar{height:50px;padding:0 14px;padding-top:env(safe-area-inset-top,0)}
     .console-title{font-size:9px;letter-spacing:3px}
     .timer-digits{font-size:16px;letter-spacing:2px}
     .timer-label{font-size:7px}
     .console-team{font-size:8px}
 
-    /* Grid — stack vertical on mobile */
-    .console-grid{grid-template-columns:1fr;gap:14px;padding:16px;align-content:start;padding-top:24px}
+    /* Grid — 2x2 on mobile so all 4 tiles visible without scrolling */
+    .console-grid{grid-template-columns:1fr 1fr;gap:10px;padding:12px;align-content:center;padding-top:16px}
 
     /* Allow console to scroll on mobile */
     #consoleScreen{position:fixed;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -1509,10 +1509,10 @@
 
     /* Expanded panels */
     .expanded-panel{width:100vw;height:100vh;border-radius:0;border:none}
-    .exp-header{height:48px;padding:0 14px}
+    .exp-header{height:52px;padding:0 14px}
     .exp-title{font-size:11px;letter-spacing:2px}
     .exp-body{padding:12px}
-    .exp-close{padding:6px 14px;font-size:9px}
+    .exp-close{padding:10px 18px;font-size:10px;min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center}
 
     /* Feed — keep 3 column grid on mobile, tight gaps like IG */
     .feed-expanded{grid-template-columns:repeat(3,1fr);gap:2px;max-width:100%}
@@ -1574,10 +1574,10 @@
     .notepad-footer{padding:10px 16px}
     .notepad-charcount{font-size:8px}
     .notepad-clear{padding:6px 14px;font-size:9px}
-    .notepad-trigger{bottom:10px;padding:8px 16px 8px 12px}
+    .notepad-trigger{bottom:calc(10px + env(safe-area-inset-bottom,0));padding:8px 16px 8px 12px}
     .notepad-trigger span{font-size:8px;letter-spacing:2px}
 
-    /* Logout */
+    /* Logout — safe area bottom */
     .logout-btn{bottom:calc(10px + env(safe-area-inset-bottom,0));left:10px;padding:8px 14px}
     .logout-btn span{font-size:10px;letter-spacing:2px}
     .logout-btn svg{width:14px;height:14px}
@@ -1591,7 +1591,7 @@
     .bc-container{width:96vw}
     .pb-inner{padding:10px 14px}
     .pb-text{font-size:11px}
-    .admin-dropdown{width:200px;bottom:48px;right:8px}
+    .admin-dropdown{width:200px;bottom:calc(48px + env(safe-area-inset-bottom,0));right:8px}
     .lb-container{width:100vw;height:100vh;border-radius:0}
     .lb-toolbar{flex-direction:column;align-items:stretch}
     .lb-search{width:100%}
@@ -1610,7 +1610,9 @@
     #eventLockOverlay{padding:20px}
     #publicLeaderboard{padding:10px}
 
-    /* Registration form on mobile — better touch targets */
+    /* Registration form on mobile — better touch targets + scrollable */
+    #regScreen{overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .reg-field input,.reg-field select{font-size:16px}
     .reg-member-input{font-size:16px;padding:10px 12px}
     .reg-member-input::placeholder{font-size:12px}
 
@@ -1625,12 +1627,28 @@
     .mv-container{border-radius:0}
     .mv-pdf-frame{min-height:60vh}
 
-    /* Admin panels — prevent horizontal overflow */
-    .ap-field input,.ap-field select{font-size:14px}
+    /* Admin panels — prevent horizontal overflow + iOS input zoom prevention */
+    .ap-field input,.ap-field select{font-size:16px}
     .ap-field label{font-size:9px}
+
+    /* All remaining inputs — prevent iOS auto-zoom */
+    #mediaSearchFilter{font-size:16px!important}
+    .intel-exp-input{font-size:16px}
 
     /* Topbar timer — ensure visible */
     .timer-block{flex-shrink:0}
+
+    /* Console grid tile adjustments for 2x2 layout */
+    .tile-icon{font-size:32px;margin-bottom:8px}
+    .tile-label{font-size:10px;letter-spacing:2px}
+    .tile-sub{font-size:8px}
+    .tile-badge{font-size:6px;letter-spacing:2px;padding:3px 8px}
+    .tile-status span{font-size:6px}
+    .crt-monitor{padding:6px}
+    .crt-screen{padding:16px 10px 14px}
+
+    /* Admin tab bar — safe area bottom */
+    .admin-tab-bar{padding-bottom:env(safe-area-inset-bottom,0)!important}
   }
 
   /* Small phones */
@@ -1639,10 +1657,20 @@
     .kb-key{height:34px}
     .kb-key span{font-size:11px}
     .login-title{font-size:10px;letter-spacing:4px}
-    .tile-label{font-size:10px}
-    .tile-icon{font-size:30px}
-    .crt-monitor{padding:8px} .crt-screen{padding:18px 14px 16px}
+    .tile-label{font-size:9px}
+    .tile-icon{font-size:24px}
+    .tile-sub{font-size:7px}
+    .crt-monitor{padding:5px} .crt-screen{padding:12px 8px 10px}
     .intel-exp-label{font-size:9px}
+    .console-grid{gap:8px;padding:10px}
+  }
+
+  /* Reduced motion — helps low-end devices and accessibility */
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
+    .landing-circuits{display:none}
+    #grainCanvas{display:none}
+    .dust{display:none}
   }
 
   @keyframes shake{0%,100%{transform:translateX(0)}10%{transform:translateX(-5px)}20%{transform:translateX(5px)}30%{transform:translateX(-4px)}40%{transform:translateX(4px)}50%{transform:translateX(-2px)}60%{transform:translateX(2px)}}
@@ -1659,7 +1687,7 @@
   body.admin-mode:not(.player-preview) .drag-handle{display:flex;opacity:0;transition:opacity .15s}
   body.admin-mode:not(.player-preview) .feed-card:hover .drag-handle,
   body.admin-mode:not(.player-preview) .media-exp-item:hover .drag-handle{opacity:1}
-  @media(hover:none){body.admin-mode:not(.player-preview) .drag-handle{opacity:1!important}}
+  @media(hover:none){body.admin-mode.reorder-mode:not(.player-preview) .drag-handle{opacity:1!important}}
   .feed-card.drag-over{border-color:var(--cyan)!important;box-shadow:0 0 12px rgba(0,212,255,.2)!important}
   .feed-card.dragging{opacity:.35;pointer-events:none}
   .media-exp-item.drag-over{border-color:var(--cyan)!important;box-shadow:0 0 12px rgba(0,212,255,.2)!important}
@@ -3531,7 +3559,7 @@ function renderMedia(){
 // ══════ PANELS ══════
 const overlay=document.getElementById('panelOverlay');
 let currentFeedView='grid';
-function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);saveSession();
+function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);if(window._histPush)window._histPush('panel');saveSession();
   if(t==='feed'){renderFeed();setFeedView('grid')}if(t==='media')renderMedia();if(t==='intel')renderIntelForm();if(t==='vault')renderVaultPanel()}
 function closePanel(){overlay.style.cssText='';overlay.classList.remove('active');setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession()},120)}
 
@@ -3591,7 +3619,7 @@ function setFeedView(mode){
 }
 
 let currentPost=0;
-function openPost(i){currentPost=i;setFeedView('single')}
+function openPost(i){currentPost=i;if(window._histPush)window._histPush('feedFocus');setFeedView('single')}
 function renderSinglePost(){
   if(!posts.length)return;
   if(currentPost>=posts.length)currentPost=0;
@@ -4198,6 +4226,7 @@ function showViewer(i){
   const dlBtn=document.getElementById('mvDownload');
   dlBtn.style.display=(allowDownloads&&m.fileUrl)?'':'none';
   document.getElementById('mediaViewer').classList.add('active');
+  if(window._histPush)window._histPush('mediaViewer');
 }
 
 function downloadCurrentMedia(){
@@ -4900,10 +4929,12 @@ function goToRegistration(){
     if(typeChoice)typeChoice.style.display='none';
   }
   buildRegForm();
+  if(window._histPush)window._histPush('register');
   showScreen('regScreen');
 }
 function goToLogin(){
   resetLoginScreen();
+  if(window._histPush)window._histPush('login');
   showScreen('loginScreen');
   setTimeout(()=>document.getElementById('loginId').focus(),300);
 }
@@ -4927,6 +4958,7 @@ function regBack(){
   setTimeout(()=>document.getElementById('loginId').focus(),300);
 }
 function goToConsole(){
+  if(window._histPush)window._histPush('console');
   showScreen('consoleScreen');document.getElementById('notepadTrigger').classList.add('visible');startElapsedTimer();
   // If no team loaded (admin direct entry), show admin identity
   if(!currentVaultTeam&&isAdmin){
@@ -7537,6 +7569,9 @@ function restoreSession(){
     // This makes images appear instantly instead of waiting 3-5s for backend API
     _restoreContentCache();
 
+    // Detect mobile for conditional panel restore
+    const _isMobileRestore=window.innerWidth<=768;
+
     function applyScreenAndPanel(){
       // Set up screen first (hidden — opacity:0 via .screen default)
       document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -7546,8 +7581,9 @@ function restoreSession(){
       document.getElementById('notepadTrigger').classList.add('visible');
 
       // Open panel SYNCHRONOUSLY before any paint if one was saved
-      // This prevents the flash of the console grid before the panel appears
-      if(data.panel&&panelMap[data.panel]){
+      // On mobile: skip panel restore — land on console grid so user has context
+      // On desktop: restore exactly where they were (prevents flash)
+      if(data.panel&&panelMap[data.panel]&&!_isMobileRestore){
         const panelEl=document.getElementById(data.panel);
         if(panelEl){
           document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));
@@ -7597,8 +7633,8 @@ function restoreSession(){
       apiCall('getEventConfig').then(cfg=>{
         if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
         // Re-render panel with fresh backend data once it arrives
-        // Preserve the feed view state the user was in before refresh
-        if(data.panel&&panelMap[data.panel]){
+        // On mobile: skip — user is on console grid
+        if(data.panel&&panelMap[data.panel]&&!_isMobileRestore){
           const t=panelMap[data.panel];
           if(t==='feed'){
             renderFeed();
@@ -7623,6 +7659,89 @@ function restoreSession(){
 
 // Auto-restore on page load
 restoreSession();
+
+// ═══════════════════════════════════════════════════════════════
+// BROWSER HISTORY — Back button / gesture support (Fix #3)
+// ═══════════════════════════════════════════════════════════════
+// Push history states when navigating so Android back gesture / iOS
+// swipe-back and browser back button work instead of leaving the site.
+(function(){
+  let _navDepth=0; // track how deep we are to avoid over-popping
+  const _historyEnabled=true;
+
+  // Push a state when navigating deeper
+  window._histPush=function(stateType){
+    if(!_historyEnabled)return;
+    _navDepth++;
+    history.pushState({type:stateType,depth:_navDepth},'');
+  };
+
+  // Pop handler — reverse the last navigation
+  window.addEventListener('popstate',function(e){
+    if(!_historyEnabled)return;
+    const state=e.state;
+    _navDepth=Math.max(0,_navDepth-1);
+
+    // Determine what to close based on current UI state
+    // Priority: media viewer > feed focus > expanded panel > admin panel > screen nav
+
+    // 1. Media viewer open?
+    const mv=document.getElementById('mediaViewer');
+    if(mv&&mv.classList.contains('active')){
+      closeMediaViewer();return;
+    }
+
+    // 2. Feed in focus/single mode?
+    const feedPanel=document.getElementById('expFeed');
+    if(feedPanel&&feedPanel.classList.contains('visible')&&currentFeedView==='single'){
+      setFeedView('grid');return;
+    }
+
+    // 3. Any expanded panel open?
+    const openExpPanel=document.querySelector('.expanded-panel.visible');
+    if(openExpPanel){
+      closePanel();return;
+    }
+
+    // 4. Any admin panel open?
+    const adminIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','dashboardPanel','portalUsersPanel','scoringPanel','registrationPanel','appearancePanel'];
+    for(const id of adminIds){
+      const el=document.getElementById(id);
+      if(el&&el.classList.contains('active')){
+        if(id==='adminPanel')closeEventSettings();
+        else if(id==='broadcastPanel')closeBroadcast();
+        else if(id==='leaderboardModule')closeLeaderboard();
+        else if(id==='keysCodesPanel')closeKeysCodes();
+        else if(id==='dashboardPanel')closeDashboard();
+        else if(id==='portalUsersPanel')closePortalUsers();
+        else if(id==='scoringPanel')closeScoringPanel();
+        else if(id==='registrationPanel')closeRegistrationPanel();
+        else if(id==='appearancePanel')closeAppearancePanel();
+        return;
+      }
+    }
+
+    // 5. On console screen — go back to landing
+    const curScreen=document.querySelector('.screen.active')?.id||'';
+    if(curScreen==='consoleScreen'&&!isAdmin){
+      // Don't actually log out — just show landing. User can log back in easily.
+      showScreen('landingScreen');return;
+    }
+    if(curScreen==='loginScreen'){loginBack();return}
+    if(curScreen==='regScreen'){regBack();return}
+
+    // 6. Nothing to go back to — push a state so we don't leave the site
+    if(_navDepth<=0){
+      history.pushState({type:'root'},'');
+      _navDepth=1;
+    }
+  });
+
+  // Seed initial state so first back press doesn't leave the site
+  if(!history.state){
+    history.replaceState({type:'root',depth:0},'');
+  }
+})();
 
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
