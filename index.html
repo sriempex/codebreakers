@@ -539,9 +539,7 @@
   .crt-screw.s1{top:5px;left:5px}.crt-screw.s2{top:5px;right:5px}.crt-screw.s3{bottom:5px;left:5px}.crt-screw.s4{bottom:5px;right:5px}
 
   /* Power LED */
-  .crt-led{position:absolute;bottom:7px;right:22px;width:5px;height:5px;border-radius:50%;
-    background:radial-gradient(circle at 40% 35%,#44ff88,#00aa44);
-    box-shadow:0 0 4px rgba(0,255,136,.4),0 0 8px rgba(0,255,136,.15);z-index:5}
+  .crt-led{display:none}
 
   /* ── CRT Screen (inner content area) ── */
   .crt-screen{position:relative;border-radius:8px;overflow:hidden;
@@ -571,11 +569,11 @@
   /* ── Tile content inside screen ── */
   .tile-glow{position:absolute;top:25%;left:50%;transform:translate(-50%,-50%);width:100px;height:100px;background:radial-gradient(circle,rgba(0,255,136,.02) 0%,transparent 70%);pointer-events:none;transition:all .4s}
   .crt-monitor:hover .tile-glow{width:160px;height:160px;background:radial-gradient(circle,rgba(0,255,136,.05) 0%,transparent 70%)}
-  .tile-icon{font-size:clamp(28px,4.5vh,48px);margin-bottom:clamp(8px,1.5vh,20px);position:relative;z-index:2;filter:grayscale(.3) brightness(.85);transition:filter .3s,transform .3s}
+  .tile-icon{font-size:clamp(40px,5vh,48px);margin-bottom:clamp(14px,2vh,20px);position:relative;z-index:2;filter:grayscale(.3) brightness(.85);transition:filter .3s,transform .3s}
   .crt-monitor:hover .tile-icon{filter:grayscale(0) brightness(1);transform:scale(1.06)}
-  .tile-label{font-family:'Saira',sans-serif;font-weight:700;font-size:clamp(11px,1.4vh,16px);letter-spacing:clamp(2px,.4vw,4px);color:#c8c8c8;text-transform:uppercase;text-align:center;margin-bottom:clamp(4px,.8vh,10px);z-index:2;text-shadow:0 2px 3px rgba(0,0,0,.7)}
-  .tile-sub{font-family:'Chakra Petch',sans-serif;font-size:clamp(8px,1vh,10px);color:#777;letter-spacing:1px;font-weight:500;text-align:center;margin-bottom:clamp(10px,1.8vh,22px);z-index:2}
-  .tile-badge{font-family:'Saira',sans-serif;font-size:clamp(8px,1vh,10px);letter-spacing:3px;font-weight:700;color:#e0e0e0;border:1px solid rgba(255,255,255,.1);padding:clamp(3px,.5vh,6px) clamp(10px,1.2vw,18px);border-radius:3px;margin-bottom:clamp(8px,1.4vh,16px);z-index:2;background:rgba(255,255,255,.04)}
+  .tile-label{font-family:'Saira',sans-serif;font-weight:700;font-size:clamp(14px,1.8vh,16px);letter-spacing:clamp(3px,.4vw,4px);color:#c8c8c8;text-transform:uppercase;text-align:center;margin-bottom:clamp(7px,1vh,10px);z-index:2;text-shadow:0 2px 3px rgba(0,0,0,.7)}
+  .tile-sub{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#777;letter-spacing:1px;font-weight:500;text-align:center;margin-bottom:clamp(16px,2vh,22px);z-index:2}
+  .tile-badge{font-family:'Saira',sans-serif;font-size:10px;letter-spacing:3px;font-weight:700;color:#e0e0e0;border:1px solid rgba(255,255,255,.1);padding:clamp(5px,.7vh,6px) clamp(14px,1.4vw,18px);border-radius:3px;margin-bottom:clamp(12px,1.6vh,16px);z-index:2;background:rgba(255,255,255,.04)}
   .tile-badge.amber{color:#f0c878;border-color:rgba(255,170,51,.2);background:rgba(255,170,51,.05)}
   .tile-badge.crimson{color:#e8667a;border-color:rgba(204,68,85,.25);background:rgba(204,68,85,.06)}
   .tile-badge.violet{color:#b088ee;border-color:rgba(153,119,221,.25);background:rgba(153,119,221,.06)}
@@ -7695,9 +7693,8 @@ function getEventState(){
 // TODO: Puzzle Builder — Multi-stage puzzle flow with progression gating
 // ══════ END FUTURE NOTES ══════
 setInterval(tickTimer,1000);
-// Initial dynamic renders — grid deferred until config loads to prevent default flash
-// renderGrid() will be called by applyEventConfig() or restoreSession()
-document.getElementById('consoleGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;font-family:IBM Plex Mono,monospace;font-size:10px;color:#333;letter-spacing:2px">LOADING CONSOLE...</div>';
+// Initial dynamic renders
+renderGrid();
 renderIntelForm();
 buildRegForm();
 updateLandingForMode();
