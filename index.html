@@ -1791,6 +1791,28 @@
     .console-grid{gap:8px;padding:10px}
   }
 
+  /* Mobile overrides for new features */
+  @media(max-width:480px){
+    .tut-tooltip{max-width:calc(100vw - 32px);padding:16px 18px}
+    .tut-tooltip-title{font-size:13px;letter-spacing:1.5px}
+    .tut-tooltip-body{font-size:12px}
+    .tut-btn{padding:5px 12px;font-size:9px}
+    .tut-step-card{padding:8px 10px;gap:8px}
+    .tut-step-card .tut-text textarea{font-size:10px}
+    .tut-step-card .tut-icon{font-size:14px}
+    .session-btn{padding:10px 14px;gap:10px}
+    .session-btn .sb-title{font-size:10px}
+    .session-btn .sb-desc{font-size:8px}
+    .briefing-container{width:96%}
+    .briefing-title{font-size:13px;letter-spacing:2px}
+    .briefing-continue{padding:8px 24px;font-size:10px}
+  }
+
+  /* Touch devices — always show drag handles in admin mode */
+  @media(hover:none){
+    body.admin-mode:not(.player-preview) .intel-exp-row .drag-handle{opacity:.5!important}
+  }
+
   /* Reduced motion — helps low-end devices and accessibility */
   @media(prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
