@@ -3080,7 +3080,7 @@ function proceedToLogin(){
 // ══════ TEAM CARD ══════
 let teamCardOpen=false,elapsedSec=0,elapsedInterval=null;
 function toggleTeamCard(e){
-  e.stopPropagation();
+  if(e)e.stopPropagation();
   teamCardOpen=!teamCardOpen;
   document.getElementById('teamCard').classList.toggle('open',teamCardOpen);
   if(teamCardOpen){
@@ -8025,7 +8025,7 @@ const TUTORIAL_STEPS_DEFAULT=[
   {id:'vault',selector:'.crt-monitor[data-tile="vault"]',icon:'🔐',title:'Vault',body:'Enter secret codes to unlock classified evidence. Codes can be found hidden throughout the mission.',enabled:true},
   {id:'timer',selector:'.timer-block',icon:'⏱️',title:'Mission Timer',body:'Keep an eye on the clock. When time runs out, the mission is over.',enabled:true},
   {id:'identity',selector:'.topbar-identity',icon:'🪪',title:'Your Identity',body:'Your team name and details. Tap to see your team card with member info and notifications.',enabled:true},
-  {id:'notepad',selector:'.notepad-trigger.visible',icon:'📝',title:'Notepad',body:'Your personal scratchpad. Jot down clues, codes, or anything you need to remember.',enabled:true}
+  {id:'notepad',selector:'#notepadTrigger',icon:'📝',title:'Notepad',body:'Your personal scratchpad. Jot down clues, codes, or anything you need to remember.',enabled:true}
 ];
 let tutorialSteps=JSON.parse(JSON.stringify(TUTORIAL_STEPS_DEFAULT));
 let tutorialEnabled=true;
@@ -8134,6 +8134,8 @@ function previewTutorial(){
 function startTutorial(){
   const enabled=tutorialSteps.filter(s=>s.enabled);
   if(!enabled.length)return;
+  // Ensure notepad is collapsed so the trigger spotlight is correct
+  if(typeof notepadOpen!=='undefined'&&notepadOpen){notepadOpen=false;document.getElementById('notepadPanel').classList.remove('open')}
   _tutCurrentStep=0;
   document.getElementById('tutorialOverlay').classList.add('active');
   showTutorialStep();
@@ -8161,7 +8163,8 @@ function showTutorialStep(){
   // Reset tooltip transform in case it was centered previously
   tooltip.style.transform='';
 
-  if(el&&el.offsetParent!==null){
+  const isVisible=el&&(el.offsetParent!==null||getComputedStyle(el).position==='fixed')&&getComputedStyle(el).display!=='none'&&el.getBoundingClientRect().width>0;
+  if(isVisible){
     // Scroll into view if needed
     el.scrollIntoView({behavior:'smooth',block:'nearest'});
     // Wait for scroll to settle then position
