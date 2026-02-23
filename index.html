@@ -7778,8 +7778,10 @@ function getEventState(){
 // TODO: Puzzle Builder — Multi-stage puzzle flow with progression gating
 // ══════ END FUTURE NOTES ══════
 setInterval(tickTimer,1000);
-// Initial dynamic renders
-renderGrid();
+// Initial dynamic renders — defer renderGrid to after restoreSession
+// so cached posts/media/intel are in memory when the grid first paints.
+// renderGrid() will be called by restoreSession → applyScreenAndPanel,
+// or by loadEventData if no session exists.
 renderIntelForm();
 buildRegForm();
 updateLandingForMode();
@@ -8022,6 +8024,7 @@ function restoreSession(){
       syncAdminDropdownToggles();
       restoreGameState();
       applyScreenAndPanel();
+      renderGrid(); // Render grid with cached data immediately
       startElapsedTimer();
       // Load fresh data from backend in background — UI already showing
       loadEventData();
@@ -8032,6 +8035,7 @@ function restoreSession(){
       updateConsoleForTeam(currentVaultTeam);
       restoreGameState();
       applyScreenAndPanel();
+      renderGrid(); // Render grid with cached data immediately
       startElapsedTimer();
       // Load config and fresh content in background — UI already showing
       apiCall('getEventConfig').then(cfg=>{
@@ -8067,7 +8071,9 @@ function restoreSession(){
 }
 
 // Auto-restore on page load
-restoreSession();
+if(!restoreSession()){
+  renderGrid(); // No session — render default grid
+}
 
 // ═══════════════════════════════════════════════════════════════
 // BROWSER HISTORY — Back button / gesture support (Fix #3)
