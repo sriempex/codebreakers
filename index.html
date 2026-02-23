@@ -8328,16 +8328,17 @@ function showTutorialStep(){
       // Position tooltip relative to spotlight
       const tipH=180;
       const tipW=360;
-      if(top-tipH-12>0){
-        // Above — preferred
+      if(top+h+tipH+20<window.innerHeight){
+        // Below element
+        tooltip.style.top=(top+h+12)+'px';
+        tooltip.style.bottom='auto';
+      }else if(top-tipH-12>0){
+        // Above element
         tooltip.style.top=(top-tipH-12)+'px';
         tooltip.style.bottom='auto';
-      }else if(h>tipH+40){
-        // Element is tall enough — position inside at top
+      }else if(h>window.innerHeight*0.5){
+        // Element fills most of screen (grid) — inside at top
         tooltip.style.top=(top+12)+'px';
-        tooltip.style.bottom='auto';
-      }else if(top+h+tipH+20<window.innerHeight){
-        tooltip.style.top=(top+h+12)+'px';
         tooltip.style.bottom='auto';
       }else{
         tooltip.style.top='auto';
