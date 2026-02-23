@@ -592,6 +592,154 @@
   /* Admin edit btn repositioned for monitor */
   .crt-monitor .admin-edit-btn{top:4px;right:4px;z-index:10}
 
+  /* ══════ CONSOLE GRID THEMES ══════ */
+  /* Theme 1 (crt) = default styles above — no override needed */
+
+  /* Theme 2: Glass Morphism */
+  .grid-theme-glass .crt-monitor{border-radius:16px;padding:0;background:linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.06)}
+  .grid-theme-glass .crt-monitor:hover{transform:translateY(-3px);border-color:rgba(0,255,136,.15);box-shadow:0 12px 40px rgba(0,0,0,.4),0 0 30px rgba(0,255,136,.03)}
+  .grid-theme-glass .crt-screw,.grid-theme-glass .crt-led{display:none}
+  .grid-theme-glass .crt-screen{border-radius:16px;background:transparent;border:none;box-shadow:none;transform:none}
+  .grid-theme-glass .crt-screen::before,.grid-theme-glass .crt-screen::after{display:none}
+  .grid-theme-glass .tile-glow{display:none}
+  .grid-theme-glass .tile-label{color:#e0e0e0;text-shadow:none}
+
+  /* Theme 3: Neon Cyberpunk */
+  .grid-theme-cyberpunk .crt-monitor{border-radius:0;padding:0;background:linear-gradient(180deg,#0a0a12,#060610);border:1px solid rgba(0,255,136,.15);clip-path:polygon(0 8px,8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%);box-shadow:0 0 12px rgba(0,255,136,.04)}
+  .grid-theme-cyberpunk .crt-monitor::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent);opacity:.4;z-index:5}
+  .grid-theme-cyberpunk .crt-monitor::after{content:'';position:absolute;bottom:0;right:0;width:2px;height:40%;background:linear-gradient(180deg,transparent,var(--cyan));opacity:.3;z-index:5}
+  .grid-theme-cyberpunk .crt-monitor:hover{border-color:rgba(0,255,136,.35);box-shadow:0 0 25px rgba(0,255,136,.1),inset 0 0 30px rgba(0,255,136,.02)}
+  .grid-theme-cyberpunk .crt-screw,.grid-theme-cyberpunk .crt-led{display:none}
+  .grid-theme-cyberpunk .crt-screen{border-radius:0;background:transparent;border:none;box-shadow:none;transform:none}
+  .grid-theme-cyberpunk .crt-screen::before,.grid-theme-cyberpunk .crt-screen::after{display:none}
+  .grid-theme-cyberpunk .tile-glow{display:none}
+  .grid-theme-cyberpunk .tile-label{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:3px;color:var(--green);text-shadow:0 0 12px rgba(0,255,136,.3)}
+  .grid-theme-cyberpunk .tile-sub{color:var(--cyan);opacity:.6}
+  .grid-theme-cyberpunk .tile-badge{border-color:rgba(0,255,136,.3);color:var(--green);background:rgba(0,255,136,.06)}
+  .grid-theme-cyberpunk .tile-badge.crimson{border-color:rgba(255,51,51,.3);color:var(--red);background:rgba(255,51,51,.06)}
+  .grid-theme-cyberpunk .tile-badge.violet{border-color:rgba(0,212,255,.3);color:var(--cyan);background:rgba(0,212,255,.06)}
+
+  /* Theme 4: Military Ops */
+  .grid-theme-military .crt-monitor{border-radius:4px;padding:0;background:repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(80,90,60,.03) 3px,rgba(80,90,60,.03) 4px),linear-gradient(180deg,#14160e,#0e100a,#0a0c08);border:2px solid #2a2e1e;box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 4px 12px rgba(0,0,0,.5)}
+  .grid-theme-military .crt-monitor:hover{border-color:#3a4228;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 6px 20px rgba(0,0,0,.5),0 0 15px rgba(140,160,80,.04)}
+  .grid-theme-military .crt-screw,.grid-theme-military .crt-led{display:none}
+  .grid-theme-military .crt-screen{border-radius:2px;background:transparent;border:none;border-top:1px solid rgba(140,160,80,.1);box-shadow:none;transform:none}
+  .grid-theme-military .crt-screen::before,.grid-theme-military .crt-screen::after{display:none}
+  .grid-theme-military .tile-glow{display:none}
+  .grid-theme-military .tile-label{font-family:'Teko',sans-serif;font-size:20px;letter-spacing:6px;color:#a0aa80;font-weight:500}
+  .grid-theme-military .tile-sub{color:#6a7050;font-weight:600;letter-spacing:2px}
+  .grid-theme-military .tile-badge{border-color:rgba(140,160,80,.25);color:#b0bb88;background:rgba(140,160,80,.06);border-radius:0;font-family:'IBM Plex Mono',monospace}
+  .grid-theme-military .tile-badge.crimson{border-color:rgba(180,80,60,.25);color:#cc8866;background:rgba(180,80,60,.06)}
+  .grid-theme-military .tile-badge.violet{border-color:rgba(140,160,80,.25);color:#a0aa80;background:rgba(140,160,80,.06)}
+  .grid-theme-military .tile-dot.active{background:radial-gradient(circle,#a0cc44,#7a9920)!important;box-shadow:0 0 4px rgba(140,180,40,.4)!important}
+  .grid-theme-military .tile-status-label.active{color:#8a9960!important}
+
+  /* Theme 5: Holographic */
+  .grid-theme-holo .crt-monitor{border-radius:12px;padding:0;background:linear-gradient(135deg,rgba(0,212,255,.03),rgba(136,0,255,.02),rgba(0,255,136,.02));border:1px solid rgba(255,255,255,.06);box-shadow:0 4px 20px rgba(0,0,0,.3);overflow:hidden}
+  .grid-theme-holo .crt-monitor::before{content:'';position:absolute;inset:-50%;background:conic-gradient(from 0deg,transparent,rgba(0,255,136,.03),transparent,rgba(0,212,255,.03),transparent,rgba(180,100,255,.03),transparent);animation:holoSpin 8s linear infinite;z-index:0}
+  @keyframes holoSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  .grid-theme-holo .crt-monitor:hover{border-color:rgba(0,212,255,.15);transform:translateY(-2px)}
+  .grid-theme-holo .crt-screw,.grid-theme-holo .crt-led{display:none}
+  .grid-theme-holo .crt-screen{border-radius:12px;background:transparent;border:none;box-shadow:none;transform:none;position:relative;z-index:1}
+  .grid-theme-holo .crt-screen::before,.grid-theme-holo .crt-screen::after{display:none}
+  .grid-theme-holo .tile-glow{display:none}
+  .grid-theme-holo .tile-label{color:#d0e8f0;text-shadow:0 0 20px rgba(0,212,255,.15)}
+  .grid-theme-holo .tile-badge{border-color:rgba(0,212,255,.2);border-radius:20px}
+
+  /* Theme 6: Brutalist Tech */
+  .grid-theme-brutalist .crt-monitor{border-radius:0;padding:0;background:#0a0a0a;border:2px solid #333;box-shadow:4px 4px 0 #111}
+  .grid-theme-brutalist .crt-monitor:hover{border-color:var(--green);box-shadow:6px 6px 0 rgba(0,255,136,.1);transform:translate(-2px,-2px)}
+  .grid-theme-brutalist .crt-screw,.grid-theme-brutalist .crt-led{display:none}
+  .grid-theme-brutalist .crt-screen{border-radius:0;background:transparent;border:none;box-shadow:none;transform:none}
+  .grid-theme-brutalist .crt-screen::before,.grid-theme-brutalist .crt-screen::after{display:none}
+  .grid-theme-brutalist .tile-glow{display:none}
+  .grid-theme-brutalist .tile-icon{filter:grayscale(1) brightness(.7)}
+  .grid-theme-brutalist .crt-monitor:hover .tile-icon{filter:grayscale(0) brightness(1)}
+  .grid-theme-brutalist .tile-label{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:2px;color:#aaa;font-weight:700}
+  .grid-theme-brutalist .tile-sub{font-family:'IBM Plex Mono',monospace;color:#555}
+  .grid-theme-brutalist .tile-badge{border-radius:0;border:1px solid #555;font-family:'IBM Plex Mono',monospace}
+
+  /* Theme 7: Sleek Minimal */
+  .grid-theme-minimal .crt-monitor{border-radius:10px;padding:0;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.04);box-shadow:none}
+  .grid-theme-minimal .crt-monitor:hover{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.08);transform:translateY(-2px)}
+  .grid-theme-minimal .crt-screw,.grid-theme-minimal .crt-led{display:none}
+  .grid-theme-minimal .crt-screen{border-radius:10px;background:transparent;border:none;box-shadow:none;transform:none}
+  .grid-theme-minimal .crt-screen::before,.grid-theme-minimal .crt-screen::after{display:none}
+  .grid-theme-minimal .tile-glow{display:none}
+  .grid-theme-minimal .tile-icon{font-size:36px}
+  .grid-theme-minimal .tile-label{font-family:'Exo 2',sans-serif;font-weight:600;font-size:14px;letter-spacing:3px;color:#ddd}
+  .grid-theme-minimal .tile-sub{color:#555}
+  .grid-theme-minimal .tile-badge{border-color:rgba(255,255,255,.06);background:transparent}
+
+  /* Theme 8: HUD Overlay */
+  .grid-theme-hud .crt-monitor{border-radius:2px;padding:0;background:linear-gradient(180deg,rgba(0,255,136,.015),transparent 20%,transparent 80%,rgba(0,255,136,.01)),linear-gradient(180deg,#060810,#040608);border:1px solid rgba(0,255,136,.1);overflow:hidden}
+  .grid-theme-hud .crt-monitor::before{content:'';position:absolute;top:4px;left:4px;width:14px;height:14px;border-top:1px solid rgba(0,255,136,.3);border-left:1px solid rgba(0,255,136,.3);z-index:5;pointer-events:none}
+  .grid-theme-hud .crt-monitor::after{content:'';position:absolute;bottom:4px;right:4px;width:14px;height:14px;border-bottom:1px solid rgba(0,255,136,.3);border-right:1px solid rgba(0,255,136,.3);z-index:5;pointer-events:none}
+  .grid-theme-hud .crt-monitor:hover{border-color:rgba(0,255,136,.25);box-shadow:0 0 20px rgba(0,255,136,.06)}
+  .grid-theme-hud .crt-screw,.grid-theme-hud .crt-led{display:none}
+  .grid-theme-hud .crt-screen{border-radius:0;background:transparent;border:none;box-shadow:none;transform:none}
+  .grid-theme-hud .crt-screen::before{display:none}
+  .grid-theme-hud .crt-screen::after{content:'';position:absolute;top:-2px;left:0;right:0;height:1px;background:rgba(0,255,136,.06);animation:scanDown 5s linear infinite;box-shadow:0 0 8px rgba(0,255,136,.03)}
+  .grid-theme-hud .tile-glow{display:none}
+  .grid-theme-hud .tile-label{font-family:'Electrolize',sans-serif;font-size:13px;letter-spacing:3px;color:rgba(0,255,136,.7)}
+  .grid-theme-hud .tile-sub{color:rgba(0,255,136,.3)}
+  .grid-theme-hud .tile-badge{border-color:rgba(0,255,136,.15);color:rgba(0,255,136,.6);background:rgba(0,255,136,.03)}
+  .grid-theme-hud .tile-badge.crimson{border-color:rgba(255,51,51,.2);color:rgba(255,80,80,.6);background:rgba(255,51,51,.03)}
+  .grid-theme-hud .tile-badge.violet{border-color:rgba(0,212,255,.2);color:rgba(0,212,255,.6);background:rgba(0,212,255,.03)}
+
+  /* Theme 9: Card Stack */
+  .grid-theme-cards .crt-monitor{border-radius:14px;padding:0;background:linear-gradient(170deg,#161820,#101218 50%,#0c0e14);border:1px solid rgba(255,255,255,.05);box-shadow:0 2px 4px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.2)}
+  .grid-theme-cards .crt-monitor::before{content:'';position:absolute;left:6px;right:6px;bottom:-4px;height:8px;border-radius:0 0 12px 12px;background:linear-gradient(180deg,rgba(16,18,24,.8),rgba(10,12,16,.5));border:1px solid rgba(255,255,255,.03);border-top:none;z-index:-1}
+  .grid-theme-cards .crt-monitor::after{content:'';position:absolute;left:12px;right:12px;bottom:-7px;height:6px;border-radius:0 0 10px 10px;background:rgba(10,12,16,.4);border:1px solid rgba(255,255,255,.02);border-top:none;z-index:-2}
+  .grid-theme-cards .crt-monitor:hover{transform:translateY(-4px);box-shadow:0 4px 8px rgba(0,0,0,.3),0 16px 40px rgba(0,0,0,.25)}
+  .grid-theme-cards .crt-screw,.grid-theme-cards .crt-led{display:none}
+  .grid-theme-cards .crt-screen{border-radius:14px;background:transparent;border:none;box-shadow:none;transform:none}
+  .grid-theme-cards .crt-screen::before,.grid-theme-cards .crt-screen::after{display:none}
+  .grid-theme-cards .tile-glow{display:none}
+  .grid-theme-cards .tile-label{font-family:'Rajdhani',sans-serif;font-size:18px;letter-spacing:3px;font-weight:600;color:#ddd}
+  .grid-theme-cards .tile-badge{border-radius:20px;padding:4px 14px}
+
+  /* Theme 10: Terminal */
+  .grid-theme-terminal .crt-monitor{border-radius:0;padding:0;background:#020604;border:1px solid rgba(0,255,136,.12);box-shadow:inset 0 0 30px rgba(0,0,0,.5);overflow:hidden}
+  .grid-theme-terminal .crt-monitor::after{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,255,136,.015) 1px,rgba(0,255,136,.015) 2px);z-index:0}
+  .grid-theme-terminal .crt-monitor:hover{border-color:rgba(0,255,136,.3);box-shadow:inset 0 0 30px rgba(0,0,0,.5),0 0 15px rgba(0,255,136,.06)}
+  .grid-theme-terminal .crt-screw,.grid-theme-terminal .crt-led{display:none}
+  .grid-theme-terminal .crt-screen{border-radius:0;background:transparent;border:none;box-shadow:none;transform:none;position:relative;z-index:1}
+  .grid-theme-terminal .crt-screen::before,.grid-theme-terminal .crt-screen::after{display:none}
+  .grid-theme-terminal .tile-glow{display:none}
+  .grid-theme-terminal .tile-icon{font-size:32px;filter:brightness(1.1) saturate(.6)}
+  .grid-theme-terminal .tile-label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--green);text-shadow:0 0 8px rgba(0,255,136,.2);font-weight:600}
+  .grid-theme-terminal .tile-sub{color:rgba(0,255,136,.3);font-family:'IBM Plex Mono',monospace}
+  .grid-theme-terminal .tile-badge{border-color:rgba(0,255,136,.15);color:rgba(0,255,136,.5);background:transparent;border-radius:0;font-family:'IBM Plex Mono',monospace}
+  .grid-theme-terminal .tile-badge.crimson{border-color:rgba(0,255,136,.15);color:rgba(0,255,136,.4);background:transparent}
+  .grid-theme-terminal .tile-badge.violet{border-color:rgba(0,255,136,.15);color:rgba(0,255,136,.4);background:transparent}
+  .grid-theme-terminal .tile-dot.active{background:var(--green)!important}
+  .grid-theme-terminal .tile-status-label.active{color:rgba(0,255,136,.5)!important}
+
+  /* Theme picker card previews */
+  .theme-picker{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
+  @media(max-width:768px){.theme-picker{grid-template-columns:repeat(3,1fr)}}
+  .theme-card{position:relative;cursor:pointer;border-radius:6px;padding:10px 6px 8px;text-align:center;transition:all .2s;border:2px solid rgba(255,255,255,.04);background:rgba(255,255,255,.015)}
+  .theme-card:hover{border-color:rgba(0,212,255,.2);background:rgba(0,212,255,.03)}
+  .theme-card.selected{border-color:var(--green);background:rgba(0,255,136,.04);box-shadow:0 0 12px rgba(0,255,136,.08)}
+  .theme-card.selected::after{content:'✓';position:absolute;top:4px;right:6px;font-size:10px;color:var(--green);font-weight:700}
+  .theme-card-preview{width:100%;aspect-ratio:1.2;border-radius:3px;margin-bottom:6px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:3px}
+  .theme-card-mini{border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:10px}
+  .theme-card-name{font-family:'Saira',sans-serif;font-size:8px;letter-spacing:1.5px;color:#aaa;text-transform:uppercase;font-weight:600}
+  .theme-card.selected .theme-card-name{color:var(--green)}
+
+  /* Mini tile styles for previews */
+  .tc-mini-crt .theme-card-mini{background:linear-gradient(170deg,#1e2028,#0c0e14);border:1px solid rgba(255,255,255,.04);border-radius:4px}
+  .tc-mini-glass .theme-card-mini{background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:4px}
+  .tc-mini-cyberpunk .theme-card-mini{background:linear-gradient(180deg,#0a0a12,#060610);border:1px solid rgba(0,255,136,.2);clip-path:polygon(0 3px,3px 0,100% 0,100% calc(100% - 3px),calc(100% - 3px) 100%,0 100%)}
+  .tc-mini-military .theme-card-mini{background:linear-gradient(180deg,#14160e,#0a0c08);border:2px solid #2a2e1e;border-radius:1px}
+  .tc-mini-holo .theme-card-mini{background:linear-gradient(135deg,rgba(0,212,255,.04),rgba(136,0,255,.03),rgba(0,255,136,.03));border:1px solid rgba(255,255,255,.06);border-radius:3px}
+  .tc-mini-brutalist .theme-card-mini{background:#0a0a0a;border:2px solid #444;box-shadow:2px 2px 0 #111;border-radius:0}
+  .tc-mini-minimal .theme-card-mini{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:3px}
+  .tc-mini-hud .theme-card-mini{background:linear-gradient(180deg,rgba(0,255,136,.02),transparent);border:1px solid rgba(0,255,136,.12);border-radius:1px}
+  .tc-mini-cards .theme-card-mini{background:linear-gradient(170deg,#161820,#0c0e14);border:1px solid rgba(255,255,255,.05);border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+  .tc-mini-terminal .theme-card-mini{background:#020604;border:1px solid rgba(0,255,136,.15);border-radius:0}
+
   /* ══════ EXPANDED OVERLAY ══════ */
   #panelOverlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #panelOverlay.active{opacity:1;pointer-events:all}
@@ -2124,6 +2272,10 @@
         <div class="ap-field"><label>Subtitle <span class="save-blip" id="blipLandingSub">✓ Saved</span></label><input id="apLandingSubtitle" value="Rise to The Challenge" onchange="updateLandingSubtitle()"></div>
       </div>
       <div style="text-align:center;padding-top:4px"><button class="ap-btn ap-btn-cyan" onclick="previewLandingPage()" style="font-size:10px;padding:8px 20px">👁 Preview Landing Page</button></div>
+    </div>
+    <div class="ap-section"><h4>🖥️ Console Theme <span class="save-blip" id="blipGridTheme">✓ Saved</span></h4>
+      <p>Choose the visual style for the console grid tiles. Content, badges, and activity indicators remain unchanged — only the frame and aesthetic changes.</p>
+      <div class="theme-picker" id="themePickerGrid"></div>
     </div>
     <div class="ap-section"><h4>🖋 Typography <span class="save-blip" id="blipTypography">✓ Saved</span></h4>
       <p>Global font overrides by content zone. Setting a font here overrides the theme default for that zone across the whole app. Leave as Default to inherit the theme font.</p>
@@ -4724,6 +4876,7 @@ async function loadEventData(){
 function applyEventConfig(cfg){
   if(cfg.operationName){operationName=cfg.operationName;const ct=document.getElementById('consoleTitle');if(ct)ct.textContent='◈ '+operationName;document.title=operationName+' — Console'}
   if(cfg.operationFont){operationFont=cfg.operationFont;applyOperationFont(operationFont)}
+  if(cfg.gridTheme){_currentGridTheme=cfg.gridTheme;applyGridTheme(cfg.gridTheme)}
   if(cfg.participantMode){regSettings.participantMode=cfg.participantMode;const sel=document.getElementById('apParticipantMode');if(sel)sel.value=cfg.participantMode}
   if(cfg.leaderboardStyle){regSettings.leaderboardStyle=cfg.leaderboardStyle;const sel=document.getElementById('apLeaderboardStyle');if(sel)sel.value=cfg.leaderboardStyle}
   if(cfg.landingTitle){regSettings.landingTitle=cfg.landingTitle;const el=document.getElementById('landingTitleEl');if(el)el.textContent=cfg.landingTitle;const inp=document.getElementById('apLandingTitle');if(inp)inp.value=cfg.landingTitle}
@@ -5139,6 +5292,7 @@ function saveEventConfigToBackend(){
   _saveConfigTimer=setTimeout(()=>{
     apiCall('saveEventConfig',{config:{
       operationName,operationFont,
+      gridTheme:_currentGridTheme,
       fontConfig:fontConfig,
       gridTiles:gridTiles.map(t=>({id:t.id,icon:t.icon,label:t.label,sub:t.sub,labelFont:t.labelFont,subFont:t.subFont})),
       participantMode:regSettings.participantMode,
@@ -5282,7 +5436,7 @@ function switchAdminTab(panelId){
   if(panelId==='broadcastPanel'){/* nothing extra */}
   if(panelId==='scoringPanel'){renderScoringEditor()}
   if(panelId==='registrationPanel'){syncRegistrationSettings()}
-  if(panelId==='appearancePanel'){initTypographyPanel()}
+  if(panelId==='appearancePanel'){renderThemePicker();initTypographyPanel()}
 }
 function syncAdminPanelSettings(){
   renderScoringEditor();
@@ -5436,7 +5590,7 @@ function syncRegistrationSettings(){
   if(st){st.textContent=regSettings.registrationOpen?'● OPEN':'● CLOSED';st.style.color=regSettings.registrationOpen?'var(--green)':'var(--red)'}
 }
 
-function openAppearancePanel(){closeAllAdminPanels();_instantShow(document.getElementById('appearancePanel'));showAdminTabs('appearancePanel');initTypographyPanel()}
+function openAppearancePanel(){closeAllAdminPanels();_instantShow(document.getElementById('appearancePanel'));showAdminTabs('appearancePanel');renderThemePicker();initTypographyPanel()}
 function closeAppearancePanel(){const el=document.getElementById('appearancePanel');if(el){el.classList.remove('active');el.style.cssText=''}hideAdminTabs()}
 function openTeamMonitor(){openDashboard()}
 function closeTeamMonitor(){closeDashboard()}
@@ -8055,6 +8209,62 @@ function unlockAdminConsole(){
   }
 }
 
+
+// ═══════════════════════════════════════════════════════════════
+// CONSOLE GRID THEMES
+// ═══════════════════════════════════════════════════════════════
+
+const _gridThemes=[
+  {id:'crt',       name:'CRT Monitor',     mini:'tc-mini-crt',       desc:'Bezel, screws, scanlines'},
+  {id:'glass',     name:'Glass Morphism',   mini:'tc-mini-glass',     desc:'Frosted glass, soft blur'},
+  {id:'cyberpunk', name:'Neon Cyberpunk',   mini:'tc-mini-cyberpunk', desc:'Clipped corners, neon glow'},
+  {id:'military',  name:'Military Ops',     mini:'tc-mini-military',  desc:'Olive drab, stencil, utilitarian'},
+  {id:'holo',      name:'Holographic',      mini:'tc-mini-holo',      desc:'Prismatic shimmer, airy'},
+  {id:'brutalist', name:'Brutalist Tech',   mini:'tc-mini-brutalist', desc:'Hard shadows, monospace'},
+  {id:'minimal',   name:'Sleek Minimal',    mini:'tc-mini-minimal',   desc:'Barely there, content first'},
+  {id:'hud',       name:'HUD Overlay',      mini:'tc-mini-hud',       desc:'Corner brackets, scan line'},
+  {id:'cards',     name:'Card Stack',       mini:'tc-mini-cards',     desc:'Layered depth, floating'},
+  {id:'terminal',  name:'Terminal',         mini:'tc-mini-terminal',  desc:'Green phosphor monochrome'}
+];
+let _currentGridTheme='crt';
+
+function renderThemePicker(){
+  const grid=document.getElementById('themePickerGrid');
+  if(!grid)return;
+  grid.innerHTML=_gridThemes.map(t=>{
+    const sel=t.id===_currentGridTheme?'selected':'';
+    return `<div class="theme-card ${sel}" data-theme="${t.id}" onclick="selectGridTheme('${t.id}')">
+      <div class="theme-card-preview ${t.mini}">
+        <div class="theme-card-mini">📡</div>
+        <div class="theme-card-mini">🗂️</div>
+        <div class="theme-card-mini">🔐</div>
+        <div class="theme-card-mini">🎯</div>
+      </div>
+      <div class="theme-card-name">${t.name}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectGridTheme(id){
+  _currentGridTheme=id;
+  applyGridTheme(id);
+  renderThemePicker();
+  // Show save blip
+  const blip=document.getElementById('blipGridTheme');
+  if(blip){blip.style.opacity='1';setTimeout(()=>blip.style.opacity='',1500)}
+  saveEventConfigToBackend();
+}
+
+function applyGridTheme(id){
+  const grid=document.getElementById('consoleGrid');
+  if(!grid)return;
+  // Remove all existing theme classes
+  _gridThemes.forEach(t=>grid.classList.remove('grid-theme-'+t.id));
+  // Apply new one (crt = default, no class needed)
+  if(id&&id!=='crt'){
+    grid.classList.add('grid-theme-'+id);
+  }
+}
 
 // ═══════════════════════════════════════════════════════════════
 // TYPOGRAPHY — Central font management
