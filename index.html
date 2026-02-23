@@ -1957,7 +1957,11 @@
   /* ══════ TUTORIAL SPOTLIGHT OVERLAY ══════ */
   #tutorialOverlay{position:fixed;inset:0;z-index:9500;pointer-events:none;opacity:0;transition:opacity .3s}
   #tutorialOverlay.active{opacity:1;pointer-events:all}
-  .tut-spotlight{position:absolute;border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.88),0 0 30px 8px rgba(0,212,255,.15);z-index:1;transition:all .3s ease;border:1px solid rgba(0,212,255,.25)}
+  .tut-spotlight{position:absolute;border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.88),0 0 30px 8px rgba(0,212,255,.15);z-index:1;transition:left .3s ease,top .3s ease,width .3s ease,height .3s ease;border:2px solid rgba(0,212,255,.4);animation:tutSpotPulse 1.2s ease-in-out infinite}
+  @keyframes tutSpotPulse{
+    0%,100%{border-color:rgba(0,212,255,.4);box-shadow:0 0 0 9999px rgba(0,0,0,.88),0 0 20px 6px rgba(0,212,255,.1)}
+    50%{border-color:rgba(0,212,255,.9);box-shadow:0 0 0 9999px rgba(0,0,0,.88),0 0 35px 12px rgba(0,212,255,.25)}
+  }
   .tut-tooltip{position:absolute;z-index:2;max-width:360px;background:#0d1018;border:1px solid rgba(0,212,255,.3);border-radius:10px;padding:22px 26px;box-shadow:0 12px 40px rgba(0,0,0,.6),0 0 20px rgba(0,212,255,.06)}
   .tut-tooltip-title{font-family:'Saira',sans-serif;font-size:15px;letter-spacing:2.5px;color:var(--cyan);font-weight:700;margin-bottom:8px}
   .tut-tooltip-body{font-family:'Chakra Petch',sans-serif;font-size:13px;color:#d0d0d0;line-height:1.7;margin-bottom:16px;letter-spacing:.2px}
@@ -8306,6 +8310,7 @@ function showTutorialStep(){
 
       // Position tooltip below or above element
       const tipH=180;
+      const tipW=360;
       if(top+h+tipH+20<window.innerHeight){
         tooltip.style.top=(top+h+12)+'px';
         tooltip.style.bottom='auto';
@@ -8316,7 +8321,10 @@ function showTutorialStep(){
         tooltip.style.top='auto';
         tooltip.style.bottom='20px';
       }
-      tooltip.style.left=Math.max(16,Math.min(left,window.innerWidth-340))+'px';
+      // Center tooltip over the element, clamped to viewport edges
+      const elCenter=rect.left+rect.width/2;
+      const tipLeft=Math.max(16,Math.min(elCenter-tipW/2,window.innerWidth-tipW-16));
+      tooltip.style.left=tipLeft+'px';
     },150);
   }else{
     // Element not visible or not found — show tooltip centered
