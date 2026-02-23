@@ -8220,11 +8220,7 @@ function destroySessions(mode){
         adminSession.adminToken=r.newToken;
         saveSession();
       }else if(mode==='all'){
-<<<<<<< HEAD
         setTimeout(()=>{localStorage.removeItem('cb_session');sessionStorage.removeItem('cb_session');location.reload()},1500);
-=======
-        setTimeout(()=>{localStorage.removeItem('cb_session');location.reload()},1500);
->>>>>>> ba7ce59b6f015e38120952dfa283682499fd9e12
       }
     }else{
       msg.className='ap-msg err';msg.textContent='✗ '+(r.error||'Failed');
