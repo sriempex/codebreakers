@@ -2687,7 +2687,7 @@
             <div class="team-card-notif-list" id="teamNotifList"><div class="notif-empty">No notifications yet</div></div>
           </div>
           <div style="padding:4px 16px 0;border-top:1px solid rgba(255,255,255,.04)">
-            <div onclick="event.stopPropagation();toggleTeamCard();startTutorial()" style="display:flex;align-items:center;gap:8px;padding:8px 0;cursor:pointer;opacity:.6;transition:opacity .15s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.6'">
+            <div onclick="event.stopPropagation();toggleTeamCard();replayTutorial()" style="display:flex;align-items:center;gap:8px;padding:8px 0;cursor:pointer;opacity:.6;transition:opacity .15s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.6'">
               <span style="font-size:12px">📖</span><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa;letter-spacing:.5px">Replay Tutorial</span>
             </div>
           </div>
@@ -8201,15 +8201,30 @@ function tutorialStep(dir){
   showTutorialStep();
 }
 
+let _tutWasAdmin=false;
+function replayTutorial(){
+  _tutWasAdmin=false;
+  if(isAdmin&&!document.body.classList.contains('player-preview')){
+    _tutWasAdmin=true;
+    togglePlayerPreview();
+    setTimeout(()=>{_tutIsPreview=true;startTutorial()},300);
+  }else{
+    _tutIsPreview=true;
+    startTutorial();
+  }
+}
+
 function endTutorial(){
   document.getElementById('tutorialOverlay').classList.remove('active');
   document.getElementById('tutSpotlight').style.display='none';
   if(!_tutIsPreview){
-    // Mark tutorial as seen for this team
     const teamId=currentVaultTeam?.id||'unknown';
     try{localStorage.setItem('cb_tutSeen_'+teamId,localStorage.getItem('cb_tutorialGen')||'1')}catch(e){}
-    // Check if briefing should show
     checkShowBriefing();
+  }
+  if(_tutWasAdmin){
+    _tutWasAdmin=false;
+    togglePlayerPreview();
   }
   _tutIsPreview=false;
 }
