@@ -1995,12 +1995,10 @@
   try{
     var t=localStorage.getItem('cb_gridTheme');
     if(t&&t!=='crt'){
-      // Apply theme class as soon as consoleGrid exists
       var obs=new MutationObserver(function(m,o){
         var g=document.getElementById('consoleGrid');
         if(g){g.classList.add('grid-theme-'+t);o.disconnect()}
       });
-      // Start observing once body exists
       if(document.body){
         var g=document.getElementById('consoleGrid');
         if(g)g.classList.add('grid-theme-'+t);
@@ -2010,6 +2008,24 @@
           if(g)g.classList.add('grid-theme-'+t);
         });
         obs.observe(document.documentElement,{childList:true,subtree:true});
+      }
+    }
+    // Intel theme pre-render
+    var it=localStorage.getItem('cb_intelTheme');
+    if(it&&it!=='standard'){
+      var obs2=new MutationObserver(function(m,o){
+        var p=document.getElementById('expIntel');
+        if(p){p.classList.add('intel-theme-'+it);o.disconnect()}
+      });
+      if(document.body){
+        var p=document.getElementById('expIntel');
+        if(p)p.classList.add('intel-theme-'+it);
+      }else{
+        document.addEventListener('DOMContentLoaded',function(){
+          var p=document.getElementById('expIntel');
+          if(p)p.classList.add('intel-theme-'+it);
+        });
+        obs2.observe(document.documentElement,{childList:true,subtree:true});
       }
     }
   }catch(e){}
@@ -9174,6 +9190,7 @@ function applyIntelTheme(id){
   if(!panel)return;
   panel.classList.remove('intel-theme-crt');
   if(id==='crt')panel.classList.add('intel-theme-crt');
+  try{localStorage.setItem('cb_intelTheme',_currentIntelTheme)}catch(e){}
   // Update appearance panel UI
   const sel=document.getElementById('intelThemeSelect');
   if(sel)sel.value=_currentIntelTheme;
