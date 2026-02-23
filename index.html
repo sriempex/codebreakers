@@ -1812,7 +1812,8 @@
   .drag-handle:active{cursor:grabbing}
   body.admin-mode:not(.player-preview) .drag-handle{display:flex;opacity:0;transition:opacity .15s}
   body.admin-mode:not(.player-preview) .feed-card:hover .drag-handle,
-  body.admin-mode:not(.player-preview) .media-exp-item:hover .drag-handle{opacity:1}
+  body.admin-mode:not(.player-preview) .media-exp-item:hover .drag-handle,
+  body.admin-mode:not(.player-preview) .intel-exp-row:hover .drag-handle{opacity:1}
   @media(hover:none){body.admin-mode.reorder-mode:not(.player-preview) .drag-handle{opacity:1!important}}
   .feed-card.drag-over{border-color:var(--cyan)!important;box-shadow:0 0 12px rgba(0,212,255,.2)!important}
   .feed-card.dragging{opacity:.35;pointer-events:none}
@@ -6922,7 +6923,7 @@ function renderIntelForm(){
   let html='';
   intelFields.forEach((f,i)=>{
     const num=String(i+1).padStart(2,'0');
-    const dragHandle=isA?`<div class="drag-handle" onpointerdown="startIntelDrag(event,${i})" onclick="event.stopPropagation()" style="padding:0 4px;font-size:14px;color:#333;cursor:grab;user-select:none;touch-action:none">⋮⋮</div>`:'';
+    const dragHandle=isA?`<div class="drag-handle" onpointerdown="startIntelDrag(event,${i})" onclick="event.stopPropagation()">⋮⋮</div>`:'';
     const editBtn=isA?`<div class="admin-row-edit" onclick="event.stopPropagation();editIntelField(${i})">✎</div>`:'';
     const _lFont=resolveFont('intelLabel',f.font||'');
     const _iFont=resolveFont('intelInput',f.inputFont||'');
@@ -8014,14 +8015,14 @@ function destroySessions(mode){
 
 // ══════ TUTORIAL SYSTEM ══════
 const TUTORIAL_STEPS_DEFAULT=[
-  {id:'grid',selector:'#consoleGrid',icon:'🖥️',title:'Mission Console',body:'These are your mission panels. Each one contains different intelligence and tools. Tap any panel to open it.',enabled:true},
+  {id:'grid',selector:'.console-grid',icon:'🖥️',title:'Mission Console',body:'These are your mission panels. Each one contains different intelligence and tools. Tap any panel to open it.',enabled:true},
   {id:'feed',selector:'.crt-monitor[data-tile="feed"]',icon:'📡',title:'Intelligence Feed',body:'Surveillance imagery and intercepted visuals from the field. Check here for visual clues.',enabled:true},
   {id:'media',selector:'.crt-monitor[data-tile="media"]',icon:'📁',title:'Evidence Locker',body:'Classified files and documents. Some may be vault-locked and require a code to access.',enabled:true},
   {id:'intel',selector:'.crt-monitor[data-tile="intel"]',icon:'🔍',title:'Intel Submissions',body:'Enter your answers here. Fill in each field with the intelligence you\'ve gathered, then hit TRANSMIT.',enabled:true},
   {id:'vault',selector:'.crt-monitor[data-tile="vault"]',icon:'🔐',title:'Vault',body:'Enter secret codes to unlock classified evidence. Codes can be found hidden throughout the mission.',enabled:true},
   {id:'timer',selector:'.timer-block',icon:'⏱️',title:'Mission Timer',body:'Keep an eye on the clock. When time runs out, the mission is over.',enabled:true},
   {id:'identity',selector:'.topbar-identity',icon:'🪪',title:'Your Identity',body:'Your team name and details. Tap to see your team card with member info and notifications.',enabled:true},
-  {id:'notepad',selector:'#notepadTrigger',icon:'📝',title:'Notepad',body:'Your personal scratchpad. Jot down clues, codes, or anything you need to remember.',enabled:true}
+  {id:'notepad',selector:'.notepad-trigger.visible',icon:'📝',title:'Notepad',body:'Your personal scratchpad. Jot down clues, codes, or anything you need to remember.',enabled:true}
 ];
 let tutorialSteps=JSON.parse(JSON.stringify(TUTORIAL_STEPS_DEFAULT));
 let tutorialEnabled=true;
@@ -8144,26 +8145,43 @@ function showTutorialStep(){
   backBtn.style.display=_tutCurrentStep===0?'none':'';
   nextBtn.textContent=_tutCurrentStep===enabled.length-1?'DONE':'NEXT';
 
-  if(el){
-    const rect=el.getBoundingClientRect();
-    const pad=8;
-    spotlight.style.left=(rect.left-pad)+'px';
-    spotlight.style.top=(rect.top-pad)+'px';
-    spotlight.style.width=(rect.width+pad*2)+'px';
-    spotlight.style.height=(rect.height+pad*2)+'px';
-    spotlight.style.display='block';
+  // Reset tooltip transform in case it was centered previously
+  tooltip.style.transform='';
 
-    // Position tooltip below or above element
-    const tipH=180;
-    if(rect.bottom+tipH+20<window.innerHeight){
-      tooltip.style.top=(rect.bottom+16)+'px';
-      tooltip.style.bottom='auto';
-    }else{
-      tooltip.style.top='auto';
-      tooltip.style.bottom=(window.innerHeight-rect.top+16)+'px';
-    }
-    tooltip.style.left=Math.max(16,Math.min(rect.left,window.innerWidth-340))+'px';
+  if(el&&el.offsetParent!==null){
+    // Scroll into view if needed
+    el.scrollIntoView({behavior:'smooth',block:'nearest'});
+    // Wait for scroll to settle then position
+    setTimeout(()=>{
+      const rect=el.getBoundingClientRect();
+      const pad=8;
+      // Clamp spotlight within viewport
+      const top=Math.max(4,rect.top-pad);
+      const left=Math.max(4,rect.left-pad);
+      const w=Math.min(rect.width+pad*2,window.innerWidth-left-4);
+      const h=Math.min(rect.height+pad*2,window.innerHeight-top-4);
+      spotlight.style.left=left+'px';
+      spotlight.style.top=top+'px';
+      spotlight.style.width=w+'px';
+      spotlight.style.height=h+'px';
+      spotlight.style.display='block';
+
+      // Position tooltip below or above element
+      const tipH=180;
+      if(top+h+tipH+20<window.innerHeight){
+        tooltip.style.top=(top+h+12)+'px';
+        tooltip.style.bottom='auto';
+      }else if(top-tipH-12>0){
+        tooltip.style.top=(top-tipH-12)+'px';
+        tooltip.style.bottom='auto';
+      }else{
+        tooltip.style.top='auto';
+        tooltip.style.bottom='20px';
+      }
+      tooltip.style.left=Math.max(16,Math.min(left,window.innerWidth-340))+'px';
+    },150);
   }else{
+    // Element not visible or not found — show tooltip centered
     spotlight.style.display='none';
     tooltip.style.top='50%';tooltip.style.left='50%';
     tooltip.style.transform='translate(-50%,-50%)';
