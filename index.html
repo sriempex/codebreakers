@@ -1839,6 +1839,34 @@
   body.landing-preview-mode #dashboardPanel{display:none!important}
   body.landing-preview-mode #adminNavBar{display:none!important}
 </style>
+<script>
+// Pre-render theme injection — runs before body paints
+// Reads cached theme from localStorage and injects a CSS class on consoleGrid
+// via a MutationObserver that fires the moment the element exists in DOM.
+(function(){
+  try{
+    var t=localStorage.getItem('cb_gridTheme');
+    if(t&&t!=='crt'){
+      // Apply theme class as soon as consoleGrid exists
+      var obs=new MutationObserver(function(m,o){
+        var g=document.getElementById('consoleGrid');
+        if(g){g.classList.add('grid-theme-'+t);o.disconnect()}
+      });
+      // Start observing once body exists
+      if(document.body){
+        var g=document.getElementById('consoleGrid');
+        if(g)g.classList.add('grid-theme-'+t);
+      }else{
+        document.addEventListener('DOMContentLoaded',function(){
+          var g=document.getElementById('consoleGrid');
+          if(g)g.classList.add('grid-theme-'+t);
+        });
+        obs.observe(document.documentElement,{childList:true,subtree:true});
+      }
+    }
+  }catch(e){}
+})();
+</script>
 </head>
 <body>
 <canvas id="grainCanvas"></canvas>
@@ -5355,6 +5383,8 @@ function saveEventConfigToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveConfigTimer);
   _saveConfigTimer=setTimeout(()=>{
+    // Cache visual settings to localStorage for instant restore
+    try{localStorage.setItem('cb_gridTheme',_currentGridTheme);localStorage.setItem('cb_opName',operationName);if(operationFont)localStorage.setItem('cb_opFont',operationFont)}catch(e){}
     apiCall('saveEventConfig',{config:{
       operationName,operationFont,
       gridTheme:_currentGridTheme,
@@ -8036,7 +8066,16 @@ function restoreSession(){
       syncAdminDropdownToggles();
       restoreGameState();
       applyScreenAndPanel();
-      renderGrid(); // Render grid with cached data immediately
+      // Apply cached theme + operation name BEFORE first renderGrid
+      try{
+        const ct=localStorage.getItem('cb_gridTheme');
+        if(ct){_currentGridTheme=ct;applyGridTheme(ct)}
+        const cn=localStorage.getItem('cb_opName');
+        if(cn){operationName=cn;const el=document.getElementById('consoleTitle');if(el)el.textContent='◈ '+cn;document.title=cn+' — Console'}
+        const cf=localStorage.getItem('cb_opFont');
+        if(cf){operationFont=cf;applyOperationFont(cf)}
+      }catch(e){}
+      renderGrid(); // Render grid with cached data + theme immediately
       startElapsedTimer();
       // Load fresh data from backend in background — UI already showing
       loadEventData();
@@ -8047,7 +8086,16 @@ function restoreSession(){
       updateConsoleForTeam(currentVaultTeam);
       restoreGameState();
       applyScreenAndPanel();
-      renderGrid(); // Render grid with cached data immediately
+      // Apply cached theme + operation name BEFORE first renderGrid
+      try{
+        const ct=localStorage.getItem('cb_gridTheme');
+        if(ct){_currentGridTheme=ct;applyGridTheme(ct)}
+        const cn=localStorage.getItem('cb_opName');
+        if(cn){operationName=cn;const el=document.getElementById('consoleTitle');if(el)el.textContent='◈ '+cn;document.title=cn+' — Console'}
+        const cf=localStorage.getItem('cb_opFont');
+        if(cf){operationFont=cf;applyOperationFont(cf)}
+      }catch(e){}
+      renderGrid(); // Render grid with cached data + theme immediately
       startElapsedTimer();
       // Load config and fresh content in background — UI already showing
       apiCall('getEventConfig').then(cfg=>{
@@ -8356,6 +8404,7 @@ function cycleThemePreview(dir){
 function applyThemeFromPreview(){
   _currentGridTheme=_gridThemes[_previewThemeIdx].id;
   applyGridTheme(_currentGridTheme);
+  try{localStorage.setItem('cb_gridTheme',_currentGridTheme)}catch(e){}
   document.getElementById('themePreviewOverlay').style.display='none';
   updateThemeLabel();
   const blip=document.getElementById('blipGridTheme');
