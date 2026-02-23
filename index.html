@@ -4771,7 +4771,11 @@ function _cacheContent(key,data){
 function _restoreContentCache(){
   let restored=false;
   try{
-    if(!localStorage.getItem('cb_contentVersion')){
+    const cv=localStorage.getItem('cb_contentVersion');
+    console.log('[CACHE] _restoreContentCache: cb_contentVersion=', cv);
+    console.log('[CACHE] cb_posts exists=', !!localStorage.getItem('cb_posts'));
+    if(!cv){
+      console.log('[CACHE] No contentVersion — nuking cache');
       localStorage.removeItem('cb_posts');
       localStorage.removeItem('cb_media');
       localStorage.removeItem('cb_intel');
@@ -4780,8 +4784,9 @@ function _restoreContentCache(){
   }catch(e){}
   try{
     const cp=localStorage.getItem('cb_posts');
-    if(cp){const arr=JSON.parse(cp);posts.length=0;arr.forEach(p=>posts.push(p));restored=true;}
-  }catch(e){}
+    if(cp){const arr=JSON.parse(cp);console.log('[CACHE] Restored posts:', arr.length);posts.length=0;arr.forEach(p=>posts.push(p));restored=true;}
+    else{console.log('[CACHE] No cb_posts in localStorage')}
+  }catch(e){console.log('[CACHE] cb_posts parse error:', e)}
   try{
     const cm=localStorage.getItem('cb_media');
     if(cm){const arr=JSON.parse(cm);mediaItems.length=0;arr.forEach(m=>mediaItems.push(m));syncVaultCodesFromMedia();restored=true;}
@@ -4790,6 +4795,7 @@ function _restoreContentCache(){
     const ci=localStorage.getItem('cb_intel');
     if(ci){const arr=JSON.parse(ci);intelFields.length=0;arr.forEach(f=>intelFields.push(f));restored=true;}
   }catch(e){}
+  console.log('[CACHE] _restoreContentCache result: restored=', restored, 'posts=', posts.length);
   return restored;
 }
 
@@ -4800,9 +4806,11 @@ async function loadEventData(){
   if(config.ok&&config.config)applyEventConfig(config.config);
 
   const feedResult=await apiCall('getFeedPosts');
+  console.log('[LOAD] getFeedPosts result: ok=', feedResult.ok, 'posts count=', feedResult.posts?.length, 'isArray=', Array.isArray(feedResult.posts));
   if(feedResult.ok&&Array.isArray(feedResult.posts)){
     posts.length=0;
     feedResult.posts.forEach(p=>posts.push(p));
+    console.log('[LOAD] posts loaded from backend:', posts.length);
     _cacheContent('cb_posts',posts);
     renderFeed();renderGrid();
     // If user was in focus mode, re-render the single post with fresh data
@@ -4871,26 +4879,29 @@ function applyEventConfig(cfg){
   try{
     const cachedVer=localStorage.getItem('cb_contentVersion')||'';
     const serverVer=cfg.contentVersion?String(cfg.contentVersion):'';
+    console.log('[CACHE] applyEventConfig: cachedVer=', cachedVer, 'serverVer=', serverVer);
+    console.log('[CACHE] posts.length BEFORE version check=', posts.length);
     if(!serverVer){
-      // No server version at all — first deploy or legacy. Nuke any pre-versioned cache.
+      console.log('[CACHE] No server version — nuking cache');
       localStorage.removeItem('cb_posts');
       localStorage.removeItem('cb_media');
       localStorage.removeItem('cb_intel');
       localStorage.removeItem('cb_contentVersion');
     }else if(cachedVer!==serverVer){
-      // Version mismatch. But if our local version is NEWER, our save is still
-      // in-flight to the server — keep the cache, don't nuke it.
       if(cachedVer && parseInt(cachedVer) > parseInt(serverVer)){
-        // Local is newer — save hasn't reached server yet. Keep cache.
+        console.log('[CACHE] Local is NEWER than server — keeping cache (save in flight)');
       }else{
-        // Server is newer — another admin updated, or our cache is stale. Nuke.
+        console.log('[CACHE] Server is newer or local is empty — NUKING cache');
         localStorage.removeItem('cb_posts');
         localStorage.removeItem('cb_media');
         localStorage.removeItem('cb_intel');
         posts.length=0;mediaItems.length=0;intelFields.length=0;
         localStorage.setItem('cb_contentVersion',serverVer);
       }
+    }else{
+      console.log('[CACHE] Versions MATCH — keeping cache');
     }
+    console.log('[CACHE] posts.length AFTER version check=', posts.length);
   }catch(e){}
   if(cfg.operationName){operationName=cfg.operationName;const ct=document.getElementById('consoleTitle');if(ct)ct.textContent='◈ '+operationName;document.title=operationName+' — Console'}
   if(cfg.operationFont){operationFont=cfg.operationFont;applyOperationFont(operationFont)}
