@@ -4807,6 +4807,18 @@ function _restoreContentCache(){
     if(ci){const arr=JSON.parse(ci);intelFields.length=0;arr.forEach(f=>intelFields.push(f));restored=true;}
   }catch(e){}
   console.log('[CACHE] _restoreContentCache result: restored=', restored, 'posts=', posts.length);
+  // Restore grid theme immediately so first paint uses the correct theme
+  try{
+    const cachedTheme=localStorage.getItem('cb_gridTheme');
+    if(cachedTheme){_currentGridTheme=cachedTheme;applyGridTheme(cachedTheme);updateThemeLabel()}
+  }catch(e){}
+  // Restore operation name/font so console title doesn't flash
+  try{
+    const cachedOp=localStorage.getItem('cb_opName');
+    if(cachedOp){operationName=cachedOp;const ct=document.getElementById('consoleTitle');if(ct)ct.textContent='◈ '+operationName;document.title=operationName+' — Console'}
+    const cachedOpFont=localStorage.getItem('cb_opFont');
+    if(cachedOpFont){operationFont=cachedOpFont;applyOperationFont(operationFont)}
+  }catch(e){}
   return restored;
 }
 
@@ -4915,9 +4927,9 @@ function applyEventConfig(cfg){
     }
     console.log('[CACHE] posts.length AFTER version check=', posts.length);
   }catch(e){}
-  if(cfg.operationName){operationName=cfg.operationName;const ct=document.getElementById('consoleTitle');if(ct)ct.textContent='◈ '+operationName;document.title=operationName+' — Console'}
-  if(cfg.operationFont){operationFont=cfg.operationFont;applyOperationFont(operationFont)}
-  if(cfg.gridTheme){_currentGridTheme=cfg.gridTheme;applyGridTheme(cfg.gridTheme);updateThemeLabel()}
+  if(cfg.operationName){operationName=cfg.operationName;const ct=document.getElementById('consoleTitle');if(ct)ct.textContent='◈ '+operationName;document.title=operationName+' — Console';try{localStorage.setItem('cb_opName',cfg.operationName)}catch(e){}}
+  if(cfg.operationFont){operationFont=cfg.operationFont;applyOperationFont(operationFont);try{localStorage.setItem('cb_opFont',cfg.operationFont)}catch(e){}}
+  if(cfg.gridTheme){_currentGridTheme=cfg.gridTheme;applyGridTheme(cfg.gridTheme);updateThemeLabel();try{localStorage.setItem('cb_gridTheme',cfg.gridTheme)}catch(e){}}
   if(cfg.participantMode){regSettings.participantMode=cfg.participantMode;const sel=document.getElementById('apParticipantMode');if(sel)sel.value=cfg.participantMode}
   if(cfg.leaderboardStyle){regSettings.leaderboardStyle=cfg.leaderboardStyle;const sel=document.getElementById('apLeaderboardStyle');if(sel)sel.value=cfg.leaderboardStyle}
   if(cfg.landingTitle){regSettings.landingTitle=cfg.landingTitle;const el=document.getElementById('landingTitleEl');if(el)el.textContent=cfg.landingTitle;const inp=document.getElementById('apLandingTitle');if(inp)inp.value=cfg.landingTitle}
