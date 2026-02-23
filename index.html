@@ -3198,6 +3198,9 @@ function proceedToLogin(){
 let teamCardOpen=false,elapsedSec=0,elapsedInterval=null;
 function toggleTeamCard(e){
   if(e)e.stopPropagation();
+  // If admin dropdown is open, close it first and show team card
+  const dd=document.getElementById('adminDropdown');
+  if(dd&&dd.classList.contains('open')){closeAdminDropdown()}
   teamCardOpen=!teamCardOpen;
   document.getElementById('teamCard').classList.toggle('open',teamCardOpen);
   if(teamCardOpen){
