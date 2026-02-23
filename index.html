@@ -571,9 +571,9 @@
   .crt-monitor:hover .tile-glow{width:160px;height:160px;background:radial-gradient(circle,rgba(0,255,136,.05) 0%,transparent 70%)}
   .tile-icon{font-size:clamp(40px,5vh,48px);margin-bottom:clamp(14px,2vh,20px);position:relative;z-index:2;filter:grayscale(.3) brightness(.85);transition:filter .3s,transform .3s}
   .crt-monitor:hover .tile-icon{filter:grayscale(0) brightness(1);transform:scale(1.06)}
-  .tile-label{font-family:'Saira',sans-serif;font-weight:700;font-size:clamp(14px,1.8vh,16px);letter-spacing:clamp(3px,.4vw,4px);color:#c8c8c8;text-transform:uppercase;text-align:center;margin-bottom:clamp(7px,1vh,10px);z-index:2;text-shadow:0 2px 3px rgba(0,0,0,.7)}
-  .tile-sub{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#777;letter-spacing:1px;font-weight:500;text-align:center;margin-bottom:clamp(16px,2vh,22px);z-index:2}
-  .tile-badge{font-family:'Saira',sans-serif;font-size:10px;letter-spacing:3px;font-weight:700;color:#e0e0e0;border:1px solid rgba(255,255,255,.1);padding:clamp(5px,.7vh,6px) clamp(14px,1.4vw,18px);border-radius:3px;margin-bottom:clamp(12px,1.6vh,16px);z-index:2;background:rgba(255,255,255,.04)}
+  .tile-label{font-family:'Saira',sans-serif;font-weight:700;font-size:clamp(15px,1.9vh,17px);letter-spacing:clamp(3px,.4vw,4px);color:#c8c8c8;text-transform:uppercase;text-align:center;margin-bottom:clamp(7px,1vh,10px);z-index:2;text-shadow:0 2px 3px rgba(0,0,0,.7)}
+  .tile-sub{font-family:'Chakra Petch',sans-serif;font-size:clamp(10px,1.2vh,11px);color:#777;letter-spacing:1px;font-weight:500;text-align:center;margin-bottom:clamp(16px,2vh,22px);z-index:2}
+  .tile-badge{font-family:'Saira',sans-serif;font-size:clamp(10px,1.2vh,11px);letter-spacing:3px;font-weight:700;color:#e0e0e0;border:1px solid rgba(255,255,255,.1);padding:clamp(5px,.7vh,6px) clamp(14px,1.4vw,18px);border-radius:3px;margin-bottom:clamp(12px,1.6vh,16px);z-index:2;background:rgba(255,255,255,.04)}
   .tile-badge.amber{color:#f0c878;border-color:rgba(255,170,51,.2);background:rgba(255,170,51,.05)}
   .tile-badge.crimson{color:#e8667a;border-color:rgba(204,68,85,.25);background:rgba(204,68,85,.06)}
   .tile-badge.violet{color:#b088ee;border-color:rgba(153,119,221,.25);background:rgba(153,119,221,.06)}
@@ -1062,7 +1062,7 @@
   body.event-locked .intel-submit-btn{pointer-events:none;opacity:.4}
   body.player-preview .landing-banner-upload{display:none!important}
   body.admin-mode .admin-trigger{display:flex}
-  body.admin-mode .console-grid{padding-bottom:clamp(56px,7vh,70px)}
+  body.admin-mode .console-grid{padding-bottom:clamp(44px,5.5vh,56px)}
 
   /* Admin dropdown menu */
   .admin-dropdown{position:fixed;bottom:52px;right:10px;z-index:810;width:220px;border-radius:6px;
@@ -3152,7 +3152,7 @@ function submitLogin(){
       if(result.ok){
         adminSession={username:result.username,role:result.role,adminToken:result.adminToken};
         isAdmin=true;document.body.classList.add('admin-mode');
-        currentVaultTeam={id:'ADMIN',name:'Administrator',type:'admin',members:['Admin'],memberDetails:[]};
+        currentVaultTeam={id:'ADMIN',name:'ADMIN',type:'admin',members:['Admin'],memberDetails:[]};
         updateConsoleForTeam(currentVaultTeam);syncAdminDropdownToggles();saveSession();
         loginSuccess();loadEventData();document.dispatchEvent(new Event('adminReady'));
       }else{
@@ -3615,20 +3615,7 @@ let regSettings={
   vaultUnlimitedAttempts:false
 };
 let currentRegType='team'; // for hybrid mode tracking
-let posts=[
-  {emoji:'🦁',bg:'#1a2a1a',cap:'The symbol of the empire. Power recognized worldwide. This beast answers to one flag.',mediaUrl:'',mediaType:'image'},
-  {emoji:'🦅',bg:'#2a2018',cap:"Wings spread wide. Freedom's guardian watches from above. One nation under its shadow.",mediaUrl:'',mediaType:'image'},
-  {emoji:'🏍️',bg:'#2a1a1a',cap:'Fresh off the lot. The Sizzle Mot 1. Receipt says paid in full.',mediaUrl:'',mediaType:'image'},
-  {emoji:'💼',bg:'#1a1a2a',cap:"48.7 lbs exactly. Not an ounce more, not an ounce less.",mediaUrl:'',mediaType:'image'},
-  {emoji:'📱',bg:'#2a2a1a',cap:"New billboard on 5th. That mascot is everywhere these days.",mediaUrl:'',mediaType:'image'},
-  {emoji:'🐅',bg:'#1a2a2a',cap:'Stripes earned, not given. National pride runs deep.',mediaUrl:'',mediaType:'image'},
-  {emoji:'🧪',bg:'#201a20',cap:'SiLiCoN Valley — where dreams are engineered.',mediaUrl:'',mediaType:'image'},
-  {emoji:'🏝️',bg:'#2a1a2a',cap:"Paradise from above. So many islands, so little time.",mediaUrl:'',mediaType:'image'},
-  {emoji:'🐻',bg:'#1a2020',cap:"The bear endures. Through every winter, still standing.",mediaUrl:'',mediaType:'image'},
-  {emoji:'🎰',bg:'#1e1e1e',cap:"The car wash on 9th. Business is booming. Suspiciously so.",mediaUrl:'',mediaType:'image'},
-  {emoji:'👔',bg:'#1a1a1a',cap:'"Have no FeAr" — printed right there on his shirt.',mediaUrl:'',mediaType:'image'},
-  {emoji:'🐘',bg:'#202520',cap:'Gentle giant. Sacred. Unmistakable.',mediaUrl:'',mediaType:'image'},
-];
+let posts=[];
 let mediaItems=[];
 
 // ══════ RENDER ══════
@@ -4765,15 +4752,15 @@ function _restoreContentCache(){
   let restored=false;
   try{
     const cp=localStorage.getItem('cb_posts');
-    if(cp){const arr=JSON.parse(cp);if(arr.length){posts.length=0;arr.forEach(p=>posts.push(p));restored=true;}}
+    if(cp){const arr=JSON.parse(cp);posts.length=0;arr.forEach(p=>posts.push(p));restored=true;}
   }catch(e){}
   try{
     const cm=localStorage.getItem('cb_media');
-    if(cm){const arr=JSON.parse(cm);if(arr.length){mediaItems.length=0;arr.forEach(m=>mediaItems.push(m));syncVaultCodesFromMedia();restored=true;}}
+    if(cm){const arr=JSON.parse(cm);mediaItems.length=0;arr.forEach(m=>mediaItems.push(m));syncVaultCodesFromMedia();restored=true;}
   }catch(e){}
   try{
     const ci=localStorage.getItem('cb_intel');
-    if(ci){const arr=JSON.parse(ci);if(arr.length){intelFields.length=0;arr.forEach(f=>intelFields.push(f));restored=true;}}
+    if(ci){const arr=JSON.parse(ci);intelFields.length=0;arr.forEach(f=>intelFields.push(f));restored=true;}
   }catch(e){}
   return restored;
 }
@@ -4785,7 +4772,7 @@ async function loadEventData(){
   if(config.ok&&config.config)applyEventConfig(config.config);
 
   const feedResult=await apiCall('getFeedPosts');
-  if(feedResult.ok&&feedResult.posts&&feedResult.posts.length>0){
+  if(feedResult.ok&&feedResult.posts){
     posts.length=0;
     feedResult.posts.forEach(p=>posts.push(p));
     _cacheContent('cb_posts',posts);
@@ -4795,7 +4782,7 @@ async function loadEventData(){
   }
 
   const mediaResult=await apiCall('getMediaItems');
-  if(mediaResult.ok&&mediaResult.items&&mediaResult.items.length>0){
+  if(mediaResult.ok&&mediaResult.items){
     mediaItems.length=0;
     mediaResult.items.forEach(m=>mediaItems.push({
       icon:m.filename||'📄',name:m.title||'',nameFont:m.titleFont||'',
@@ -4813,7 +4800,7 @@ async function loadEventData(){
   }
 
   const intelResult=await apiCall('getIntelFields');
-  if(intelResult.ok&&intelResult.fields&&intelResult.fields.length>0){
+  if(intelResult.ok&&intelResult.fields){
     intelFields.length=0;
     intelResult.fields.forEach(f=>intelFields.push({
       label:f.label||'',emoji:f.emoji||'',type:f.fieldType||'text',
@@ -5122,7 +5109,7 @@ function goToConsole(){
   renderGrid(); // Ensure grid renders even if config hasn't loaded yet
   // If no team loaded (admin direct entry), show admin identity
   if(!currentVaultTeam&&isAdmin){
-    currentVaultTeam={id:'ADMIN',name:'Administrator',type:'admin',members:['Admin'],memberDetails:[]};
+    currentVaultTeam={id:'ADMIN',name:'ADMIN',type:'admin',members:['Admin'],memberDetails:[]};
     updateConsoleForTeam(currentVaultTeam);
   }
 }
