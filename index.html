@@ -280,7 +280,7 @@
   }
 
   /* Panel — cold zinc/steel with brushed texture */
-  .vault-panel{position:relative;width:420px;border-radius:8px;padding:28px 24px 20px;
+  .vault-panel{position:relative;width:420px;max-width:100%;border-radius:8px;padding:28px 24px 20px;
     background:
       repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.007) 1px,rgba(255,255,255,.007) 2px,transparent 2px,transparent 4px),
       repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(255,255,255,.004) 60px,rgba(255,255,255,.004) 61px),
@@ -882,6 +882,53 @@
   .intel-dual-wrap{width:240px;flex:none;display:flex;gap:8px;align-items:center}
   .intel-dual-wrap input{flex:1;min-width:0;width:auto}
   .intel-dual-sep{color:rgba(0,255,136,.25);font-size:10px;letter-spacing:1px;flex-shrink:0}
+
+  /* ══════ INTEL CRT THEME ══════ */
+  .intel-theme-crt .intel-scroll-area{position:relative;border-radius:6px;
+    background:linear-gradient(180deg,#020604 0%,#030906 40%,#020503 100%);
+    border:1px solid #1a2a1e;
+    box-shadow:inset 0 0 40px rgba(0,0,0,.8),inset 0 0 80px rgba(0,20,8,.3),0 1px 0 rgba(255,255,255,.03),0 8px 32px rgba(0,0,0,.4);
+  }
+  /* CRT scanlines */
+  .intel-theme-crt .intel-scroll-area::after{
+    content:'';position:absolute;inset:0;border-radius:6px;
+    background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.08) 1px,rgba(0,0,0,.08) 2px);
+    pointer-events:none;z-index:3;
+  }
+  /* CRT header bar inside scroll area */
+  .intel-crt-header{display:none;font-family:'Saira',sans-serif;font-size:11px;letter-spacing:4px;color:var(--green);font-weight:700;text-transform:uppercase;padding:16px 20px 10px;border-bottom:1px solid rgba(0,255,136,.12);text-shadow:0 0 10px rgba(0,255,136,.2);align-items:center;gap:10px}
+  .intel-theme-crt .intel-crt-header{display:flex}
+  .intel-crt-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(0,255,136,.5);animation:intelCrtPulse 2s ease-in-out infinite}
+  @keyframes intelCrtPulse{0%,100%{opacity:1}50%{opacity:.5}}
+  /* CRT vignette */
+  .intel-theme-crt .intel-scroll-area::before{
+    content:'';position:absolute;inset:0;border-radius:6px;
+    background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.4) 100%);
+    pointer-events:none;z-index:2;
+  }
+  /* Phosphor glow labels with subtle flicker */
+  .intel-theme-crt .intel-exp-label{
+    color:#00ff88;
+    text-shadow:0 0 12px rgba(0,255,136,.35),0 0 24px rgba(0,255,136,.15);
+    animation:phosphorFlicker 4s ease-in-out infinite;
+  }
+  .intel-theme-crt .intel-exp-row:nth-child(2) .intel-exp-label{animation-delay:.7s}
+  .intel-theme-crt .intel-exp-row:nth-child(3) .intel-exp-label{animation-delay:1.4s}
+  .intel-theme-crt .intel-exp-row:nth-child(4) .intel-exp-label{animation-delay:2.1s}
+  .intel-theme-crt .intel-exp-row:nth-child(5) .intel-exp-label{animation-delay:2.8s}
+  .intel-theme-crt .intel-exp-row:nth-child(6) .intel-exp-label{animation-delay:3.5s}
+  .intel-theme-crt .intel-exp-row:nth-child(7) .intel-exp-label{animation-delay:.3s}
+  .intel-theme-crt .intel-exp-row:nth-child(8) .intel-exp-label{animation-delay:1.0s}
+  .intel-theme-crt .intel-exp-row:nth-child(9) .intel-exp-label{animation-delay:1.7s}
+  .intel-theme-crt .intel-exp-row:nth-child(10) .intel-exp-label{animation-delay:2.4s}
+  @keyframes phosphorFlicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.85}94%{opacity:1}}
+  /* Soften row borders inside CRT */
+  .intel-theme-crt .intel-exp-row{border-color:rgba(0,255,136,.06);background:transparent}
+  .intel-theme-crt .intel-exp-row:hover{border-color:rgba(0,255,136,.2);background:rgba(0,255,136,.015)}
+  /* Phosphor glow on numbers */
+  .intel-theme-crt .intel-exp-num{text-shadow:0 0 6px rgba(0,255,136,.3)}
+  /* Transmit button enhanced glow inside CRT */
+  .intel-theme-crt .intel-submit-btn{position:relative;z-index:4}
   /* Transmit button — Neon Grid style */
   .intel-submit-wrap{margin-top:20px;display:flex;justify-content:center}
   .intel-submit-btn{padding:12px 44px;cursor:pointer;transition:all .3s;border-radius:2px;
@@ -1806,6 +1853,15 @@
     .briefing-container{width:96%}
     .briefing-title{font-size:13px;letter-spacing:2px}
     .briefing-continue{padding:8px 24px;font-size:10px}
+    /* Vault mobile — fit keypad to screen */
+    .vault-panel{width:100%;padding:20px 14px 16px}
+    .vault-puzzle-layout{max-width:100%;padding:0 4px}
+    .kb-key{height:36px}
+    .kb-key span{font-size:11px}
+    .kb-key.fn span{font-size:9px}
+    .v-display{min-height:68px;padding:8px 10px;margin-bottom:14px}
+    #vDisp{font-size:16px;letter-spacing:4px}
+    .vault-unlock-section{width:100%;max-width:100%}
   }
 
   /* Touch devices — always show drag handles in admin mode */
@@ -2493,6 +2549,16 @@
         <button class="ap-btn ap-btn-cyan" onclick="openThemePreview()" style="font-size:10px;padding:8px 20px">👁 Preview & Select Theme</button>
       </div>
     </div>
+    <div class="ap-section"><h4>🔍 Intel Display <span class="save-blip" id="blipIntelTheme">✓ Saved</span></h4>
+      <p>Visual style for the Intel Submissions screen. Standard is clean and minimal. CRT adds scanlines, phosphor glow, and vignette for an immersive terminal feel.</p>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:8px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--green);letter-spacing:1px" id="currentIntelThemeLabel">Current: Standard</div>
+        <select id="intelThemeSelect" onchange="setIntelTheme(this.value)" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;cursor:pointer">
+          <option value="standard">Standard</option>
+          <option value="crt">CRT Terminal</option>
+        </select>
+      </div>
+    </div>
     <div class="ap-section"><h4>🖋 Typography <span class="save-blip" id="blipTypography">✓ Saved</span></h4>
       <p>Global font overrides by content zone. Setting a font here overrides the theme default for that zone across the whole app. Leave as Default to inherit the theme font.</p>
       <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:14px">
@@ -2750,7 +2816,7 @@
 <div id="panelOverlay">
   <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter"></span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
   <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
-  <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area" id="intelForm"></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
+  <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area"><div class="intel-crt-header"><div class="intel-crt-dot"></div> INTEL SUBMISSIONS</div><div id="intelForm"></div></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
   <div class="expanded-panel" id="expVault">
     <div class="exp-header"><span class="panel-icon">🔐</span><span class="exp-title">The Vault</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div>
     <div class="exp-body">
@@ -3381,7 +3447,7 @@ function submitLogin(){
     return;
   }
   const idVal=document.getElementById('loginId').value.trim();
-  if(!idVal){setLoginStatus('ENTER TEAM ID','denied');setTimeout(()=>setLoginStatus(''),2000);return}
+  if(!idVal){setLoginStatus(getLoginPrompt(),'denied');setTimeout(()=>setLoginStatus(getLoginPrompt(),''),2000);return}
   const pwZone=document.getElementById('loginCrtPwZone');
   const btn=document.getElementById('loginSubmitBtn');
   setLoginLed('active');
@@ -3445,12 +3511,18 @@ function loginSuccess(){
   btn.style.opacity='.4';btn.style.pointerEvents='none';
   setTimeout(()=>openVault(),800);
 }
+function getLoginPrompt(){
+  const mode=regSettings.participantMode||'team';
+  return mode==='individual'?'ENTER YOUR PLAYER ID':mode==='hybrid'?'ENTER YOUR ID':'ENTER YOUR TEAM ID';
+}
 function resetLoginScreen(){
   document.getElementById('loginId').value='';document.getElementById('loginPw').value='';
   document.getElementById('loginCrtPwZone').style.display='none';
   const btn=document.getElementById('loginSubmitBtn');
   btn.style.opacity='';btn.style.pointerEvents='';
-  setLoginLed('');setLoginStatus('');
+  setLoginLed('');
+  // Dynamic prompt based on participant mode
+  setLoginStatus(getLoginPrompt(),'');
 }
 // Enter key support on login fields
 document.getElementById('loginId')?.addEventListener('keydown',e=>{if(e.key==='Enter')submitLogin()});
@@ -3462,7 +3534,12 @@ document.getElementById('loginId')?.addEventListener('input',function(){
     pwZone.style.display='none';
     setLoginStatus('');
   }
-  setLoginLed(this.value.trim()?'active':'');
+  if(this.value.trim()){
+    setLoginLed('active');setLoginStatus('');
+  }else{
+    setLoginLed('');
+    setLoginStatus(getLoginPrompt(),'');
+  }
 });
 document.getElementById('loginPw')?.addEventListener('input',function(){
   setLoginLed(this.value.trim()||document.getElementById('loginId').value.trim()?'active':'');
@@ -5157,7 +5234,11 @@ function applyEventConfig(cfg){
   if(cfg.operationName){operationName=cfg.operationName;const ct=document.getElementById('consoleTitle');if(ct)ct.textContent='◈ '+operationName;document.title=operationName+' — Console';try{localStorage.setItem('cb_opName',cfg.operationName)}catch(e){}}
   if(cfg.operationFont){operationFont=cfg.operationFont;applyOperationFont(operationFont);try{localStorage.setItem('cb_opFont',cfg.operationFont)}catch(e){}}
   if(cfg.gridTheme){_currentGridTheme=cfg.gridTheme;applyGridTheme(cfg.gridTheme);updateThemeLabel();try{localStorage.setItem('cb_gridTheme',cfg.gridTheme)}catch(e){}}
-  if(cfg.participantMode){regSettings.participantMode=cfg.participantMode;const sel=document.getElementById('apParticipantMode');if(sel)sel.value=cfg.participantMode}
+  if(cfg.intelTheme){applyIntelTheme(cfg.intelTheme)}
+  if(cfg.participantMode){regSettings.participantMode=cfg.participantMode;const sel=document.getElementById('apParticipantMode');if(sel)sel.value=cfg.participantMode;
+    // Refresh login prompt if on login screen and nothing typed yet
+    const lid=document.getElementById('loginId');if(lid&&!lid.value.trim()){setLoginStatus(getLoginPrompt(),'')}
+  }
   if(cfg.leaderboardStyle){regSettings.leaderboardStyle=cfg.leaderboardStyle;const sel=document.getElementById('apLeaderboardStyle');if(sel)sel.value=cfg.leaderboardStyle}
   if(cfg.landingTitle){regSettings.landingTitle=cfg.landingTitle;const el=document.getElementById('landingTitleEl');if(el)el.textContent=cfg.landingTitle;const inp=document.getElementById('apLandingTitle');if(inp)inp.value=cfg.landingTitle}
   if(cfg.landingSubtitle){regSettings.landingSubtitle=cfg.landingSubtitle;const el=document.getElementById('landingSubEl');if(el)el.textContent=cfg.landingSubtitle;const inp=document.getElementById('apLandingSubtitle');if(inp)inp.value=cfg.landingSubtitle}
@@ -9073,6 +9154,30 @@ function applyGridTheme(id){
   if(id&&id!=='crt'){
     grid.classList.add('grid-theme-'+id);
   }
+}
+
+// ══════ INTEL DISPLAY THEME ══════
+let _currentIntelTheme='standard';
+function setIntelTheme(id){
+  _currentIntelTheme=id;
+  applyIntelTheme(id);
+  // Save to backend
+  apiCall('saveEventConfig',{config:{intelTheme:id}});
+  // Flash save blip
+  const blip=document.getElementById('blipIntelTheme');
+  if(blip){blip.classList.add('show');setTimeout(()=>blip.classList.remove('show'),1500)}
+}
+function applyIntelTheme(id){
+  _currentIntelTheme=id||'standard';
+  const panel=document.getElementById('expIntel');
+  if(!panel)return;
+  panel.classList.remove('intel-theme-crt');
+  if(id==='crt')panel.classList.add('intel-theme-crt');
+  // Update appearance panel UI
+  const sel=document.getElementById('intelThemeSelect');
+  if(sel)sel.value=_currentIntelTheme;
+  const lbl=document.getElementById('currentIntelThemeLabel');
+  if(lbl)lbl.textContent='Current: '+(_currentIntelTheme==='crt'?'CRT Terminal':'Standard');
 }
 
 // ═══════════════════════════════════════════════════════════════
