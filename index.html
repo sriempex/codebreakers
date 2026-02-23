@@ -6954,7 +6954,8 @@ function saveOperationName(){
 // ── Grid Tiles ──
 function vaultBadgeText(){
   const u=vaultCodes.filter(c=>c.unlocked).length,t=vaultCodes.length;
-  return u+' OF '+t+' ITEMS UNLOCKED';
+  if(t===0)return 'EMPTY';
+  return u+' OF '+t+' UNLOCKED';
 }
 function updateVaultBadgeColor(){
   const badge=document.getElementById('vaultBadge');
@@ -6968,6 +6969,16 @@ function updateVaultBadgeColor(){
   else if(pct>=0.5){badge.style.color='#aadd66';badge.style.textShadow=''}
   else if(pct>0){badge.style.color='#ccbb44';badge.style.textShadow=''}
   else{badge.style.color='';badge.style.textShadow=''}
+}
+function tileBadgeText(id,isAdmin){
+  if(id==='feed')return posts.length?posts.length+' ITEMS':'NO INTEL';
+  if(id==='media'){
+    const count=isAdmin?mediaItems.length:mediaItems.filter(m=>!m.vaultLocked||vaultCodes.find(c=>c.linkedMediaIdx===mediaItems.indexOf(m)&&c.unlocked)).length;
+    return count?count+' ITEMS':'NO EVIDENCE';
+  }
+  if(id==='vault')return vaultBadgeText();
+  // intel
+  return '0 / '+intelFields.length+' ENTERED';
 }
 function renderGrid(){
   updateTileStates(); // Always recalculate orb states before rendering
@@ -6986,7 +6997,7 @@ function renderGrid(){
         <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:48px;height:48px;object-fit:contain">`:t.icon}</div>
         <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
         <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
-        <div class="tile-badge${badgeCls}" id="${t.badgeId}">${t.id==='feed'?posts.length+' ITEMS':t.id==='media'?(isAdmin?mediaItems.length:mediaItems.filter(m=>!m.vaultLocked||vaultCodes.find(c=>c.linkedMediaIdx===mediaItems.indexOf(m)&&c.unlocked)).length)+' ITEMS':t.id==='vault'?vaultBadgeText():'0 / '+intelFields.length+' ENTERED'}</div>
+        <div class="tile-badge${badgeCls}" id="${t.badgeId}">${tileBadgeText(t.id,isA)}</div>
         <div class="tile-status" title="${t.dotClass==='active'?'Activity detected recently':t.dotClass==='idle'?'No recent activity':'No activity recorded yet'}"><div class="tile-dot ${t.dotClass}"></div><span class="tile-status-label ${t.dotClass}">${t.status}</span></div>
       </div>
     </div>`;
