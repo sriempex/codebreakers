@@ -8295,7 +8295,24 @@ function showTutorialStep(){
     el.scrollIntoView({behavior:'smooth',block:'nearest'});
     // Wait for scroll to settle then position
     setTimeout(()=>{
-      const rect=el.getBoundingClientRect();
+      let rect=el.getBoundingClientRect();
+      // For flex/grid containers with centered content, measure tight child bounds
+      // to avoid highlighting empty buffer space
+      const cs=getComputedStyle(el);
+      const isCentered=cs.alignContent==='center'||cs.justifyContent==='center';
+      const isFlexGrid=cs.display.includes('flex')||cs.display.includes('grid');
+      if(isFlexGrid&&isCentered&&el.children.length>0){
+        let cTop=Infinity,cLeft=Infinity,cBottom=-Infinity,cRight=-Infinity;
+        for(const child of el.children){
+          const cr=child.getBoundingClientRect();
+          if(cr.width===0||cr.height===0)continue;
+          cTop=Math.min(cTop,cr.top);cLeft=Math.min(cLeft,cr.left);
+          cBottom=Math.max(cBottom,cr.bottom);cRight=Math.max(cRight,cr.right);
+        }
+        if(cTop!==Infinity){
+          rect={top:cTop,left:cLeft,bottom:cBottom,right:cRight,width:cRight-cLeft,height:cBottom-cTop};
+        }
+      }
       const pad=8;
       // Clamp spotlight within viewport
       const top=Math.max(4,rect.top-pad);
@@ -8311,7 +8328,11 @@ function showTutorialStep(){
       // Position tooltip below or above element
       const tipH=180;
       const tipW=360;
-      if(top+h+tipH+20<window.innerHeight){
+      // For large elements (>60% of viewport), position tooltip inside at top-center
+      if(h>window.innerHeight*0.6){
+        tooltip.style.top=(top+20)+'px';
+        tooltip.style.bottom='auto';
+      }else if(top+h+tipH+20<window.innerHeight){
         tooltip.style.top=(top+h+12)+'px';
         tooltip.style.bottom='auto';
       }else if(top-tipH-12>0){
