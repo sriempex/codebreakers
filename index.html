@@ -5631,7 +5631,7 @@ function changeAdminPw(){
   const conf=document.getElementById('apConfPw').value;
   const msg=document.getElementById('apPwMsg');
   if(!cur){msg.className='ap-msg err';msg.textContent='✗ Enter current password';return}
-  if(nw.length<4){msg.className='ap-msg err';msg.textContent='✗ New password must be at least 4 characters';return}
+  if(nw.length<8){msg.className='ap-msg err';msg.textContent='✗ New password must be at least 8 characters';return}
   if(nw!==conf){msg.className='ap-msg err';msg.textContent='✗ Passwords do not match';return}
   msg.className='ap-msg';msg.textContent='Updating...';
   apiCall('changePassword',{username:adminSession.username,currentPassword:cur,newPassword:nw}).then(r=>{
