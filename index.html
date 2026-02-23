@@ -8116,10 +8116,18 @@ function resetTutorialForAll(){
   });
 }
 
+let _tutFromConfig=false;
 function previewTutorial(){
   closeTutorialConfig();
+  _tutFromConfig=true;
   _tutIsPreview=true;
-  startTutorial();
+  if(isAdmin&&!document.body.classList.contains('player-preview')){
+    _tutWasAdmin=true;
+    togglePlayerPreview();
+    setTimeout(()=>startTutorial(),300);
+  }else{
+    startTutorial();
+  }
 }
 
 // Tutorial spotlight engine
@@ -8226,7 +8234,10 @@ function endTutorial(){
     _tutWasAdmin=false;
     togglePlayerPreview();
   }
+  const wasFromConfig=_tutFromConfig;
   _tutIsPreview=false;
+  _tutFromConfig=false;
+  if(wasFromConfig){setTimeout(()=>openTutorialConfig(),200)}
 }
 
 function shouldShowTutorial(){
