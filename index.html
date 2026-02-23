@@ -1866,8 +1866,8 @@
   .tut-step-card .tut-drag:active{cursor:grabbing}
   .tut-step-card .tut-icon{font-size:16px;flex-shrink:0}
   .tut-step-card .tut-text{flex:1}
-  .tut-step-card .tut-text input{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:#ddd;font-family:'Chakra Petch',sans-serif;font-size:11px;padding:4px 0;outline:none;letter-spacing:.3px}
-  .tut-step-card .tut-text input:focus{border-color:rgba(0,212,255,.3)}
+  .tut-step-card .tut-text textarea{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:#ddd;font-family:'Chakra Petch',sans-serif;font-size:11px;padding:4px 0;outline:none;letter-spacing:.3px;resize:none;overflow:hidden;height:20px;transition:height .2s ease,border-color .2s,background .2s}
+  .tut-step-card .tut-text textarea:focus{border-color:rgba(0,212,255,.3);height:72px;background:rgba(0,212,255,.03);border-radius:4px;padding:8px;border:1px solid rgba(0,212,255,.2)}
   .tut-step-toggle{width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);cursor:pointer;position:relative;transition:all .15s;flex-shrink:0}
   .tut-step-toggle.on{background:rgba(0,255,136,.15);border-color:rgba(0,255,136,.3)}
   .tut-step-toggle::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#555;top:2px;left:2px;transition:all .15s}
@@ -8049,12 +8049,14 @@ function closeTutorialConfig(){const el=document.getElementById('tutorialConfigP
 
 function renderTutorialStepList(){
   const list=document.getElementById('tutStepList');
-  list.innerHTML=tutorialSteps.map((s,i)=>`<div class="tut-step-card" data-tut-idx="${i}">
+  list.innerHTML=tutorialSteps.map((s,i)=>{
+    const escaped=s.body.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return `<div class="tut-step-card" data-tut-idx="${i}">
     <div class="tut-drag" onpointerdown="startTutDrag(event,${i})">⋮⋮</div>
     <span class="tut-icon">${s.icon}</span>
-    <div class="tut-text"><input value="${s.body.replace(/"/g,'&quot;')}" onchange="updateTutStep(${i},this.value)"></div>
+    <div class="tut-text"><textarea onchange="updateTutStep(${i},this.value)" onblur="updateTutStep(${i},this.value)">${escaped}</textarea></div>
     <div class="tut-step-toggle${s.enabled?' on':''}" onclick="toggleTutStep(${i})"></div>
-  </div>`).join('');
+  </div>`}).join('');
 }
 
 function toggleTutorialGlobal(){tutorialEnabled=!tutorialEnabled;document.getElementById('tutGlobalToggle').classList.toggle('on',tutorialEnabled);saveTutorialConfig()}
