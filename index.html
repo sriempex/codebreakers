@@ -5563,7 +5563,7 @@ function closeEventControl(){
 }
 function closeAdminPanel(){closeEventControl()} // backward compat alias
 
-// ══════ REORGANIZED ADMIN PANEL FUNCTIONS (BUILD 20260222-1600) ══════
+// ══════ REORGANIZED ADMIN PANEL FUNCTIONS (BUILD 20260223-0400) ══════
 let _previewReturnPanel=null;
 
 function openDashboard(){closeAllAdminPanels();_instantShow(document.getElementById('dashboardPanel'));showAdminTabs('dashboardPanel');renderTeamMonitor();startTeamMonitor()}
@@ -8095,7 +8095,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-1600';
+const _BUILD_ID = '20260223-0400';
 // Security: HTML sanitizer to prevent XSS
 function sanitizeHTML(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')}
 // Security: Rate limiter for API calls
