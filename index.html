@@ -589,6 +589,9 @@
   .tile-status-label.silent{color:#3a3d44}
   /* Admin edit btn repositioned for monitor */
   .crt-monitor .admin-edit-btn{top:4px;right:4px;z-index:10}
+  /* Force edit buttons visible above ALL theme effects in admin mode */
+  body.admin-mode:not(.player-preview) .crt-monitor{clip-path:none!important;overflow:visible!important}
+  body.admin-mode:not(.player-preview) .crt-monitor .admin-edit-btn{z-index:20}
 
   /* ══════ CONSOLE GRID THEMES ══════ */
   /* Theme 1 (crt) = default styles above — no override needed */
@@ -2448,7 +2451,7 @@
     <div class="topbar-identity" onclick="toggleTeamCard(event)">
       <span class="console-team">—</span>
       <span class="team-chevron">▾</span>
-      <span class="admin-topbar-label">Administrator</span>
+      <span class="admin-topbar-label">ADMIN</span>
       <span class="team-notif-badge" id="teamNotifBadge"></span>
       <div class="team-card" id="teamCard">
         <div class="team-card-header">
@@ -3152,7 +3155,7 @@ function submitLogin(){
       if(result.ok){
         adminSession={username:result.username,role:result.role,adminToken:result.adminToken};
         isAdmin=true;document.body.classList.add('admin-mode');
-        currentVaultTeam={id:'ADMIN',name:'ADMIN',type:'admin',members:['Admin'],memberDetails:[]};
+        currentVaultTeam={id:'ADMIN',name:'ADMIN',displayName:'ADMINISTRATOR',type:'admin',members:['Admin'],memberDetails:[]};
         updateConsoleForTeam(currentVaultTeam);syncAdminDropdownToggles();saveSession();
         loginSuccess();loadEventData();document.dispatchEvent(new Event('adminReady'));
       }else{
@@ -3233,7 +3236,7 @@ function updateConsoleForTeam(team){
   }
   const cardName=document.querySelector('.team-card-name');
   const cardId=document.querySelector('.team-card-id');
-  if(cardName)cardName.textContent=team.name;
+  if(cardName)cardName.textContent=team.displayName||team.name;
   if(cardId)cardId.textContent='ID: '+team.id;
   const membersHtml=team.members.map((m,i)=>`<div class="team-card-member"><div class="team-card-avatar">${i+1}</div><span class="team-card-mname">${m}</span></div>`).join('');
   const memberSection=document.querySelector('.team-card-section');
@@ -4764,7 +4767,6 @@ function _cacheContent(key,data){
 }
 function _restoreContentCache(){
   let restored=false;
-  // If no content version stamp exists, this cache is from a pre-versioned build — nuke it
   try{
     if(!localStorage.getItem('cb_contentVersion')){
       localStorage.removeItem('cb_posts');
@@ -4862,19 +4864,16 @@ async function loadEventData(){
 }
 
 function applyEventConfig(cfg){
-  // Content version check — if server version differs from cached, clear stale content
-  // Also: if server has no contentVersion yet, nuke any pre-existing cache (legacy data)
+  // Content version check — nuke stale cache if version mismatch or missing
   try{
     const cachedVer=localStorage.getItem('cb_contentVersion')||'';
     const serverVer=cfg.contentVersion?String(cfg.contentVersion):'';
     if(!serverVer){
-      // Server has no version stamp yet — wipe any legacy cache
       localStorage.removeItem('cb_posts');
       localStorage.removeItem('cb_media');
       localStorage.removeItem('cb_intel');
       localStorage.removeItem('cb_contentVersion');
     }else if(cachedVer!==serverVer){
-      // Version mismatch — purge content cache (NOT game state)
       localStorage.removeItem('cb_posts');
       localStorage.removeItem('cb_media');
       localStorage.removeItem('cb_intel');
@@ -5152,7 +5151,7 @@ function goToConsole(){
   renderGrid(); // Ensure grid renders even if config hasn't loaded yet
   // If no team loaded (admin direct entry), show admin identity
   if(!currentVaultTeam&&isAdmin){
-    currentVaultTeam={id:'ADMIN',name:'ADMIN',type:'admin',members:['Admin'],memberDetails:[]};
+    currentVaultTeam={id:'ADMIN',name:'ADMIN',displayName:'ADMINISTRATOR',type:'admin',members:['Admin'],memberDetails:[]};
     updateConsoleForTeam(currentVaultTeam);
   }
 }
@@ -5576,7 +5575,7 @@ function closeEventControl(){
 }
 function closeAdminPanel(){closeEventControl()} // backward compat alias
 
-// ══════ REORGANIZED ADMIN PANEL FUNCTIONS (BUILD 20260223-0500) ══════
+// ══════ REORGANIZED ADMIN PANEL FUNCTIONS (BUILD 20260223-0600) ══════
 let _previewReturnPanel=null;
 
 function openDashboard(){closeAllAdminPanels();_instantShow(document.getElementById('dashboardPanel'));showAdminTabs('dashboardPanel');renderTeamMonitor();startTeamMonitor()}
@@ -8108,7 +8107,7 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260223-0500';
+const _BUILD_ID = '20260223-0600';
 // Security: HTML sanitizer to prevent XSS
 function sanitizeHTML(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')}
 // Security: Rate limiter for API calls
