@@ -4728,6 +4728,17 @@ let manualTeams=[];
 //     .setMimeType(ContentService.MimeType.JSON);
 //
 // ══════ END checkTeamName ══════
+// Security: Rate limiter for API calls (must be before apiCall)
+const _apiRateLimit={lastCall:0,minInterval:200,burst:0,maxBurst:20};
+function _checkRateLimit(){
+  const now=Date.now();
+  if(now-_apiRateLimit.lastCall<_apiRateLimit.minInterval){
+    _apiRateLimit.burst++;
+    if(_apiRateLimit.burst>_apiRateLimit.maxBurst){console.warn('API rate limit hit');return false}
+  }else{_apiRateLimit.burst=Math.max(0,_apiRateLimit.burst-1)}
+  _apiRateLimit.lastCall=now;
+  return true;
+}
 async function apiCall(action,data={}){
   if(!_checkRateLimit()&&!['loginTeam','login','getEventConfig'].includes(action)){
     console.warn('Rate limited:',action);
@@ -8146,17 +8157,6 @@ restoreSession();
 const _BUILD_ID = '20260223-0600';
 // Security: HTML sanitizer to prevent XSS
 function sanitizeHTML(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')}
-// Security: Rate limiter for API calls
-const _apiRateLimit={lastCall:0,minInterval:200,burst:0,maxBurst:20};
-function _checkRateLimit(){
-  const now=Date.now();
-  if(now-_apiRateLimit.lastCall<_apiRateLimit.minInterval){
-    _apiRateLimit.burst++;
-    if(_apiRateLimit.burst>_apiRateLimit.maxBurst){console.warn('API rate limit hit');return false}
-  }else{_apiRateLimit.burst=Math.max(0,_apiRateLimit.burst-1)}
-  _apiRateLimit.lastCall=now;
-  return true;
-}
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
