@@ -4902,11 +4902,12 @@ function applyEventConfig(cfg){
       if(cachedVer && parseInt(cachedVer) > parseInt(serverVer)){
         console.log('[CACHE] Local is NEWER than server — keeping cache (save in flight)');
       }else{
-        console.log('[CACHE] Server is newer or local is empty — NUKING cache');
+        console.log('[CACHE] Server is newer — clearing localStorage cache (fresh data incoming)');
         localStorage.removeItem('cb_posts');
         localStorage.removeItem('cb_media');
         localStorage.removeItem('cb_intel');
-        posts.length=0;mediaItems.length=0;intelFields.length=0;
+        // Do NOT clear the in-memory arrays here — loadEventData will overwrite them
+        // momentarily. Clearing them causes a flash of "0 ITEMS" on the grid.
         localStorage.setItem('cb_contentVersion',serverVer);
       }
     }else{
