@@ -5346,20 +5346,34 @@ function saveEventConfigToBackend(){
 }
 
 let _saveFeedTimer=null;
+// ── Centralized content version bump ──
+// All save functions share a single version stamp to prevent mismatches
+let _pendingContentVersion = null;
+let _contentVersionTimer = null;
+function bumpContentVersion() {
+  if (!_pendingContentVersion) _pendingContentVersion = Date.now().toString();
+  clearTimeout(_contentVersionTimer);
+  _contentVersionTimer = setTimeout(() => {
+    const ver = _pendingContentVersion;
+    _pendingContentVersion = null;
+    apiCall('saveEventConfig', { config: { contentVersion: ver } });
+    try { localStorage.setItem('cb_contentVersion', ver); } catch(e) {}
+  }, 2000);
+  return _pendingContentVersion;
+}
+
 function saveFeedPostsToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveFeedTimer);
   _saveFeedTimer=setTimeout(()=>{
-    const ver=Date.now().toString();
+    bumpContentVersion();
     apiCall('saveFeedPosts',{posts:posts.map(p=>{
       const url=(p.mediaUrl&&(p.mediaUrl.startsWith('data:')||p.mediaUrl.startsWith('blob:')))?'':p.mediaUrl||'';
       return{emoji:p.emoji,bg:p.bg,cap:p.cap,capFont:p.capFont,
         mediaUrl:url,mediaType:p.mediaType,
         focalX:p.focalX||50,focalY:p.focalY||50};
     })}).then(r=>{if(!r.ok)console.warn('Feed save failed:',r.error)});
-    apiCall('saveEventConfig',{config:{contentVersion:ver}});
     _cacheContent('cb_posts',posts);
-    try{localStorage.setItem('cb_contentVersion',ver)}catch(e){}
   },1500);
 }
 
@@ -5368,7 +5382,7 @@ function saveMediaItemsToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveMediaTimer);
   _saveMediaTimer=setTimeout(()=>{
-    const ver=Date.now().toString();
+    bumpContentVersion();
     apiCall('saveMediaItems',{items:mediaItems.map(m=>{
       const url=(m.fileUrl&&(m.fileUrl.startsWith('data:')||m.fileUrl.startsWith('blob:')))?'':m.fileUrl||'';
       return{type:m.type||'',title:m.name||'',titleFont:m.nameFont||'',
@@ -5380,9 +5394,7 @@ function saveMediaItemsToBackend(){
         vaultCode:m.vaultCode||'',
         vaultCodename:m.vaultCodename||''};
     })}).then(r=>{if(!r.ok)console.warn('Media save failed:',r.error)});
-    apiCall('saveEventConfig',{config:{contentVersion:ver}});
     _cacheContent('cb_media',mediaItems);
-    try{localStorage.setItem('cb_contentVersion',ver)}catch(e){}
   },1500);
 }
 
@@ -5391,14 +5403,12 @@ function saveIntelFieldsToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveIntelTimer);
   _saveIntelTimer=setTimeout(()=>{
-    const ver=Date.now().toString();
+    bumpContentVersion();
     apiCall('saveIntelFields',{fields:intelFields.map(f=>({
       label:f.label||'',emoji:f.emoji||'',fieldType:f.type||'text',
       font:f.font||'',inputFont:f.inputFont||'',answer:f.answer||{}
     }))}).then(r=>{});
-    apiCall('saveEventConfig',{config:{contentVersion:ver}});
     _cacheContent('cb_intel',intelFields);
-    try{localStorage.setItem('cb_contentVersion',ver)}catch(e){}
   },1500);
 }
 
