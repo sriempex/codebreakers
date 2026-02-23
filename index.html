@@ -2505,7 +2505,7 @@
 
 <!-- EXPANDED -->
 <div id="panelOverlay">
-  <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter">1 / 12</span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
+  <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter"></span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
   <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
   <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area" id="intelForm"></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
   <div class="expanded-panel" id="expVault">
@@ -3762,7 +3762,13 @@ function setFeedView(mode){
 let currentPost=0;
 function openPost(i){currentPost=i;if(window._histPush)window._histPush('feedFocus');setFeedView('single')}
 function renderSinglePost(){
-  if(!posts.length)return;
+  if(!posts.length){
+    const img=document.getElementById('singleImg');
+    if(img){img.style.background='';img.textContent='';img.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:Chakra Petch,sans-serif;font-size:11px;color:#333;letter-spacing:1px">No intelligence available</div>'}
+    document.getElementById('singleCounter').textContent='0 / 0';
+    const capEl=document.getElementById('singleCap');if(capEl)capEl.textContent='';
+    return;
+  }
   if(currentPost>=posts.length)currentPost=0;
   const p=posts[currentPost],img=document.getElementById('singleImg');
   const resolved=(p.mediaUrl&&(p.mediaType==='video'||isVideoUrl(p.mediaUrl)))?resolveVideoEmbed(p.mediaUrl):null;
@@ -4847,6 +4853,21 @@ async function loadEventData(){
 }
 
 function applyEventConfig(cfg){
+  // Content version check — if server version differs from cached, clear stale content
+  if(cfg.contentVersion){
+    try{
+      const cachedVer=localStorage.getItem('cb_contentVersion')||'';
+      if(cachedVer&&cachedVer!==String(cfg.contentVersion)){
+        // Server content changed — purge content cache (NOT game state)
+        localStorage.removeItem('cb_posts');
+        localStorage.removeItem('cb_media');
+        localStorage.removeItem('cb_intel');
+        // Reset in-memory arrays to empty so stale cache doesn't persist
+        posts.length=0;mediaItems.length=0;intelFields.length=0;
+      }
+      localStorage.setItem('cb_contentVersion',String(cfg.contentVersion));
+    }catch(e){}
+  }
   if(cfg.operationName){operationName=cfg.operationName;const ct=document.getElementById('consoleTitle');if(ct)ct.textContent='◈ '+operationName;document.title=operationName+' — Console'}
   if(cfg.operationFont){operationFont=cfg.operationFont;applyOperationFont(operationFont)}
   if(cfg.gridTheme){_currentGridTheme=cfg.gridTheme;applyGridTheme(cfg.gridTheme);updateThemeLabel()}
@@ -5313,14 +5334,17 @@ function saveFeedPostsToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveFeedTimer);
   _saveFeedTimer=setTimeout(()=>{
+    const ver=Date.now().toString();
     apiCall('saveFeedPosts',{posts:posts.map(p=>{
-      // Only save real URLs, skip base64/blob (shouldn't happen with Drive pipeline but safety check)
       const url=(p.mediaUrl&&(p.mediaUrl.startsWith('data:')||p.mediaUrl.startsWith('blob:')))?'':p.mediaUrl||'';
       return{emoji:p.emoji,bg:p.bg,cap:p.cap,capFont:p.capFont,
         mediaUrl:url,mediaType:p.mediaType,
         focalX:p.focalX||50,focalY:p.focalY||50};
     })}).then(r=>{if(!r.ok)console.warn('Feed save failed:',r.error)});
+    apiCall('saveEventConfig',{config:{contentVersion:ver}});
     _cacheContent('cb_posts',posts);
+    try{localStorage.setItem('cb_contentVersion',ver)}catch(e){}
+  },1500);
   },1500);
 }
 
@@ -5329,6 +5353,7 @@ function saveMediaItemsToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveMediaTimer);
   _saveMediaTimer=setTimeout(()=>{
+    const ver=Date.now().toString();
     apiCall('saveMediaItems',{items:mediaItems.map(m=>{
       const url=(m.fileUrl&&(m.fileUrl.startsWith('data:')||m.fileUrl.startsWith('blob:')))?'':m.fileUrl||'';
       return{type:m.type||'',title:m.name||'',titleFont:m.nameFont||'',
@@ -5340,7 +5365,9 @@ function saveMediaItemsToBackend(){
         vaultCode:m.vaultCode||'',
         vaultCodename:m.vaultCodename||''};
     })}).then(r=>{if(!r.ok)console.warn('Media save failed:',r.error)});
+    apiCall('saveEventConfig',{config:{contentVersion:ver}});
     _cacheContent('cb_media',mediaItems);
+    try{localStorage.setItem('cb_contentVersion',ver)}catch(e){}
   },1500);
 }
 
@@ -5349,11 +5376,14 @@ function saveIntelFieldsToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveIntelTimer);
   _saveIntelTimer=setTimeout(()=>{
+    const ver=Date.now().toString();
     apiCall('saveIntelFields',{fields:intelFields.map(f=>({
       label:f.label||'',emoji:f.emoji||'',fieldType:f.type||'text',
       font:f.font||'',inputFont:f.inputFont||'',answer:f.answer||{}
     }))}).then(r=>{});
+    apiCall('saveEventConfig',{config:{contentVersion:ver}});
     _cacheContent('cb_intel',intelFields);
+    try{localStorage.setItem('cb_contentVersion',ver)}catch(e){}
   },1500);
 }
 
