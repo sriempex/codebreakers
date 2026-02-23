@@ -2750,6 +2750,8 @@ function updateTeamCardStats(){
 // Start elapsed timer when console opens
 function startElapsedTimer(){
   if(elapsedInterval)return;
+  // Set session start time if not restored from game state
+  if(!_sessionStartTime)_sessionStartTime=Date.now()-elapsedSec*1000;
   elapsedInterval=setInterval(()=>{elapsedSec++;if(teamCardOpen)updateTeamCardStats()},1000);
 }
 // Close card when clicking outside
@@ -2818,6 +2820,9 @@ function doLogout(){
   document.getElementById('notepadTrigger').classList.remove('visible');
   if(elapsedInterval){clearInterval(elapsedInterval);elapsedInterval=null}
   elapsedSec=0;currentVaultTeam=null;
+  isSubmitted=false;
+  vkFailCount=0;vkTotalFails=0;vkRateLimited=false;vkCode='';
+  _vaultLockoutEnd=null;_sessionStartTime=null;
   // Stop broadcast polling
   if(_broadcastPollInterval){clearInterval(_broadcastPollInterval);_broadcastPollInterval=null}
   // Clear admin state on logout
@@ -3136,6 +3141,8 @@ function syncVaultCodesFromMedia(){
   });
 }
 let vkCode='';let vkFailCount=0;let vkTotalFails=0;let vkRateLimited=false;
+let _vaultLockoutEnd=null;
+let _sessionStartTime=null;
 const vkDisp=document.getElementById('vDisp');
 function vkUpdDisp(){if(vkDisp){vkDisp.textContent=vkCode.length?vkCode:'ENTER CODE';vkDisp.style.color='';vkDisp.style.fontSize='';vkDisp.style.letterSpacing=''}const triesEl=document.getElementById('vkTries');if(triesEl)triesEl.style.visibility=vkCode.length?'hidden':'visible'}
 function vkType(ch){playClick();if(vkRateLimited)return;if(vkCode.length<20){vkCode+=ch;vkUpdDisp();vkGlitch()}}
@@ -3164,6 +3171,7 @@ function vkSubmit(){
     showVaultUnlockNotification(releasedName);
     setTimeout(()=>{vkCode='';vkUpdDisp();renderVaultPanel()},2000);
     renderGrid();renderMedia();
+    saveGameState();
   }else if(vaultCodes.find(c=>c.code.toUpperCase()===entered&&c.unlocked)){
     vkDisp.textContent='⚡ ALREADY UNLOCKED';vkDisp.style.color='var(--amber)';vkDisp.style.fontSize='13px';
     playClick();
@@ -3176,6 +3184,7 @@ function vkSubmit(){
     const cooldown=regSettings.vaultCooldownSec||30;
     const unlimited=regSettings.vaultUnlimitedAttempts;
     updateTriesDisplay();
+    saveGameState();
     if(unlimited){
       setTimeout(()=>{vkCode='';vkUpdDisp()},1200);
     }else{
@@ -3216,6 +3225,11 @@ function updateTriesDisplay(){
 }
 function triggerVaultLockout(seconds,title,subtitle){
   vkRateLimited=true;
+  // Store absolute end time so cooldown survives browser close
+  if(!_vaultLockoutEnd||_vaultLockoutEnd<Date.now()){
+    _vaultLockoutEnd=Date.now()+seconds*1000;
+  }
+  saveGameState();
   const limiter=document.getElementById('vRateLimit');
   const timerEl=document.getElementById('vRateLimitTimer');
   const textEl=document.getElementById('vRateLimitText');
@@ -3239,6 +3253,8 @@ function triggerVaultLockout(seconds,title,subtitle){
       vkFailCount=0;vkTotalFails=0;
       vkCode='';vkUpdDisp();
       updateTriesDisplay();
+      _vaultLockoutEnd=null;
+      saveGameState();
     }
   },1000);
 }
@@ -4168,6 +4184,7 @@ function finalSubmit(){
   // Grade all answers locally — results stored for admin/leaderboard
   submissionResults=gradeAllSubmissions();
   submissionResults.submittedAt=new Date().toISOString();
+  saveGameState();
 
   document.getElementById('confirmModal').classList.remove('active');
   document.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});
@@ -6507,6 +6524,19 @@ function renderIntelForm(){
   // Sync intelLabels array
   syncIntelLabels();
 }
+// Delegated listener: auto-save intel draft as user types
+(function(){
+  const form=document.getElementById('intelForm');
+  if(form){
+    let _intelSaveTimer=null;
+    form.addEventListener('input',function(e){
+      if(e.target.classList.contains('intel-exp-input')){
+        clearTimeout(_intelSaveTimer);
+        _intelSaveTimer=setTimeout(()=>saveGameState(),800);
+      }
+    });
+  }
+})();
 function syncIntelLabels(){
   const labels=[];
   intelFields.forEach(f=>{
@@ -7546,12 +7576,155 @@ function saveSession(){
   }catch(e){}
 }
 
+// ── Game State Persistence ──
+// Persists vault progress, intel answers, cooldown, and elapsed timer
+// so browser close / refresh doesn't lose gameplay progress.
+// Keyed per team to prevent cross-team bleed.
+
+function _gsKey(suffix){
+  const tid=currentVaultTeam?.id||'UNKNOWN';
+  return 'cb_gs_'+tid+'_'+suffix;
+}
+
+function saveGameState(){
+  try{
+    if(!currentVaultTeam)return;
+
+    // 1. Vault unlock progress — which codes have been cracked
+    const unlocks={};
+    vaultCodes.forEach(c=>{if(c.unlocked)unlocks[c.code]={at:c.unlockedAt}});
+    localStorage.setItem(_gsKey('vaultUnlocks'),JSON.stringify(unlocks));
+
+    // 2. Vault fail counters
+    localStorage.setItem(_gsKey('vaultFails'),JSON.stringify({
+      failCount:vkFailCount,
+      totalFails:vkTotalFails
+    }));
+
+    // 3. Vault cooldown — store absolute end time so it survives browser close
+    // _vaultLockoutEnd is set by triggerVaultLockout()
+    if(_vaultLockoutEnd){
+      localStorage.setItem(_gsKey('vaultLockout'),JSON.stringify({endTime:_vaultLockoutEnd}));
+    }else{
+      localStorage.removeItem(_gsKey('vaultLockout'));
+    }
+
+    // 4. Intel form answers (typed but not yet submitted)
+    const intelAnswers={};
+    document.querySelectorAll('.intel-exp-input').forEach(inp=>{
+      const idx=inp.dataset.idx;
+      if(idx!==undefined&&inp.value.trim())intelAnswers[idx]=inp.value;
+    });
+    localStorage.setItem(_gsKey('intelDraft'),JSON.stringify(intelAnswers));
+
+    // 5. Submission status
+    localStorage.setItem(_gsKey('isSubmitted'),isSubmitted?'1':'0');
+
+    // 6. Elapsed timer — store session start time (absolute) so we can compute elapsed on restore
+    if(!_sessionStartTime)_sessionStartTime=Date.now()-elapsedSec*1000;
+    localStorage.setItem(_gsKey('sessionStart'),String(_sessionStartTime));
+
+  }catch(e){console.warn('saveGameState error:',e)}
+}
+
+function restoreGameState(){
+  try{
+    if(!currentVaultTeam)return;
+
+    // 1. Vault unlock progress
+    const unlockRaw=localStorage.getItem(_gsKey('vaultUnlocks'));
+    if(unlockRaw){
+      const unlocks=JSON.parse(unlockRaw);
+      vaultCodes.forEach(c=>{
+        const u=unlocks[c.code];
+        if(u){c.unlocked=true;c.unlockedAt=u.at||new Date().toISOString();
+          // Also unlock the linked media item
+          if(typeof c.linkedMediaIdx==='number'&&mediaItems[c.linkedMediaIdx]){
+            mediaItems[c.linkedMediaIdx].vaultLocked=false;
+          }
+        }
+      });
+    }
+
+    // 2. Vault fail counters
+    const failRaw=localStorage.getItem(_gsKey('vaultFails'));
+    if(failRaw){
+      const f=JSON.parse(failRaw);
+      vkFailCount=f.failCount||0;
+      vkTotalFails=f.totalFails||0;
+    }
+
+    // 3. Vault cooldown — check if lockout is still active
+    const lockoutRaw=localStorage.getItem(_gsKey('vaultLockout'));
+    if(lockoutRaw){
+      const l=JSON.parse(lockoutRaw);
+      const remaining=Math.ceil((l.endTime-Date.now())/1000);
+      if(remaining>0){
+        // Cooldown still active — resume it
+        _vaultLockoutEnd=l.endTime;
+        triggerVaultLockout(remaining,'SECURITY LOCKOUT','Cooldown in progress · '+remaining+'s remaining');
+      }else{
+        // Cooldown expired while browser was closed — clear it
+        localStorage.removeItem(_gsKey('vaultLockout'));
+        _vaultLockoutEnd=null;
+        vkFailCount=0;vkTotalFails=0;
+        localStorage.setItem(_gsKey('vaultFails'),JSON.stringify({failCount:0,totalFails:0}));
+      }
+    }
+
+    // 4. Submission status
+    const subRaw=localStorage.getItem(_gsKey('isSubmitted'));
+    if(subRaw==='1')isSubmitted=true;
+
+    // 5. Elapsed timer — compute from stored start time
+    const startRaw=localStorage.getItem(_gsKey('sessionStart'));
+    if(startRaw){
+      _sessionStartTime=parseInt(startRaw);
+      elapsedSec=Math.floor((Date.now()-_sessionStartTime)/1000);
+    }
+
+  }catch(e){console.warn('restoreGameState error:',e)}
+}
+
+function restoreIntelDraft(){
+  // Called after renderIntelForm to restore typed answers
+  try{
+    if(!currentVaultTeam)return;
+    const raw=localStorage.getItem(_gsKey('intelDraft'));
+    if(!raw)return;
+    const answers=JSON.parse(raw);
+    document.querySelectorAll('.intel-exp-input').forEach(inp=>{
+      const idx=inp.dataset.idx;
+      if(idx!==undefined&&answers[idx]){inp.value=answers[idx]}
+    });
+  }catch(e){}
+}
+
+function clearGameState(){
+  try{
+    if(!currentVaultTeam)return;
+    const prefixes=['vaultUnlocks','vaultFails','vaultLockout','intelDraft','isSubmitted','sessionStart'];
+    prefixes.forEach(p=>localStorage.removeItem(_gsKey(p)));
+  }catch(e){}
+}
+
+// Auto-save game state periodically and on visibility change
+setInterval(()=>{if(currentVaultTeam&&_currentScreen==='consoleScreen')saveGameState()},5000);
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'&&currentVaultTeam&&_currentScreen==='consoleScreen'){
+    saveGameState();saveSession();
+  }
+});
+
 function clearSession(){
   try{
+    clearGameState();
     localStorage.removeItem('cb_session');
     localStorage.removeItem('cb_posts');
     localStorage.removeItem('cb_media');
     localStorage.removeItem('cb_intel');
+    _vaultLockoutEnd=null;
+    _sessionStartTime=null;
   }catch(e){}
 }
 
@@ -7605,7 +7778,7 @@ function restoreSession(){
             }
           }
           if(t==='media')renderMedia();
-          if(t==='intel')renderIntelForm();
+          if(t==='intel'){renderIntelForm();restoreIntelDraft()}
           if(t==='vault')renderVaultPanel();
         }
       }
@@ -7618,6 +7791,7 @@ function restoreSession(){
       currentVaultTeam=data.team;
       updateConsoleForTeam(currentVaultTeam);
       syncAdminDropdownToggles();
+      restoreGameState();
       applyScreenAndPanel();
       startElapsedTimer();
       // Load fresh data from backend in background — UI already showing
@@ -7627,11 +7801,15 @@ function restoreSession(){
       currentVaultTeam=data.team;
       if(!registeredTeams.find(r=>r.id===data.team.id))registeredTeams.push(currentVaultTeam);
       updateConsoleForTeam(currentVaultTeam);
+      restoreGameState();
       applyScreenAndPanel();
       startElapsedTimer();
       // Load config and fresh content in background — UI already showing
       apiCall('getEventConfig').then(cfg=>{
         if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
+        // Re-sync vault codes after fresh data arrives, then re-apply unlock state
+        syncVaultCodesFromMedia();
+        restoreGameState();
         // Re-render panel with fresh backend data once it arrives
         // On mobile: skip — user is on console grid
         if(data.panel&&panelMap[data.panel]&&!_isMobileRestore){
@@ -7646,9 +7824,11 @@ function restoreSession(){
             }
           }
           if(t==='media')renderMedia();
-          if(t==='intel')renderIntelForm();
+          if(t==='intel'){renderIntelForm();restoreIntelDraft()}
           if(t==='vault')renderVaultPanel();
         }
+        // Also update grid badges after vault state is restored
+        renderGrid();
       });
       startBroadcastPolling();
       return true;
