@@ -468,9 +468,9 @@
   body.event-locked .v-key{pointer-events:none;opacity:.4}
   body.event-locked .intel-submit-btn{pointer-events:none;opacity:.4}
   body.player-preview .team-card-notifs{display:block!important}
-  .console-team{font-family:'Saira',sans-serif;font-size:11px;color:var(--cyan);letter-spacing:2px;font-weight:600;transition:color .2s;padding:4px 10px;border:1px solid rgba(0,212,255,.2);border-radius:3px;background:rgba(0,212,255,.04)}
+  .console-team{font-family:'Saira',sans-serif;font-size:13px;color:var(--cyan);letter-spacing:2.5px;font-weight:600;transition:color .2s;padding:6px 14px;border:1px solid rgba(0,212,255,.25);border-radius:3px;background:rgba(0,212,255,.04)}
   .console-team:hover{color:#b0e8cc;border-color:rgba(0,212,255,.3)}
-  .team-chevron{font-size:14px;color:#555;margin-left:4px;transition:color .2s;line-height:1}
+  .team-chevron{font-size:18px;color:#555;margin-left:6px;transition:color .2s;line-height:1}
   .topbar-identity:hover .team-chevron{color:#999}
   body.admin-mode .console-team{display:none}
   .team-notif-badge{position:absolute;top:-6px;right:-8px;min-width:16px;height:16px;border-radius:8px;background:var(--red);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 0 8px rgba(255,50,50,.4);animation:ledPulse 2s ease-in-out infinite;z-index:5}
@@ -589,6 +589,9 @@
   .tile-status-label.silent{color:#3a3d44}
   /* Admin edit btn repositioned for monitor */
   .crt-monitor .admin-edit-btn{top:4px;right:4px;z-index:10}
+  /* Force edit buttons visible above ALL theme effects in admin mode */
+  body.admin-mode:not(.player-preview) .crt-monitor{clip-path:none!important;overflow:visible!important}
+  body.admin-mode:not(.player-preview) .crt-monitor .admin-edit-btn{z-index:20}
 
   /* ══════ CONSOLE GRID THEMES ══════ */
   /* Theme 1 (crt) = default styles above — no override needed */
@@ -1106,7 +1109,7 @@
   .logout-btn span{font-family:'Saira',sans-serif;font-size:12px;letter-spacing:3px;color:var(--red);font-weight:700;text-transform:uppercase}
 
   /* Notification bell */
-  .admin-topbar-label{display:none;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--amber);font-weight:600;text-transform:uppercase;padding:4px 10px;border:1px solid rgba(255,170,51,.2);border-radius:3px;background:rgba(255,170,51,.06)}
+  .admin-topbar-label{display:none;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:2.5px;color:var(--amber);font-weight:600;text-transform:uppercase;padding:6px 14px;border:1px solid rgba(255,170,51,.25);border-radius:3px;background:rgba(255,170,51,.06)}
   body.admin-mode .admin-topbar-label{display:inline-flex}
   .notif-empty{padding:12px 8px;text-align:center;font-family:'Chakra Petch',sans-serif;font-size:10px;color:#555}
 
@@ -1569,7 +1572,7 @@
     .timer-block{position:relative;left:auto;transform:none}
     .timer-digits{font-size:18px;letter-spacing:3px}
     .timer-label{font-size:7px;letter-spacing:2px}
-    .console-team{font-size:9px;letter-spacing:2px;padding:3px 8px}
+    .console-team{font-size:11px;letter-spacing:2px;padding:4px 10px}
 
     /* Grid — 2 columns, centered */
     .console-grid{gap:16px;padding:16px;align-content:start;padding-top:20px}
@@ -1616,7 +1619,7 @@
     .console-title{font-size:9px;letter-spacing:3px}
     .timer-digits{font-size:16px;letter-spacing:2px}
     .timer-label{font-size:7px}
-    .console-team{font-size:8px}
+    .console-team{font-size:10px}
 
     /* Grid — 2x2 on mobile so all 4 tiles visible without scrolling */
     .console-grid{grid-template-columns:1fr 1fr;gap:10px;padding:12px;align-content:center;padding-top:16px}
@@ -1835,7 +1838,101 @@
   body.landing-preview-mode #appearancePanel,
   body.landing-preview-mode #dashboardPanel{display:none!important}
   body.landing-preview-mode #adminNavBar{display:none!important}
+
+  /* ══════ SESSION MANAGEMENT PANEL ══════ */
+  #sessionMgmtPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
+  #sessionMgmtPanel.active{opacity:1;pointer-events:all}
+  .session-btn-group{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+  .session-btn{padding:12px 20px;border-radius:4px;font-family:'Saira',sans-serif;font-size:11px;letter-spacing:1.5px;font-weight:600;cursor:pointer;transition:all .15s;text-align:left;display:flex;align-items:center;gap:12px}
+  .session-btn .sb-icon{font-size:18px;flex-shrink:0}
+  .session-btn .sb-info{display:flex;flex-direction:column;gap:2px}
+  .session-btn .sb-title{font-size:11px;letter-spacing:1.5px}
+  .session-btn .sb-desc{font-size:9px;letter-spacing:.5px;opacity:.6;font-weight:400}
+  .session-btn-danger{background:rgba(255,51,51,.08);border:1px solid rgba(255,51,51,.2);color:#ff6655}
+  .session-btn-danger:hover{background:rgba(255,51,51,.15);border-color:rgba(255,51,51,.4)}
+  .session-btn-warn{background:rgba(255,170,51,.08);border:1px solid rgba(255,170,51,.2);color:var(--amber)}
+  .session-btn-warn:hover{background:rgba(255,170,51,.15);border-color:rgba(255,170,51,.4)}
+  .session-btn-safe{background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);color:var(--green)}
+  .session-btn-safe:hover{background:rgba(0,255,136,.15);border-color:rgba(0,255,136,.4)}
+
+  /* ══════ TUTORIAL & BRIEFING CONFIG PANEL ══════ */
+  #tutorialConfigPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
+  #tutorialConfigPanel.active{opacity:1;pointer-events:all}
+  .tut-step-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+  .tut-step-card{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:4px;transition:all .15s}
+  .tut-step-card:hover{border-color:rgba(0,212,255,.2)}
+  .tut-step-card .tut-drag{cursor:grab;font-size:14px;color:#444;padding:0 4px;user-select:none;touch-action:none}
+  .tut-step-card .tut-drag:active{cursor:grabbing}
+  .tut-step-card .tut-icon{font-size:16px;flex-shrink:0}
+  .tut-step-card .tut-text{flex:1}
+  .tut-step-card .tut-text input{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:#ddd;font-family:'Chakra Petch',sans-serif;font-size:11px;padding:4px 0;outline:none;letter-spacing:.3px}
+  .tut-step-card .tut-text input:focus{border-color:rgba(0,212,255,.3)}
+  .tut-step-toggle{width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);cursor:pointer;position:relative;transition:all .15s;flex-shrink:0}
+  .tut-step-toggle.on{background:rgba(0,255,136,.15);border-color:rgba(0,255,136,.3)}
+  .tut-step-toggle::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#555;top:2px;left:2px;transition:all .15s}
+  .tut-step-toggle.on::after{background:var(--green);left:18px}
+
+  /* ══════ TUTORIAL SPOTLIGHT OVERLAY ══════ */
+  #tutorialOverlay{position:fixed;inset:0;z-index:9500;pointer-events:none;opacity:0;transition:opacity .3s}
+  #tutorialOverlay.active{opacity:1;pointer-events:all}
+  .tut-spotlight{position:absolute;border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.75);z-index:1;transition:all .3s ease}
+  .tut-tooltip{position:absolute;z-index:2;max-width:320px;background:#0d0f14;border:1px solid rgba(0,212,255,.25);border-radius:8px;padding:16px 20px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+  .tut-tooltip-title{font-family:'Saira',sans-serif;font-size:13px;letter-spacing:2px;color:var(--cyan);font-weight:700;margin-bottom:6px}
+  .tut-tooltip-body{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#bbb;line-height:1.6;margin-bottom:14px}
+  .tut-tooltip-nav{display:flex;align-items:center;justify-content:space-between}
+  .tut-tooltip-dots{display:flex;gap:6px}
+  .tut-tooltip-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15)}
+  .tut-tooltip-dot.active{background:var(--cyan)}
+  .tut-tooltip-btns{display:flex;gap:8px}
+  .tut-btn{padding:6px 16px;border-radius:3px;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1.5px;font-weight:600;cursor:pointer;transition:all .15s}
+  .tut-btn-skip{background:none;border:1px solid rgba(255,255,255,.1);color:#777}
+  .tut-btn-skip:hover{border-color:rgba(255,255,255,.2);color:#aaa}
+  .tut-btn-next{background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);color:var(--cyan)}
+  .tut-btn-next:hover{background:rgba(0,212,255,.2)}
+  .tut-btn-back{background:none;border:1px solid rgba(255,255,255,.1);color:#777}
+  .tut-btn-back:hover{border-color:rgba(255,255,255,.2);color:#aaa}
+
+  /* ══════ MISSION BRIEFING MODAL ══════ */
+  #briefingModal{position:fixed;inset:0;z-index:9200;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+  #briefingModal.active{opacity:1;pointer-events:all}
+  .briefing-container{max-width:640px;width:90%;background:#0a0c10;border:1px solid rgba(0,212,255,.15);border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .briefing-header{padding:20px 24px 12px;text-align:center}
+  .briefing-title{font-family:'Saira',sans-serif;font-size:15px;letter-spacing:3px;color:var(--cyan);font-weight:700;text-transform:uppercase}
+  .briefing-subtitle{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#777;margin-top:4px}
+  .briefing-video{position:relative;aspect-ratio:16/9;background:#000;border-radius:6px;overflow:hidden;margin:0 16px}
+  .briefing-video video,.briefing-video iframe{width:100%;height:100%;border:none;border-radius:6px}
+  .briefing-footer{padding:16px 24px 20px;text-align:center}
+  .briefing-continue{padding:10px 32px;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.25);border-radius:4px;color:var(--green);font-family:'Saira',sans-serif;font-size:11px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:all .15s}
+  .briefing-continue:hover{background:rgba(0,255,136,.2);border-color:rgba(0,255,136,.4)}
 </style>
+<script>
+// Pre-render theme injection — runs before body paints
+// Reads cached theme from localStorage and injects a CSS class on consoleGrid
+// via a MutationObserver that fires the moment the element exists in DOM.
+(function(){
+  try{
+    var t=localStorage.getItem('cb_gridTheme');
+    if(t&&t!=='crt'){
+      // Apply theme class as soon as consoleGrid exists
+      var obs=new MutationObserver(function(m,o){
+        var g=document.getElementById('consoleGrid');
+        if(g){g.classList.add('grid-theme-'+t);o.disconnect()}
+      });
+      // Start observing once body exists
+      if(document.body){
+        var g=document.getElementById('consoleGrid');
+        if(g)g.classList.add('grid-theme-'+t);
+      }else{
+        document.addEventListener('DOMContentLoaded',function(){
+          var g=document.getElementById('consoleGrid');
+          if(g)g.classList.add('grid-theme-'+t);
+        });
+        obs.observe(document.documentElement,{childList:true,subtree:true});
+      }
+    }
+  }catch(e){}
+})();
+</script>
 </head>
 <body>
 <canvas id="grainCanvas"></canvas>
@@ -1862,6 +1959,8 @@
     <div class="adm-tier-label">SYSTEM</div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openAppearancePanel()"><span class="adm-icon">🎨</span><span class="adm-label">Appearance</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openPortalUsers()"><span class="adm-icon">👥</span><span class="adm-label">Portal Users</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openSessionMgmt()"><span class="adm-icon">🛡️</span><span class="adm-label">Sessions</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openTutorialConfig()"><span class="adm-icon">📖</span><span class="adm-label">Tutorial & Briefing</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openChangePassword()"><span class="adm-icon">🔑</span><span class="adm-label">Change Password</span></div>
     <div class="admin-dropdown-sep"></div>
     <div class="admin-dropdown-toggle pp-toggle" onclick="togglePlayerPreview()"><span class="adm-icon">👁</span><span class="adm-label">View as Player</span><span class="adm-toggle off" id="admPreviewToggle">OFF</span></div>
@@ -2095,6 +2194,120 @@
     <div class="ap-section"><h4>📋 All Portal Users</h4>
       <p>All administrators and manually created entries.</p>
       <div id="puCombinedList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SESSION MANAGEMENT PANEL -->
+<div id="sessionMgmtPanel">
+  <div class="ap-container" style="width:480px">
+    <div class="ap-header"><h3>🛡️ Session Management</h3><button class="mv-close" onclick="closeSessionMgmt()">✕ CLOSE</button></div>
+    <div class="ap-section">
+      <h4>Active Sessions</h4>
+      <p>Invalidate active sessions. Affected users will be returned to the login screen on their next action.</p>
+      <div class="session-btn-group">
+        <div class="session-btn session-btn-safe" onclick="destroySessions('teams')">
+          <span class="sb-icon">👥</span>
+          <div class="sb-info"><span class="sb-title">DESTROY TEAM SESSIONS</span><span class="sb-desc">Kick all players — admins stay logged in</span></div>
+        </div>
+        <div class="session-btn session-btn-warn" onclick="destroySessions('exceptMe')">
+          <span class="sb-icon">🔒</span>
+          <div class="sb-info"><span class="sb-title">DESTROY ALL EXCEPT ME</span><span class="sb-desc">Kick everyone — your session is preserved</span></div>
+        </div>
+        <div class="session-btn session-btn-danger" onclick="destroySessions('all')">
+          <span class="sb-icon">💥</span>
+          <div class="sb-info"><span class="sb-title">DESTROY ALL SESSIONS</span><span class="sb-desc">Nuclear option — everyone including you gets kicked</span></div>
+        </div>
+      </div>
+      <div class="ap-msg" id="sessionMgmtMsg" style="margin-top:12px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TUTORIAL & BRIEFING CONFIG PANEL -->
+<div id="tutorialConfigPanel">
+  <div class="ap-container" style="width:560px">
+    <div class="ap-header"><h3>📖 Tutorial & Briefing</h3><button class="mv-close" onclick="closeTutorialConfig()">✕ CLOSE</button></div>
+    <div class="ap-section">
+      <h4>📍 Navigation Tutorial</h4>
+      <p>Step-by-step spotlight tour shown to players on first login. Drag to reorder, toggle to enable/disable each step, edit text to customize.</p>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <span style="font-family:Saira,sans-serif;font-size:10px;letter-spacing:1.5px;color:#888">TUTORIAL</span>
+        <div class="tut-step-toggle" id="tutGlobalToggle" onclick="toggleTutorialGlobal()"><span></span></div>
+        <button class="ap-btn ap-btn-ghost" onclick="resetTutorialForAll()" style="font-size:8px;padding:5px 12px;margin-left:auto">↺ Reset for All Teams</button>
+        <button class="ap-btn ap-btn-ghost" onclick="previewTutorial()" style="font-size:8px;padding:5px 12px">▶ Preview</button>
+      </div>
+      <div class="tut-step-list" id="tutStepList"></div>
+    </div>
+    <div class="ap-section">
+      <h4>🎬 Mission Briefing</h4>
+      <p>Video shown to players after first login (after the tutorial if both are enabled). Plays once per team.</p>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <span style="font-family:Saira,sans-serif;font-size:10px;letter-spacing:1.5px;color:#888">BRIEFING</span>
+        <div class="tut-step-toggle" id="briefingGlobalToggle" onclick="toggleBriefingGlobal()"><span></span></div>
+        <button class="ap-btn ap-btn-ghost" onclick="resetBriefingForAll()" style="font-size:8px;padding:5px 12px;margin-left:auto">↺ Reset for All Teams</button>
+        <button class="ap-btn ap-btn-ghost" onclick="previewBriefing()" style="font-size:8px;padding:5px 12px">▶ Preview</button>
+      </div>
+      <div class="ap-row" style="margin-bottom:10px">
+        <div class="ap-field"><label>Source Type</label>
+          <select id="briefingSourceType" onchange="onBriefingTypeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%;outline:none">
+            <option value="upload">Upload Video (R2)</option>
+            <option value="youtube">YouTube / Vimeo Link</option>
+            <option value="direct">Direct Video URL</option>
+          </select>
+        </div>
+      </div>
+      <div id="briefingUploadZone" class="ap-row" style="margin-bottom:10px">
+        <div class="ap-field" style="flex:1"><label>Video File</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="briefingFileUrl" readonly placeholder="No video uploaded" style="flex:1;background:#060810;border:1px solid var(--border);border-radius:4px;padding:10px;color:#aaa;font-size:11px">
+            <label style="cursor:pointer;padding:8px 14px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:4px;color:var(--cyan);font-family:Saira,sans-serif;font-size:9px;letter-spacing:1px;white-space:nowrap">
+              📁 Upload<input type="file" accept="video/*" style="display:none" onchange="uploadBriefingVideo(this)">
+            </label>
+          </div>
+        </div>
+      </div>
+      <div id="briefingUrlZone" class="ap-row" style="margin-bottom:10px;display:none">
+        <div class="ap-field" style="flex:1"><label>Video URL</label>
+          <input id="briefingVideoUrl" placeholder="https://youtube.com/watch?v=... or direct .mp4 URL" oninput="saveBriefingConfig()" style="background:#060810;border:1px solid var(--border);border-radius:4px;padding:10px;color:#ddd;font-size:11px;width:100%">
+        </div>
+      </div>
+      <div class="ap-row" style="margin-bottom:10px">
+        <div class="ap-field"><label>Title (optional)</label><input id="briefingTitle" placeholder="Mission Briefing" oninput="saveBriefingConfig()"></div>
+        <div class="ap-field"><label>Subtitle (optional)</label><input id="briefingSubtitle" placeholder="Watch carefully, agent." oninput="saveBriefingConfig()"></div>
+      </div>
+      <div class="ap-msg" id="briefingMsg" style="margin-top:4px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TUTORIAL SPOTLIGHT OVERLAY -->
+<div id="tutorialOverlay">
+  <div class="tut-spotlight" id="tutSpotlight"></div>
+  <div class="tut-tooltip" id="tutTooltip">
+    <div class="tut-tooltip-title" id="tutTooltipTitle"></div>
+    <div class="tut-tooltip-body" id="tutTooltipBody"></div>
+    <div class="tut-tooltip-nav">
+      <div class="tut-tooltip-dots" id="tutDots"></div>
+      <div class="tut-tooltip-btns">
+        <div class="tut-btn tut-btn-skip" id="tutBtnSkip" onclick="endTutorial()">SKIP</div>
+        <div class="tut-btn tut-btn-back" id="tutBtnBack" onclick="tutorialStep(-1)">BACK</div>
+        <div class="tut-btn tut-btn-next" id="tutBtnNext" onclick="tutorialStep(1)">NEXT</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MISSION BRIEFING MODAL -->
+<div id="briefingModal">
+  <div class="briefing-container">
+    <div class="briefing-header">
+      <div class="briefing-title" id="briefingModalTitle">Mission Briefing</div>
+      <div class="briefing-subtitle" id="briefingModalSubtitle"></div>
+    </div>
+    <div class="briefing-video" id="briefingVideoContainer"></div>
+    <div class="briefing-footer">
+      <button class="briefing-continue" onclick="dismissBriefing()">◈ CONTINUE TO MISSION ◈</button>
     </div>
   </div>
 </div>
@@ -2447,8 +2660,8 @@
     </div>
     <div class="topbar-identity" onclick="toggleTeamCard(event)">
       <span class="console-team">—</span>
+      <span class="admin-topbar-label">ADMIN</span>
       <span class="team-chevron">▾</span>
-      <span class="admin-topbar-label">Administrator</span>
       <span class="team-notif-badge" id="teamNotifBadge"></span>
       <div class="team-card" id="teamCard">
         <div class="team-card-header">
@@ -2469,6 +2682,11 @@
           <div class="team-card-notifs" id="teamCardNotifs">
             <div class="team-card-label" style="display:flex;align-items:center;justify-content:space-between">Notifications <span class="notif-clear-link" onclick="event.stopPropagation();clearNotifications()">Clear all</span></div>
             <div class="team-card-notif-list" id="teamNotifList"><div class="notif-empty">No notifications yet</div></div>
+          </div>
+          <div style="padding:4px 16px 0;border-top:1px solid rgba(255,255,255,.04)">
+            <div onclick="event.stopPropagation();toggleTeamCard();startTutorial()" style="display:flex;align-items:center;gap:8px;padding:8px 0;cursor:pointer;opacity:.6;transition:opacity .15s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.6'">
+              <span style="font-size:12px">📖</span><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa;letter-spacing:.5px">Replay Tutorial</span>
+            </div>
           </div>
           <div class="team-card-logout" onclick="event.stopPropagation();showLogout()">
             <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -2505,7 +2723,7 @@
 
 <!-- EXPANDED -->
 <div id="panelOverlay">
-  <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter">1 / 12</span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
+  <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter"></span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
   <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
   <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area" id="intelForm"></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
   <div class="expanded-panel" id="expVault">
@@ -3152,7 +3370,7 @@ function submitLogin(){
       if(result.ok){
         adminSession={username:result.username,role:result.role,adminToken:result.adminToken};
         isAdmin=true;document.body.classList.add('admin-mode');
-        currentVaultTeam={id:'ADMIN',name:'ADMIN',type:'admin',members:['Admin'],memberDetails:[]};
+        currentVaultTeam={id:'ADMIN',name:'ADMIN',displayName:'ADMINISTRATOR',type:'admin',members:['Admin'],memberDetails:[]};
         updateConsoleForTeam(currentVaultTeam);syncAdminDropdownToggles();saveSession();
         loginSuccess();loadEventData();document.dispatchEvent(new Event('adminReady'));
       }else{
@@ -3233,7 +3451,7 @@ function updateConsoleForTeam(team){
   }
   const cardName=document.querySelector('.team-card-name');
   const cardId=document.querySelector('.team-card-id');
-  if(cardName)cardName.textContent=team.name;
+  if(cardName)cardName.textContent=team.displayName||team.name;
   if(cardId)cardId.textContent='ID: '+team.id;
   const membersHtml=team.members.map((m,i)=>`<div class="team-card-member"><div class="team-card-avatar">${i+1}</div><span class="team-card-mname">${m}</span></div>`).join('');
   const memberSection=document.querySelector('.team-card-section');
@@ -3244,7 +3462,7 @@ function updateConsoleForTeam(team){
     memberSection.insertAdjacentHTML('beforeend',membersHtml);
   }
 }
-function openVault(){const ov=document.getElementById('vaultOpenOverlay');ov.classList.add('active');setTimeout(()=>document.getElementById('voText').classList.add('show'),300);setTimeout(()=>document.getElementById('voSub').classList.add('show'),300);setTimeout(()=>{document.getElementById('voBar').classList.add('show');document.getElementById('voPct').classList.add('show')},300);setTimeout(()=>{document.getElementById('voFill').classList.add('go');let pct=0;const pctEl=document.getElementById('voPct');const pctInt=setInterval(()=>{pct=Math.min(100,pct+Math.ceil(Math.random()*4+1));pctEl.textContent=pct+'%';if(pct>=100)clearInterval(pctInt)},50)},1200);setTimeout(()=>{showScreen('consoleScreen');document.getElementById('notepadTrigger').classList.add('visible');startElapsedTimer();ov.classList.remove('active');document.getElementById('voText').classList.remove('show');document.getElementById('voSub').classList.remove('show');document.getElementById('voBar').classList.remove('show');document.getElementById('voFill').classList.remove('go');document.getElementById('voPct').classList.remove('show');document.getElementById('voPct').textContent='0%'},3800)}
+function openVault(){const ov=document.getElementById('vaultOpenOverlay');ov.classList.add('active');setTimeout(()=>document.getElementById('voText').classList.add('show'),300);setTimeout(()=>document.getElementById('voSub').classList.add('show'),300);setTimeout(()=>{document.getElementById('voBar').classList.add('show');document.getElementById('voPct').classList.add('show')},300);setTimeout(()=>{document.getElementById('voFill').classList.add('go');let pct=0;const pctEl=document.getElementById('voPct');const pctInt=setInterval(()=>{pct=Math.min(100,pct+Math.ceil(Math.random()*4+1));pctEl.textContent=pct+'%';if(pct>=100)clearInterval(pctInt)},50)},1200);setTimeout(()=>{showScreen('consoleScreen');document.getElementById('notepadTrigger').classList.add('visible');startElapsedTimer();ov.classList.remove('active');document.getElementById('voText').classList.remove('show');document.getElementById('voSub').classList.remove('show');document.getElementById('voBar').classList.remove('show');document.getElementById('voFill').classList.remove('go');document.getElementById('voPct').classList.remove('show');document.getElementById('voPct').textContent='0%';setTimeout(()=>{if(shouldShowTutorial()){startTutorial()}else{checkShowBriefing()}},500)},3800)}
 
 // ══════ VAULT PUZZLE (in-console keypad) ══════
 let vaultCodes=[];
@@ -3762,7 +3980,13 @@ function setFeedView(mode){
 let currentPost=0;
 function openPost(i){currentPost=i;if(window._histPush)window._histPush('feedFocus');setFeedView('single')}
 function renderSinglePost(){
-  if(!posts.length)return;
+  if(!posts.length){
+    const img=document.getElementById('singleImg');
+    if(img){img.style.background='';img.textContent='';img.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:Chakra Petch,sans-serif;font-size:11px;color:#333;letter-spacing:1px">No intelligence available</div>'}
+    document.getElementById('singleCounter').textContent='0 / 0';
+    const capEl=document.getElementById('singleCap');if(capEl)capEl.textContent='';
+    return;
+  }
   if(currentPost>=posts.length)currentPost=0;
   const p=posts[currentPost],img=document.getElementById('singleImg');
   const resolved=(p.mediaUrl&&(p.mediaType==='video'||isVideoUrl(p.mediaUrl)))?resolveVideoEmbed(p.mediaUrl):null;
@@ -4695,8 +4919,7 @@ let isAdmin=false;
 // ═══════ BACKEND API ═══════
 const API_URL='https://script.google.com/macros/s/AKfycbxRjOpiRs1jMpIt8obpexJBZDRtoOI1KPLhyFe0dd7SFx_YbWOjTa0DyjLBssRaEJbK/exec';
 const R2_URL='https://cb-media.sriempex.workers.dev';
-const _r2k=[65,108,112,104,97,36,75,120,57,45,82,109,51,81,118,55,87,110,50,90,112,56];
-const R2_SECRET=_r2k.map(c=>String.fromCharCode(c)).join('');
+// R2_SECRET removed — uploads now proxied through backend for security
 let adminSession=null; // {username, role, adminToken}
 let adminUsers=[]; // populated from backend on admin list fetch
 let manualTeams=[];
@@ -4720,28 +4943,43 @@ let manualTeams=[];
 //     .setMimeType(ContentService.MimeType.JSON);
 //
 // ══════ END checkTeamName ══════
+// Security: Rate limiter for API calls (must be before apiCall)
+const _apiRateLimit={lastCall:0,minInterval:200,burst:0,maxBurst:20};
+function _checkRateLimit(){
+  const now=Date.now();
+  if(now-_apiRateLimit.lastCall<_apiRateLimit.minInterval){
+    _apiRateLimit.burst++;
+    if(_apiRateLimit.burst>_apiRateLimit.maxBurst){console.warn('API rate limit hit');return false}
+  }else{_apiRateLimit.burst=Math.max(0,_apiRateLimit.burst-1)}
+  _apiRateLimit.lastCall=now;
+  return true;
+}
 async function apiCall(action,data={}){
   if(!_checkRateLimit()&&!['loginTeam','login','getEventConfig'].includes(action)){
     console.warn('Rate limited:',action);
     return{ok:false,error:'Too many requests. Please slow down.'};
   }
   try{
-    const params=new URLSearchParams({action});
-    if(adminSession)params.set('adminToken',adminSession.adminToken);
-    // For complex data (arrays/objects), encode as JSON in a 'payload' param
+    // Build POST body — no sensitive data in URL query strings
+    const body=new URLSearchParams({action});
+    if(adminSession)body.set('adminToken',adminSession.adminToken);
     const simpleKeys=['username','password','currentPassword','newPassword',
       'newUsername','newPassword','targetUsername','teamId','teamName','type',
       'code','recoveryKey'];
     let hasComplex=false;
     Object.entries(data).forEach(([k,v])=>{
       if(typeof v==='object'){hasComplex=true}
-      else if(simpleKeys.includes(k)){params.set(k,String(v))}
+      else if(simpleKeys.includes(k)){body.set(k,String(v))}
       else{hasComplex=true}
     });
     if(hasComplex){
-      params.set('payload',JSON.stringify(data));
+      body.set('payload',JSON.stringify(data));
     }
-    const resp=await fetch(API_URL+'?'+params.toString());
+    const resp=await fetch(API_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:body.toString()
+    });
     const text=await resp.text();
     try{return JSON.parse(text)}
     catch(e){console.error('Parse error:',text.substring(0,200));return {ok:false,error:'Invalid response from server'}}
@@ -4759,6 +4997,15 @@ function _cacheContent(key,data){
 function _restoreContentCache(){
   let restored=false;
   try{
+    const cv=localStorage.getItem('cb_contentVersion');
+    if(!cv){
+      localStorage.removeItem('cb_posts');
+      localStorage.removeItem('cb_media');
+      localStorage.removeItem('cb_intel');
+      return false;
+    }
+  }catch(e){}
+  try{
     const cp=localStorage.getItem('cb_posts');
     if(cp){const arr=JSON.parse(cp);posts.length=0;arr.forEach(p=>posts.push(p));restored=true;}
   }catch(e){}
@@ -4769,6 +5016,18 @@ function _restoreContentCache(){
   try{
     const ci=localStorage.getItem('cb_intel');
     if(ci){const arr=JSON.parse(ci);intelFields.length=0;arr.forEach(f=>intelFields.push(f));restored=true;}
+  }catch(e){}
+  // Restore grid theme immediately so first paint uses the correct theme
+  try{
+    const cachedTheme=localStorage.getItem('cb_gridTheme');
+    if(cachedTheme){_currentGridTheme=cachedTheme;applyGridTheme(cachedTheme);updateThemeLabel()}
+  }catch(e){}
+  // Restore operation name/font so console title doesn't flash
+  try{
+    const cachedOp=localStorage.getItem('cb_opName');
+    if(cachedOp){operationName=cachedOp;const ct=document.getElementById('consoleTitle');if(ct)ct.textContent='◈ '+operationName;document.title=operationName+' — Console'}
+    const cachedOpFont=localStorage.getItem('cb_opFont');
+    if(cachedOpFont){operationFont=cachedOpFont;applyOperationFont(operationFont)}
   }catch(e){}
   return restored;
 }
@@ -4847,9 +5106,31 @@ async function loadEventData(){
 }
 
 function applyEventConfig(cfg){
-  if(cfg.operationName){operationName=cfg.operationName;const ct=document.getElementById('consoleTitle');if(ct)ct.textContent='◈ '+operationName;document.title=operationName+' — Console'}
-  if(cfg.operationFont){operationFont=cfg.operationFont;applyOperationFont(operationFont)}
-  if(cfg.gridTheme){_currentGridTheme=cfg.gridTheme;applyGridTheme(cfg.gridTheme);updateThemeLabel()}
+  // Content version check — nuke stale cache if version mismatch or missing
+  try{
+    const cachedVer=localStorage.getItem('cb_contentVersion')||'';
+    const serverVer=cfg.contentVersion?String(cfg.contentVersion):'';
+    if(!serverVer){
+      localStorage.removeItem('cb_posts');
+      localStorage.removeItem('cb_media');
+      localStorage.removeItem('cb_intel');
+      localStorage.removeItem('cb_contentVersion');
+    }else if(cachedVer!==serverVer){
+      if(cachedVer && parseInt(cachedVer) > parseInt(serverVer)){
+      }else{
+        localStorage.removeItem('cb_posts');
+        localStorage.removeItem('cb_media');
+        localStorage.removeItem('cb_intel');
+        // Do NOT clear the in-memory arrays here — loadEventData will overwrite them
+        // momentarily. Clearing them causes a flash of "0 ITEMS" on the grid.
+        localStorage.setItem('cb_contentVersion',serverVer);
+      }
+    }else{
+    }
+  }catch(e){}
+  if(cfg.operationName){operationName=cfg.operationName;const ct=document.getElementById('consoleTitle');if(ct)ct.textContent='◈ '+operationName;document.title=operationName+' — Console';try{localStorage.setItem('cb_opName',cfg.operationName)}catch(e){}}
+  if(cfg.operationFont){operationFont=cfg.operationFont;applyOperationFont(operationFont);try{localStorage.setItem('cb_opFont',cfg.operationFont)}catch(e){}}
+  if(cfg.gridTheme){_currentGridTheme=cfg.gridTheme;applyGridTheme(cfg.gridTheme);updateThemeLabel();try{localStorage.setItem('cb_gridTheme',cfg.gridTheme)}catch(e){}}
   if(cfg.participantMode){regSettings.participantMode=cfg.participantMode;const sel=document.getElementById('apParticipantMode');if(sel)sel.value=cfg.participantMode}
   if(cfg.leaderboardStyle){regSettings.leaderboardStyle=cfg.leaderboardStyle;const sel=document.getElementById('apLeaderboardStyle');if(sel)sel.value=cfg.leaderboardStyle}
   if(cfg.landingTitle){regSettings.landingTitle=cfg.landingTitle;const el=document.getElementById('landingTitleEl');if(el)el.textContent=cfg.landingTitle;const inp=document.getElementById('apLandingTitle');if(inp)inp.value=cfg.landingTitle}
@@ -4911,6 +5192,8 @@ function applyEventConfig(cfg){
   updateLandingForMode();
   updateEventStatus();
   startGlobalEventTimer();
+  // Tutorial & briefing config
+  applyTutorialBriefingConfig(cfg);
 }
 
 // Admin auth now handled via login screen (submitLogin)
@@ -5036,7 +5319,7 @@ document.addEventListener('keydown',e=>{
     const curScreen=document.querySelector('.screen.active')?.id||'';
     if(curScreen==='loginScreen'){e.preventDefault();loginBack();return}
     if(curScreen==='regScreen'){e.preventDefault();regBack();return}
-    const adminIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','dashboardPanel','portalUsersPanel','scoringPanel','registrationPanel','appearancePanel'];
+    const adminIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','dashboardPanel','portalUsersPanel','scoringPanel','registrationPanel','appearancePanel','sessionMgmtPanel','tutorialConfigPanel'];
     for(const id of adminIds){
       const el=document.getElementById(id);
       if(el&&el.classList.contains('active')){
@@ -5117,7 +5400,7 @@ function goToConsole(){
   renderGrid(); // Ensure grid renders even if config hasn't loaded yet
   // If no team loaded (admin direct entry), show admin identity
   if(!currentVaultTeam&&isAdmin){
-    currentVaultTeam={id:'ADMIN',name:'ADMIN',type:'admin',members:['Admin'],memberDetails:[]};
+    currentVaultTeam={id:'ADMIN',name:'ADMIN',displayName:'ADMINISTRATOR',type:'admin',members:['Admin'],memberDetails:[]};
     updateConsoleForTeam(currentVaultTeam);
   }
 }
@@ -5275,6 +5558,8 @@ function saveEventConfigToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveConfigTimer);
   _saveConfigTimer=setTimeout(()=>{
+    // Cache visual settings to localStorage for instant restore
+    try{localStorage.setItem('cb_gridTheme',_currentGridTheme);localStorage.setItem('cb_opName',operationName);if(operationFont)localStorage.setItem('cb_opFont',operationFont)}catch(e){}
     apiCall('saveEventConfig',{config:{
       operationName,operationFont,
       gridTheme:_currentGridTheme,
@@ -5309,12 +5594,32 @@ function saveEventConfigToBackend(){
 }
 
 let _saveFeedTimer=null;
+// ── Centralized content version bump ──
+// All save functions share a single version stamp to prevent mismatches.
+// localStorage is written IMMEDIATELY (so cache restore works on refresh).
+// Server call is debounced to avoid duplicate saveEventConfig calls.
+let _pendingContentVersion = null;
+let _contentVersionTimer = null;
+function bumpContentVersion() {
+  if (!_pendingContentVersion) _pendingContentVersion = Date.now().toString();
+  // Write to localStorage IMMEDIATELY — cache restore depends on this
+  try { localStorage.setItem('cb_contentVersion', _pendingContentVersion); } catch(e) {}
+  // Debounce the server call so concurrent saves only trigger one saveEventConfig
+  clearTimeout(_contentVersionTimer);
+  _contentVersionTimer = setTimeout(() => {
+    const ver = _pendingContentVersion;
+    _pendingContentVersion = null;
+    apiCall('saveEventConfig', { config: { contentVersion: ver } });
+  }, 2000);
+  return _pendingContentVersion;
+}
+
 function saveFeedPostsToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveFeedTimer);
   _saveFeedTimer=setTimeout(()=>{
+    bumpContentVersion();
     apiCall('saveFeedPosts',{posts:posts.map(p=>{
-      // Only save real URLs, skip base64/blob (shouldn't happen with Drive pipeline but safety check)
       const url=(p.mediaUrl&&(p.mediaUrl.startsWith('data:')||p.mediaUrl.startsWith('blob:')))?'':p.mediaUrl||'';
       return{emoji:p.emoji,bg:p.bg,cap:p.cap,capFont:p.capFont,
         mediaUrl:url,mediaType:p.mediaType,
@@ -5329,6 +5634,7 @@ function saveMediaItemsToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveMediaTimer);
   _saveMediaTimer=setTimeout(()=>{
+    bumpContentVersion();
     apiCall('saveMediaItems',{items:mediaItems.map(m=>{
       const url=(m.fileUrl&&(m.fileUrl.startsWith('data:')||m.fileUrl.startsWith('blob:')))?'':m.fileUrl||'';
       return{type:m.type||'',title:m.name||'',titleFont:m.nameFont||'',
@@ -5349,6 +5655,7 @@ function saveIntelFieldsToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveIntelTimer);
   _saveIntelTimer=setTimeout(()=>{
+    bumpContentVersion();
     apiCall('saveIntelFields',{fields:intelFields.map(f=>({
       label:f.label||'',emoji:f.emoji||'',fieldType:f.type||'text',
       font:f.font||'',inputFont:f.inputFont||'',answer:f.answer||{}
@@ -5375,7 +5682,7 @@ function onLeaderboardStyleChange(){
 }
 
 // ── Admin Panel ──
-const adminPanelIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','dashboardPanel','portalUsersPanel','scoringPanel','registrationPanel','appearancePanel'];
+const adminPanelIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','dashboardPanel','portalUsersPanel','scoringPanel','registrationPanel','appearancePanel','sessionMgmtPanel','tutorialConfigPanel'];
 function closeAllAdminPanels(){
   adminPanelIds.forEach(id=>{
     const el=document.getElementById(id);
@@ -5533,7 +5840,7 @@ function closeEventControl(){
 }
 function closeAdminPanel(){closeEventControl()} // backward compat alias
 
-// ══════ REORGANIZED ADMIN PANEL FUNCTIONS (BUILD 20260222-1600) ══════
+// ══════ REORGANIZED ADMIN PANEL FUNCTIONS (BUILD 20260223-0600) ══════
 let _previewReturnPanel=null;
 
 function openDashboard(){closeAllAdminPanels();_instantShow(document.getElementById('dashboardPanel'));showAdminTabs('dashboardPanel');renderTeamMonitor();startTeamMonitor()}
@@ -5586,7 +5893,7 @@ function changeAdminPw(){
   const conf=document.getElementById('apConfPw').value;
   const msg=document.getElementById('apPwMsg');
   if(!cur){msg.className='ap-msg err';msg.textContent='✗ Enter current password';return}
-  if(nw.length<4){msg.className='ap-msg err';msg.textContent='✗ New password must be at least 4 characters';return}
+  if(nw.length<8){msg.className='ap-msg err';msg.textContent='✗ New password must be at least 8 characters';return}
   if(nw!==conf){msg.className='ap-msg err';msg.textContent='✗ Passwords do not match';return}
   msg.className='ap-msg';msg.textContent='Updating...';
   apiCall('changePassword',{username:adminSession.username,currentPassword:cur,newPassword:nw}).then(r=>{
@@ -6433,16 +6740,20 @@ let pendingMediaFileUrl='';
 let _uploadingIndicator=null;
 
 async function uploadFileToDrive(file,subfolder){
-  // Upload file to Cloudflare R2 via Worker
+  // Step 1: Get an upload ticket from backend (secret stays server-side)
+  const ticketResult=await apiCall('getUploadUrl',{subfolder:subfolder||''});
+  if(!ticketResult.ok)throw new Error(ticketResult.error||'Failed to get upload authorization');
+  
+  // Step 2: Upload to R2 Worker with the one-time ticket
   const formData=new FormData();
   formData.append('file',file);
   formData.append('fileName',file.name||'upload_'+Date.now());
   formData.append('mimeType',file.type||'application/octet-stream');
   formData.append('subfolder',subfolder||'');
   
-  const resp=await fetch(R2_URL+'/upload',{
+  const resp=await fetch(ticketResult.uploadUrl,{
     method:'POST',
-    headers:{'X-Upload-Secret':R2_SECRET},
+    headers:{'X-Upload-Ticket':ticketResult.ticket},
     body:formData
   });
   
@@ -6611,6 +6922,7 @@ function renderIntelForm(){
   let html='';
   intelFields.forEach((f,i)=>{
     const num=String(i+1).padStart(2,'0');
+    const dragHandle=isA?`<div class="drag-handle" onpointerdown="startIntelDrag(event,${i})" onclick="event.stopPropagation()" style="padding:0 4px;font-size:14px;color:#333;cursor:grab;user-select:none;touch-action:none">⋮⋮</div>`:'';
     const editBtn=isA?`<div class="admin-row-edit" onclick="event.stopPropagation();editIntelField(${i})">✎</div>`:'';
     const _lFont=resolveFont('intelLabel',f.font||'');
     const _iFont=resolveFont('intelInput',f.inputFont||'');
@@ -6621,27 +6933,27 @@ function renderIntelForm(){
     const ph=f.placeholder||'···';
     if(f.type==='money'){
       const _moneyIStyle=_iFont?`border:none;background:transparent;box-shadow:none;${fontStyle(_iFont)}`:'border:none;background:transparent;box-shadow:none';
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="${_moneyIStyle}" placeholder="${ph}" data-idx="${i}" oninput="formatMoney(this)" ${keyHandler}></div>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row" data-idx="${i}">${dragHandle}${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="${_moneyIStyle}" placeholder="${ph}" data-idx="${i}" oninput="formatMoney(this)" ${keyHandler}></div>${clearBtn}</div>`;
     }else if(f.type==='phone'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${f.placeholder||'(XXX) XXX-XXXX'}" data-idx="${i}" oninput="formatPhone(this)" ${keyHandler}>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row" data-idx="${i}">${dragHandle}${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${f.placeholder||'(XXX) XXX-XXXX'}" data-idx="${i}" oninput="formatPhone(this)" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='number'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${ph}" data-idx="${i}" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9.\\-]/g,'')" ${keyHandler}>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row" data-idx="${i}">${dragHandle}${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${ph}" data-idx="${i}" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9.\\-]/g,'')" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='date'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${f.placeholder||'MM/DD/YYYY'}" data-idx="${i}" oninput="formatDate(this)" maxlength="10" ${keyHandler}>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row" data-idx="${i}">${dragHandle}${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${f.placeholder||'MM/DD/YYYY'}" data-idx="${i}" oninput="formatDate(this)" maxlength="10" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='email'){
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${f.placeholder||'name@domain.com'}" data-idx="${i}" inputmode="email" ${keyHandler}>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row" data-idx="${i}">${dragHandle}${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${f.placeholder||'name@domain.com'}" data-idx="${i}" inputmode="email" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='plate'){
       const _plateIStyle=`text-transform:uppercase;letter-spacing:2px${_iFont?';'+fontStyle(_iFont):''}`;
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${f.placeholder||'ABC-1234'}" data-idx="${i}" style="${_plateIStyle}" oninput="this.value=this.value.toUpperCase()" maxlength="12" ${keyHandler}>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row" data-idx="${i}">${dragHandle}${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input" placeholder="${f.placeholder||'ABC-1234'}" data-idx="${i}" style="${_plateIStyle}" oninput="this.value=this.value.toUpperCase()" maxlength="12" ${keyHandler}>${clearBtn}</div>`;
     }else if(f.type==='select'){
       const opts=(f.options||[]).map(o=>`<option value="${o}">${o}</option>`).join('');
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><select class="intel-exp-input intel-select"${iStyle} data-idx="${i}"><option value="">— Select —</option>${opts}</select>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row" data-idx="${i}">${dragHandle}${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><select class="intel-exp-input intel-select"${iStyle} data-idx="${i}"><option value="">— Select —</option>${opts}</select>${clearBtn}</div>`;
     }else if(f.type==='dual'){
       const ph1=f.placeholder1||'Value 1';
       const ph2=f.placeholder2||'Value 2';
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-dual-wrap"><input class="intel-exp-input"${iStyle} placeholder="${ph1}" data-idx="${i}" ${keyHandler}><span class="intel-dual-sep">&</span><input class="intel-exp-input"${iStyle} placeholder="${ph2}" data-idx="${i}b" ${keyHandler}></div>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row" data-idx="${i}">${dragHandle}${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-dual-wrap"><input class="intel-exp-input"${iStyle} placeholder="${ph1}" data-idx="${i}" ${keyHandler}><span class="intel-dual-sep">&</span><input class="intel-exp-input"${iStyle} placeholder="${ph2}" data-idx="${i}b" ${keyHandler}></div>${clearBtn}</div>`;
     }else{
-      html+=`<div class="intel-exp-row">${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${ph}" data-idx="${i}" ${keyHandler}>${clearBtn}</div>`;
+      html+=`<div class="intel-exp-row" data-idx="${i}">${dragHandle}${editBtn}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><input class="intel-exp-input"${iStyle} placeholder="${ph}" data-idx="${i}" ${keyHandler}>${clearBtn}</div>`;
     }
   });
   if(isA)html+=`<div class="admin-add-btn" style="margin-top:10px;padding:14px;max-width:600px;width:100%" onclick="addIntelField()">+ Add Intel Field</div>`;
@@ -6932,16 +7244,12 @@ function saveFeedPost(i){
   saveFeedPostsToBackend();
 }
 
-// ── R2 Cleanup — delete file from R2 when removed from portal ──
+// ── R2 Cleanup — delete file from R2 via backend proxy ──
 function deleteFromR2(url){
   if(!url||!url.includes('.workers.dev/file/'))return;
   const key=url.split('/file/')[1];
   if(!key)return;
-  fetch(R2_URL+'/delete',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','X-Upload-Secret':R2_SECRET},
-    body:JSON.stringify({key:key})
-  }).catch(e=>{});
+  apiCall('proxyDeleteFile',{fileKey:key}).catch(e=>{});
 }
 
 function deleteFeedPost(i){const delPost=posts[i];if(delPost&&delPost.imageUrl)deleteFromR2(delPost.imageUrl);posts.splice(i,1);if(currentPost>=posts.length)currentPost=Math.max(0,posts.length-1);hideEditModal();renderFeed();renderGrid();
@@ -7681,6 +7989,363 @@ function getEventState(){
 }
 
 
+// ══════ SESSION MANAGEMENT ══════
+function openSessionMgmt(){closeAllAdminPanels();_instantShow(document.getElementById('sessionMgmtPanel'));showAdminTabs('sessionMgmtPanel')}
+function closeSessionMgmt(){const el=document.getElementById('sessionMgmtPanel');el.classList.remove('active');el.style.cssText=''}
+function destroySessions(mode){
+  const labels={all:'DESTROY ALL SESSIONS (including yours)',teams:'DESTROY ALL TEAM SESSIONS',exceptMe:'DESTROY ALL SESSIONS EXCEPT YOURS'};
+  if(!confirm(labels[mode]+'?\n\nAffected users will be kicked to the login screen immediately.')){return}
+  const msg=document.getElementById('sessionMgmtMsg');
+  msg.className='ap-msg';msg.textContent='Destroying sessions...';
+  apiCall('destroySessions',{mode}).then(r=>{
+    if(r.ok){
+      msg.className='ap-msg ok';msg.textContent='✓ '+r.message;
+      if(mode==='exceptMe'&&r.newToken){
+        adminSession.adminToken=r.newToken;
+        saveSession();
+      }else if(mode==='all'){
+        setTimeout(()=>{localStorage.removeItem('cb_session');location.reload()},1500);
+      }
+    }else{
+      msg.className='ap-msg err';msg.textContent='✗ '+(r.error||'Failed');
+    }
+  });
+}
+
+// ══════ TUTORIAL SYSTEM ══════
+const TUTORIAL_STEPS_DEFAULT=[
+  {id:'grid',selector:'#consoleGrid',icon:'🖥️',title:'Mission Console',body:'These are your mission panels. Each one contains different intelligence and tools. Tap any panel to open it.',enabled:true},
+  {id:'feed',selector:'.crt-monitor[data-tile="feed"]',icon:'📡',title:'Intelligence Feed',body:'Surveillance imagery and intercepted visuals from the field. Check here for visual clues.',enabled:true},
+  {id:'media',selector:'.crt-monitor[data-tile="media"]',icon:'📁',title:'Evidence Locker',body:'Classified files and documents. Some may be vault-locked and require a code to access.',enabled:true},
+  {id:'intel',selector:'.crt-monitor[data-tile="intel"]',icon:'🔍',title:'Intel Submissions',body:'Enter your answers here. Fill in each field with the intelligence you\'ve gathered, then hit TRANSMIT.',enabled:true},
+  {id:'vault',selector:'.crt-monitor[data-tile="vault"]',icon:'🔐',title:'Vault',body:'Enter secret codes to unlock classified evidence. Codes can be found hidden throughout the mission.',enabled:true},
+  {id:'timer',selector:'.timer-block',icon:'⏱️',title:'Mission Timer',body:'Keep an eye on the clock. When time runs out, the mission is over.',enabled:true},
+  {id:'identity',selector:'.topbar-identity',icon:'🪪',title:'Your Identity',body:'Your team name and details. Tap to see your team card with member info and notifications.',enabled:true},
+  {id:'notepad',selector:'#notepadTrigger',icon:'📝',title:'Notepad',body:'Your personal scratchpad. Jot down clues, codes, or anything you need to remember.',enabled:true}
+];
+let tutorialSteps=JSON.parse(JSON.stringify(TUTORIAL_STEPS_DEFAULT));
+let tutorialEnabled=true;
+let _tutCurrentStep=0;
+let _tutIsPreview=false;
+
+function openTutorialConfig(){
+  closeAllAdminPanels();_instantShow(document.getElementById('tutorialConfigPanel'));showAdminTabs('tutorialConfigPanel');
+  renderTutorialStepList();
+  const tg=document.getElementById('tutGlobalToggle');
+  tg.classList.toggle('on',tutorialEnabled);
+  const bg=document.getElementById('briefingGlobalToggle');
+  bg.classList.toggle('on',!!briefingConfig.enabled);
+  // Restore briefing form
+  const st=document.getElementById('briefingSourceType');
+  st.value=briefingConfig.sourceType||'upload';
+  onBriefingTypeChange();
+  document.getElementById('briefingTitle').value=briefingConfig.title||'';
+  document.getElementById('briefingSubtitle').value=briefingConfig.subtitle||'';
+  if(briefingConfig.sourceType==='upload'){document.getElementById('briefingFileUrl').value=briefingConfig.videoUrl||''}
+  else{document.getElementById('briefingVideoUrl').value=briefingConfig.videoUrl||''}
+}
+function closeTutorialConfig(){const el=document.getElementById('tutorialConfigPanel');el.classList.remove('active');el.style.cssText=''}
+
+function renderTutorialStepList(){
+  const list=document.getElementById('tutStepList');
+  list.innerHTML=tutorialSteps.map((s,i)=>`<div class="tut-step-card" data-tut-idx="${i}">
+    <div class="tut-drag" onpointerdown="startTutDrag(event,${i})">⋮⋮</div>
+    <span class="tut-icon">${s.icon}</span>
+    <div class="tut-text"><input value="${s.body.replace(/"/g,'&quot;')}" onchange="updateTutStep(${i},this.value)"></div>
+    <div class="tut-step-toggle${s.enabled?' on':''}" onclick="toggleTutStep(${i})"></div>
+  </div>`).join('');
+}
+
+function toggleTutorialGlobal(){tutorialEnabled=!tutorialEnabled;document.getElementById('tutGlobalToggle').classList.toggle('on',tutorialEnabled);saveTutorialConfig()}
+function toggleTutStep(i){tutorialSteps[i].enabled=!tutorialSteps[i].enabled;renderTutorialStepList();saveTutorialConfig()}
+function updateTutStep(i,text){tutorialSteps[i].body=text;saveTutorialConfig()}
+
+// Tutorial step drag reorder
+let _tutDrag={active:false,fromIdx:null,ghost:null,overIdx:null};
+function startTutDrag(e,idx){
+  e.preventDefault();e.stopPropagation();
+  const target=e.target.closest('.tut-step-card');
+  if(!target)return;
+  _tutDrag={active:true,fromIdx:idx,ghost:null,overIdx:null};
+  const rect=target.getBoundingClientRect();
+  const ghost=target.cloneNode(true);ghost.className='drag-ghost';
+  ghost.style.width=rect.width+'px';ghost.style.height=rect.height+'px';
+  ghost.style.left=rect.left+'px';ghost.style.top=rect.top+'px';
+  document.body.appendChild(ghost);_tutDrag.ghost=ghost;
+  target.classList.add('dragging');
+  const ox=e.clientX-rect.left,oy=e.clientY-rect.top;
+  function onMove(ev){
+    const cx=ev.clientX||0,cy=ev.clientY||0;
+    ghost.style.left=(cx-ox)+'px';ghost.style.top=(cy-oy)+'px';
+    ghost.style.display='none';const el=document.elementFromPoint(cx,cy);ghost.style.display='';
+    document.querySelectorAll('.tut-step-card').forEach(c=>c.classList.remove('drag-over'));
+    if(el){const dt=el.closest('.tut-step-card');if(dt){const di=parseInt(dt.dataset.tutIdx);if(!isNaN(di)&&di!==idx){dt.classList.add('drag-over');_tutDrag.overIdx=di}}}
+  }
+  function onEnd(){
+    window.removeEventListener('pointermove',onMove);window.removeEventListener('pointerup',onEnd);
+    if(ghost)ghost.remove();
+    document.querySelectorAll('.tut-step-card').forEach(c=>c.classList.remove('dragging','drag-over'));
+    if(_tutDrag.overIdx!==null&&_tutDrag.overIdx!==_tutDrag.fromIdx){
+      const item=tutorialSteps.splice(_tutDrag.fromIdx,1)[0];
+      tutorialSteps.splice(_tutDrag.overIdx,0,item);
+      renderTutorialStepList();saveTutorialConfig();
+    }
+    _tutDrag={active:false,fromIdx:null,ghost:null,overIdx:null};
+  }
+  window.addEventListener('pointermove',onMove);window.addEventListener('pointerup',onEnd);
+}
+
+function saveTutorialConfig(){
+  apiCall('saveEventConfig',{config:{
+    tutorialEnabled:tutorialEnabled,
+    tutorialSteps:JSON.stringify(tutorialSteps),
+    briefingConfig:JSON.stringify(briefingConfig)
+  }});
+}
+
+function resetTutorialForAll(){
+  if(!confirm('Reset tutorial for all teams? Everyone will see the tutorial again on their next login.'))return;
+  apiCall('saveEventConfig',{config:{tutorialGen:String(Date.now())}}).then(r=>{
+    if(r.ok){const msg=document.getElementById('briefingMsg');if(msg){msg.className='ap-msg ok';msg.textContent='✓ Tutorial reset for all teams';setTimeout(()=>msg.textContent='',3000)}}
+  });
+}
+
+function previewTutorial(){
+  closeTutorialConfig();
+  _tutIsPreview=true;
+  startTutorial();
+}
+
+// Tutorial spotlight engine
+function startTutorial(){
+  const enabled=tutorialSteps.filter(s=>s.enabled);
+  if(!enabled.length)return;
+  _tutCurrentStep=0;
+  document.getElementById('tutorialOverlay').classList.add('active');
+  showTutorialStep();
+}
+
+function showTutorialStep(){
+  const enabled=tutorialSteps.filter(s=>s.enabled);
+  if(_tutCurrentStep<0||_tutCurrentStep>=enabled.length){endTutorial();return}
+  const step=enabled[_tutCurrentStep];
+  const el=document.querySelector(step.selector);
+  const spotlight=document.getElementById('tutSpotlight');
+  const tooltip=document.getElementById('tutTooltip');
+  const title=document.getElementById('tutTooltipTitle');
+  const body=document.getElementById('tutTooltipBody');
+  const dots=document.getElementById('tutDots');
+  const backBtn=document.getElementById('tutBtnBack');
+  const nextBtn=document.getElementById('tutBtnNext');
+
+  title.textContent=step.title;
+  body.textContent=step.body;
+  dots.innerHTML=enabled.map((_,i)=>`<div class="tut-tooltip-dot${i===_tutCurrentStep?' active':''}"></div>`).join('');
+  backBtn.style.display=_tutCurrentStep===0?'none':'';
+  nextBtn.textContent=_tutCurrentStep===enabled.length-1?'DONE':'NEXT';
+
+  if(el){
+    const rect=el.getBoundingClientRect();
+    const pad=8;
+    spotlight.style.left=(rect.left-pad)+'px';
+    spotlight.style.top=(rect.top-pad)+'px';
+    spotlight.style.width=(rect.width+pad*2)+'px';
+    spotlight.style.height=(rect.height+pad*2)+'px';
+    spotlight.style.display='block';
+
+    // Position tooltip below or above element
+    const tipH=180;
+    if(rect.bottom+tipH+20<window.innerHeight){
+      tooltip.style.top=(rect.bottom+16)+'px';
+      tooltip.style.bottom='auto';
+    }else{
+      tooltip.style.top='auto';
+      tooltip.style.bottom=(window.innerHeight-rect.top+16)+'px';
+    }
+    tooltip.style.left=Math.max(16,Math.min(rect.left,window.innerWidth-340))+'px';
+  }else{
+    spotlight.style.display='none';
+    tooltip.style.top='50%';tooltip.style.left='50%';
+    tooltip.style.transform='translate(-50%,-50%)';
+  }
+}
+
+function tutorialStep(dir){
+  const enabled=tutorialSteps.filter(s=>s.enabled);
+  _tutCurrentStep+=dir;
+  if(_tutCurrentStep>=enabled.length){endTutorial();return}
+  if(_tutCurrentStep<0)_tutCurrentStep=0;
+  showTutorialStep();
+}
+
+function endTutorial(){
+  document.getElementById('tutorialOverlay').classList.remove('active');
+  document.getElementById('tutSpotlight').style.display='none';
+  if(!_tutIsPreview){
+    // Mark tutorial as seen for this team
+    const teamId=currentVaultTeam?.id||'unknown';
+    try{localStorage.setItem('cb_tutSeen_'+teamId,localStorage.getItem('cb_tutorialGen')||'1')}catch(e){}
+    // Check if briefing should show
+    checkShowBriefing();
+  }
+  _tutIsPreview=false;
+}
+
+function shouldShowTutorial(){
+  if(!tutorialEnabled)return false;
+  if(isAdmin&&!document.body.classList.contains('player-preview'))return false;
+  const teamId=currentVaultTeam?.id;
+  if(!teamId)return false;
+  const seen=localStorage.getItem('cb_tutSeen_'+teamId)||'';
+  const gen=localStorage.getItem('cb_tutorialGen')||'1';
+  return seen!==gen;
+}
+
+// ══════ MISSION BRIEFING ══════
+let briefingConfig={enabled:false,sourceType:'upload',videoUrl:'',title:'',subtitle:''};
+
+function toggleBriefingGlobal(){briefingConfig.enabled=!briefingConfig.enabled;document.getElementById('briefingGlobalToggle').classList.toggle('on',briefingConfig.enabled);saveTutorialConfig()}
+
+function onBriefingTypeChange(){
+  const type=document.getElementById('briefingSourceType').value;
+  briefingConfig.sourceType=type;
+  document.getElementById('briefingUploadZone').style.display=type==='upload'?'':'none';
+  document.getElementById('briefingUrlZone').style.display=type!=='upload'?'':'none';
+  saveTutorialConfig();
+}
+
+function saveBriefingConfig(){
+  const type=document.getElementById('briefingSourceType').value;
+  briefingConfig.sourceType=type;
+  briefingConfig.title=document.getElementById('briefingTitle').value.trim();
+  briefingConfig.subtitle=document.getElementById('briefingSubtitle').value.trim();
+  if(type==='upload'){briefingConfig.videoUrl=document.getElementById('briefingFileUrl').value.trim()}
+  else{briefingConfig.videoUrl=document.getElementById('briefingVideoUrl').value.trim()}
+  saveTutorialConfig();
+}
+
+function uploadBriefingVideo(input){
+  if(!input.files||!input.files[0])return;
+  const file=input.files[0];
+  const msg=document.getElementById('briefingMsg');
+  msg.className='ap-msg';msg.textContent='Uploading video...';
+  // Use the same upload ticket system as media
+  apiCall('getUploadUrl',{filename:file.name,contentType:file.type}).then(r=>{
+    if(!r.ok){msg.className='ap-msg err';msg.textContent='✗ '+r.error;return}
+    const formData=new FormData();formData.append('file',file);
+    fetch(r.uploadUrl,{method:'POST',headers:{'X-Upload-Ticket':r.ticket},body:formData}).then(resp=>resp.json()).then(u=>{
+      if(u.ok){
+        briefingConfig.videoUrl=u.url;
+        document.getElementById('briefingFileUrl').value=u.url;
+        msg.className='ap-msg ok';msg.textContent='✓ Video uploaded';
+        saveBriefingConfig();
+      }else{msg.className='ap-msg err';msg.textContent='✗ Upload failed'}
+    }).catch(()=>{msg.className='ap-msg err';msg.textContent='✗ Upload error'});
+  });
+}
+
+function resetBriefingForAll(){
+  if(!confirm('Reset briefing for all teams? Everyone will see the briefing again on their next login.'))return;
+  apiCall('saveEventConfig',{config:{briefingGen:String(Date.now())}}).then(r=>{
+    if(r.ok){const msg=document.getElementById('briefingMsg');if(msg){msg.className='ap-msg ok';msg.textContent='✓ Briefing reset for all teams';setTimeout(()=>msg.textContent='',3000)}}
+  });
+}
+
+function previewBriefing(){
+  closeTutorialConfig();
+  showBriefingModal();
+}
+
+function checkShowBriefing(){
+  if(!briefingConfig.enabled||!briefingConfig.videoUrl)return;
+  if(isAdmin&&!document.body.classList.contains('player-preview'))return;
+  const teamId=currentVaultTeam?.id;
+  if(!teamId)return;
+  const seen=localStorage.getItem('cb_briefSeen_'+teamId)||'';
+  const gen=localStorage.getItem('cb_briefingGen')||'1';
+  if(seen===gen)return;
+  showBriefingModal();
+}
+
+function showBriefingModal(){
+  const modal=document.getElementById('briefingModal');
+  const container=document.getElementById('briefingVideoContainer');
+  const titleEl=document.getElementById('briefingModalTitle');
+  const subEl=document.getElementById('briefingModalSubtitle');
+  titleEl.textContent=briefingConfig.title||'Mission Briefing';
+  subEl.textContent=briefingConfig.subtitle||'';
+  // Render video based on source type
+  const url=briefingConfig.videoUrl||'';
+  if(briefingConfig.sourceType==='youtube'||url.includes('youtube.com')||url.includes('youtu.be')||url.includes('vimeo.com')){
+    let embedUrl=url;
+    const ytMatch=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+    if(ytMatch)embedUrl='https://www.youtube.com/embed/'+ytMatch[1]+'?autoplay=1';
+    const vimeoMatch=url.match(/vimeo\.com\/(\d+)/);
+    if(vimeoMatch)embedUrl='https://player.vimeo.com/video/'+vimeoMatch[1]+'?autoplay=1';
+    container.innerHTML=`<iframe src="${embedUrl}" allow="autoplay;fullscreen" allowfullscreen></iframe>`;
+  }else{
+    container.innerHTML=`<video src="${url}" controls autoplay playsinline></video>`;
+  }
+  modal.classList.add('active');
+}
+
+function dismissBriefing(){
+  const modal=document.getElementById('briefingModal');
+  modal.classList.remove('active');
+  // Stop video
+  const container=document.getElementById('briefingVideoContainer');
+  container.innerHTML='';
+  // Mark seen
+  const teamId=currentVaultTeam?.id;
+  if(teamId){
+    try{localStorage.setItem('cb_briefSeen_'+teamId,localStorage.getItem('cb_briefingGen')||'1')}catch(e){}
+  }
+}
+
+// ══════ INTEL DRAG REORDER ══════
+// Extend the existing drag system to support intel fields
+function startIntelDrag(e,idx){
+  e.preventDefault();e.stopPropagation();
+  const target=e.target.closest('.intel-exp-row');
+  if(!target)return;
+  _drag={active:true,type:'intel',fromIdx:idx,ghost:null,overIdx:null};
+  const rect=target.getBoundingClientRect();
+  const ghost=target.cloneNode(true);ghost.className='drag-ghost';
+  ghost.style.width=rect.width+'px';ghost.style.height=rect.height+'px';
+  ghost.style.left=rect.left+'px';ghost.style.top=rect.top+'px';
+  document.body.appendChild(ghost);_drag.ghost=ghost;
+  target.classList.add('dragging');
+  const ox=e.clientX-rect.left,oy=e.clientY-rect.top;
+  function onMove(ev){
+    const cx=ev.clientX||0,cy=ev.clientY||0;
+    ghost.style.left=(cx-ox)+'px';ghost.style.top=(cy-oy)+'px';
+    ghost.style.display='none';const el=document.elementFromPoint(cx,cy);ghost.style.display='';
+    document.querySelectorAll('.intel-exp-row[data-idx]').forEach(c=>c.classList.remove('drag-over'));
+    if(el){const dt=el.closest('.intel-exp-row[data-idx]');if(dt){const di=parseInt(dt.dataset.idx);if(!isNaN(di)&&di!==idx){dt.classList.add('drag-over');_drag.overIdx=di}}}
+  }
+  function onEnd(){
+    window.removeEventListener('pointermove',onMove);window.removeEventListener('pointerup',onEnd);
+    if(ghost)ghost.remove();
+    document.querySelectorAll('.intel-exp-row').forEach(c=>c.classList.remove('dragging','drag-over'));
+    if(_drag.overIdx!==null&&_drag.overIdx!==_drag.fromIdx){
+      const item=intelFields.splice(_drag.fromIdx,1)[0];
+      intelFields.splice(_drag.overIdx,0,item);
+      renderIntelForm();renderGrid();saveIntelFieldsToBackend();
+    }
+    _drag={active:false,type:null,fromIdx:null,ghost:null,overIdx:null};
+  }
+  window.addEventListener('pointermove',onMove);window.addEventListener('pointerup',onEnd);
+}
+
+// ══════ APPLY TUTORIAL/BRIEFING CONFIG FROM BACKEND ══════
+function applyTutorialBriefingConfig(cfg){
+  if(cfg.tutorialEnabled!==undefined)tutorialEnabled=(cfg.tutorialEnabled==='true'||cfg.tutorialEnabled===true);
+  if(cfg.tutorialSteps){try{tutorialSteps=JSON.parse(cfg.tutorialSteps)}catch(e){}}
+  if(cfg.tutorialGen){try{localStorage.setItem('cb_tutorialGen',String(cfg.tutorialGen))}catch(e){}}
+  if(cfg.briefingGen){try{localStorage.setItem('cb_briefingGen',String(cfg.briefingGen))}catch(e){}}
+  if(cfg.briefingConfig){try{briefingConfig=JSON.parse(cfg.briefingConfig)}catch(e){}}
+}
+
 // ══════ FUTURE UPGRADES (NOTED) ══════
 // TODO: Pre-event Lobby — Holding screen with countdown for teams before event starts
 // TODO: Hint System — Timed or purchasable hints per puzzle, configurable in admin
@@ -7688,8 +8353,10 @@ function getEventState(){
 // TODO: Puzzle Builder — Multi-stage puzzle flow with progression gating
 // ══════ END FUTURE NOTES ══════
 setInterval(tickTimer,1000);
-// Initial dynamic renders
-renderGrid();
+// Initial dynamic renders — defer renderGrid to after restoreSession
+// so cached posts/media/intel are in memory when the grid first paints.
+// renderGrid() will be called by restoreSession → applyScreenAndPanel,
+// or by loadEventData if no session exists.
 renderIntelForm();
 buildRegForm();
 updateLandingForMode();
@@ -7932,6 +8599,16 @@ function restoreSession(){
       syncAdminDropdownToggles();
       restoreGameState();
       applyScreenAndPanel();
+      // Apply cached theme + operation name BEFORE first renderGrid
+      try{
+        const ct=localStorage.getItem('cb_gridTheme');
+        if(ct){_currentGridTheme=ct;applyGridTheme(ct)}
+        const cn=localStorage.getItem('cb_opName');
+        if(cn){operationName=cn;const el=document.getElementById('consoleTitle');if(el)el.textContent='◈ '+cn;document.title=cn+' — Console'}
+        const cf=localStorage.getItem('cb_opFont');
+        if(cf){operationFont=cf;applyOperationFont(cf)}
+      }catch(e){}
+      renderGrid(); // Render grid with cached data + theme immediately
       startElapsedTimer();
       // Load fresh data from backend in background — UI already showing
       loadEventData();
@@ -7942,6 +8619,16 @@ function restoreSession(){
       updateConsoleForTeam(currentVaultTeam);
       restoreGameState();
       applyScreenAndPanel();
+      // Apply cached theme + operation name BEFORE first renderGrid
+      try{
+        const ct=localStorage.getItem('cb_gridTheme');
+        if(ct){_currentGridTheme=ct;applyGridTheme(ct)}
+        const cn=localStorage.getItem('cb_opName');
+        if(cn){operationName=cn;const el=document.getElementById('consoleTitle');if(el)el.textContent='◈ '+cn;document.title=cn+' — Console'}
+        const cf=localStorage.getItem('cb_opFont');
+        if(cf){operationFont=cf;applyOperationFont(cf)}
+      }catch(e){}
+      renderGrid(); // Render grid with cached data + theme immediately
       startElapsedTimer();
       // Load config and fresh content in background — UI already showing
       apiCall('getEventConfig').then(cfg=>{
@@ -7977,7 +8664,9 @@ function restoreSession(){
 }
 
 // Auto-restore on page load
-restoreSession();
+if(!restoreSession()){
+  renderGrid(); // No session — render default grid
+}
 
 // ═══════════════════════════════════════════════════════════════
 // BROWSER HISTORY — Back button / gesture support (Fix #3)
@@ -8023,7 +8712,7 @@ restoreSession();
     }
 
     // 4. Any admin panel open?
-    const adminIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','dashboardPanel','portalUsersPanel','scoringPanel','registrationPanel','appearancePanel'];
+    const adminIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','dashboardPanel','portalUsersPanel','scoringPanel','registrationPanel','appearancePanel','sessionMgmtPanel','tutorialConfigPanel'];
     for(const id of adminIds){
       const el=document.getElementById(id);
       if(el&&el.classList.contains('active')){
@@ -8065,20 +8754,9 @@ restoreSession();
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260222-1600';
+const _BUILD_ID = '20260223-0730';
 // Security: HTML sanitizer to prevent XSS
 function sanitizeHTML(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')}
-// Security: Rate limiter for API calls
-const _apiRateLimit={lastCall:0,minInterval:200,burst:0,maxBurst:20};
-function _checkRateLimit(){
-  const now=Date.now();
-  if(now-_apiRateLimit.lastCall<_apiRateLimit.minInterval){
-    _apiRateLimit.burst++;
-    if(_apiRateLimit.burst>_apiRateLimit.maxBurst){console.warn('API rate limit hit');return false}
-  }else{_apiRateLimit.burst=Math.max(0,_apiRateLimit.burst-1)}
-  _apiRateLimit.lastCall=now;
-  return true;
-}
 (function(){
   function showBuildStamp(status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
@@ -8174,14 +8852,20 @@ if(!isAdmin){
   }
 }
 
-// Detect dev tools open (debugger trap — non-admin only)
+// Detect dev tools open (debugger pause — non-admin only)
+// Softened: shows overlay warning instead of destroying the page
+let _devtoolsWarned=false;
 setInterval(()=>{
-  if(isAdmin)return;
+  if(isAdmin||_devtoolsWarned)return;
   const t=performance.now();
   debugger;
   if(performance.now()-t>100){
-    // Dev tools detected — redirect or blank
-    document.body.innerHTML='<div style="background:#000;color:#f00;display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;font-size:20px;letter-spacing:3px">ACCESS VIOLATION DETECTED</div>';
+    _devtoolsWarned=true;
+    const overlay=document.createElement('div');
+    overlay.id='devtoolsOverlay';
+    overlay.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-family:monospace';
+    overlay.innerHTML='<div style="color:#ff3333;font-size:18px;letter-spacing:3px">⚠ DEVELOPER TOOLS DETECTED</div><div style="color:#888;font-size:13px;max-width:400px;text-align:center;line-height:1.6">Please close developer tools to continue the experience.</div><button onclick="this.parentElement.remove();_devtoolsWarned=false" style="margin-top:12px;padding:10px 28px;background:none;border:1px solid #555;color:#aaa;cursor:pointer;font-family:monospace;letter-spacing:2px;border-radius:4px">DISMISS</button>';
+    document.body.appendChild(overlay);
   }
 },4000);
 
@@ -8253,6 +8937,7 @@ function cycleThemePreview(dir){
 function applyThemeFromPreview(){
   _currentGridTheme=_gridThemes[_previewThemeIdx].id;
   applyGridTheme(_currentGridTheme);
+  try{localStorage.setItem('cb_gridTheme',_currentGridTheme)}catch(e){}
   document.getElementById('themePreviewOverlay').style.display='none';
   updateThemeLabel();
   const blip=document.getElementById('blipGridTheme');
