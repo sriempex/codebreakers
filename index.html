@@ -4186,6 +4186,7 @@ function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(
 function _refreshPanelData(panel){
   if(_isTutorialRunning())return; // Don't refresh during tutorial — causes badge flicker
   if(panel==='feed'){
+    if(_saveFeedTimer){return} // Save pending — don't overwrite with stale backend data
     apiCall('getFeedPosts').then(r=>{
       if(r.ok&&r.posts){
         const changed=JSON.stringify(r.posts)!==JSON.stringify(posts.map(p=>({emoji:p.emoji,bg:p.bg,cap:p.cap,capFont:p.capFont||'',mediaUrl:p.mediaUrl||'',mediaType:p.mediaType||'image',focalX:p.focalX||50,focalY:p.focalY||50})));
@@ -4193,6 +4194,7 @@ function _refreshPanelData(panel){
       }
     });
   }else if(panel==='media'){
+    if(_saveMediaTimer){return} // Save pending
     apiCall('getMediaItems').then(r=>{
       if(r.ok&&r.items){
         const changed=r.items.length!==mediaItems.length||JSON.stringify(r.items)!==JSON.stringify(mediaItems.map(m=>({name:m.name,desc:m.desc||'',url:m.url,type:m.type||'image',nameFont:m.nameFont||'',descFont:m.descFont||'',vaultLocked:m.vaultLocked||false})));
@@ -5936,6 +5938,7 @@ function saveFeedPostsToBackend(){
         focalX:p.focalX||50,focalY:p.focalY||50};
     })}).then(r=>{if(!r.ok)console.warn('Feed save failed:',r.error)});
     _cacheContent('cb_posts',posts);
+    _saveFeedTimer=null;
   },1500);
 }
 
@@ -5957,6 +5960,7 @@ function saveMediaItemsToBackend(){
         vaultCodename:m.vaultCodename||''};
     })}).then(r=>{if(!r.ok)console.warn('Media save failed:',r.error)});
     _cacheContent('cb_media',mediaItems);
+    _saveMediaTimer=null;
   },1500);
 }
 
