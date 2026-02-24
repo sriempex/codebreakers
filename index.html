@@ -5946,9 +5946,29 @@ function saveFeedPostsToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveFeedTimer);
   _feedSaveInFlight=true;
-  _saveFeedTimer=setTimeout(()=>{
+  _saveFeedTimer=setTimeout(async()=>{
     _saveFeedTimer=null;
     bumpContentVersion();
+    // Retry R2 upload for any local-only media before saving
+    for(let i=0;i<posts.length;i++){
+      const p=posts[i];
+      if(p.mediaUrl&&(p.mediaUrl.startsWith('data:')||p.mediaUrl.startsWith('blob:'))){
+        console.log('[FEED] Post',i,'has local-only media, attempting R2 re-upload...');
+        try{
+          const blob=await(await fetch(p.mediaUrl)).blob();
+          const ext=(blob.type.split('/')[1]||'jpg').replace('jpeg','jpg');
+          const file=new File([blob],'feed_'+Date.now()+'_'+i+'.'+ext,{type:blob.type});
+          const result=await uploadFileToDrive(file,'feed');
+          if(result&&result.directUrl){
+            console.log('[FEED] R2 re-upload SUCCESS for post',i,':',result.directUrl.substring(0,80));
+            posts[i].mediaUrl=result.directUrl;
+            renderFeed();renderGrid();
+          }
+        }catch(e){
+          console.warn('[FEED] R2 re-upload FAILED for post',i,':',e.message);
+        }
+      }
+    }
     const mapped=posts.map(p=>{
       const url=(p.mediaUrl&&(p.mediaUrl.startsWith('data:')||p.mediaUrl.startsWith('blob:')))?'':p.mediaUrl||'';
       return{emoji:p.emoji,bg:p.bg,cap:p.cap,capFont:p.capFont,
