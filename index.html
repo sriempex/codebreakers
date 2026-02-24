@@ -3994,7 +3994,7 @@ function renderFeed(){
     } else if(isEmbeddable||isExternal){
       media=buildVideoThumbnail(resolved);
     } else if(isVid){
-      media=`<div class="feed-card-poster" style="width:100%;height:100%;background:#0a0a0e;display:flex;align-items:center;justify-content:center"><div class="feed-video-play-icon">▶</div></div><div class="feed-video-badge">VIDEO</div>`;
+      media=`<video class="feed-card-thumb" src="${resolved.url}" muted preload="metadata" style="width:100%;height:100%;object-fit:cover;pointer-events:none"></video><div class="feed-video-play-icon" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">▶</div><div class="feed-video-badge">VIDEO</div>`;
     } else {
       media=`<span style="opacity:.5">${p.emoji}</span>`;
     }
@@ -4004,6 +4004,8 @@ function renderFeed(){
   }).join('')+(isA?'<div class="admin-add-btn" onclick="addFeedPost()">+ Add Post</div>':'');
   document.getElementById('feedBadge').textContent=tileBadgeText('feed',isA);
   const fci=document.getElementById('feedCountIndicator');if(fci)fci.textContent=posts.length+' posts';
+  // Seek video thumbnails to 1s to show a real frame instead of black
+  setTimeout(()=>{grid.querySelectorAll('video.feed-card-thumb').forEach(v=>{v.currentTime=1})},100);
 }
 let _mediaSelectMode=false;
 let _mediaSelected=new Set();
@@ -9086,53 +9088,59 @@ if(!restoreSession()){
 })();
 
 // ── Build stamp & cache staleness check (admin only) ──
-// BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
-// file, this value won't change even after you push a new version.
 const _BUILD_ID = '20260224-0200';
-const _BUILD_DATE = 'Feb 24 · 2:00AM';
 // Security: HTML sanitizer to prevent XSS
-function sanitizeHTML(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')}
+function sanitizeHTML(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#x27;')}
 (function(){
-  function showBuildStamp(status,hint){
+  function showBuildStamp(dateStr,status,hint){
     if(!document.body.classList.contains('admin-mode'))return;
     const el=document.getElementById('buildStamp');
     if(!el)return;
     el.style.display='block';
-    el.textContent='Updated '+_BUILD_DATE+' · '+status;
+    el.textContent=(dateStr?'Updated '+dateStr+' - ':'')+status;
     el.style.color=status.startsWith('✓')?'#2a6a3a':status.startsWith('⚠')?'#8a6a10':'#333';
     if(hint)el.title=hint;
+  }
+  function formatLastMod(header){
+    if(!header)return '';
+    try{
+      var d=new Date(header);
+      if(isNaN(d))return '';
+      var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var h=d.getHours(),m=d.getMinutes();
+      var ampm=h>=12?'PM':'AM';
+      var h12=h%12||12;
+      return months[d.getMonth()]+' '+d.getDate()+', '+h12+':'+String(m).padStart(2,'0')+ampm;
+    }catch(e){return ''}
   }
 
   function checkCache(){
     if(!document.body.classList.contains('admin-mode'))return;
-    // Fetch the page HEAD with cache-bypass to get current server ETag
     fetch(window.location.pathname+'?_v='+Date.now(),{method:'HEAD',cache:'no-store'})
       .then(r=>{
-        const etag=r.headers.get('etag')||r.headers.get('cf-cache-status')||'';
-        const lastEtag=localStorage.getItem('cb_last_etag');
+        var lastMod=formatLastMod(r.headers.get('last-modified'));
+        var etag=r.headers.get('etag')||r.headers.get('cf-cache-status')||'';
+        var lastEtag=localStorage.getItem('cb_last_etag');
         if(!lastEtag){
-          // First visit — store it
           localStorage.setItem('cb_last_etag',etag);
-          showBuildStamp('✓ Cache OK','ETag stored. Future refreshes will detect stale cache.');
+          showBuildStamp(lastMod,'✓ Cache OK','ETag stored. Future refreshes will detect stale cache.');
         } else if(etag && etag!==lastEtag){
-          // ETag changed — new file on server, update stored value
           localStorage.setItem('cb_last_etag',etag);
-          showBuildStamp('✓ Fresh deploy detected','Server returned a new ETag. You are running the latest version.');
+          showBuildStamp(lastMod,'✓ Fresh deploy','Server returned a new ETag. You are running the latest version.');
         } else {
-          // ETag unchanged — either truly fresh or Cloudflare cached
-          const cfStatus=r.headers.get('cf-cache-status')||'';
+          var cfStatus=r.headers.get('cf-cache-status')||'';
           if(cfStatus==='HIT'){
-            showBuildStamp('⚠ Cloudflare cache HIT','Cloudflare is serving a cached version. Go to Cloudflare Pages → your project → Purge Cache, then hard-refresh.');
+            showBuildStamp(lastMod,'⚠ CF cache HIT','Cloudflare serving cached version. Purge cache then hard-refresh.');
           } else {
-            showBuildStamp('✓ Cache OK'+(cfStatus?' · CF: '+cfStatus:''),'File appears current.');
+            showBuildStamp(lastMod,'✓ Cache OK'+(cfStatus?' - CF: '+cfStatus:''),'File appears current.');
           }
         }
       })
-      .catch(()=>showBuildStamp('· '+_BUILD_ID,'Could not verify cache status.'));
+      .catch(function(){showBuildStamp('','Build '+_BUILD_ID,'Could not verify cache status.')});
   }
 
-  setTimeout(()=>checkCache(),1200);
-  document.addEventListener('adminReady',()=>setTimeout(checkCache,800));
+  setTimeout(function(){checkCache()},1200);
+  document.addEventListener('adminReady',function(){setTimeout(checkCache,800)});
 })();
 
 // Apply stored operation font via centralized helper
