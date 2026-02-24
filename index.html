@@ -1316,7 +1316,7 @@
   .lb-desubmit-check{margin-right:6px;cursor:pointer}
 
   /* Leaderboard rows */
-  .lb-row{border:1px solid var(--border);border-radius:5px;margin-bottom:6px;transition:all .2s;overflow:hidden;cursor:pointer}
+  .lb-row{border:1px solid var(--border);border-radius:5px;margin-bottom:6px;transition:border-color .2s;overflow:hidden;cursor:pointer}
   .lb-row:hover{border-color:rgba(255,215,0,.1)}
   .lb-row.expanded{border-color:rgba(255,215,0,.15)}
   .lb-row-main{display:flex;align-items:center;gap:12px;padding:12px 16px}
@@ -6503,6 +6503,7 @@ function renderFullLeaderboard(){
 function toggleLbTeam(id){
   lbExpandedTeam=lbExpandedTeam===id?null:id;
   _lbLastHash='';
+  _tmLastHash='';
   renderFullLeaderboard();
 }
 
