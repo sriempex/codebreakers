@@ -6322,33 +6322,29 @@ function renderLeaderboard(){
 let _tmLastHash='',_lbLastHash='';
 function startTeamMonitor(){
   if(teamMonitorInterval)clearInterval(teamMonitorInterval);
-  let _tmFetchCount=0;
   teamMonitorInterval=setInterval(async()=>{
-    _tmFetchCount++;
-    // Every 3rd tick (9s), re-fetch teams and submissions in parallel
-    if(_tmFetchCount%3===0){
-      const [teamsResult, subResult] = await Promise.all([
-        apiCall('getTeams'),
-        apiCall('getSubmissions')
-      ]);
-      if(teamsResult.ok&&teamsResult.teams){
-        registeredTeams.length=0;manualTeams.length=0;
-        teamsResult.teams.forEach(t=>{
-          const team={id:t.teamId,name:t.teamName,type:t.type,members:t.members.map(m=>typeof m==='string'?m:m.name),memberDetails:t.members,lastActive:new Date(t.lastActive).getTime(),fieldsCompleted:0,submitTime:null,registeredAt:t.registeredAt,submissionResults:null};
-          if(t.manual)manualTeams.push(team);
-          registeredTeams.push(team);
-        });
-      }
-      if(subResult.ok&&subResult.submissions){
-        subResult.submissions.forEach(s=>{
-          const team=registeredTeams.find(t=>t.id===s.teamId);
-          if(team){
-            team.submitTime=s.submittedAt;
-            team.submissionResults={totalScore:s.score,totalPossible:s.totalPossible||0,correctCount:s.correct,totalFields:s.total};
-            team.fieldsCompleted=s.correct||0;
-          }
-        });
-      }
+    // Fetch teams and submissions from backend every tick
+    const [teamsResult, subResult] = await Promise.all([
+      apiCall('getTeams'),
+      apiCall('getSubmissions')
+    ]);
+    if(teamsResult.ok&&teamsResult.teams){
+      registeredTeams.length=0;manualTeams.length=0;
+      teamsResult.teams.forEach(t=>{
+        const team={id:t.teamId,name:t.teamName,type:t.type,members:t.members.map(m=>typeof m==='string'?m:m.name),memberDetails:t.members,lastActive:new Date(t.lastActive).getTime(),fieldsCompleted:0,submitTime:null,registeredAt:t.registeredAt,submissionResults:null};
+        if(t.manual)manualTeams.push(team);
+        registeredTeams.push(team);
+      });
+    }
+    if(subResult.ok&&subResult.submissions){
+      subResult.submissions.forEach(s=>{
+        const team=registeredTeams.find(t=>t.id===s.teamId);
+        if(team){
+          team.submitTime=s.submittedAt;
+          team.submissionResults={totalScore:s.score,totalPossible:s.totalPossible||0,correctCount:s.correct,totalFields:s.total};
+          team.fieldsCompleted=s.correct||0;
+        }
+      });
     }
     // Only re-render if data actually changed (prevents flicker)
     const tmHash=_teamDataHash();
@@ -9140,7 +9136,13 @@ function restoreSession(){
       }
       startElapsedTimer();
       // Load fresh data from backend in background — UI already showing
-      loadEventData();
+      loadEventData().then(function(){
+        // Re-render the active admin panel now that data has arrived
+        if(data.adminPanel==='dashboardPanel'){renderTeamMonitor();renderLeaderboard()}
+        if(data.adminPanel==='leaderboardModule')renderFullLeaderboard();
+        if(data.adminPanel==='keysCodesPanel')renderKeysCodes();
+        if(data.adminPanel==='scoringPanel')renderScoringEditor();
+      });
       return true;
     }else if(data.type==='team'&&data.team.id){
       currentVaultTeam=data.team;
