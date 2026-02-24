@@ -2129,11 +2129,9 @@
   <div class="admin-dropdown-body">
     <div class="adm-tier-label">LIVE</div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openDashboard()"><span class="adm-icon">📊</span><span class="adm-label">Dashboard</span></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openBroadcast()"><span class="adm-icon">📢</span><span class="adm-label">Broadcast</span></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openKeysCodes()"><span class="adm-icon">🔐</span><span class="adm-label">Keys & Codes</span></div>
     <div class="adm-tier-label">SETUP</div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openSetup('adminPanel')"><span class="adm-icon">⚙️</span><span class="adm-label">Event</span></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openSetup('scoringPanel')"><span class="adm-icon">🎯</span><span class="adm-label">Scoring</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openSetup('keysCodesPanel')"><span class="adm-icon">🎯</span><span class="adm-label">Intel & Scoring</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openSetup('appearancePanel')"><span class="adm-icon">🎨</span><span class="adm-label">Appearance</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openSetup('portalUsersPanel')"><span class="adm-icon">👥</span><span class="adm-label">Users & Sessions</span></div>
     <div class="admin-dropdown-sep"></div>
@@ -2342,8 +2340,8 @@
 <!-- PORTAL USERS PANEL -->
 <div id="portalUsersPanel">
   <div class="ap-container">
-    <div class="ap-header"><h3>👥 Portal Users</h3><button class="mv-close" onclick="closePortalUsers()">✕ CLOSE</button></div>
-    <div class="ap-section"><h4>🔑 Add Administrator</h4>
+    <div class="ap-header"><h3>👥 Users & Sessions</h3><button class="mv-close" onclick="closePortalUsers()">✕ CLOSE</button></div>
+    <div class="ap-section"><h4>🔑 Administrators</h4>
       <p>Administrators can access the admin menu and all management tools.</p>
       <div class="ap-row">
         <div class="ap-field"><label>Username</label><input id="apAddUser"></div>
@@ -2352,7 +2350,7 @@
       </div>
       <div class="ap-msg" id="apAdminMsg"></div>
     </div>
-    <div class="ap-section"><h4>🏷️ Add Manual Entry</h4>
+    <div class="ap-section"><h4>🏷️ Create ID</h4>
       <p id="apManualDesc">Manually create teams or individuals with custom or auto-generated IDs.</p>
       <div class="ap-row" id="apManualTypeRow" style="margin-bottom:10px">
         <div class="ap-field"><label>Entry Type</label><select id="apManualType" onchange="onManualTypeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%;outline:none"><option value="team">Team</option><option value="individual">Individual</option></select></div>
@@ -2367,7 +2365,7 @@
       </div>
       <div class="ap-msg" id="apTeamMsg"></div>
     </div>
-    <div class="ap-section"><h4>📋 All Portal Users</h4>
+    <div class="ap-section"><h4>📋 Portal Users</h4>
       <p>All administrators and manually created entries.</p>
       <div id="puCombinedList"></div>
     </div>
@@ -2502,7 +2500,7 @@
 <!-- EVENT SETTINGS PANEL -->
 <div id="adminPanel">
   <div class="ap-container">
-    <div class="ap-header"><h3>⚙️ Event Settings</h3><button class="mv-close" onclick="closeEventSettings()">✕ CLOSE</button></div>
+    <div class="ap-header"><h3>⚙️ Configuration</h3><button class="mv-close" onclick="closeEventSettings()">✕ CLOSE</button></div>
     <div class="ap-section"><h4>🎮 Event Settings <span class="save-blip" id="blipEventSettings">✓ Saved</span></h4>
       <p>Configure participant mode, countdown timer, and leaderboard display.</p>
       <div style="margin-bottom:16px">
@@ -2699,7 +2697,7 @@
         <button class="ap-btn ap-btn-ghost" onclick="resetConsoleBg()" style="font-size:9px;padding:7px 20px">↺ Reset to Default</button>
       </div>
     </div>
-    <div class="ap-section"><h4>🔍 Intel Display <span class="save-blip" id="blipIntelTheme">✓ Saved</span></h4>
+    <div class="ap-section"><h4>🔍 Intel Theme <span class="save-blip" id="blipIntelTheme">✓ Saved</span></h4>
       <p>Visual style for the Intel Submissions screen. Standard is clean and minimal. CRT adds scanlines, phosphor glow, and vignette for an immersive terminal feel.</p>
       <div style="display:flex;align-items:center;gap:14px;margin-top:8px">
         <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--green);letter-spacing:1px" id="currentIntelThemeLabel">Current: Standard</div>
@@ -2766,10 +2764,6 @@
 <div id="dashboardPanel">
   <div class="ap-container" style="width:700px">
     <div class="ap-header"><h3>📊 Dashboard</h3><button class="mv-close" onclick="closeDashboard()">✕ CLOSE</button></div>
-    <div style="display:flex;gap:2px;margin-bottom:16px;background:rgba(255,255,255,.02);border-radius:6px;padding:3px;border:1px solid var(--border)">
-      <button class="dash-tab active" id="dashTabMonitor" onclick="switchDashTab('monitor')" style="flex:1;padding:8px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15);border-radius:4px;color:var(--green);font-family:Saira,sans-serif;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .15s;font-weight:700">📡 TEAMS</button>
-      <button class="dash-tab" id="dashTabLeaderboard" onclick="switchDashTab('leaderboard')" style="flex:1;padding:8px;background:transparent;border:1px solid transparent;border-radius:4px;color:#666;font-family:Saira,sans-serif;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .15s;font-weight:700">🏆 LEADERBOARD</button>
-    </div>
     <div id="dashMonitorView">
     <div class="ap-section">
       <p>Real-time view of all registered teams and their activity status. Teams inactive for 5+ minutes are flagged.</p>
@@ -2792,9 +2786,6 @@
         </select>
       </div>
     </div>
-    </div>
-    <div id="dashLeaderboardView" style="display:none">
-      <div id="dashLbContent"></div>
     </div>
   </div>
 </div>
@@ -2888,7 +2879,7 @@
 <!-- KEYS & CODES PANEL -->
 <div id="keysCodesPanel">
   <div class="kc-container">
-    <div class="kc-header"><h3>🔐 Keys & Codes</h3><button class="mv-close" onclick="closeKeysCodes()">✕ CLOSE</button></div>
+    <div class="kc-header"><h3>🎯 Intel & Scoring</h3><button class="mv-close" onclick="closeKeysCodes()">✕ CLOSE</button></div>
     <div class="kc-body" id="kcBody"></div>
   </div>
 </div>
@@ -6040,17 +6031,20 @@ function onLeaderboardStyleChange(){
 // ── Admin Panel ──
 const adminPanelIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','dashboardPanel','portalUsersPanel','scoringPanel','registrationPanel','appearancePanel','sessionMgmtPanel','tutorialConfigPanel'];
 
+// ══════ LIVE GROUP — Dashboard internal tabs ══════
+const dashGroupIds=['dashboardPanel','leaderboardModule','broadcastPanel','sessionMgmtPanel'];
+
 // ══════ SETUP GROUP — sub-nav between related panels ══════
 const setupGroupTabs=[
   {id:'adminPanel',label:'Event',icon:'⚙️',subs:[
     {id:'registrationPanel',label:'Registration'},
-    {id:'tutorialConfigPanel',label:'Tutorial'}
+    {id:'tutorialConfigPanel',label:'Tutorial & Briefing'}
   ]},
-  {id:'scoringPanel',label:'Scoring',icon:'🎯'},
+  {id:'keysCodesPanel',label:'Intel & Scoring',icon:'🎯',subs:[
+    {id:'scoringPanel',label:'Scoring'}
+  ]},
   {id:'appearancePanel',label:'Appearance',icon:'🎨'},
-  {id:'portalUsersPanel',label:'Users',icon:'👥',subs:[
-    {id:'sessionMgmtPanel',label:'Sessions'}
-  ]}
+  {id:'portalUsersPanel',label:'Users & Sessions',icon:'👥'}
 ];
 const setupGroupIds=[];
 const setupAllIds={};
@@ -6078,6 +6072,32 @@ function injectSetupNav(activePanelId){
   nav.className='setup-nav';
   nav.innerHTML=html;
   header.after(nav);
+}
+
+function injectDashNav(activePanelId){
+  document.querySelectorAll('.dash-nav').forEach(n=>n.remove());
+  const panel=document.getElementById(activePanelId);
+  if(!panel)return;
+  const header=panel.querySelector('.ap-header,.kc-header,.bc-header,.lb-header');
+  if(!header)return;
+  const tabs=[
+    {id:'dashboardPanel',label:'Teams',icon:'📡'},
+    {id:'leaderboardModule',label:'Leaderboard',icon:'🏆'},
+    {id:'sessionMgmtPanel',label:'Sessions',icon:'🛡️'},
+    {id:'broadcastPanel',label:'Broadcast',icon:'📢'}
+  ];
+  let html='';
+  tabs.forEach(t=>{
+    html+='<button class="setup-nav-btn'+(t.id===activePanelId?' active':'')+'" onclick="switchDashNavTab(\''+t.id+'\')">'+t.icon+' '+t.label+'</button>';
+  });
+  const nav=document.createElement('div');
+  nav.className='dash-nav setup-nav';
+  nav.innerHTML=html;
+  header.after(nav);
+}
+
+function switchDashNavTab(panelId){
+  switchAdminTab(panelId);
 }
 
 function switchSetupTab(panelId){
@@ -6109,6 +6129,8 @@ function showAdminTabs(activeId){
     // For setup group panels, highlight the Setup button (anb-adminPanel)
     let isActive=btn.id==='anb-'+activeId;
     if(!isActive&&btn.id==='anb-adminPanel'&&setupGroupIds.includes(activeId))isActive=true;
+    // For live group panels (broadcast, sessionMgmt), highlight the Live/Dashboard button
+    if(!isActive&&btn.id==='anb-dashboardPanel'&&dashGroupIds.includes(activeId))isActive=true;
     btn.classList.toggle('active',isActive);
   });
 }
@@ -6117,6 +6139,7 @@ function hideAdminTabs(){
   if(bar)bar.classList.remove('visible');
   document.querySelectorAll('.anb-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.setup-nav').forEach(n=>n.remove());
+  document.querySelectorAll('.dash-nav').forEach(n=>n.remove());
 }
 function switchAdminTab(panelId){
   adminPanelIds.forEach(id=>{
@@ -6139,6 +6162,9 @@ function switchAdminTab(panelId){
   // Inject setup sub-nav for setup group panels
   document.querySelectorAll('.setup-nav').forEach(n=>n.remove());
   if(setupGroupIds.includes(panelId)){injectSetupNav(panelId)}
+  // Inject dashboard sub-nav for live group panels
+  document.querySelectorAll('.dash-nav').forEach(n=>n.remove());
+  if(dashGroupIds.includes(panelId)){injectDashNav(panelId)}
   saveSession();
 }
 function syncAdminPanelSettings(){
@@ -6253,21 +6279,9 @@ function openDashboard(){switchAdminTab('dashboardPanel');renderTeamMonitor();st
 function closeDashboard(){const el=document.getElementById('dashboardPanel');if(el){el.classList.remove('active');el.style.cssText=''}hideAdminTabs()}
 
 function switchDashTab(tab){
-  const monView=document.getElementById('dashMonitorView');
-  const lbView=document.getElementById('dashLeaderboardView');
-  const tabMon=document.getElementById('dashTabMonitor');
-  const tabLb=document.getElementById('dashTabLeaderboard');
-  if(!monView||!lbView)return;
-  const isLb=tab==='leaderboard';
-  monView.style.display=isLb?'none':'';
-  lbView.style.display=isLb?'':'none';
-  [tabMon,tabLb].forEach((btn,i)=>{
-    const active=(i===0&&!isLb)||(i===1&&isLb);
-    if(btn){btn.style.background=active?'rgba(0,255,136,.08)':'transparent';btn.style.borderColor=active?'rgba(0,255,136,.15)':'transparent';btn.style.color=active?'var(--green)':'#666'}
-  });
-  if(isLb){renderFullLeaderboard()}
-  else{renderTeamMonitor();startTeamMonitor()}
-  saveSession();
+  // Legacy compatibility — redirect to new dash-nav panels
+  if(tab==='leaderboard'){switchAdminTab('leaderboardModule')}
+  else{switchAdminTab('dashboardPanel');renderTeamMonitor();startTeamMonitor()}
 }
 
 function openEventSettings(){switchAdminTab('adminPanel')}
@@ -6701,9 +6715,6 @@ function renderFullLeaderboard(){
     return '<div class="lb-row'+(expanded?' expanded':'')+(ghost?' ghost':'')+'" onclick="toggleLbTeam(\''+t.id+'\')"><div class="lb-row-main">'+checkbox+'<div class="lb-rank '+rc+'">#'+rank+'</div><div class="lb-team-status '+(on?'on':'off')+'"></div><div class="lb-team-info"><div class="lb-team-name">'+t.name+'</div><div class="lb-team-meta">'+metaHtml+'</div></div><div class="lb-score-block"><div class="lb-score-pct '+rc+'">'+(t.submitTime?scorePct:0)+'%</div><div class="lb-score-label">'+(t.submitTime?actualScore+' PTS':'—')+'</div></div></div><div class="lb-progress"><div class="lb-progress-fill" style="width:'+(t.submitTime?scorePct:0)+'%;background:'+barColor+'"></div></div>'+detailHtml+'</div>';
   }).join('');
   renderPagination('lbPagination',teams.length,lbPerPage,lbCurrentPage,function(p){lbCurrentPage=p;renderFullLeaderboard()});
-  // Sync dashboard's embedded leaderboard view
-  var dashLb=document.getElementById('dashLbContent');
-  if(dashLb)dashLb.innerHTML=body.innerHTML;
 }
 
 let _lbUserInteractedAt=0;
@@ -9073,9 +9084,6 @@ function saveSession(){
       // Save which admin panel is open
       const activeAdminPanel=adminPanelIds.find(id=>{const el=document.getElementById(id);return el&&el.classList.contains('active')});
       if(activeAdminPanel)data.adminPanel=activeAdminPanel;
-      // Save which dashboard tab is active (TEAMS vs LEADERBOARD)
-      const dashLbView=document.getElementById('dashLeaderboardView');
-      if(activeAdminPanel==='dashboardPanel'&&dashLbView&&dashLbView.style.display!=='none')data.dashTab='leaderboard';
     }
     // Save which player panel is open so refresh restores exactly where the user was
     const openPanelEl=document.querySelector('.expanded-panel.visible');
@@ -9340,9 +9348,6 @@ function restoreSession(){
       // Restore admin panel IMMEDIATELY — before data loads — to prevent console flash
       if(data.adminPanel){
         switchAdminTab(data.adminPanel);
-        if(data.adminPanel==='dashboardPanel'&&data.dashTab==='leaderboard'){
-          switchDashTab('leaderboard');
-        }
       }
       startElapsedTimer();
       startTeamMonitor();
@@ -9952,20 +9957,20 @@ function renderIntelThemePreview(){
     var ph=f.placeholder||'···';
     var inputHtml='';
     if(f.type==='money'){
-      inputHtml='<div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="border:none;background:transparent;box-shadow:none" placeholder="'+ph+'" disabled></div>';
+      inputHtml='<div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="border:none;background:transparent;box-shadow:none" placeholder="'+ph+'"></div>';
     }else if(f.type==='phone'){
-      inputHtml='<input class="intel-exp-input" placeholder="'+(f.placeholder||'(XXX) XXX-XXXX')+'" disabled>';
+      inputHtml='<input class="intel-exp-input" placeholder="'+(f.placeholder||'(XXX) XXX-XXXX')+'">';
     }else if(f.type==='select'){
       var opts=(f.options||[]).map(function(o){return '<option>'+o+'</option>'}).join('');
-      inputHtml='<select class="intel-exp-input intel-select" disabled><option>— Select —</option>'+opts+'</select>';
+      inputHtml='<select class="intel-exp-input intel-select"><option>— Select —</option>'+opts+'</select>';
     }else if(f.type==='dual'){
-      inputHtml='<div class="intel-dual-wrap"><input class="intel-exp-input" placeholder="'+(f.placeholder1||'Value 1')+'" disabled><span class="intel-dual-sep">&amp;</span><input class="intel-exp-input" placeholder="'+(f.placeholder2||'Value 2')+'" disabled></div>';
+      inputHtml='<div class="intel-dual-wrap"><input class="intel-exp-input" placeholder="'+(f.placeholder1||'Value 1')+'"><span class="intel-dual-sep">&amp;</span><input class="intel-exp-input" placeholder="'+(f.placeholder2||'Value 2')+'"></div>';
     }else{
-      inputHtml='<input class="intel-exp-input" placeholder="'+ph+'" disabled>';
+      inputHtml='<input class="intel-exp-input" placeholder="'+ph+'">';
     }
     rows+='<div class="intel-exp-row" style="max-width:600px;width:100%"><span class="intel-exp-num">'+num+'</span><span class="intel-exp-label">'+f.label+' '+(f.emoji||'')+'</span>'+inputHtml+'</div>';
   });
-  container.innerHTML='<div class="expanded-panel'+themeClass+'" style="position:relative;display:flex;flex-direction:column;opacity:1;pointer-events:none;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.06);background:var(--bg-panel);max-width:560px;margin:0 auto;max-height:70vh"><div class="exp-header" style="pointer-events:none;display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0"><span class="panel-icon" style="font-size:18px">🎯</span><span class="exp-title" style="font-family:Saira,sans-serif;font-size:13px;letter-spacing:2px;color:#fff;font-weight:700">Intel Submissions</span></div><div class="exp-body intel-exp-body" style="display:flex;flex-direction:column;overflow:hidden;flex:1;padding:0"><div class="intel-scroll-area" style="flex:1;overflow-y:auto;padding:20px 20px 0;display:flex;flex-direction:column;gap:8px;align-items:center"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:100%">'+rows+'</div></div><div class="intel-transmit-dock" style="flex-shrink:0;padding:14px 20px;display:flex;justify-content:center;align-items:center"><button class="intel-submit-btn" disabled style="pointer-events:none">◈ TRANSMIT ◈</button></div></div></div>';
+  container.innerHTML='<div class="expanded-panel'+themeClass+'" style="position:relative;display:flex;flex-direction:column;opacity:1;pointer-events:auto;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.06);background:var(--bg-panel);max-width:560px;margin:0 auto;max-height:70vh"><div class="exp-header" style="pointer-events:none;display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0"><span class="panel-icon" style="font-size:18px">🎯</span><span class="exp-title" style="font-family:Saira,sans-serif;font-size:13px;letter-spacing:2px;color:#fff;font-weight:700">Intel Submissions</span></div><div class="exp-body intel-exp-body" style="display:flex;flex-direction:column;overflow:hidden;flex:1;padding:0"><div class="intel-scroll-area" style="flex:1;overflow-y:auto;padding:20px 20px 0;display:flex;flex-direction:column;gap:8px;align-items:center"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:100%">'+rows+'</div></div><div class="intel-transmit-dock" style="flex-shrink:0;padding:14px 20px;display:flex;justify-content:center;align-items:center"><button class="intel-submit-btn" disabled style="pointer-events:none">◈ TRANSMIT ◈</button></div></div></div>';
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -10155,13 +10160,7 @@ function confirmVaultLock(){
 
 <div id="adminNavBar">
   <div class="anb-btn" id="anb-dashboardPanel" onclick="switchAdminTab('dashboardPanel')" title="Dashboard">
-    <span class="anb-icon">📊</span><span class="anb-label">Dashboard</span>
-  </div>
-  <div class="anb-btn" id="anb-broadcastPanel" onclick="switchAdminTab('broadcastPanel')" title="Broadcast">
-    <span class="anb-icon">📢</span><span class="anb-label">Broadcast</span>
-  </div>
-  <div class="anb-btn" id="anb-keysCodesPanel" onclick="switchAdminTab('keysCodesPanel')" title="Keys & Codes">
-    <span class="anb-icon">🔐</span><span class="anb-label">Keys</span>
+    <span class="anb-icon">📊</span><span class="anb-label">Live</span>
   </div>
   <div class="anb-sep"></div>
   <div class="anb-btn" id="anb-adminPanel" onclick="openSetup()" title="Setup">
@@ -10210,7 +10209,7 @@ function confirmVaultLock(){
 <div id="intelThemePreviewOverlay" style="position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,.96);display:none;flex-direction:column">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(0,0,0,.8);border-bottom:1px solid rgba(0,255,136,.1);flex-shrink:0;flex-wrap:wrap;gap:8px">
     <div style="display:flex;align-items:center;gap:12px">
-      <span style="font-family:'Saira',sans-serif;font-size:11px;letter-spacing:3px;color:var(--green);font-weight:700">INTEL DISPLAY PREVIEW</span>
+      <span style="font-family:'Saira',sans-serif;font-size:11px;letter-spacing:3px;color:var(--green);font-weight:700">INTEL THEME PREVIEW</span>
       <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#666" id="intelThemePreviewName">Standard</span>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
@@ -10223,7 +10222,7 @@ function confirmVaultLock(){
       <button onclick="closeIntelThemePreview()" style="padding:7px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:#999;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .15s" onmouseenter="this.style.borderColor='rgba(255,50,50,.3)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.1)'">✕ CANCEL</button>
     </div>
   </div>
-  <div style="flex:1;display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:20px">
+  <div style="flex:1;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px">
     <div id="intelThemePreviewContent" style="width:100%;max-width:700px"></div>
   </div>
   <div style="padding:8px 20px;text-align:center;flex-shrink:0;border-top:1px solid rgba(255,255,255,.04)">
