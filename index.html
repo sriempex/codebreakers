@@ -4132,10 +4132,10 @@ function _refreshPanelData(panel){
     apiCall('getMediaItems').then(r=>{
       if(r.ok&&r.items){
         if(r.items.length!==mediaItems.length||_quickHash(r.items)!==_quickHash(mediaItems)){
-          mediaItems=r.items;_cacheContent("cb_media",mediaItems)
+          mediaItems=r.items;_cacheContent("cb_media",mediaItems);
+          syncVaultCodesFromMedia();restoreGameState();renderVaultPanel();renderGrid();
         }
       }
-      syncVaultCodesFromMedia();restoreGameState();renderVaultPanel();renderGrid();
     });
   }
 }
@@ -5304,7 +5304,7 @@ async function loadEventData(){
     posts.length=0;
     feedResult.posts.forEach(p=>posts.push(p));
     _cacheContent('cb_posts',posts);
-    renderFeed();renderGrid();
+    renderFeed();
     // If user was in focus mode, re-render the single post with fresh data
     if(currentFeedView==='single')renderSinglePost();
   }
@@ -5324,7 +5324,7 @@ async function loadEventData(){
     }));
     syncVaultCodesFromMedia();
     _cacheContent('cb_media',mediaItems);
-    renderMedia();renderGrid();
+    renderMedia();
   }
 
   const intelResult=await apiCall('getIntelFields');
@@ -5335,7 +5335,7 @@ async function loadEventData(){
       font:f.font||'',inputFont:f.inputFont||'',answer:f.answer||{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}
     }));
     _cacheContent('cb_intel',intelFields);
-    renderIntelForm();renderGrid();
+    renderIntelForm();
   }
 
   const teamsResult=await apiCall('getTeams');
@@ -5358,16 +5358,15 @@ async function loadEventData(){
       if(team){
         team.submitTime=s.submittedAt;
         team.submissionResults={totalScore:s.score,totalPossible:s.totalPossible||0,correctCount:s.correct,totalFields:s.total};
-        // Count non-empty answers for fieldsCompleted
-        let filled=0;
-        try{const ans=typeof s.answers==='string'?JSON.parse(s.answers):s.answers;if(ans)Object.values(ans).forEach(v=>{if(v&&String(v).trim())filled++})}catch(e){}
-        team.fieldsCompleted=filled||s.correct||0;
+        // Use correct count for submitted teams; for pre-submission, count filled answers
+        team.fieldsCompleted=s.correct||0;
       }
     });
   }
 
   refreshAdminList();
   startGlobalEventTimer();
+  renderGrid(); // Single grid update after all data loaded
 }
 
 function applyEventConfig(cfg){
@@ -6343,13 +6342,14 @@ function renderTeamMonitor(){
     const removeBtn=ghost?`<span class="ap-monitor-remove" onclick="event.stopPropagation();removeGhostTeam('${t.id}')" title="Remove ghost">✕</span>`:'';
     const msgBtn=!ghost?`<span class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage('${t.id}','${t.name.replace(/'/g,"\\'")}')">💬</span>`:'';
     const sub=t.submitTime?'✓':'—';
-    const score=t.score||0;
+    const score=t.submissionResults?t.submissionResults.totalScore:0;
+    const correct=t.submissionResults?t.submissionResults.correctCount:0;
     return `<div class="ap-monitor-row ${rowClass}">
       <div class="ap-monitor-dot ${on?'on':'off'}"></div>
       <span class="ap-monitor-id">${t.id}</span>
       <span class="ap-monitor-name">${t.name} (${t.members.length})</span>
       ${ghostTag}
-      <span class="ap-monitor-fields">${t.fieldsCompleted}/${intelFields.length}</span>
+      <span class="ap-monitor-fields">${t.submitTime?correct:t.fieldsCompleted}/${intelFields.length}</span>
       <span class="ap-monitor-score" style="font-size:9px;color:${score?'var(--green)':'#555'};min-width:40px;text-align:center">${score?score+'pts':'—'}</span>
       <span style="font-size:10px;color:${t.submitTime?'var(--green)':'#444'};min-width:14px;text-align:center" title="${t.submitTime?'Submitted':'Not submitted'}">${sub}</span>
       <span class="ap-monitor-time">${ghost?'Never active':timeSince(t.lastActive)}</span>
@@ -6365,36 +6365,42 @@ function renderLeaderboard(){
   if(!el)return;
   if(!registeredTeams.length){el.innerHTML='<div class="ap-lb-empty">No teams registered yet</div>';return}
 
-  // Scoring: fields completed (primary), submit time (secondary — earlier = better)
-  const maxFields=intelFields.length||11;
+  // Scoring: actual backend score (primary), submit time (secondary — earlier = better)
+  const maxFields=intelFields.length||1;
   const sorted=[...registeredTeams].sort((a,b)=>{
-    if(b.fieldsCompleted!==a.fieldsCompleted)return b.fieldsCompleted-a.fieldsCompleted;
-    // If both submitted, earlier wins
+    const aScore=a.submissionResults?a.submissionResults.totalScore:0;
+    const bScore=b.submissionResults?b.submissionResults.totalScore:0;
+    if(bScore!==aScore)return bScore-aScore;
     if(a.submitTime&&b.submitTime)return a.submitTime.localeCompare(b.submitTime);
     if(a.submitTime)return -1;if(b.submitTime)return 1;
-    return b.lastActive-a.lastActive; // More recent = higher
+    return b.lastActive-a.lastActive;
   });
 
-  const topScore=sorted[0]?sorted[0].fieldsCompleted:1;
+  const topPossible=sorted[0]?.submissionResults?.totalPossible||(maxFields*10);
 
   el.innerHTML=sorted.slice(0,5).map((t,i)=>{
     const rank=i+1;
     const rc=rank===1?'gold':rank===2?'silver':rank===3?'bronze':'std';
-    const pct=Math.round((t.fieldsCompleted/maxFields)*100);
+    const score=t.submissionResults?t.submissionResults.totalScore:0;
+    const possible=t.submissionResults?t.submissionResults.totalPossible:(maxFields*10);
+    const pct=possible?Math.round((score/possible)*100):0;
     const barColor=rank===1?'#ffd700':rank===2?'#c0c0c0':rank===3?'#cd7f32':'#444';
+    const correct=t.submissionResults?t.submissionResults.correctCount:0;
     return `<div class="ap-lb-row">
       <div class="ap-lb-rank ${rc}">#${rank}</div>
       <div class="ap-lb-info">
         <div class="ap-lb-name">${t.name}</div>
-        <div class="ap-lb-meta">${t.id} · ${t.fieldsCompleted}/${maxFields} fields${t.submitTime?' · Submitted '+t.submitTime:''}</div>
+        <div class="ap-lb-meta">${t.id} · ${t.submitTime?correct+'/'+maxFields+' correct · '+score+' pts':'Not submitted'}</div>
         <div class="ap-lb-bar" style="width:${pct}%;background:${barColor}"></div>
       </div>
-      <div class="ap-lb-score ${rc}">${pct}%</div>
+      <div class="ap-lb-score ${rc}">${t.submitTime?pct+'%':'—'}</div>
     </div>`;
   }).join('');
 }
 
 // Team monitor — re-fetch from backend periodically for live data
+let _tmLastHash='';
+let _lbLastHash='';
 function startTeamMonitor(){
   if(teamMonitorInterval)clearInterval(teamMonitorInterval);
   let _tmFetchCount=0;
@@ -6418,20 +6424,33 @@ function startTeamMonitor(){
           if(team){
             team.submitTime=s.submittedAt;
             team.submissionResults={totalScore:s.score,totalPossible:s.totalPossible||0,correctCount:s.correct,totalFields:s.total};
-            let filled=0;
-            try{const ans=typeof s.answers==='string'?JSON.parse(s.answers):s.answers;if(ans)Object.values(ans).forEach(v=>{if(v&&String(v).trim())filled++})}catch(e){}
-            team.fieldsCompleted=filled||s.correct||0;
+            team.fieldsCompleted=s.correct||0;
           }
         });
       }
     }
-    if(document.getElementById('dashboardPanel').classList.contains('active')){
+    // Only re-render if data actually changed (prevents flicker)
+    const tmHash=_teamDataHash();
+    if(document.getElementById('dashboardPanel').classList.contains('active')&&tmHash!==_tmLastHash){
+      _tmLastHash=tmHash;
       renderTeamMonitor();
     }
-    if(document.getElementById('leaderboardModule').classList.contains('active')){
+    if(document.getElementById('leaderboardModule').classList.contains('active')&&tmHash!==_lbLastHash){
+      _lbLastHash=tmHash;
       renderFullLeaderboard();
     }
   },3000);
+}
+function _teamDataHash(){
+  let h=registeredTeams.length;
+  for(let i=0;i<registeredTeams.length;i++){
+    const t=registeredTeams[i];
+    h=((h<<5)-h+(t.fieldsCompleted||0))|0;
+    h=((h<<5)-h+(t.submitTime?1:0))|0;
+    h=((h<<5)-h+(t.submissionResults?t.submissionResults.totalScore:0))|0;
+    h=((h<<5)-h+t.lastActive)|0;
+  }
+  return String(h);
 }
 
 // ── Full Leaderboard Module ──
@@ -6537,13 +6556,23 @@ function renderFullLeaderboard(){
 
       let fieldsHtml='';
       if(t.submissionResults){
-        fieldsHtml=t.submissionResults.results.map(r=>{
-          const st=r.correct?'correct':(r.submitted||r.submitted===''&&r.type==='dual'?'wrong':'empty');
-          const stText=r.correct?'✓ Correct':(st==='empty'?'— Empty':'✗ Wrong');
-          return `<div class="lb-field-row"><span class="lb-field-label">${r.field}</span><span class="lb-field-status ${st}">${stText}</span></div>`;
-        }).join('');
+        if(t.submissionResults.results&&Array.isArray(t.submissionResults.results)){
+          // Client-side graded results available (local team)
+          fieldsHtml=t.submissionResults.results.map(r=>{
+            const st=r.correct?'correct':(r.submitted||r.submitted===''&&r.type==='dual'?'wrong':'empty');
+            const stText=r.correct?'✓ Correct':(st==='empty'?'— Empty':'✗ Wrong');
+            return `<div class="lb-field-row"><span class="lb-field-label">${r.field}</span><span class="lb-field-status ${st}">${stText}</span></div>`;
+          }).join('');
+        }else{
+          // Backend summary only — show score breakdown
+          const sr=t.submissionResults;
+          fieldsHtml=`<div style="display:flex;flex-direction:column;gap:6px;padding:4px 0">
+            <div class="lb-field-row"><span class="lb-field-label">Correct Answers</span><span class="lb-field-status correct">${sr.correctCount||0} / ${sr.totalFields||maxFields}</span></div>
+            <div class="lb-field-row"><span class="lb-field-label">Score</span><span class="lb-field-status ${sr.totalScore>0?'correct':'empty'}">${sr.totalScore||0} / ${sr.totalPossible||maxFields*10} pts</span></div>
+          </div>`;
+        }
       }else{
-        fieldsHtml=`<div style="font-family:IBM Plex Mono,monospace;font-size:9px;color:#555;padding:8px 0">Awaiting submission</div>`;
+        fieldsHtml=`<div style="font-family:IBM Plex Mono,monospace;font-size:9px;color:#555;padding:8px 0">${t.submitTime?'Submitted — awaiting scoring data':'Awaiting submission'}</div>`;
       }
 
       const msgBtn=isAdmin?`<button class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage('${t.id}','${t.name.replace(/'/g,"\\'")}')">💬 Message Team</button>`:'';
@@ -6567,6 +6596,9 @@ function renderFullLeaderboard(){
     const checkbox=isAdmin&&t.submitTime?`<input type="checkbox" class="lb-desubmit-check" data-team="${t.id}" onclick="event.stopPropagation()">`:'';
 
     const ghost=isTeamGhost(t);
+    const actualScore=t.submissionResults?t.submissionResults.totalScore:0;
+    const correctCount=t.submissionResults?t.submissionResults.correctCount:0;
+    const scorePct=t.submissionResults?Math.round((actualScore/(t.submissionResults.totalPossible||1))*100):0;
     return `<div class="lb-row${expanded?' expanded':''}${ghost?' ghost':''}" onclick="toggleLbTeam('${t.id}')">
       <div class="lb-row-main">
         ${checkbox}
@@ -6576,17 +6608,17 @@ function renderFullLeaderboard(){
           <div class="lb-team-name">${t.name}${ghost?'<span class="ap-lb-ghost-tag">GHOST</span>':''}</div>
           <div class="lb-team-meta">
             <span>${t.id}</span>
-            <span>${t.fieldsCompleted}/${maxFields} fields</span>
+            <span>${t.submitTime?correctCount+'/'+maxFields+' correct':t.fieldsCompleted+'/'+maxFields+' fields'}</span>
             <span>${ghost?'Never active':on?'Active':'Inactive '+timeSince(t.lastActive)}</span>
             ${t.submitTime?`<span style="color:var(--green)">✓ Submitted</span>`:''}
           </div>
         </div>
         <div class="lb-score-block">
-          <div class="lb-score-pct ${rc}">${pct}%</div>
-          <div class="lb-score-label">${t.fieldsCompleted*10} PTS</div>
+          <div class="lb-score-pct ${rc}">${t.submitTime?scorePct:pct}%</div>
+          <div class="lb-score-label">${t.submitTime?actualScore+' PTS':'—'}</div>
         </div>
       </div>
-      <div class="lb-progress"><div class="lb-progress-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      <div class="lb-progress"><div class="lb-progress-fill" style="width:${t.submitTime?scorePct:pct}%;background:${barColor}"></div></div>
       ${detailHtml}
     </div>`;
   }).join('');
@@ -6596,6 +6628,7 @@ function renderFullLeaderboard(){
 
 function toggleLbTeam(id){
   lbExpandedTeam=lbExpandedTeam===id?null:id;
+  _lbLastHash=''; // Invalidate so interval doesn't suppress this render
   renderFullLeaderboard();
 }
 
@@ -6641,21 +6674,20 @@ function sendTeamMessage(teamId,teamName){
 function dispatchTeamMessage(teamId){
   const msg=document.getElementById('tmMsgText')?.value.trim();
   if(!msg)return;
-  // Store targeted message
-  if(!window.teamMessages)window.teamMessages={};
-  if(!window.teamMessages[teamId])window.teamMessages[teamId]=[];
-  window.teamMessages[teamId].push({text:msg,time:new Date().toISOString(),read:false});
-  hideEditModal();
-  // If we're viewing as that team, show the banner immediately
-  if(currentTeam&&currentTeam.id===teamId){
-    showPlayerBanner('text',msg);
-  }
-  // Flash confirmation
-  const flash=document.createElement('div');
-  flash.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.3);border-radius:6px;padding:10px 20px;font-family:IBM Plex Mono,monospace;font-size:11px;color:var(--cyan);letter-spacing:1px;animation:fadeIn .3s ease';
-  flash.textContent='✓ Message sent to '+teamId;
-  document.body.appendChild(flash);
-  setTimeout(()=>flash.remove(),2500);
+  // Send as a targeted broadcast via the backend (prefixed with team ID so only that team shows it)
+  const targetMsg='[TO:'+teamId+'] '+msg;
+  apiCall('sendBroadcast',{message:targetMsg,type:'text'}).then(r=>{
+    if(r.ok){
+      hideEditModal();
+      const flash=document.createElement('div');
+      flash.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.3);border-radius:6px;padding:10px 20px;font-family:IBM Plex Mono,monospace;font-size:11px;color:var(--cyan);letter-spacing:1px;animation:fadeIn .3s ease';
+      flash.textContent='✓ Message sent to '+teamId;
+      document.body.appendChild(flash);
+      setTimeout(()=>flash.remove(),2500);
+    }else{
+      alert('Failed to send message: '+(r.error||'Unknown error'));
+    }
+  });
 }
 
 // ── De-submit Mechanism ──
@@ -6892,8 +6924,18 @@ function startBroadcastPolling(){
     const r=await apiCall('getBroadcasts',{since:_lastBroadcastTime});
     if(r.ok&&r.broadcasts&&r.broadcasts.length>0){
       r.broadcasts.forEach(b=>{
-        showPlayerBanner(b.type,b.message);
         _lastBroadcastTime=b.sentAt;
+        // Check for targeted message: [TO:TEAM-XXXX] prefix
+        const targetMatch=b.message.match(/^\[TO:([^\]]+)\]\s*/);
+        if(targetMatch){
+          // Targeted — only show if this team is the recipient
+          if(currentVaultTeam&&targetMatch[1]===currentVaultTeam.id){
+            showPlayerBanner(b.type,b.message.replace(/^\[TO:[^\]]+\]\s*/,''));
+          }
+        }else{
+          // Global broadcast — show to everyone
+          showPlayerBanner(b.type,b.message);
+        }
       });
     }
     // Check session generation on every poll to detect session destruction quickly
