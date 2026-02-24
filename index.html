@@ -4100,6 +4100,7 @@ let mediaItems=[];
 // ══════ RENDER ══════
 
 function renderFeed(){
+  if(posts.length)console.log('[FEED] renderFeed called. posts[last].mediaUrl:',posts[posts.length-1]?.mediaUrl?.substring(0,80),'trace:',new Error().stack?.split('\n')[2]?.trim());
   const grid=document.getElementById('feedGridView'),isA=document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview');
   if(!posts.length){
     grid.innerHTML=isA
@@ -4186,15 +4187,20 @@ function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(
 function _refreshPanelData(panel){
   if(_isTutorialRunning())return; // Don't refresh during tutorial — causes badge flicker
   if(panel==='feed'){
-    if(_saveFeedTimer){return} // Save pending — don't overwrite with stale backend data
+    if(_saveFeedTimer||_feedSaveInFlight||Date.now()<_feedSaveCooldown){console.log('[FEED] Refresh blocked — save pending/inflight/cooldown');return}
     apiCall('getFeedPosts').then(r=>{
       if(r.ok&&r.posts){
+        // Smart merge: never overwrite local data that has mediaUrls if backend is missing them
+        // (Cloudflare KV eventual consistency can return stale reads for up to 60s)
+        const localHasMedia=posts.some(p=>p.mediaUrl);
+        const backendMissingMedia=localHasMedia&&posts.length===r.posts.length&&r.posts.some((bp,i)=>!bp.mediaUrl&&posts[i]&&posts[i].mediaUrl);
+        if(backendMissingMedia){console.log('[FEED] Refresh skipped — backend appears stale (missing mediaUrls local has)');return}
         const changed=JSON.stringify(r.posts)!==JSON.stringify(posts.map(p=>({emoji:p.emoji,bg:p.bg,cap:p.cap,capFont:p.capFont||'',mediaUrl:p.mediaUrl||'',mediaType:p.mediaType||'image',focalX:p.focalX||50,focalY:p.focalY||50})));
         if(changed){posts=r.posts;renderFeed();renderGrid();_cacheContent("cb_posts",posts)}
       }
     });
   }else if(panel==='media'){
-    if(_saveMediaTimer){return} // Save pending
+    if(_saveMediaTimer||_mediaSaveInFlight||Date.now()<_mediaSaveCooldown){return} // Save pending/cooldown
     apiCall('getMediaItems').then(r=>{
       if(r.ok&&r.items){
         const changed=r.items.length!==mediaItems.length||JSON.stringify(r.items)!==JSON.stringify(mediaItems.map(m=>({name:m.name,desc:m.desc||'',url:m.url,type:m.type||'image',nameFont:m.nameFont||'',descFont:m.descFont||'',vaultLocked:m.vaultLocked||false})));
@@ -5337,14 +5343,21 @@ async function loadEventData(){
   if(config.ok&&config.config)applyEventConfig(config.config);
 
   if(feedResult.ok&&Array.isArray(feedResult.posts)){
-    posts.length=0;
-    feedResult.posts.forEach(p=>posts.push(p));
-    _cacheContent('cb_posts',posts);
-    renderFeed();renderGrid();
-    if(currentFeedView==='single')renderSinglePost();
+    if(_saveFeedTimer||_feedSaveInFlight||Date.now()<_feedSaveCooldown){
+      console.log('[FEED] loadEventData skipped — save cooldown active');
+    }else{
+      posts.length=0;
+      feedResult.posts.forEach(p=>posts.push(p));
+      _cacheContent('cb_posts',posts);
+      renderFeed();renderGrid();
+      if(currentFeedView==='single')renderSinglePost();
+    }
   }
 
   if(mediaResult.ok&&Array.isArray(mediaResult.items)){
+    if(_saveMediaTimer||_mediaSaveInFlight||Date.now()<_mediaSaveCooldown){
+      console.log('[MEDIA] loadEventData skipped — save cooldown active');
+    }else{
     mediaItems.length=0;
     mediaResult.items.forEach(m=>mediaItems.push({
       icon:m.filename||'📄',name:m.title||'',nameFont:m.titleFont||'',
@@ -5359,6 +5372,7 @@ async function loadEventData(){
     syncVaultCodesFromMedia();
     _cacheContent('cb_media',mediaItems);
     renderMedia();renderGrid();
+    }
   }
 
   if(intelResult.ok&&Array.isArray(intelResult.fields)){
@@ -5906,6 +5920,8 @@ function saveEventConfigToBackend(){
 }
 
 let _saveFeedTimer=null;
+let _feedSaveInFlight=false;
+let _feedSaveCooldown=0; // timestamp — block refreshes until this time (KV eventual consistency guard)
 // ── Centralized content version bump ──
 // All save functions share a single version stamp to prevent mismatches.
 // localStorage is written IMMEDIATELY (so cache restore works on refresh).
@@ -5929,23 +5945,29 @@ function bumpContentVersion() {
 function saveFeedPostsToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveFeedTimer);
+  _feedSaveInFlight=true;
   _saveFeedTimer=setTimeout(()=>{
+    _saveFeedTimer=null;
     bumpContentVersion();
-    apiCall('saveFeedPosts',{posts:posts.map(p=>{
+    const mapped=posts.map(p=>{
       const url=(p.mediaUrl&&(p.mediaUrl.startsWith('data:')||p.mediaUrl.startsWith('blob:')))?'':p.mediaUrl||'';
       return{emoji:p.emoji,bg:p.bg,cap:p.cap,capFont:p.capFont,
         mediaUrl:url,mediaType:p.mediaType,
         focalX:p.focalX||50,focalY:p.focalY||50};
-    })}).then(r=>{if(!r.ok)console.warn('Feed save failed:',r.error)});
+    });
+    console.log('[FEED] saveFeedPostsToBackend SENDING',mapped.length,'posts. mediaUrls:',mapped.map(p=>p.mediaUrl?.substring(0,60)));
+    apiCall('saveFeedPosts',{posts:mapped}).then(r=>{console.log('[FEED] saveFeedPosts response:',r);if(!r.ok)console.warn('Feed save failed:',r.error)}).finally(()=>{_feedSaveInFlight=false;_feedSaveCooldown=Date.now()+60000});
     _cacheContent('cb_posts',posts);
-    _saveFeedTimer=null;
   },1500);
 }
 
 let _saveMediaTimer=null;
+let _mediaSaveInFlight=false;
+let _mediaSaveCooldown=0;
 function saveMediaItemsToBackend(){
   if(!adminSession)return;
   clearTimeout(_saveMediaTimer);
+  _mediaSaveInFlight=true;
   _saveMediaTimer=setTimeout(()=>{
     bumpContentVersion();
     apiCall('saveMediaItems',{items:mediaItems.map(m=>{
@@ -5958,7 +5980,7 @@ function saveMediaItemsToBackend(){
         unlocked:m.unlocked||false,
         vaultCode:m.vaultCode||'',
         vaultCodename:m.vaultCodename||''};
-    })}).then(r=>{if(!r.ok)console.warn('Media save failed:',r.error)});
+    })}).then(r=>{if(!r.ok)console.warn('Media save failed:',r.error)}).finally(()=>{_mediaSaveInFlight=false;_mediaSaveCooldown=Date.now()+60000});
     _cacheContent('cb_media',mediaItems);
     _saveMediaTimer=null;
   },1500);
@@ -7646,6 +7668,7 @@ function handleFeedUpload(input){
     }else{
       pendingFeedUpload=result.directUrl;
       pendingFeedUploadType='image';
+      console.log('[FEED UPLOAD] R2 success, URL:',result.directUrl);
       zone.innerHTML=`<img src="${result.directUrl}" class="upload-preview"><br><span style="font-size:9px;color:var(--green)">✓ ${file.name} uploaded to Drive</span>`;
       zone.classList.add('has-file');
       showFocalPointForUpload(result.directUrl);
@@ -7653,7 +7676,7 @@ function handleFeedUpload(input){
     const vidField=document.getElementById('ef_video');
     if(vidField)vidField.value='';
   }).catch(err=>{
-    console.error('Feed upload error:',err);
+    console.error('[FEED UPLOAD] FAILED, falling back to local:',err);
     // Fallback to local
     if(isVideo){
       const blobUrl=URL.createObjectURL(file);
@@ -7773,6 +7796,7 @@ function saveNewFeedPost(){
     p.mediaUrl=pendingFeedUpload;
     p.mediaType=pendingFeedUploadType||'image';
   }
+  console.log('[FEED] saveNewFeedPost mediaUrl:',p.mediaUrl?.substring(0,80));
   posts.push(p);pendingFeedUpload='';hideEditModal();renderFeed();renderGrid();
   if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
   saveFeedPostsToBackend();
