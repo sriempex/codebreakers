@@ -6818,7 +6818,7 @@ function startBroadcastPolling(){
     if(!currentVaultTeam)return;
     // Parallel fetch — broadcasts + config session check
     const [r, cfg] = await Promise.all([
-      apiCall('getBroadcasts',{since:_lastBroadcastTime}),
+      apiCall('getBroadcasts',{since:_lastBroadcastTime,teamId:currentVaultTeam?.id}),
       apiCall('getEventConfig')
     ]);
     if(r.ok&&r.broadcasts&&r.broadcasts.length>0){
