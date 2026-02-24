@@ -7210,16 +7210,20 @@ let pendingMediaFileUrl='';
 let _uploadingIndicator=null;
 
 async function uploadFileToDrive(file,subfolder){
-  // Upload via cb-api proxy using multipart FormData (bypasses cb-media ticket validation)
+  // Step 1: Get an upload ticket from cb-api (secret stays server-side)
+  const ticketResult=await apiCall('getUploadUrl',{subfolder:subfolder||''});
+  if(!ticketResult.ok)throw new Error(ticketResult.error||'Failed to get upload authorization');
+  
+  // Step 2: Upload directly to R2 Worker with the one-time ticket
   const formData=new FormData();
   formData.append('file',file);
   formData.append('fileName',file.name||'upload_'+Date.now());
   formData.append('mimeType',file.type||'application/octet-stream');
   formData.append('subfolder',subfolder||'');
-  if(adminSession)formData.append('adminToken',adminSession.adminToken);
   
-  const resp=await fetch(API_URL+'?action=proxyUpload',{
+  const resp=await fetch(ticketResult.uploadUrl,{
     method:'POST',
+    headers:{'X-Upload-Ticket':ticketResult.ticket},
     body:formData
   });
   
@@ -7231,8 +7235,8 @@ async function uploadFileToDrive(file,subfolder){
     directUrl:result.url,
     previewUrl:result.url,
     fileId:result.key,
-    fileName:result.fileName||file.name,
-    mimeType:result.mimeType||file.type
+    fileName:result.fileName,
+    mimeType:result.mimeType
   };
 }
 
