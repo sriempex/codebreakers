@@ -9088,7 +9088,8 @@ if(!restoreSession()){
 // ── Build stamp & cache staleness check (admin only) ──
 // BUILD_ID is hardcoded at file-save time. If Cloudflare serves a stale cached
 // file, this value won't change even after you push a new version.
-const _BUILD_ID = '20260223-0730';
+const _BUILD_ID = '20260224-0200';
+const _BUILD_DATE = 'Feb 24 · 2:00AM';
 // Security: HTML sanitizer to prevent XSS
 function sanitizeHTML(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;')}
 (function(){
@@ -9097,7 +9098,7 @@ function sanitizeHTML(str){return String(str||'').replace(/&/g,'&amp;').replace(
     const el=document.getElementById('buildStamp');
     if(!el)return;
     el.style.display='block';
-    el.textContent='BUILD '+_BUILD_ID+' · '+status;
+    el.textContent='Updated '+_BUILD_DATE+' · '+status;
     el.style.color=status.startsWith('✓')?'#2a6a3a':status.startsWith('⚠')?'#8a6a10':'#333';
     if(hint)el.title=hint;
   }
