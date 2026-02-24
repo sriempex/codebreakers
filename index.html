@@ -1257,11 +1257,11 @@
   .ap-monitor-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--border);border-radius:3px;margin-bottom:4px;transition:border-color .3s}
   .ap-monitor-row.active{border-color:rgba(0,255,136,.1)}
   .ap-monitor-row.inactive{border-color:rgba(255,170,51,.08);opacity:.65}
-  .ap-monitor-row.ghost{border-color:rgba(255,51,51,.07);opacity:.38;filter:grayscale(.5)}
+  .ap-monitor-row.ghost{border-color:rgba(255,51,51,.12);opacity:.65}
   .ap-monitor-ghost-tag{font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:2px;color:#ff6666;padding:2px 6px;border:1px solid rgba(255,80,80,.4);border-radius:2px;flex-shrink:0;background:rgba(255,51,51,.12);text-shadow:0 0 6px rgba(255,80,80,.4)}
   .ap-monitor-remove{width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,51,51,.25);font-size:10px;border-radius:50%;transition:all .2s;flex-shrink:0;margin-left:2px}
   .ap-monitor-remove:hover{color:var(--red);background:rgba(255,51,51,.1)}
-  .ap-lb-row.ghost{opacity:.32;filter:grayscale(.5)}
+  .ap-lb-row.ghost{opacity:.55}
   .ap-lb-ghost-tag{font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1px;color:rgba(255,80,80,.5);padding:1px 5px;border:1px solid rgba(255,51,51,.15);border-radius:2px;margin-left:4px;vertical-align:middle}
   .ap-monitor-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
   .ap-monitor-dot.on{background:var(--green);box-shadow:0 0 6px rgba(0,255,136,.4)}
@@ -4082,7 +4082,7 @@ function renderMedia(){
 // ══════ PANELS ══════
 const overlay=document.getElementById('panelOverlay');
 let currentFeedView='grid';
-function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);if(window._histPush)window._histPush('panel');saveSession();
+function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);if(window._histPush)window._histPush('panel');saveSession();if(!isAdmin&&currentVaultTeam)apiCall('heartbeat',{teamId:currentVaultTeam.id});
   if(t==='feed'){renderFeed();setFeedView('grid');_refreshPanelData('feed')}if(t==='media'){renderMedia();_refreshPanelData('media')}if(t==='intel'){renderIntelForm();restoreIntelDraft();_refreshPanelData('intel')}if(t==='vault'){renderVaultPanel();_refreshPanelData('vault')}}
 
 // Fresh data fetch on panel open — ensures frontend matches backend
@@ -9131,18 +9131,16 @@ function restoreSession(){
         if(cf){operationFont=cf;applyOperationFont(cf)}
       }catch(e){}
       renderGrid(); // Render grid with cached data + theme immediately
+      // Restore admin panel IMMEDIATELY — before data loads — to prevent console flash
+      if(data.adminPanel){
+        switchAdminTab(data.adminPanel);
+        if(data.adminPanel==='dashboardPanel'&&data.dashTab==='leaderboard'){
+          switchDashTab('leaderboard');
+        }
+      }
       startElapsedTimer();
       // Load fresh data from backend in background — UI already showing
-      loadEventData().then(function(){
-        // Restore admin panel after data is loaded
-        if(data.adminPanel){
-          switchAdminTab(data.adminPanel);
-          // Restore dashboard sub-tab if applicable
-          if(data.adminPanel==='dashboardPanel'&&data.dashTab==='leaderboard'){
-            switchDashTab('leaderboard');
-          }
-        }
-      });
+      loadEventData();
       return true;
     }else if(data.type==='team'&&data.team.id){
       currentVaultTeam=data.team;
