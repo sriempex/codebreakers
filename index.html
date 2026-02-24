@@ -1994,10 +1994,6 @@
   .briefing-footer{padding:16px 24px 20px;text-align:center}
   .briefing-continue{padding:10px 32px;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.25);border-radius:4px;color:var(--green);font-family:'Saira',sans-serif;font-size:11px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:all .15s}
   .briefing-continue:hover{background:rgba(0,255,136,.2);border-color:rgba(0,255,136,.4)}
-  /* Connection toast */
-  #connToast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);z-index:9999;padding:10px 20px;border-radius:6px;border:1px solid rgba(255,80,80,.3);background:linear-gradient(180deg,rgba(30,10,10,.95),rgba(20,5,5,.98));backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 20px rgba(255,80,80,.1);transition:transform .4s ease,opacity .4s ease;opacity:0;max-width:90vw;text-align:center;font-family:'Exo 2',sans-serif;font-size:12px;color:#ff8888;pointer-events:none}
-  #connToast.visible{opacity:1;transform:translateX(-50%) translateY(0)}
-  #connToast.ok{border-color:rgba(0,255,136,.3);background:linear-gradient(180deg,rgba(10,20,15,.95),rgba(5,15,10,.98));box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 20px rgba(0,255,136,.1);color:#88ffaa}
 </style>
 <script>
 // Pre-render theme injection — runs before body paints
@@ -2048,7 +2044,6 @@
 <canvas id="grainCanvas"></canvas>
 <div class="flash-green" id="flashG"></div>
 <div class="flash-red" id="flashR"></div>
-<div id="connToast">⚠ Connection issue — retrying…</div>
 
 <div class="admin-trigger" id="adminTrigger" onclick="handleAdminTrigger()" title="System"><svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53a7.76 7.76 0 0 0 0-1.94l2.11-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5 0 0 0-.61-.22l-2.49 1a7.2 7.2 0 0 0-1.69-.98l-.38-2.65A.49.49 0 0 0 14 2h-4a.49.49 0 0 0-.49.42l-.38 2.65a7.2 7.2 0 0 0-1.69.98l-2.49-1a.5.5 0 0 0-.61.22l-2 3.46a.49.49 0 0 0 .12.64l2.11 1.65a7.9 7.9 0 0 0 0 1.94l-2.11 1.65a.5.5 0 0 0-.12.64l2 3.46a.5.5 0 0 0 .61.22l2.49-1c.52.4 1.08.72 1.69.98l.38 2.65c.05.24.26.42.49.42h4c.24 0 .44-.18.49-.42l.38-2.65a7.2 7.2 0 0 0 1.69-.98l2.49 1a.5.5 0 0 0 .61-.22l2-3.46a.49.49 0 0 0-.12-.64z"/></svg></div>
 
@@ -3139,9 +3134,9 @@ function buildRegForm(){
     }
     // Show individual-specific optional fields instead of member slots
     let html='';
-    html+=`<div class="reg-field full" style="margin-bottom:10px"><label>Department${regSettings.requireDept?'':' (optional)'}</label><input type="text" id="regIndDept" placeholder="Department"></div>`;
-    html+=`<div class="reg-field full" style="margin-bottom:10px"><label>Email${regSettings.requireEmail?'':' (optional)'}</label><input type="email" id="regIndEmail" placeholder="email@company.com"></div>`;
-    html+=`<div class="reg-field full" style="margin-bottom:10px"><label>Cell #${regSettings.requirePhone?'':' (optional)'}</label><input type="tel" id="regIndPhone" placeholder="(XXX) XXX-XXXX" oninput="formatRegPhone(this)"></div>`;
+    if(regSettings.requireDept||true){html+=`<div class="reg-field full" style="margin-bottom:10px"><label>Department${regSettings.requireDept?'':' (optional)'}</label><input type="text" id="regIndDept" placeholder="Department"></div>`}
+    if(regSettings.requireEmail||true){html+=`<div class="reg-field full" style="margin-bottom:10px"><label>Email${regSettings.requireEmail?'':' (optional)'}</label><input type="email" id="regIndEmail" placeholder="email@company.com"></div>`}
+    if(regSettings.requirePhone||true){html+=`<div class="reg-field full" style="margin-bottom:10px"><label>Cell #${regSettings.requirePhone?'':' (optional)'}</label><input type="tel" id="regIndPhone" placeholder="(XXX) XXX-XXXX" oninput="formatRegPhone(this)"></div>`}
     container.innerHTML=html;
   }else{
     // Team mode — restore standard team form
@@ -3176,11 +3171,11 @@ function rebuildMemberSlots(){
       <div class="reg-member-label"><span class="reg-member-num">${m}</span> Team Member ${m}</div>
       <div class="reg-row">
         <div class="reg-field"><label>Full Name</label><input type="text" id="reg${m}Name" placeholder="First & Last Name"></div>
-        <div class="reg-field"><label>Department${regSettings.requireDept?'':' (optional)'}</label><input type="text" id="reg${m}Dept" placeholder="Department"></div>
+        ${regSettings.requireDept||true?`<div class="reg-field"><label>Department${regSettings.requireDept?'':' (optional)'}</label><input type="text" id="reg${m}Dept" placeholder="Department"></div>`:''}
       </div>
       <div class="reg-row">
-        <div class="reg-field"><label>Email${regSettings.requireEmail?'':' (optional)'}</label><input type="email" id="reg${m}Email" placeholder="email@company.com"></div>
-        <div class="reg-field"><label>Cell #${regSettings.requirePhone?'':' (optional)'}</label><input type="tel" id="reg${m}Phone" placeholder="(XXX) XXX-XXXX" oninput="formatRegPhone(this)"></div>
+        ${regSettings.requireEmail||true?`<div class="reg-field"><label>Email${regSettings.requireEmail?'':' (optional)'}</label><input type="email" id="reg${m}Email" placeholder="email@company.com"></div>`:''}
+        ${regSettings.requirePhone||true?`<div class="reg-field"><label>Cell #${regSettings.requirePhone?'':' (optional)'}</label><input type="tel" id="reg${m}Phone" placeholder="(XXX) XXX-XXXX" oninput="formatRegPhone(this)"></div>`:''}
       </div>
     </div>`;
   }
@@ -3285,7 +3280,8 @@ function showLogout(){
 function hideLogout(){document.getElementById('logoutModal').classList.remove('active')}
 function doLogout(){
   hideLogout();
-  clearSession();
+  // Clear session but preserve team-specific game state (isSubmitted, vault, drafts)
+  try{localStorage.removeItem('cb_session');sessionStorage.removeItem('cb_session')}catch(e){}
   notepadOpen=false;document.getElementById('notepadPanel').classList.remove('open');
   document.getElementById('notepadTrigger').classList.remove('visible');
   if(elapsedInterval){clearInterval(elapsedInterval);elapsedInterval=null}
@@ -3516,17 +3512,9 @@ function submitLogin(){
       if(!registeredTeams.find(r=>r.id===t.teamId)){registeredTeams.push(currentVaultTeam)}
       updateConsoleForTeam(currentVaultTeam);saveSession();loginSuccess();startBroadcastPolling();
       apiCall('getEventConfig').then(cfg=>{
-        if(cfg.ok&&cfg.config){
-          applyEventConfig(cfg.config);
-          // Store session generation for destroy detection
-          try{localStorage.setItem('cb_sessionGen',String(cfg.config.sessionGenTeam||'0'))}catch(e){}
-        }
-        // Load content (posts, media, intel) so grid badges reflect actual counts
-        _loadTeamContent().then(()=>{
-          renderGrid();
-          // Load drafts from backend after intel fields are rendered
-          loadDraftsFromBackend();
-        });
+        if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
+        // Load drafts from backend after intel fields are rendered
+        loadDraftsFromBackend();
       });
     }else{
       apiCall('validateUsername',{username:idVal}).then(vResult=>{
@@ -4065,35 +4053,6 @@ function renderMedia(){
 // ══════ PANELS ══════
 const overlay=document.getElementById('panelOverlay');
 let currentFeedView='grid';
-
-// Fetch content (posts, media, intel) for team players — called on first login
-async function _loadTeamContent(){
-  const feedResult=await apiCall('getFeedPosts');
-  if(feedResult.ok&&Array.isArray(feedResult.posts)){
-    posts.length=0;feedResult.posts.forEach(p=>posts.push(p));
-    _cacheContent('cb_posts',posts);
-  }
-  const mediaResult=await apiCall('getMediaItems');
-  if(mediaResult.ok&&Array.isArray(mediaResult.items)){
-    mediaItems.length=0;mediaResult.items.forEach(m=>mediaItems.push({
-      icon:m.filename||'📄',name:m.title||'',nameFont:m.titleFont||'',
-      desc:m.desc||'',descFont:m.descFont||'',
-      type:m.type||'doc',fileUrl:m.url||'',
-      vaultLocked:m.vaultLocked||false,unlockKey:m.unlockKey||'',
-      unlocked:m.unlocked||false,vaultCode:m.vaultCode||'',vaultCodename:m.vaultCodename||''
-    }));
-    syncVaultCodesFromMedia();restoreGameState();
-    _cacheContent('cb_media',mediaItems);
-  }
-  const intelResult=await apiCall('getIntelFields');
-  if(intelResult.ok&&Array.isArray(intelResult.fields)){
-    intelFields.length=0;intelResult.fields.forEach(f=>intelFields.push({
-      label:f.label||'',emoji:f.emoji||'',type:f.fieldType||'text',
-      font:f.font||'',inputFont:f.inputFont||''
-    }));
-    _cacheContent('cb_intel',intelFields);
-  }
-}
 function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);if(window._histPush)window._histPush('panel');saveSession();
   if(t==='feed'){renderFeed();setFeedView('grid');_refreshPanelData('feed')}if(t==='media'){renderMedia();_refreshPanelData('media')}if(t==='intel'){renderIntelForm();restoreIntelDraft();_refreshPanelData('intel')}if(t==='vault'){renderVaultPanel();_refreshPanelData('vault')}}
 
@@ -4103,57 +4062,38 @@ function _refreshPanelData(panel){
   if(panel==='feed'){
     apiCall('getFeedPosts').then(r=>{
       if(r.ok&&r.posts){
-        // Only re-render if count changed or content differs
-        if(r.posts.length!==posts.length||_quickHash(r.posts)!==_quickHash(posts)){
-          posts=r.posts;renderFeed();renderGrid();_cacheContent("cb_posts",posts)
-        }
+        const changed=JSON.stringify(r.posts)!==JSON.stringify(posts.map(p=>({emoji:p.emoji,bg:p.bg,cap:p.cap,capFont:p.capFont||'',mediaUrl:p.mediaUrl||'',mediaType:p.mediaType||'image',focalX:p.focalX||50,focalY:p.focalY||50})));
+        if(changed){posts=r.posts;renderFeed();renderGrid();_cacheContent("cb_posts",posts)}
       }
     });
   }else if(panel==='media'){
     apiCall('getMediaItems').then(r=>{
       if(r.ok&&r.items){
-        if(r.items.length!==mediaItems.length||_quickHash(r.items)!==_quickHash(mediaItems)){
-          mediaItems=r.items;syncVaultCodesFromMedia();restoreGameState();renderMedia();renderGrid();_cacheContent("cb_media",mediaItems)
-        }
+        const changed=r.items.length!==mediaItems.length||JSON.stringify(r.items)!==JSON.stringify(mediaItems.map(m=>({name:m.name,desc:m.desc||'',url:m.url,type:m.type||'image',nameFont:m.nameFont||'',descFont:m.descFont||'',vaultLocked:m.vaultLocked||false})));
+        if(changed){mediaItems=r.items;syncVaultCodesFromMedia();restoreGameState();renderMedia();renderGrid();_cacheContent("cb_media",mediaItems)}
       }
     });
   }else if(panel==='intel'){
     apiCall('getIntelFields').then(r=>{
       if(r.ok&&r.fields){
-        if(r.fields.length!==intelFields.length||_quickHash(r.fields)!==_quickHash(intelFields)){
+        const changed=r.fields.length!==intelFields.length||JSON.stringify(r.fields)!==JSON.stringify(intelFields);
+        if(changed){
+          // Preserve current input values before re-render
           const curVals={};
           document.querySelectorAll('.intel-exp-input').forEach(inp=>{if(inp.dataset.idx&&inp.value.trim())curVals[inp.dataset.idx]=inp.value});
           intelFields=r.fields;renderIntelForm();
+          // Restore typed values
           document.querySelectorAll('.intel-exp-input').forEach(inp=>{if(curVals[inp.dataset.idx])inp.value=curVals[inp.dataset.idx]});
           renderGrid();_cacheContent("cb_intel",intelFields);
         }
       }
     });
   }else if(panel==='vault'){
-    apiCall('getMediaItems').then(r=>{
-      if(r.ok&&r.items){
-        if(r.items.length!==mediaItems.length||_quickHash(r.items)!==_quickHash(mediaItems)){
-          mediaItems=r.items;_cacheContent("cb_media",mediaItems);
-          syncVaultCodesFromMedia();restoreGameState();renderVaultPanel();renderGrid();
-        }
-      }
+    apiCall('getEventConfig').then(cfg=>{
+      if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
+      syncVaultCodesFromMedia();restoreGameState();renderVaultPanel();
     });
   }
-}
-// Fast content hash — avoids false positives from key ordering in JSON.stringify
-function _quickHash(arr){
-  if(!arr||!arr.length)return '0';
-  let h=arr.length;
-  for(let i=0;i<arr.length;i++){
-    const keys=Object.keys(arr[i]);
-    for(let j=0;j<keys.length;j++){
-      const v=arr[i][keys[j]];
-      if(typeof v==='string')h=((h<<5)-h+v.length)|0;
-      else if(typeof v==='number')h=((h<<5)-h+v)|0;
-      else if(typeof v==='boolean')h=((h<<5)-h+(v?1:0))|0;
-    }
-  }
-  return String(h);
 }
 function closePanel(){_stopAllFeedVideos();overlay.style.cssText='';overlay.classList.remove('active');setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession()},120)}
 
@@ -4759,7 +4699,7 @@ function finalSubmit(){
     document.getElementById('confirmModal').classList.remove('active');
     document.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});
     const btn=document.getElementById('intelSubmitBtn');if(btn){btn.textContent='◈ TRANSMITTED ◈';btn.disabled=true}
-    document.getElementById('intelBadge').textContent='SUBMITTED '+document.querySelectorAll('.intel-exp-input').length+' RESPONSES';
+    document.getElementById('intelBadge').textContent='SUBMITTED';
     playSuccess();
     document.getElementById('flashG').classList.add('on');
     setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
@@ -4783,7 +4723,7 @@ function finalSubmit(){
   // Show neutral checkmarks — NO indication of right/wrong
     document.getElementById('intelSubmitBtn').disabled=true;
   const _sl=document.getElementById('intelSubmitBtn');if(_sl){_sl.textContent='◈ TRANSMITTED ◈';_sl.disabled=true;}
-  document.getElementById('intelBadge').textContent='SUBMITTED '+document.querySelectorAll('.intel-exp-input').length+' RESPONSES';
+  document.getElementById('intelBadge').textContent='SUBMITTED';
   document.getElementById('intelBadge').classList.remove('amber');
   playSuccess();
   document.getElementById('flashG').classList.add('on');
@@ -5197,16 +5137,6 @@ function _checkRateLimit(){
   _apiRateLimit.lastCall=now;
   return true;
 }
-let _connFails=0;let _connToastTimer=null;
-function _showConnToast(ok){
-  const el=document.getElementById('connToast');if(!el)return;
-  if(ok){
-    if(_connFails>0){_connFails=0;el.textContent='✓ Connection restored';el.classList.add('ok');el.classList.add('visible');clearTimeout(_connToastTimer);_connToastTimer=setTimeout(()=>{el.classList.remove('visible');el.classList.remove('ok')},2500)}
-    return;
-  }
-  _connFails++;
-  if(_connFails>=2){el.textContent='⚠ Connection issue — retrying…';el.classList.remove('ok');el.classList.add('visible');clearTimeout(_connToastTimer);_connToastTimer=setTimeout(()=>{el.classList.remove('visible')},8000)}
-}
 async function apiCall(action,data={}){
   if(!_checkRateLimit()&&!['loginTeam','login','getEventConfig'].includes(action)){
     console.warn('Rate limited:',action);
@@ -5234,19 +5164,10 @@ async function apiCall(action,data={}){
       body:body.toString()
     });
     const text=await resp.text();
-    try{const result=JSON.parse(text);_showConnToast(true);
-      // Detect session invalidation — force logout if backend says session expired
-      if(!result.ok&&result.error&&(result.error.includes('expired')&&result.error.includes('session')||result.error.includes('Invalid or expired'))){
-        _showConnToast(true);
-        clearSession();
-        location.reload();
-        return result;
-      }
-      return result}
+    try{return JSON.parse(text)}
     catch(e){console.error('Parse error:',text.substring(0,200));return {ok:false,error:'Invalid response from server'}}
   }catch(err){
     console.error('API error:',err);
-    _showConnToast(false);
     return {ok:false,error:'Network error — check connection'};
   }
 }
@@ -5305,7 +5226,7 @@ async function loadEventData(){
     posts.length=0;
     feedResult.posts.forEach(p=>posts.push(p));
     _cacheContent('cb_posts',posts);
-    renderFeed();
+    renderFeed();renderGrid();
     // If user was in focus mode, re-render the single post with fresh data
     if(currentFeedView==='single')renderSinglePost();
   }
@@ -5325,7 +5246,7 @@ async function loadEventData(){
     }));
     syncVaultCodesFromMedia();
     _cacheContent('cb_media',mediaItems);
-    renderMedia();
+    renderMedia();renderGrid();
   }
 
   const intelResult=await apiCall('getIntelFields');
@@ -5336,7 +5257,7 @@ async function loadEventData(){
       font:f.font||'',inputFont:f.inputFont||'',answer:f.answer||{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}
     }));
     _cacheContent('cb_intel',intelFields);
-    renderIntelForm();
+    renderIntelForm();renderGrid();
   }
 
   const teamsResult=await apiCall('getTeams');
@@ -5359,15 +5280,12 @@ async function loadEventData(){
       if(team){
         team.submitTime=s.submittedAt;
         team.submissionResults={totalScore:s.score,totalPossible:s.totalPossible||0,correctCount:s.correct,totalFields:s.total};
-        // Use correct count for submitted teams; for pre-submission, count filled answers
-        team.fieldsCompleted=s.correct||0;
       }
     });
   }
 
   refreshAdminList();
   startGlobalEventTimer();
-  renderGrid(); // Single grid update after all data loaded
 }
 
 function applyEventConfig(cfg){
@@ -5454,8 +5372,7 @@ function applyEventConfig(cfg){
       }
     });
   }
-  // Only rebuild grid if tile config actually changed
-  if(_gridTilesChanged)forceRenderGrid();
+  if(_gridTilesChanged)renderGrid();
   // Sync threshold UI
   const idleInp=document.getElementById('apThresholdIdle');if(idleInp)idleInp.value=activityThresholds.activeToIdle;
   const silentInp=document.getElementById('apThresholdSilent');if(silentInp)silentInp.value=activityThresholds.idleToSilent;
@@ -5531,7 +5448,7 @@ function togglePlayerPreview(){
     const pill=document.getElementById('previewExitPill');
     if(pill)pill.style.display='none';
   }
-  forceRenderGrid();renderFeed();renderMedia();renderIntelForm();renderVaultPanel();
+  renderGrid();renderFeed();renderMedia();renderIntelForm();renderVaultPanel();
   if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
   syncAdminDropdownToggles();
   closeAdminDropdown();
@@ -5622,7 +5539,7 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('contextmenu',e=>{
   if(e.target.closest('.feed-card-img')||e.target.closest('.feed-single-img')||e.target.closest('.mv-body')||e.target.closest('.no-download-shield'))e.preventDefault();
 });
-function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');closeAdminDropdown();closeAdminPanel();closeBroadcast();closeLeaderboard();closeKeysCodes();forceRenderGrid();renderIntelForm()}
+function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');closeAdminDropdown();closeAdminPanel();closeBroadcast();closeLeaderboard();closeKeysCodes();renderGrid();renderIntelForm()}
 
 // ══════ SCREEN NAVIGATION ══════
 let _currentScreen='landingScreen';
@@ -5979,7 +5896,6 @@ function closeAllAdminPanels(){
   if(bcMediaRecorder&&bcMediaRecorder.state==='recording')bcMediaRecorder.stop();
   lbExpandedTeam=null;
   hideAdminTabs();
-  saveSession();
 }
 function showAdminTabs(activeId){
   const bar=document.getElementById('adminNavBar');
@@ -5989,7 +5905,6 @@ function showAdminTabs(activeId){
     const isActive=btn.id==='anb-'+activeId;
     btn.classList.toggle('active',isActive);
   });
-  saveSession();
 }
 function hideAdminTabs(){
   const bar=document.getElementById('adminNavBar');
@@ -6290,13 +6205,10 @@ initDemoTeams();
 
 function isTeamActive(t){return(Date.now()-t.lastActive)<INACTIVE_THRESHOLD}
 function isTeamGhost(t){
-  // Ghost: registered but never meaningfully engaged
-  // NOT a ghost if they have submitted, have a score, or have any fieldsCompleted
-  if(t.submitTime||t.submissionResults||t.fieldsCompleted>0)return false;
+  // Ghost: registered but never meaningfully engaged — lastActive within 45s of registeredAt
   if(!t.registeredAt)return false;
   const regTime=new Date(t.registeredAt).getTime();
-  // If lastActive is within 5 minutes of registration AND no engagement signals → ghost
-  return(t.lastActive-regTime)<300000;
+  return(t.lastActive-regTime)<300000; // 5 minutes — never meaningfully engaged
 }
 function removeGhostTeam(teamId){
   const idx=registeredTeams.findIndex(t=>t.id===teamId);
@@ -6336,7 +6248,16 @@ function renderTeamMonitor(){
   const start=tmCurrentPage*tmPerPage;
   const pageTeams=sorted.slice(start,start+tmPerPage);
 
-  el.innerHTML=pageTeams.length?pageTeams.map(t=>{
+  const headerRow=`<div class="ap-monitor-row" style="border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:4px;opacity:.5">
+      <div class="ap-monitor-dot" style="visibility:hidden"></div>
+      <span class="ap-monitor-id" style="font-size:8px;letter-spacing:2px">ID</span>
+      <span class="ap-monitor-name" style="font-size:8px;letter-spacing:2px">TEAM</span>
+      <span class="ap-monitor-fields" style="font-size:8px;letter-spacing:2px">FIELDS</span>
+      <span style="font-size:8px;letter-spacing:2px;min-width:40px;text-align:center">SCORE</span>
+      <span style="font-size:8px;letter-spacing:2px;min-width:14px;text-align:center">SUB</span>
+      <span class="ap-monitor-time" style="font-size:8px;letter-spacing:2px">ACTIVITY</span>
+    </div>`;
+  el.innerHTML=pageTeams.length?headerRow+pageTeams.map(t=>{
     const ghost=isTeamGhost(t);
     const on=!ghost&&isTeamActive(t);
     const rowClass=ghost?'ghost':on?'active':'inactive';
@@ -6367,7 +6288,6 @@ function renderLeaderboard(){
   if(!el)return;
   if(!registeredTeams.length){el.innerHTML='<div class="ap-lb-empty">No teams registered yet</div>';return}
 
-  // Scoring: actual backend score (primary), submit time (secondary — earlier = better)
   const maxFields=intelFields.length||1;
   const sorted=[...registeredTeams].sort((a,b)=>{
     const aScore=a.submissionResults?a.submissionResults.totalScore:0;
@@ -6378,16 +6298,14 @@ function renderLeaderboard(){
     return b.lastActive-a.lastActive;
   });
 
-  const topPossible=sorted[0]?.submissionResults?.totalPossible||(maxFields*10);
-
   el.innerHTML=sorted.slice(0,5).map((t,i)=>{
     const rank=i+1;
     const rc=rank===1?'gold':rank===2?'silver':rank===3?'bronze':'std';
     const score=t.submissionResults?t.submissionResults.totalScore:0;
     const possible=t.submissionResults?t.submissionResults.totalPossible:(maxFields*10);
     const pct=possible?Math.round((score/possible)*100):0;
-    const barColor=rank===1?'#ffd700':rank===2?'#c0c0c0':rank===3?'#cd7f32':'#444';
     const correct=t.submissionResults?t.submissionResults.correctCount:0;
+    const barColor=rank===1?'#ffd700':rank===2?'#c0c0c0':rank===3?'#cd7f32':'#444';
     return `<div class="ap-lb-row">
       <div class="ap-lb-rank ${rc}">#${rank}</div>
       <div class="ap-lb-info">
@@ -6400,9 +6318,8 @@ function renderLeaderboard(){
   }).join('');
 }
 
-// Team monitor — re-fetch from backend periodically for live data
-let _tmLastHash='';
-let _lbLastHash='';
+// Team monitor — hash-checked refresh + live backend data fetch
+let _tmLastHash='',_lbLastHash='';
 function startTeamMonitor(){
   if(teamMonitorInterval)clearInterval(teamMonitorInterval);
   let _tmFetchCount=0;
@@ -6450,7 +6367,7 @@ function _teamDataHash(){
     h=((h<<5)-h+(t.fieldsCompleted||0))|0;
     h=((h<<5)-h+(t.submitTime?1:0))|0;
     h=((h<<5)-h+(t.submissionResults?t.submissionResults.totalScore:0))|0;
-    h=((h<<5)-h+t.lastActive)|0;
+    for(let j=0;j<t.name.length;j++)h=((h<<5)-h+t.name.charCodeAt(j))|0;
   }
   return String(h);
 }
@@ -6559,14 +6476,12 @@ function renderFullLeaderboard(){
       let fieldsHtml='';
       if(t.submissionResults){
         if(t.submissionResults.results&&Array.isArray(t.submissionResults.results)){
-          // Client-side graded results available (local team)
           fieldsHtml=t.submissionResults.results.map(r=>{
             const st=r.correct?'correct':(r.submitted||r.submitted===''&&r.type==='dual'?'wrong':'empty');
             const stText=r.correct?'✓ Correct':(st==='empty'?'— Empty':'✗ Wrong');
             return `<div class="lb-field-row"><span class="lb-field-label">${r.field}</span><span class="lb-field-status ${st}">${stText}</span></div>`;
           }).join('');
         }else{
-          // Backend summary only — show score breakdown
           const sr=t.submissionResults;
           fieldsHtml=`<div style="display:flex;flex-direction:column;gap:6px;padding:4px 0">
             <div class="lb-field-row"><span class="lb-field-label">Correct Answers</span><span class="lb-field-status correct">${sr.correctCount||0} / ${sr.totalFields||maxFields}</span></div>
@@ -6574,7 +6489,7 @@ function renderFullLeaderboard(){
           </div>`;
         }
       }else{
-        fieldsHtml=`<div style="font-family:IBM Plex Mono,monospace;font-size:9px;color:#555;padding:8px 0">${t.submitTime?'Submitted — awaiting scoring data':'Awaiting submission'}</div>`;
+        fieldsHtml=`<div style="font-family:IBM Plex Mono,monospace;font-size:9px;color:#555;padding:8px 0">${t.submitTime?'Submitted — awaiting scoring':'Awaiting submission'}</div>`;
       }
 
       const msgBtn=isAdmin?`<button class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage('${t.id}','${t.name.replace(/'/g,"\\'")}')">💬 Message Team</button>`:'';
@@ -6630,7 +6545,7 @@ function renderFullLeaderboard(){
 
 function toggleLbTeam(id){
   lbExpandedTeam=lbExpandedTeam===id?null:id;
-  _lbLastHash=''; // Invalidate so interval doesn't suppress this render
+  _lbLastHash='';
   renderFullLeaderboard();
 }
 
@@ -6676,7 +6591,7 @@ function sendTeamMessage(teamId,teamName){
 function dispatchTeamMessage(teamId){
   const msg=document.getElementById('tmMsgText')?.value.trim();
   if(!msg)return;
-  // Send as a targeted broadcast via the backend (prefixed with team ID so only that team shows it)
+  // Send as targeted broadcast via backend — [TO:TEAMID] prefix tells player poll to filter
   const targetMsg='[TO:'+teamId+'] '+msg;
   apiCall('sendBroadcast',{message:targetMsg,type:'text'}).then(r=>{
     if(r.ok){
@@ -6844,7 +6759,9 @@ function openBroadcast(){
   showAdminTabs('broadcastPanel');
   setTimeout(()=>{
     if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
-      navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{s.getTracks().forEach(t=>t.stop())}).catch(e=>{});
+      navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{s.getTracks().forEach(t=>t.stop())}).catch(e=>{
+        console.log('Mic permission prompt:',e.name);
+      });
     }
   },100);
 }
@@ -6892,6 +6809,13 @@ function sendBroadcast(){
       if(r.ok){
         document.getElementById('bcMessage').value='';
         closeBroadcast();
+        const flash=document.createElement('div');
+        flash.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.3);border-radius:6px;padding:10px 20px;font-family:IBM Plex Mono,monospace;font-size:11px;color:var(--green);letter-spacing:1px';
+        flash.textContent='✓ Broadcast sent to all teams';
+        document.body.appendChild(flash);
+        setTimeout(()=>flash.remove(),3000);
+      }else{
+        alert('Broadcast failed: '+(r.error||'Unknown error')+'\nYou may need to re-login as admin.');
       }
     });
   } else {
@@ -6919,7 +6843,7 @@ let _broadcastPollInterval=null;
 
 function startBroadcastPolling(){
   if(_broadcastPollInterval)clearInterval(_broadcastPollInterval);
-  if(isAdmin)return; // Admins don't need to poll — they send
+  if(isAdmin)return;
   _lastBroadcastTime=new Date().toISOString();
   _broadcastPollInterval=setInterval(async()=>{
     if(!currentVaultTeam)return;
@@ -6927,7 +6851,7 @@ function startBroadcastPolling(){
     if(r.ok&&r.broadcasts&&r.broadcasts.length>0){
       r.broadcasts.forEach(b=>{
         _lastBroadcastTime=b.sentAt;
-        // Check for targeted message: [TO:TEAM-XXXX] prefix
+        // Filter targeted messages: [TO:TEAMID] prefix
         const targetMatch=b.message.match(/^\[TO:([^\]]+)\]\s*/);
         if(targetMatch){
           if(currentVaultTeam&&targetMatch[1]===currentVaultTeam.id){
@@ -6938,7 +6862,7 @@ function startBroadcastPolling(){
         }
       });
     }
-    // Lightweight session generation check — no full config apply
+    // Lightweight session generation check
     const cfg=await apiCall('getEventConfig');
     if(cfg.ok&&cfg.config){
       const serverGen=String(cfg.config.sessionGenTeam||'0');
@@ -7211,50 +7135,44 @@ function tileBadgeText(id,isAdmin){
     return count?count+' ITEMS':'NO EVIDENCE';
   }
   if(id==='vault')return vaultBadgeText();
-  // intel
+  // intel — check submission state and count filled inputs
+  if(isSubmitted) return 'SUBMITTED';
+  const inputs=document.querySelectorAll('.intel-exp-input');
+  if(inputs.length>0){
+    let filled=0;inputs.forEach(inp=>{if(inp.value&&inp.value.trim())filled++});
+    return filled+' / '+intelFields.length+' ENTERED';
+  }
+  try{
+    const tid=currentVaultTeam?.id||'UNKNOWN';
+    const raw=localStorage.getItem('cb_gs_'+tid+'_intelDraft');
+    if(raw){const d=JSON.parse(raw);const filled=Object.keys(d).filter(k=>d[k]&&String(d[k]).trim()).length;return filled+' / '+intelFields.length+' ENTERED'}
+  }catch(e){}
   return '0 / '+intelFields.length+' ENTERED';
 }
-let _gridRenderedMode=null; // Track last render mode to detect structural changes
 function renderGrid(){
-  updateTileStates();
+  updateTileStates(); // Always recalculate orb states before rendering
   const isA=document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview');
   const g=document.getElementById('consoleGrid');
-  // Full rebuild only when structure changes (first render, mode switch, or forced)
-  const needsRebuild=!g.children.length||_gridRenderedMode!==isA;
-  if(needsRebuild){
-    _gridRenderedMode=isA;
-    g.innerHTML=gridTiles.map((t,i)=>{
-      const isIntel=t.id==='intel';
-      const isVault=t.id==='vault';
-      const badgeCls=isVault?' crimson':isIntel?' violet':'';
-      return `<div class="crt-monitor" data-tile="${t.id}" onclick="openPanel('${t.id}')">
-        ${isA?`<div class="admin-edit-btn" onclick="event.stopPropagation();editGridTile(${i})">✎</div>`:''}
-        <div class="crt-screw s1"></div><div class="crt-screw s2"></div><div class="crt-screw s3"></div><div class="crt-screw s4"></div>
-        <div class="crt-led"></div>
-        <div class="crt-screen">
-          <div class="tile-glow"></div>
-          <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:48px;height:48px;object-fit:contain">`:t.icon}</div>
-          <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
-          <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
-          <div class="tile-badge${badgeCls}" id="${t.badgeId}">${tileBadgeText(t.id,isA)}</div>
-          <div class="tile-status" title="${t.dotClass==='active'?'Activity detected recently':t.dotClass==='idle'?'No recent activity':'No activity recorded yet'}"><div class="tile-dot ${t.dotClass}"></div><span class="tile-status-label ${t.dotClass}">${t.status}</span></div>
-        </div>
-      </div>`;
-    }).join('');
-  }else{
-    // Light update — only update badges and status dots in place (no flicker)
-    gridTiles.forEach(t=>{
-      const badgeEl=document.getElementById(t.badgeId);
-      if(badgeEl){const newText=tileBadgeText(t.id,isA);if(badgeEl.textContent!==newText)badgeEl.textContent=newText}
-      const dotEl=document.querySelector(`[data-tile="${t.id}"] .tile-dot`);
-      if(dotEl)dotEl.className='tile-dot '+t.dotClass;
-      const labelEl=document.querySelector(`[data-tile="${t.id}"] .tile-status-label`);
-      if(labelEl){labelEl.className='tile-status-label '+t.dotClass;labelEl.textContent=t.status}
-    });
-  }
+  g.innerHTML=gridTiles.map((t,i)=>{
+    const isIntel=t.id==='intel';
+    const isVault=t.id==='vault';
+    const badgeCls=isVault?' crimson':isIntel?' violet':'';
+    return `<div class="crt-monitor" data-tile="${t.id}" onclick="openPanel('${t.id}')">
+      ${isA?`<div class="admin-edit-btn" onclick="event.stopPropagation();editGridTile(${i})">✎</div>`:''}
+      <div class="crt-screw s1"></div><div class="crt-screw s2"></div><div class="crt-screw s3"></div><div class="crt-screw s4"></div>
+      <div class="crt-led"></div>
+      <div class="crt-screen">
+        <div class="tile-glow"></div>
+        <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:48px;height:48px;object-fit:contain">`:t.icon}</div>
+        <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
+        <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
+        <div class="tile-badge${badgeCls}" id="${t.badgeId}">${tileBadgeText(t.id,isA)}</div>
+        <div class="tile-status" title="${t.dotClass==='active'?'Activity detected recently':t.dotClass==='idle'?'No recent activity':'No activity recorded yet'}"><div class="tile-dot ${t.dotClass}"></div><span class="tile-status-label ${t.dotClass}">${t.status}</span></div>
+      </div>
+    </div>`;
+  }).join('');
   updateVaultBadgeColor();
 }
-function forceRenderGrid(){_gridRenderedMode=null;renderGrid()}
 function editGridTile(i){
   const t=gridTiles[i];
   const isImgIcon=t.icon.startsWith('http')||t.icon.startsWith('data:');
@@ -7300,7 +7218,7 @@ function saveGridTile(i){
   gridTiles[i].subFont=sf;
   if(document.getElementById('eg_label_all').checked)gridTiles.forEach(t=>t.labelFont=lf);
   if(document.getElementById('eg_sub_all').checked)gridTiles.forEach(t=>t.subFont=sf);
-  hideEditModal();forceRenderGrid();saveEventConfigToBackend();
+  hideEditModal();renderGrid();saveEventConfigToBackend();
 }
 
 // ── Intel Fields ──
@@ -7362,7 +7280,7 @@ function renderIntelForm(){
   }
   // Restore values
   form.querySelectorAll('.intel-exp-input').forEach(inp=>{if(prevVals[inp.dataset.idx])inp.value=prevVals[inp.dataset.idx]});
-  if(isSubmitted){form.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});const btn=document.getElementById('intelSubmitBtn');if(btn){btn.disabled=true;btn.textContent='◈ TRANSMITTED ◈'}const ib=document.getElementById('intelBadge');if(ib)ib.textContent='SUBMITTED '+form.querySelectorAll('.intel-exp-input').length+' RESPONSES'}
+  if(isSubmitted){form.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});const btn=document.getElementById('intelSubmitBtn');if(btn){btn.disabled=true;btn.textContent='◈ TRANSMITTED ◈'}}
   // Sync intelLabels array
   syncIntelLabels();
 }
@@ -7389,34 +7307,26 @@ function loadDraftsFromBackend(){
       try{localStorage.setItem(_gsKey('isSubmitted'),'1')}catch(e){}
       // Store submitted answers as draft so restoreIntelDraft can populate them
       if(r.answers&&typeof r.answers==='object'&&Object.keys(r.answers).length>0){
-        // Map label-keyed answers to index-keyed for restoreIntelDraft
         const indexedAnswers={};
-        intelFields.forEach((f,i)=>{
-          if(r.answers[f.label])indexedAnswers[String(i)]=r.answers[f.label];
-        });
+        intelFields.forEach((f,i)=>{if(r.answers[f.label])indexedAnswers[String(i)]=r.answers[f.label]});
         try{localStorage.setItem(_gsKey('intelDraft'),JSON.stringify(indexedAnswers))}catch(e){}
       }
-      // If intel panel is already rendered, lock it immediately
+      // Lock form if intel panel is already rendered
       const intelInputs=document.querySelectorAll('.intel-exp-input');
       if(intelInputs.length>0){
-        intelFields.forEach((f,i)=>{
-          const inp=intelInputs[i];
-          if(inp&&r.answers&&r.answers[f.label]){inp.value=r.answers[f.label]}
-        });
+        intelFields.forEach((f,i)=>{const inp=intelInputs[i];if(inp&&r.answers&&r.answers[f.label])inp.value=r.answers[f.label]});
         intelInputs.forEach(inp=>inp.disabled=true);
         const btn=document.getElementById('intelSubmitBtn');
         if(btn){btn.disabled=true;btn.textContent='◈ TRANSMITTED ◈'}
       }
-      // Update grid badge
-      renderGrid();
+      renderGrid(); // Update tile badge
       return;
     }
     // Not submitted — restore drafts
+    if(!r.drafts)return;
     const drafts=typeof r.drafts==='string'?JSON.parse(r.drafts):r.drafts;
     if(!drafts||typeof drafts!=='object')return;
-    // Store for later panel open
     try{localStorage.setItem(_gsKey('intelDraft'),JSON.stringify(drafts))}catch(e){}
-    // If panel is open, populate now
     document.querySelectorAll('.intel-exp-input').forEach(inp=>{
       const idx=inp.dataset.idx;
       if(idx!==undefined&&drafts[idx]&&!inp.value.trim()){inp.value=drafts[idx]}
@@ -8912,11 +8822,6 @@ function saveSession(){
     // Save which panel is open so refresh restores exactly where the user was
     const openPanelEl=document.querySelector('.expanded-panel.visible');
     if(openPanelEl)data.panel=openPanelEl.id;
-    // Save active admin panel so admin refresh restores dashboard/leaderboard/etc
-    if(isAdmin){
-      const activeAdmin=document.querySelector('#dashboardPanel.active,#leaderboardModule.active,#broadcastPanel.active,#keysCodesPanel.active,#portalUsersPanel.active,#scoringPanel.active,#registrationPanel.active,#appearancePanel.active,#sessionMgmtPanel.active,#tutorialConfigPanel.active');
-      if(activeAdmin)data.adminPanel=activeAdmin.id;
-    }
     // Save feed view state so focus mode + post index survive refresh
     data.feedView=currentFeedView;
     data.feedPost=currentPost;
@@ -8962,16 +8867,12 @@ function saveGameState(){
     }
 
     // 4. Intel form answers (typed but not yet submitted)
-    // Only save if intel inputs exist in DOM — otherwise we'd overwrite valid data with empty
-    const intelInputs=document.querySelectorAll('.intel-exp-input');
-    if(intelInputs.length>0){
-      const intelAnswers={};
-      intelInputs.forEach(inp=>{
-        const idx=inp.dataset.idx;
-        if(idx!==undefined&&inp.value.trim())intelAnswers[idx]=inp.value;
-      });
-      localStorage.setItem(_gsKey('intelDraft'),JSON.stringify(intelAnswers));
-    }
+    const intelAnswers={};
+    document.querySelectorAll('.intel-exp-input').forEach(inp=>{
+      const idx=inp.dataset.idx;
+      if(idx!==undefined&&inp.value.trim())intelAnswers[idx]=inp.value;
+    });
+    localStorage.setItem(_gsKey('intelDraft'),JSON.stringify(intelAnswers));
 
     // 5. Submission status
     localStorage.setItem(_gsKey('isSubmitted'),isSubmitted?'1':'0');
@@ -9047,27 +8948,12 @@ function restoreIntelDraft(){
   try{
     if(!currentVaultTeam)return;
     const raw=localStorage.getItem(_gsKey('intelDraft'));
-    if(raw){
-      const answers=JSON.parse(raw);
-      if(Object.keys(answers).length>0){
-        document.querySelectorAll('.intel-exp-input').forEach(inp=>{
-          const idx=inp.dataset.idx;
-          if(idx!==undefined&&answers[idx]){inp.value=answers[idx]}
-        });
-        return;
-      }
-    }
-    // If no local draft and player has submitted, load answers from backend
-    if(isSubmitted&&currentVaultTeam.id!=='ADMIN'){
-      apiCall('getDrafts',{teamId:currentVaultTeam.id}).then(r=>{
-        if(r.ok&&r.drafts&&Object.keys(r.drafts).length>0){
-          document.querySelectorAll('.intel-exp-input').forEach(inp=>{
-            const idx=inp.dataset.idx;
-            if(idx!==undefined&&r.drafts[idx]){inp.value=r.drafts[idx]}
-          });
-        }
-      });
-    }
+    if(!raw)return;
+    const answers=JSON.parse(raw);
+    document.querySelectorAll('.intel-exp-input').forEach(inp=>{
+      const idx=inp.dataset.idx;
+      if(idx!==undefined&&answers[idx]){inp.value=answers[idx]}
+    });
   }catch(e){}
 }
 
@@ -9186,13 +9072,7 @@ function restoreSession(){
       renderGrid(); // Render grid with cached data + theme immediately
       startElapsedTimer();
       // Load fresh data from backend in background — UI already showing
-      loadEventData().then(()=>{
-        // Restore admin panel (dashboard, leaderboard, etc.) after data is loaded
-        if(data.adminPanel){
-          const apEl=document.getElementById(data.adminPanel);
-          if(apEl){_instantShow(apEl);showAdminTabs(data.adminPanel);renderTeamMonitor();renderFullLeaderboard();renderLeaderboard()}
-        }
-      });
+      loadEventData();
       return true;
     }else if(data.type==='team'&&data.team.id){
       currentVaultTeam=data.team;
@@ -9759,13 +9639,11 @@ function applyFontConfig(){
   // Vault keypad display
   const vDisp=document.getElementById('vDisp');
   if(vDisp){const fam=getFontFamily(fontConfig.vaultDisplay||'');vDisp.style.fontFamily=fam||'';}
-  // Set CSS custom properties — panels pick these up on next render
+  // Set CSS custom properties — panels pick these up on next natural render
   document.documentElement.style.setProperty('--fc-vault',getFontFamily(fontConfig.vaultDisplay||'')||'inherit');
   document.documentElement.style.setProperty('--fc-feed-cap',getFontFamily(fontConfig.feedCap||'')||'inherit');
   document.documentElement.style.setProperty('--fc-media-name',getFontFamily(fontConfig.mediaName||'')||'inherit');
   document.documentElement.style.setProperty('--fc-media-desc',getFontFamily(fontConfig.mediaDesc||'')||'inherit');
-  // Do NOT re-render panels here — causes flicker and input focus loss
-  // Panels will pick up new fonts on their next natural render
 }
 
 function resetFontConfig(){
