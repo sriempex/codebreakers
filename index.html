@@ -2579,10 +2579,7 @@
       <p>Visual style for the Intel Submissions screen. Standard is clean and minimal. CRT adds scanlines, phosphor glow, and vignette for an immersive terminal feel.</p>
       <div style="display:flex;align-items:center;gap:14px;margin-top:8px">
         <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--green);letter-spacing:1px" id="currentIntelThemeLabel">Current: Standard</div>
-        <select id="intelThemeSelect" onchange="setIntelTheme(this.value)" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 14px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;cursor:pointer">
-          <option value="standard">Standard</option>
-          <option value="crt">CRT Terminal</option>
-        </select>
+        <button class="ap-btn ap-btn-cyan" onclick="openIntelThemePreview()" style="font-size:10px;padding:8px 20px">👁 Preview & Select</button>
       </div>
     </div>
     <div class="ap-section"><h4>🖋 Typography <span class="save-blip" id="blipTypography">✓ Saved</span></h4>
@@ -5491,6 +5488,16 @@ document.addEventListener('keydown',e=>{
     if(e.key==='ArrowRight'){e.preventDefault();cycleThemePreview(1);return}
     if(e.key==='Enter'){e.preventDefault();applyThemeFromPreview();return}
   }
+  // Escape closes intel theme preview
+  if(document.getElementById('intelThemePreviewOverlay').style.display==='flex'&&e.key==='Escape'){
+    e.preventDefault();closeIntelThemePreview();return;
+  }
+  // Arrow keys cycle intel themes in preview
+  if(document.getElementById('intelThemePreviewOverlay').style.display==='flex'){
+    if(e.key==='ArrowLeft'){e.preventDefault();cycleIntelThemePreview(-1);return}
+    if(e.key==='ArrowRight'){e.preventDefault();cycleIntelThemePreview(1);return}
+    if(e.key==='Enter'){e.preventDefault();applyIntelThemeFromPreview();return}
+  }
   // Escape closes active admin panels
   if(e.key==='Escape'){
     // Login screen — contextual back
@@ -8348,6 +8355,8 @@ function previewTutorial(){
 function startTutorial(){
   const enabled=tutorialSteps.filter(s=>s.enabled);
   if(!enabled.length)return;
+  // Re-render grid to ensure badges/labels reflect current state
+  renderGrid();
   // Ensure notepad is collapsed so the trigger spotlight is correct
   if(typeof notepadOpen!=='undefined'&&notepadOpen){notepadOpen=false;document.getElementById('notepadPanel').classList.remove('open')}
   _tutCurrentStep=0;
@@ -9334,10 +9343,84 @@ function applyIntelTheme(id){
   if(id==='crt')panel.classList.add('intel-theme-crt');
   try{localStorage.setItem('cb_intelTheme',_currentIntelTheme)}catch(e){}
   // Update appearance panel UI
-  const sel=document.getElementById('intelThemeSelect');
-  if(sel)sel.value=_currentIntelTheme;
   const lbl=document.getElementById('currentIntelThemeLabel');
   if(lbl)lbl.textContent='Current: '+(_currentIntelTheme==='crt'?'CRT Terminal':'Standard');
+}
+
+// ══════ INTEL THEME PREVIEW ══════
+const _intelThemes=[{id:'standard',name:'Standard'},{id:'crt',name:'CRT Terminal'}];
+let _intelPreviewIdx=0;
+let _intelPreviewOriginal='standard';
+
+function openIntelThemePreview(){
+  _intelPreviewOriginal=_currentIntelTheme;
+  _intelPreviewIdx=_intelThemes.findIndex(t=>t.id===_currentIntelTheme);
+  if(_intelPreviewIdx<0)_intelPreviewIdx=0;
+  closeAppearancePanel();
+  document.getElementById('intelThemePreviewOverlay').style.display='flex';
+  renderIntelThemePreview();
+  updateIntelThemePreviewUI();
+}
+
+function closeIntelThemePreview(){
+  document.getElementById('intelThemePreviewOverlay').style.display='none';
+  applyIntelTheme(_intelPreviewOriginal);
+  setTimeout(()=>openAppearancePanel(),120);
+}
+
+function cycleIntelThemePreview(dir){
+  _intelPreviewIdx=(_intelPreviewIdx+dir+_intelThemes.length)%_intelThemes.length;
+  renderIntelThemePreview();
+  updateIntelThemePreviewUI();
+}
+
+function applyIntelThemeFromPreview(){
+  setIntelTheme(_intelThemes[_intelPreviewIdx].id);
+  document.getElementById('intelThemePreviewOverlay').style.display='none';
+  setTimeout(()=>openAppearancePanel(),120);
+}
+
+function updateIntelThemePreviewUI(){
+  document.getElementById('intelThemePreviewName').textContent=_intelThemes[_intelPreviewIdx].name;
+  document.getElementById('intelThemePreviewCounter').textContent=(_intelPreviewIdx+1)+' / '+_intelThemes.length;
+}
+
+function renderIntelThemePreview(){
+  const themeId=_intelThemes[_intelPreviewIdx].id;
+  const container=document.getElementById('intelThemePreviewContent');
+  // Sample intel fields for preview
+  const sampleFields=[
+    {num:'01',label:'SUSPECT NAME',emoji:'🕵️',placeholder:'···'},
+    {num:'02',label:'LOCATION',emoji:'📍',placeholder:'···'},
+    {num:'03',label:'PHONE NUMBER',emoji:'📱',placeholder:'(XXX) XXX-XXXX'},
+    {num:'04',label:'CODE NAME',emoji:'🔑',placeholder:'···'},
+    {num:'05',label:'AMOUNT',emoji:'💰',placeholder:'···'},
+    {num:'06',label:'LICENSE PLATE',emoji:'🚗',placeholder:'ABC-1234'}
+  ];
+  const crtClass=themeId==='crt'?' intel-theme-crt':'';
+  const crtHeader=themeId==='crt'?'<div class="intel-crt-header" style="display:flex"><div class="intel-crt-dot"></div> INTEL SUBMISSIONS</div>':'';
+  let rows='';
+  sampleFields.forEach((f,i)=>{
+    rows+=`<div class="intel-exp-row" style="max-width:600px;width:100%">
+      <span class="intel-exp-num">${f.num}</span>
+      <span class="intel-exp-label">${f.label} ${f.emoji}</span>
+      <input class="intel-exp-input" placeholder="${f.placeholder}" disabled style="pointer-events:none">
+    </div>`;
+  });
+  container.innerHTML=`<div class="expanded-panel${crtClass}" style="position:relative;display:block;opacity:1;pointer-events:none;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.06);background:#10121a">
+    <div class="exp-header" style="pointer-events:none"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span></div>
+    <div class="exp-body intel-exp-body" style="max-height:none;overflow:visible">
+      <div class="intel-scroll-area" style="overflow:visible;padding:20px 20px 0">
+        ${crtHeader}
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          ${rows}
+        </div>
+      </div>
+      <div class="intel-transmit-dock" style="position:relative">
+        <button class="intel-submit-btn" disabled style="pointer-events:none">◈ TRANSMIT ◈</button>
+      </div>
+    </div>
+  </div>`;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -9593,6 +9676,31 @@ function confirmVaultLock(){
   </div>
   <div style="padding:8px 20px;text-align:center;flex-shrink:0;border-top:1px solid rgba(255,255,255,.04)">
     <span style="font-family:'Chakra Petch',sans-serif;font-size:9px;color:#444;letter-spacing:1px">Use ◀ ▶ to cycle through themes · Press SELECT to apply · ESC to cancel</span>
+  </div>
+</div>
+
+<!-- Intel Theme Preview Overlay -->
+<div id="intelThemePreviewOverlay" style="position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,.96);display:none;flex-direction:column">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(0,0,0,.8);border-bottom:1px solid rgba(0,255,136,.1);flex-shrink:0;flex-wrap:wrap;gap:8px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-family:'Saira',sans-serif;font-size:11px;letter-spacing:3px;color:var(--green);font-weight:700">INTEL DISPLAY PREVIEW</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#666" id="intelThemePreviewName">Standard</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onclick="cycleIntelThemePreview(-1)" style="padding:6px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:#ccc;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s" onmouseenter="this.style.borderColor='rgba(0,212,255,.3)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.1)'">◀ Prev</button>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;min-width:40px;text-align:center" id="intelThemePreviewCounter">1 / 2</span>
+      <button onclick="cycleIntelThemePreview(1)" style="padding:6px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:#ccc;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s" onmouseenter="this.style.borderColor='rgba(0,212,255,.3)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.1)'">Next ▶</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="applyIntelThemeFromPreview()" style="padding:7px 18px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.25);border-radius:4px;color:var(--green);font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:all .15s" onmouseenter="this.style.background='rgba(0,255,136,.15)'" onmouseleave="this.style.background='rgba(0,255,136,.08)'">✓ SELECT</button>
+      <button onclick="closeIntelThemePreview()" style="padding:7px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:#999;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .15s" onmouseenter="this.style.borderColor='rgba(255,50,50,.3)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.1)'">✕ CANCEL</button>
+    </div>
+  </div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:20px">
+    <div id="intelThemePreviewContent" style="width:100%;max-width:700px"></div>
+  </div>
+  <div style="padding:8px 20px;text-align:center;flex-shrink:0;border-top:1px solid rgba(255,255,255,.04)">
+    <span style="font-family:'Chakra Petch',sans-serif;font-size:9px;color:#444;letter-spacing:1px">Use ◀ ▶ to switch between Standard and CRT Terminal · Press SELECT to apply · ESC to cancel</span>
   </div>
 </div>
 
