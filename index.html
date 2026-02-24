@@ -5113,33 +5113,15 @@ function tryUnlock(i){
 // ══════ ADMIN ══════
 let isAdmin=false;
 // ═══════ BACKEND API ═══════
-const API_URL='https://script.google.com/macros/s/AKfycbxRjOpiRs1jMpIt8obpexJBZDRtoOI1KPLhyFe0dd7SFx_YbWOjTa0DyjLBssRaEJbK/exec';
+// ══════ API CONFIGURATION ══════
+// Cloudflare Worker backend (replaces Google Apps Script)
+const API_URL='https://cb-api.sriempex.workers.dev';
 const R2_URL='https://cb-media.sriempex.workers.dev';
-// R2_SECRET removed — uploads now proxied through backend for security
 let adminSession=null; // {username, role, adminToken}
 let adminUsers=[]; // populated from backend on admin list fetch
 let manualTeams=[];
 
-
-// ══════ GOOGLE APPS SCRIPT: checkTeamName ENDPOINT ══════
-// Add this handler to your doPost function in Google Apps Script:
-// 
-// case 'checkTeamName':
-//   const teamSheet = ss.getSheetByName('Teams');
-//   const teamData = teamSheet.getDataRange().getValues();
-//   const nameToCheck = payload.teamName.trim().toLowerCase();
-//   let nameExists = false;
-//   for (let i = 1; i < teamData.length; i++) {
-//     if (teamData[i][1] && teamData[i][1].toString().trim().toLowerCase() === nameToCheck) {
-//       nameExists = true;
-//       break;
-//     }
-//   }
-//   return ContentService.createTextOutput(JSON.stringify({ok: true, exists: nameExists}))
-//     .setMimeType(ContentService.MimeType.JSON);
-//
-// ══════ END checkTeamName ══════
-// Security: Rate limiter for API calls (must be before apiCall)
+// Security: Rate limiter for API calls
 const _apiRateLimit={lastCall:0,minInterval:200,burst:0,maxBurst:20};
 function _checkRateLimit(){
   const now=Date.now();
@@ -5156,25 +5138,13 @@ async function apiCall(action,data={}){
     return{ok:false,error:'Too many requests. Please slow down.'};
   }
   try{
-    // Build POST body — no sensitive data in URL query strings
-    const body=new URLSearchParams({action});
-    if(adminSession)body.set('adminToken',adminSession.adminToken);
-    const simpleKeys=['username','password','currentPassword','newPassword',
-      'newUsername','newPassword','targetUsername','teamId','teamName','type',
-      'code','recoveryKey','mode','since','message'];
-    let hasComplex=false;
-    Object.entries(data).forEach(([k,v])=>{
-      if(typeof v==='object'){hasComplex=true}
-      else if(simpleKeys.includes(k)){body.set(k,String(v))}
-      else{hasComplex=true}
-    });
-    if(hasComplex){
-      body.set('payload',JSON.stringify(data));
-    }
+    // Build JSON POST body — clean format for Cloudflare Worker
+    const body={action,...data};
+    if(adminSession)body.adminToken=adminSession.adminToken;
     const resp=await fetch(API_URL,{
       method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:body.toString()
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
     });
     const text=await resp.text();
     try{const result=JSON.parse(text);
