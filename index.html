@@ -7210,34 +7210,30 @@ let pendingMediaFileUrl='';
 let _uploadingIndicator=null;
 
 async function uploadFileToDrive(file,subfolder){
-  // Step 1: Get an upload ticket from backend (secret stays server-side)
-  const ticketResult=await apiCall('getUploadUrl',{subfolder:subfolder||''});
-  if(!ticketResult.ok)throw new Error(ticketResult.error||'Failed to get upload authorization');
-  
-  // Step 2: Upload to R2 Worker with the one-time ticket
-  const formData=new FormData();
-  formData.append('file',file);
-  formData.append('fileName',file.name||'upload_'+Date.now());
-  formData.append('mimeType',file.type||'application/octet-stream');
-  formData.append('subfolder',subfolder||'');
-  
-  const resp=await fetch(ticketResult.uploadUrl,{
-    method:'POST',
-    headers:{'X-Upload-Ticket':ticketResult.ticket},
-    body:formData
+  // Convert file to base64 and upload via cb-api proxy (bypasses cb-media ticket validation)
+  const base64=await new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result.split(',')[1]);
+    reader.onerror=()=>reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
   });
   
-  const result=await resp.json();
+  const result=await apiCall('proxyUpload',{
+    fileData:base64,
+    fileName:file.name||'upload_'+Date.now(),
+    mimeType:file.type||'application/octet-stream',
+    subfolder:subfolder||''
+  });
+  
   if(!result.ok)throw new Error(result.error||'Upload failed');
   
-  // Return in same format the rest of the code expects
   return{
     ok:true,
     directUrl:result.url,
     previewUrl:result.url,
     fileId:result.key,
-    fileName:result.fileName,
-    mimeType:result.mimeType
+    fileName:result.fileName||file.name,
+    mimeType:result.mimeType||file.type
   };
 }
 
