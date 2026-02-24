@@ -862,12 +862,15 @@
   .intel-exp-row::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,255,136,.03),transparent 30%);pointer-events:none}
   .intel-exp-num{font-family:'Orbitron','Oxanium',sans-serif;font-size:10px;font-weight:700;color:rgba(0,255,136,.35);width:28px;flex-shrink:0}
   .intel-exp-label{font-family:'Chakra Petch',sans-serif;font-size:12px;font-weight:700;color:#8cf0b0;letter-spacing:2px;text-transform:uppercase;width:210px;flex-shrink:0}
-  /* Admin tools overlay — absolutely positioned so they don't affect row layout */
-  .intel-admin-tools{position:absolute;left:-2px;top:50%;transform:translateY(-50%);display:flex;gap:2px;align-items:center;opacity:0;transition:opacity .15s;z-index:2}
+  /* Admin tools — positioned in the left padding area of the row */
+  .intel-admin-tools{position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;gap:1px;align-items:center;padding-left:2px;opacity:0;transition:opacity .15s;z-index:2}
   .intel-exp-row:hover .intel-admin-tools{opacity:1}
-  .intel-admin-tools .drag-handle{display:flex;cursor:grab;padding:2px 3px;color:#444;font-size:12px;letter-spacing:-2px;user-select:none;-webkit-user-select:none;touch-action:none}
-  .intel-admin-tools .admin-row-edit{display:flex;width:16px;height:16px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:3px;color:var(--cyan);font-size:7px;cursor:pointer;align-items:center;justify-content:center}
-  .intel-admin-tools .admin-row-edit:hover{background:rgba(0,212,255,.2)}
+  .intel-admin-tools .drag-handle{display:flex;cursor:grab;padding:1px 2px;color:#555;font-size:10px;letter-spacing:-2px;user-select:none;-webkit-user-select:none;touch-action:none}
+  .intel-admin-tools .drag-handle:hover{color:#888}
+  .intel-admin-tools .admin-row-edit{display:flex;width:14px;height:14px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);border-radius:2px;color:var(--cyan);font-size:7px;cursor:pointer;align-items:center;justify-content:center}
+  .intel-admin-tools .admin-row-edit:hover{background:rgba(0,212,255,.25)}
+  /* When admin tools show, fade the row number so they don't visually clash */
+  .intel-exp-row:hover .intel-exp-num{opacity:.2}
   /* Admin test submit button */
   .intel-submit-admin-test{background:rgba(255,170,51,.08)!important;border-color:rgba(255,170,51,.3)!important;color:var(--amber)!important}
   .intel-exp-input{width:240px;flex:none;border-radius:2px;padding:9px 14px;color:#0f8;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2px;outline:none;transition:all .2s;
