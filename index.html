@@ -1238,6 +1238,21 @@
   .ap-btn-amber{color:#f0d8a0;background:linear-gradient(180deg,rgba(40,30,15,.5),rgba(25,18,10,.6));border:1px solid rgba(255,170,51,.25);border-bottom:2px solid rgba(255,170,51,.12)}
   .ap-btn-amber:hover{border-color:rgba(255,170,51,.4)}
   .ap-msg{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;margin-top:6px;height:14px;font-weight:600}
+
+  /* Console Background controls */
+  .cbg-preset:hover{transform:scale(1.15);box-shadow:0 0 8px rgba(255,255,255,.15)}
+  .cbg-preset{transition:all .15s}
+  .cbg-tex{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px;border:1px solid var(--border);border-radius:5px;background:transparent;cursor:pointer;transition:all .15s}
+  .cbg-tex:hover{border-color:rgba(0,212,255,.25)}
+  .cbg-tex.active{border-color:var(--cyan);background:rgba(0,212,255,.06);box-shadow:0 0 8px rgba(0,212,255,.1)}
+  .cbg-tex-preview{width:100%;height:32px;border-radius:3px;background:#080a10;border:1px solid rgba(255,255,255,.04)}
+  .cbg-tex-label{font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1.5px;color:#888;text-transform:uppercase}
+  .cbg-noise-preview{background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E") !important}
+  .cbg-hex-preview{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15z' fill='none' stroke='rgba(0,212,255,0.06)' stroke-width='0.5'/%3E%3Cpath d='M13.99 33.75l13 7.5v15l-13 7.5L1 56.25v-15z' fill='none' stroke='rgba(0,212,255,0.06)' stroke-width='0.5'/%3E%3Cpath d='M27.99 -8.25l13 7.5v15l-13 7.5L15 6.75v-15z' fill='none' stroke='rgba(0,212,255,0.06)' stroke-width='0.5'/%3E%3C/svg%3E") !important}
+
+  /* Console texture overlay — applied to console screen */
+  #consoleScreen{position:relative}
+  #consoleBgOverlay{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.4}
   .ap-msg.ok{color:#b8f0d0}.ap-msg.err{color:#ff9988}
   .ap-team-list{max-height:150px;overflow-y:auto;margin-top:10px}
   .ap-team-row{display:flex;align-items:center;gap:10px;padding:6px 10px;border:1px solid var(--border);border-radius:3px;margin-bottom:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#ccc}
@@ -2268,6 +2283,7 @@
 <!-- ADMIN BAR (fixed, body-level) -->
 <!-- CONSOLE -->
 <div class="screen" id="consoleScreen">
+<div id="consoleBgOverlay"></div>
 
 <!-- CHANGE PASSWORD MODAL -->
 <div id="changePwModal" style="display:none;position:fixed;inset:0;z-index:920;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center" onclick="if(event.target===this)closeChangePassword()">
@@ -2603,6 +2619,45 @@
       <div style="display:flex;align-items:center;gap:14px;margin-top:8px">
         <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--green);letter-spacing:1px" id="currentThemeLabel">Current: CRT Monitor</div>
         <button class="ap-btn ap-btn-cyan" onclick="openThemePreview()" style="font-size:10px;padding:8px 20px">👁 Preview & Select Theme</button>
+      </div>
+    </div>
+    <div class="ap-section"><h4>🌐 Console Background <span class="save-blip" id="blipConsoleBg">✓ Saved</span></h4>
+      <p>Set the background color and overlay texture for the console screen. Affects all users in real-time.</p>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:12px">
+        <div style="flex:1;min-width:200px">
+          <label style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#666;text-transform:uppercase;display:block;margin-bottom:8px">Background Color</label>
+          <div style="display:flex;align-items:center;gap:10px">
+            <input type="color" id="consoleBgColor" value="#080a10" onchange="updateConsoleBg()" style="width:48px;height:36px;border:1px solid var(--border);border-radius:4px;background:transparent;cursor:pointer;padding:2px">
+            <input id="consoleBgHex" value="#080a10" onchange="document.getElementById('consoleBgColor').value=this.value;updateConsoleBg()" style="width:90px;font-family:IBM Plex Mono,monospace;font-size:11px;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:6px 8px;color:#aaa;outline:none;letter-spacing:1px">
+          </div>
+          <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+            <button class="cbg-preset" onclick="setConsoleBgColor('#080a10')" title="Default Black" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#080a10;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#0a1628')" title="Dark Navy" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#0a1628;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#1a1f2e')" title="Dark Slate" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1a1f2e;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#1e1e24')" title="Deep Charcoal" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1e1e24;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#0d1a0d')" title="Dark Green" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#0d1a0d;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#1a0a0a')" title="Dark Red" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1a0a0a;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#12121a')" title="Dark Purple" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#12121a;cursor:pointer"></button>
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px">
+          <label style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#666;text-transform:uppercase;display:block;margin-bottom:8px">Texture Overlay</label>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="consoleBgTextureGrid">
+            <button class="cbg-tex active" data-tex="none" onclick="setConsoleTexture('none')"><span class="cbg-tex-preview" style="background:#080a10"></span><span class="cbg-tex-label">None</span></button>
+            <button class="cbg-tex" data-tex="scanlines" onclick="setConsoleTexture('scanlines')"><span class="cbg-tex-preview" style="background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.03) 2px,rgba(255,255,255,.03) 4px)"></span><span class="cbg-tex-label">Scanlines</span></button>
+            <button class="cbg-tex" data-tex="grid" onclick="setConsoleTexture('grid')"><span class="cbg-tex-preview" style="background:repeating-linear-gradient(0deg,transparent,transparent 11px,rgba(0,255,136,.04) 11px,rgba(0,255,136,.04) 12px),repeating-linear-gradient(90deg,transparent,transparent 11px,rgba(0,255,136,.04) 11px,rgba(0,255,136,.04) 12px)"></span><span class="cbg-tex-label">Grid</span></button>
+            <button class="cbg-tex" data-tex="noise" onclick="setConsoleTexture('noise')"><span class="cbg-tex-preview cbg-noise-preview"></span><span class="cbg-tex-label">Noise</span></button>
+            <button class="cbg-tex" data-tex="circuit" onclick="setConsoleTexture('circuit')"><span class="cbg-tex-preview" style="background:repeating-linear-gradient(90deg,transparent,transparent 20px,rgba(0,212,255,.03) 20px,rgba(0,212,255,.03) 21px),repeating-linear-gradient(0deg,transparent,transparent 30px,rgba(0,212,255,.03) 30px,rgba(0,212,255,.03) 31px),repeating-linear-gradient(45deg,transparent 0px,transparent 28px,rgba(0,212,255,.02) 28px,rgba(0,212,255,.02) 29px)"></span><span class="cbg-tex-label">Circuit</span></button>
+            <button class="cbg-tex" data-tex="hex" onclick="setConsoleTexture('hex')"><span class="cbg-tex-preview cbg-hex-preview"></span><span class="cbg-tex-label">Hex</span></button>
+          </div>
+          <div style="margin-top:10px">
+            <label style="font-family:Saira,sans-serif;font-size:8px;letter-spacing:2px;color:#555;text-transform:uppercase;display:block;margin-bottom:4px">Texture Opacity: <span id="texOpacityVal">40%</span></label>
+            <input type="range" id="consoleBgTexOpacity" min="10" max="100" value="40" oninput="updateTexOpacity()" style="width:100%;accent-color:var(--cyan)">
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:14px;text-align:center">
+        <button class="ap-btn ap-btn-ghost" onclick="resetConsoleBg()" style="font-size:9px;padding:7px 20px">↺ Reset to Default</button>
       </div>
     </div>
     <div class="ap-section"><h4>🔍 Intel Display <span class="save-blip" id="blipIntelTheme">✓ Saved</span></h4>
@@ -3293,6 +3348,7 @@ function clearNotes(){
 // Load dot state on init
 document.addEventListener('DOMContentLoaded',()=>{
   if(localStorage.getItem('dd_notes'))document.getElementById('notepadDot').classList.add('has-notes');
+  restoreConsoleBg();
 });
 
 function showLogout(){
@@ -5340,6 +5396,8 @@ function applyEventConfig(cfg){
   if(cfg.bannerFallback)regSettings.bannerFallback=cfg.bannerFallback;
   if(cfg.activeToIdle)activityThresholds.activeToIdle=parseInt(cfg.activeToIdle);
   if(cfg.idleToSilent)activityThresholds.idleToSilent=parseInt(cfg.idleToSilent);
+  // Console background
+  if(cfg.consoleBgColor||cfg.consoleBgTexture)syncConsoleBgFromConfig(cfg);
   // Landing banner
   if(cfg.landingBannerUrl!==undefined){regSettings.landingBannerUrl=cfg.landingBannerUrl;applyBannerImage(cfg.landingBannerUrl);syncBannerPreview()}
   // Registration settings
@@ -9460,6 +9518,131 @@ const _gridThemes=[
 let _currentGridTheme='crt';
 let _previewThemeIdx=0;
 let _previewOriginalTheme='crt';
+
+// ── Console Background Color & Texture ──
+let _consoleBg='#080a10';
+let _consoleTex='none';
+let _consoleTexOpacity=40;
+
+const _textureCSS={
+  none:'',
+  scanlines:'repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.03) 2px,rgba(255,255,255,.03) 4px)',
+  grid:'repeating-linear-gradient(0deg,transparent,transparent 11px,rgba(0,255,136,.04) 11px,rgba(0,255,136,.04) 12px),repeating-linear-gradient(90deg,transparent,transparent 11px,rgba(0,255,136,.04) 11px,rgba(0,255,136,.04) 12px)',
+  noise:'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 512 512\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'512\' height=\'512\' filter=\'url(%23n)\' opacity=\'0.08\'/%3E%3C/svg%3E")',
+  circuit:'repeating-linear-gradient(90deg,transparent,transparent 20px,rgba(0,212,255,.04) 20px,rgba(0,212,255,.04) 21px),repeating-linear-gradient(0deg,transparent,transparent 30px,rgba(0,212,255,.04) 30px,rgba(0,212,255,.04) 31px),repeating-linear-gradient(45deg,transparent 0px,transparent 28px,rgba(0,212,255,.025) 28px,rgba(0,212,255,.025) 29px)',
+  hex:'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'28\' height=\'49\' viewBox=\'0 0 28 49\'%3E%3Cpath d=\'M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15z\' fill=\'none\' stroke=\'rgba(0,212,255,0.06)\' stroke-width=\'0.5\'/%3E%3Cpath d=\'M13.99 33.75l13 7.5v15l-13 7.5L1 56.25v-15z\' fill=\'none\' stroke=\'rgba(0,212,255,0.06)\' stroke-width=\'0.5\'/%3E%3Cpath d=\'M27.99 -8.25l13 7.5v15l-13 7.5L15 6.75v-15z\' fill=\'none\' stroke=\'rgba(0,212,255,0.06)\' stroke-width=\'0.5\'/%3E%3C/svg%3E")'
+};
+
+function applyConsoleBg(){
+  const screen=document.getElementById('consoleScreen');
+  const overlay=document.getElementById('consoleBgOverlay');
+  // Set CSS variable so body and all panels inherit the background
+  document.documentElement.style.setProperty('--bg-deep',_consoleBg);
+  document.documentElement.style.setProperty('--console-bg',_consoleBg);
+  if(screen)screen.style.background=_consoleBg;
+  if(overlay){
+    if(_consoleTex==='none'){
+      overlay.style.background='';
+      overlay.style.opacity='0';
+    }else{
+      overlay.style.background=_textureCSS[_consoleTex]||'';
+      overlay.style.opacity=String(_consoleTexOpacity/100);
+    }
+  }
+}
+
+function setConsoleBgColor(color){
+  _consoleBg=color;
+  const picker=document.getElementById('consoleBgColor');
+  const hex=document.getElementById('consoleBgHex');
+  if(picker)picker.value=color;
+  if(hex)hex.value=color;
+  applyConsoleBg();
+  saveConsoleBgConfig();
+}
+
+function updateConsoleBg(){
+  const picker=document.getElementById('consoleBgColor');
+  const hex=document.getElementById('consoleBgHex');
+  if(picker){_consoleBg=picker.value;if(hex)hex.value=picker.value}
+  applyConsoleBg();
+  saveConsoleBgConfig();
+}
+
+function setConsoleTexture(tex){
+  _consoleTex=tex;
+  document.querySelectorAll('.cbg-tex').forEach(b=>{
+    b.classList.toggle('active',b.dataset.tex===tex);
+  });
+  applyConsoleBg();
+  saveConsoleBgConfig();
+}
+
+function updateTexOpacity(){
+  const slider=document.getElementById('consoleBgTexOpacity');
+  const label=document.getElementById('texOpacityVal');
+  if(slider){_consoleTexOpacity=parseInt(slider.value);if(label)label.textContent=slider.value+'%'}
+  applyConsoleBg();
+  saveConsoleBgConfig();
+}
+
+function resetConsoleBg(){
+  setConsoleBgColor('#080a10');
+  setConsoleTexture('none');
+  _consoleTexOpacity=40;
+  const slider=document.getElementById('consoleBgTexOpacity');
+  const label=document.getElementById('texOpacityVal');
+  if(slider)slider.value='40';
+  if(label)label.textContent='40%';
+  applyConsoleBg();
+  saveConsoleBgConfig();
+}
+
+function saveConsoleBgConfig(){
+  const blip=document.getElementById('blipConsoleBg');
+  if(blip){blip.style.opacity='1';setTimeout(()=>blip.style.opacity='0',1500)}
+  // Save locally for instant restore
+  try{
+    localStorage.setItem('cb_consoleBg',JSON.stringify({color:_consoleBg,texture:_consoleTex,texOpacity:_consoleTexOpacity}));
+  }catch(e){}
+  // Save to backend config
+  apiCall('saveEventConfig',{consoleBgColor:_consoleBg,consoleBgTexture:_consoleTex,consoleBgTexOpacity:_consoleTexOpacity});
+}
+
+function restoreConsoleBg(){
+  // Try localStorage first for instant display
+  try{
+    const raw=localStorage.getItem('cb_consoleBg');
+    if(raw){
+      const cfg=JSON.parse(raw);
+      if(cfg.color)_consoleBg=cfg.color;
+      if(cfg.texture)_consoleTex=cfg.texture;
+      if(cfg.texOpacity!==undefined)_consoleTexOpacity=cfg.texOpacity;
+    }
+  }catch(e){}
+  applyConsoleBg();
+}
+
+function syncConsoleBgFromConfig(cfg){
+  if(cfg.consoleBgColor)_consoleBg=cfg.consoleBgColor;
+  if(cfg.consoleBgTexture)_consoleTex=cfg.consoleBgTexture;
+  if(cfg.consoleBgTexOpacity!==undefined)_consoleTexOpacity=parseInt(cfg.consoleBgTexOpacity);
+  // Update UI controls if visible
+  const picker=document.getElementById('consoleBgColor');
+  const hex=document.getElementById('consoleBgHex');
+  const slider=document.getElementById('consoleBgTexOpacity');
+  const label=document.getElementById('texOpacityVal');
+  if(picker)picker.value=_consoleBg;
+  if(hex)hex.value=_consoleBg;
+  if(slider)slider.value=String(_consoleTexOpacity);
+  if(label)label.textContent=_consoleTexOpacity+'%';
+  document.querySelectorAll('.cbg-tex').forEach(b=>{
+    b.classList.toggle('active',b.dataset.tex===_consoleTex);
+  });
+  // Save locally for next load
+  try{localStorage.setItem('cb_consoleBg',JSON.stringify({color:_consoleBg,texture:_consoleTex,texOpacity:_consoleTexOpacity}))}catch(e){}
+  applyConsoleBg();
+}
 
 function updateThemeLabel(){
   const el=document.getElementById('currentThemeLabel');
