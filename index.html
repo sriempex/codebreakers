@@ -1033,30 +1033,56 @@
 
 
   /* ══════ ADMIN PAGE SCREENS ══════ */
-  #dashboardScreen,#settingsScreen{background:#0c0e16;min-height:100vh;padding:0}
+  #settingsScreen{background:#0e1019;min-height:100vh;padding:0}
   .admin-page{display:flex;flex-direction:column;height:100vh;overflow:hidden}
-  .admin-page-header{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 24px 0;background:linear-gradient(180deg,#141722,#0e1018);border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0}
-  .admin-page-title{font-family:'Staatliches',cursive;font-size:16px;letter-spacing:5px;color:#ffd699;text-transform:uppercase}
+  .admin-page-header{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 24px 0;background:linear-gradient(180deg,#161a26,#10131c);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+  .admin-page-header-row{display:flex;align-items:center;justify-content:center;width:100%;position:relative}
+  .admin-page-title{font-family:'Staatliches',cursive;font-size:15px;letter-spacing:5px;color:#ffd699;text-transform:uppercase}
+  .admin-page-close{position:absolute;right:0;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:4px;color:#777;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;padding:6px 14px;cursor:pointer;transition:all .15s}
+  .admin-page-close:hover{color:#ff6655;border-color:rgba(255,80,60,.2);background:rgba(255,50,50,.05)}
   .admin-page-tabs{display:flex;gap:0;flex-wrap:wrap;justify-content:center}
-  .admin-page-tab{padding:10px 20px;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;color:#556;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;font-weight:700;white-space:nowrap}
+  .admin-page-tab{padding:10px 18px;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;color:#556;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;font-weight:700;white-space:nowrap}
   .admin-page-tab:hover{color:#aab;background:rgba(255,255,255,.02)}
   .admin-page-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);background:rgba(0,212,255,.03)}
-  .admin-page-body{flex:1;overflow-y:auto;display:flex;justify-content:center;padding:28px 24px}
-  .admin-page-section{display:none;width:100%;max-width:720px}
+  .admin-page-tab-sep{width:1px;height:20px;background:rgba(255,255,255,.06);margin:6px 8px;align-self:center;flex-shrink:0}
+  .admin-page-body{flex:1;overflow-y:auto;display:flex;justify-content:center;padding:28px 24px 60px}
+  .admin-page-section{display:none;width:100%;max-width:740px}
   .admin-page-section.active{display:block}
 
   /* Better section styling inside pages */
   .admin-page-section .ap-section,
-  .admin-page-section .kc-section{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:8px;margin-bottom:16px;padding:22px 28px}
-  .admin-page-section .ap-section:last-child{border-bottom:1px solid rgba(255,255,255,.05)}
+  .admin-page-section .kc-section{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:8px;margin-bottom:16px;padding:24px 28px}
+  .admin-page-section .ap-section:last-child{border-bottom:1px solid rgba(255,255,255,.06)}
   .admin-page-section .bc-body{padding:20px 0}
   .admin-page-section .kc-body{padding:0}
 
+  /* ══════ READABILITY — larger text in admin pages ══════ */
+  .admin-page-section .ap-section h4{font-size:14px;letter-spacing:2.5px;margin-bottom:16px}
+  .admin-page-section .ap-section p{font-size:12px;color:#b0b8c8;line-height:1.7;margin-bottom:14px}
+  .admin-page-section .ap-field label{font-size:11px;letter-spacing:1.5px;color:#c0c8d8;margin-bottom:6px}
+  .admin-page-section .ap-field input,
+  .admin-page-section .ap-field select{font-size:13px;padding:10px 14px}
+  .admin-page-section .ap-btn{font-size:11px;padding:8px 16px;letter-spacing:1.5px}
+  .admin-page-section .kc-section-title{font-size:13px}
+  .admin-page-section .kc-row{padding:10px 14px}
+  .admin-page-section .kc-label{font-size:12px}
+  .admin-page-section .kc-value{font-size:11px}
+  .admin-page-section .session-btn .sb-title{font-size:11px}
+  .admin-page-section .session-btn .sb-desc{font-size:10px;color:#999}
+  .admin-page-section .lb-toolbar{padding:12px 16px}
+  .admin-page-section .lb-search{font-size:12px;padding:10px 14px}
+  .admin-page-section .bc-textarea{font-size:13px;min-height:120px}
+  .admin-page-section .ap-team-row{padding:10px 14px}
+  .admin-page-section .ap-status-pill{font-size:11px;padding:6px 12px}
+  .admin-page-section .tut-step-list .tut-step{padding:10px 12px}
+
   @media(max-width:600px){
-    .admin-page-header{padding:14px 16px 0;gap:6px}
+    .admin-page-header{padding:12px 16px 0;gap:4px}
     .admin-page-tabs{gap:0}
-    .admin-page-tab{padding:8px 14px;font-size:9px;letter-spacing:1px}
-    .admin-page-body{padding:16px}
+    .admin-page-tab{padding:8px 12px;font-size:8px;letter-spacing:1px}
+    .admin-page-tab-sep{margin:4px 4px}
+    .admin-page-body{padding:16px 12px 60px}
+    .admin-page-close{padding:5px 10px;font-size:10px}
   }
 
   /* Panels as page sections — override overlay positioning */
@@ -2224,8 +2250,8 @@
 <!-- GEAR DROPDOWN -->
 <div class="gear-dropdown" id="gearDropdown">
   <div class="gear-dropdown-item" onclick="closeGearDropdown();navigateToAdmin('settingsScreen')"><span class="gd-icon">⚙️</span><span class="gd-label">Settings</span></div>
-  <div class="gear-dropdown-item" onclick="closeGearDropdown();navigateToAdmin('dashboardScreen')"><span class="gd-icon">📊</span><span class="gd-label">Dashboard</span></div>
-  <div class="gear-dropdown-item" onclick="closeGearDropdown();navigateToAdmin('dashboardScreen','dash-broadcast')"><span class="gd-icon">📢</span><span class="gd-label">Broadcast</span></div>
+  <div class="gear-dropdown-item" onclick="closeGearDropdown();navigateToAdmin('settingsScreen','dash-teams')"><span class="gd-icon">📊</span><span class="gd-label">Dashboard</span></div>
+  <div class="gear-dropdown-item" onclick="closeGearDropdown();navigateToAdmin('settingsScreen','dash-broadcast')"><span class="gd-icon">📢</span><span class="gd-label">Broadcast</span></div>
 </div>
 
 <div class="admin-trigger" id="adminTrigger" onclick="handleAdminTrigger()" title="System"><svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53a7.76 7.76 0 0 0 0-1.94l2.11-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5 0 0 0-.61-.22l-2.49 1a7.2 7.2 0 0 0-1.69-.98l-.38-2.65A.49.49 0 0 0 14 2h-4a.49.49 0 0 0-.49.42l-.38 2.65a7.2 7.2 0 0 0-1.69.98l-2.49-1a.5.5 0 0 0-.61.22l-2 3.46a.49.49 0 0 0 .12.64l2.11 1.65a7.9 7.9 0 0 0 0 1.94l-2.11 1.65a.5.5 0 0 0-.12.64l2 3.46a.5.5 0 0 0 .61.22l2.49-1c.52.4 1.08.72 1.69.98l.38 2.65c.05.24.26.42.49.42h4c.24 0 .44-.18.49-.42l.38-2.65a7.2 7.2 0 0 0 1.69-.98l2.49 1a.5.5 0 0 0 .61-.22l2-3.46a.49.49 0 0 0-.12-.64z"/></svg></div>
@@ -5783,7 +5809,7 @@ function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');
 
 // ══════ SCREEN NAVIGATION ══════
 let _currentScreen='landingScreen';
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',id==='consoleScreen');if(id!=='dashboardScreen'&&id!=='settingsScreen'){_currentAdminPage=null;updateGearIcon()}if(currentVaultTeam)saveSession()}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',id==='consoleScreen');if(id!=='settingsScreen'){_currentAdminPage=null;updateGearIcon()}if(currentVaultTeam)saveSession()}
 function goToRegistration(){
   const mode=regSettings.participantMode||'team';
   // Update registration screen text based on mode
@@ -7096,22 +7122,8 @@ let bcRecordedBlob=null;
 let bcBannerAudio=null;
 
 function openBroadcast(){
-  // If panels are mounted in pages, navigate to dashboard broadcast tab
-  if(_panelsMounted){
-    navigateToAdmin('dashboardScreen','dash-broadcast');
-    return;
-  }
-  // Fallback: overlay mode
-  const el=document.getElementById('broadcastPanel');
-  el.style.cssText='opacity:1;pointer-events:all;transition:none';
-  el.classList.add('active');
-  setTimeout(()=>{
-    if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
-      navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{s.getTracks().forEach(t=>t.stop())}).catch(e=>{
-        console.log('Mic permission prompt:',e.name);
-      });
-    }
-  },100);
+  // Navigate to settings broadcast tab
+  navigateToAdmin('settingsScreen','dash-broadcast');
 }
 function closeBroadcast(){
   const el=document.getElementById('broadcastPanel');
@@ -9252,15 +9264,15 @@ function _sessionStore(){return regSettings.sessionPersist?localStorage:sessionS
 function saveSession(){
   try{
     // Only save when user is authenticated on the console screen
-    if(_currentScreen!=='consoleScreen'&&_currentScreen!=='dashboardScreen'&&_currentScreen!=='settingsScreen')return;
+    if(_currentScreen!=='consoleScreen'&&_currentScreen!=='settingsScreen')return;
     if(!currentVaultTeam)return;
     const data={type:isAdmin?'admin':'team',team:currentVaultTeam,savedAt:Date.now()};
     if(isAdmin){
       data.adminSession=adminSession;
       // Save which admin page is open
-      if(_currentAdminPage)data.adminPage=_currentAdminPage;
-      // Save active tab within admin pages
-      var activeTab=document.querySelector((_currentAdminPage==='dashboardScreen'?'#dashboardScreen':'#settingsScreen')+' .admin-page-section.active');
+      if(_currentAdminPage)data.adminPage='settingsScreen';
+      // Save active tab within settings page
+      var activeTab=document.querySelector('#settingsScreen .admin-page-section.active');
       if(activeTab)data.adminTab=activeTab.id;
     }
     // Save which player panel is open so refresh restores exactly where the user was
@@ -9526,27 +9538,15 @@ function restoreSession(){
       // Restore admin panel IMMEDIATELY — before data loads — to prevent console flash
       if(data.adminPage){
         _gearReturnScreen='consoleScreen';
-        navigateToAdmin(data.adminPage);
-        if(data.adminTab){
-          var tabBtn=null;
-          var screen=document.getElementById(data.adminPage);
-          if(screen){
-            screen.querySelectorAll('.admin-page-tab').forEach(function(t){
-              if(t.textContent.trim()&&document.getElementById(data.adminTab)){
-                // Find matching tab button by checking onclick
-                var onc=t.getAttribute('onclick')||'';
-                if(onc.indexOf(data.adminTab)>-1){tabBtn=t}
-              }
-            });
-          }
-          switchPageTab(data.adminPage,data.adminTab,tabBtn);
-        }
+        navigateToAdmin('settingsScreen',data.adminTab||null);
       }
       startElapsedTimer();
       startTeamMonitor();
       loadEventData().then(function(){
-        if(_currentAdminPage==='dashboardScreen'){renderTeamMonitor();renderFullLeaderboard()}
-        if(_currentAdminPage==='settingsScreen'){var as=document.querySelector('#settingsScreen .admin-page-section.active');if(as)switchPageTab('settingsScreen',as.id,null)}
+        if(_currentAdminPage==='settingsScreen'){
+          var as=document.querySelector('#settingsScreen .admin-page-section.active');
+          if(as)switchPageTab('settingsScreen',as.id,null);
+        }
       });
       return true;
     }else if(data.type==='team'&&data.team.id){
@@ -10349,7 +10349,7 @@ function confirmVaultLock(){
 // ══════ PAGE-BASED ADMIN NAVIGATION ══════
 let _gearReturnScreen='consoleScreen';
 let _gearReturnPanel=null;
-let _currentAdminPage=null; // 'dashboardScreen' or 'settingsScreen'
+let _currentAdminPage=null; // 'settingsScreen' when on admin page, null otherwise
 
 function handleGearClick(){
   const dd=document.getElementById('gearDropdown');
@@ -10389,27 +10389,22 @@ function navigateToAdmin(screenId,tabId){
     const openPanelEl=document.querySelector('.expanded-panel.visible');
     _gearReturnPanel=openPanelEl?openPanelEl.id:null;
   }
-  _currentAdminPage=screenId;
+  _currentAdminPage='settingsScreen';
   // Move panels into page sections if not already done
   mountAdminPanels();
-  showScreen(screenId);
-  // Activate the right tab's content
-  if(screenId==='dashboardScreen'){
-    initDashboardPage();
-  }else if(screenId==='settingsScreen'){
-    initSettingsPage();
-  }
+  showScreen('settingsScreen');
+  initSettingsPage();
   // If a specific tab was requested, switch to it
   if(tabId){
     var tabBtn=null;
-    var screen=document.getElementById(screenId);
+    var screen=document.getElementById('settingsScreen');
     if(screen){
       screen.querySelectorAll('.admin-page-tab').forEach(function(t){
         var onc=t.getAttribute('onclick')||'';
         if(onc.indexOf("'"+tabId+"'")>-1){tabBtn=t}
       });
     }
-    switchPageTab(screenId,tabId,tabBtn);
+    switchPageTab('settingsScreen',tabId,tabBtn);
   }
   updateGearIcon();
   updatePreviewIcon();
@@ -10438,7 +10433,7 @@ function updateGearIcon(){
 function updatePreviewIcon(){
   const icon=document.getElementById('adminPreviewIcon');
   if(!icon)return;
-  // Hide preview icon entirely on admin pages
+  // Hide preview icon on admin settings page
   if(_currentAdminPage){
     icon.style.display='none';
   }else{
@@ -10451,20 +10446,11 @@ let _panelsMounted=false;
 function mountAdminPanels(){
   if(_panelsMounted)return;
   _panelsMounted=true;
-  // Dashboard page sections
-  const dashTeams=document.getElementById('dash-teams');
-  const dashLb=document.getElementById('dash-leaderboard');
-  const dashSessions=document.getElementById('dash-sessions');
-  if(dashTeams)dashTeams.appendChild(document.getElementById('dashboardPanel'));
-  if(dashLb)dashLb.appendChild(document.getElementById('leaderboardModule'));
-  if(dashSessions)dashSessions.appendChild(document.getElementById('sessionMgmtPanel'));
-  var dashBroadcast=document.getElementById('dash-broadcast');
-  if(dashBroadcast)dashBroadcast.appendChild(document.getElementById('broadcastPanel'));
-  // Settings page sections
-  const setEvent=document.getElementById('set-event');
-  const setIntel=document.getElementById('set-intel');
-  const setAppearance=document.getElementById('set-appearance');
-  const setUsers=document.getElementById('set-users');
+  // Settings sections
+  var setEvent=document.getElementById('set-event');
+  var setIntel=document.getElementById('set-intel');
+  var setAppearance=document.getElementById('set-appearance');
+  var setUsers=document.getElementById('set-users');
   // Event tab: config + registration + tutorial
   if(setEvent){
     setEvent.appendChild(document.getElementById('adminPanel'));
@@ -10480,36 +10466,33 @@ function mountAdminPanels(){
   if(setAppearance)setAppearance.appendChild(document.getElementById('appearancePanel'));
   // Users tab
   if(setUsers)setUsers.appendChild(document.getElementById('portalUsersPanel'));
-}
-
-function initDashboardPage(){
-  // Make panels visible (they're styled via CSS overrides when inside .admin-page-section)
-  const panels=['dashboardPanel','leaderboardModule','sessionMgmtPanel','broadcastPanel'];
-  panels.forEach(function(id){
-    const el=document.getElementById(id);
-    if(el){el.style.cssText='';el.classList.add('active')}
-  });
-  // Init the active tab's content
-  const activeSection=document.querySelector('#dashboardScreen .admin-page-section.active');
-  if(activeSection){
-    if(activeSection.id==='dash-teams'){renderTeamMonitor();startTeamMonitor()}
-    if(activeSection.id==='dash-leaderboard'){renderFullLeaderboard()}
-  }
+  // Dashboard sections (now inside settings)
+  var dashTeams=document.getElementById('dash-teams');
+  var dashLb=document.getElementById('dash-leaderboard');
+  var dashSessions=document.getElementById('dash-sessions');
+  var dashBroadcast=document.getElementById('dash-broadcast');
+  if(dashTeams)dashTeams.appendChild(document.getElementById('dashboardPanel'));
+  if(dashLb)dashLb.appendChild(document.getElementById('leaderboardModule'));
+  if(dashSessions)dashSessions.appendChild(document.getElementById('sessionMgmtPanel'));
+  if(dashBroadcast)dashBroadcast.appendChild(document.getElementById('broadcastPanel'));
 }
 
 function initSettingsPage(){
-  const panels=['adminPanel','scoringPanel','registrationPanel','tutorialConfigPanel','keysCodesPanel','appearancePanel','portalUsersPanel'];
-  panels.forEach(function(id){
-    const el=document.getElementById(id);
+  var allPanels=['adminPanel','scoringPanel','registrationPanel','tutorialConfigPanel','keysCodesPanel','appearancePanel','portalUsersPanel','dashboardPanel','leaderboardModule','sessionMgmtPanel','broadcastPanel'];
+  allPanels.forEach(function(id){
+    var el=document.getElementById(id);
     if(el){el.style.cssText='';el.classList.add('active')}
   });
   // Init the active tab's content
-  const activeSection=document.querySelector('#settingsScreen .admin-page-section.active');
+  var activeSection=document.querySelector('#settingsScreen .admin-page-section.active');
   if(activeSection){
-    if(activeSection.id==='set-event'){syncAdminPanelSettings();syncRegistrationSettings();renderTutorialStepList();var tg=document.getElementById('tutGlobalToggle');if(tg)tg.classList.toggle('on',tutorialEnabled)}
-    if(activeSection.id==='set-intel'){renderKeysCodes();renderScoringEditor()}
-    if(activeSection.id==='set-appearance'){updateThemeLabel();initTypographyPanel()}
-    if(activeSection.id==='set-users'){renderPortalUsersList();refreshAdminList()}
+    var sid=activeSection.id;
+    if(sid==='set-event'){syncAdminPanelSettings();syncRegistrationSettings();renderTutorialStepList();var tg=document.getElementById('tutGlobalToggle');if(tg)tg.classList.toggle('on',tutorialEnabled)}
+    if(sid==='set-intel'){renderKeysCodes();renderScoringEditor()}
+    if(sid==='set-appearance'){updateThemeLabel();initTypographyPanel()}
+    if(sid==='set-users'){renderPortalUsersList();refreshAdminList()}
+    if(sid==='dash-teams'){renderTeamMonitor();startTeamMonitor()}
+    if(sid==='dash-leaderboard'){renderFullLeaderboard()}
   }
 }
 
@@ -10530,6 +10513,8 @@ function switchPageTab(screenId,sectionId,btn){
   if(sectionId==='set-intel'){renderKeysCodes();renderScoringEditor()}
   if(sectionId==='set-appearance'){updateThemeLabel();initTypographyPanel()}
   if(sectionId==='set-users'){renderPortalUsersList();refreshAdminList()}
+  if(sectionId==='dash-teams'){renderTeamMonitor();startTeamMonitor()}
+  if(sectionId==='dash-leaderboard'){renderFullLeaderboard()}
 }
 
 // Override togglePlayerPreview to update icon
@@ -10543,36 +10528,24 @@ togglePlayerPreview=function(){
 
 
 <!-- DASHBOARD SCREEN (full page) -->
-<div class="screen" id="dashboardScreen">
-  <div class="admin-page">
-    <div class="admin-page-header">
-      <span class="admin-page-title">📊 Dashboard</span>
-      <div class="admin-page-tabs">
-        <button class="admin-page-tab active" onclick="switchPageTab('dashboardScreen','dash-teams',this)">📡 Teams</button>
-        <button class="admin-page-tab" onclick="switchPageTab('dashboardScreen','dash-leaderboard',this)">🏆 Leaderboard</button>
-        <button class="admin-page-tab" onclick="switchPageTab('dashboardScreen','dash-sessions',this)">🛡️ Sessions</button>
-        <button class="admin-page-tab" onclick="switchPageTab('dashboardScreen','dash-broadcast',this)">📢 Broadcast</button>
-      </div>
-    </div>
-    <div class="admin-page-body">
-      <div class="admin-page-section active" id="dash-teams"></div>
-      <div class="admin-page-section" id="dash-leaderboard"></div>
-      <div class="admin-page-section" id="dash-sessions"></div>
-      <div class="admin-page-section" id="dash-broadcast"></div>
-    </div>
-  </div>
-</div>
-
-<!-- SETTINGS SCREEN (full page) -->
+<!-- SETTINGS SCREEN (full page — unified admin) -->
 <div class="screen" id="settingsScreen">
   <div class="admin-page">
     <div class="admin-page-header">
-      <span class="admin-page-title">⚙️ Settings</span>
+      <div class="admin-page-header-row">
+        <span class="admin-page-title">◈ Admin Console</span>
+        <button class="admin-page-close" onclick="returnFromAdminPage()" title="Return to console">✕</button>
+      </div>
       <div class="admin-page-tabs">
         <button class="admin-page-tab active" onclick="switchPageTab('settingsScreen','set-event',this)">⚙️ Event</button>
         <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','set-intel',this)">🎯 Intel & Scoring</button>
         <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','set-appearance',this)">🎨 Appearance</button>
         <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','set-users',this)">👥 Users</button>
+        <span class="admin-page-tab-sep"></span>
+        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-teams',this)">📡 Teams</button>
+        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-leaderboard',this)">🏆 Leaderboard</button>
+        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-sessions',this)">🛡️ Sessions</button>
+        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-broadcast',this)">📢 Broadcast</button>
       </div>
     </div>
     <div class="admin-page-body">
@@ -10580,6 +10553,10 @@ togglePlayerPreview=function(){
       <div class="admin-page-section" id="set-intel"></div>
       <div class="admin-page-section" id="set-appearance"></div>
       <div class="admin-page-section" id="set-users"></div>
+      <div class="admin-page-section" id="dash-teams"></div>
+      <div class="admin-page-section" id="dash-leaderboard"></div>
+      <div class="admin-page-section" id="dash-sessions"></div>
+      <div class="admin-page-section" id="dash-broadcast"></div>
     </div>
   </div>
 </div>
