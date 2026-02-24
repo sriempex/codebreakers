@@ -1242,6 +1242,13 @@
   #scoringPanel.active,#registrationPanel.active,#appearancePanel.active{opacity:1;pointer-events:all}
   #portalUsersPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #portalUsersPanel.active{opacity:1;pointer-events:all}
+
+  /* ══════ SETUP SUB-NAV ══════ */
+  .setup-nav{display:flex;gap:1px;padding:4px 12px;background:rgba(0,0,0,.35);border-bottom:1px solid rgba(255,255,255,.04);flex-wrap:wrap}
+  .setup-nav-btn{padding:8px 14px;font-family:'Saira',sans-serif;font-size:9px;letter-spacing:1.5px;color:#555;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .12s;text-transform:uppercase;font-weight:600;white-space:nowrap}
+  .setup-nav-btn:hover{color:#999}
+  .setup-nav-btn.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+  @media(max-width:600px){.setup-nav-btn{padding:7px 10px;font-size:8px;letter-spacing:1px}}
   .ap-container{width:600px;max-width:92vw;max-height:85vh;overflow-y:auto;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
     border:1px solid rgba(255,255,255,.05);box-shadow:0 25px 80px rgba(0,0,0,.7)}
@@ -2125,16 +2132,12 @@
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openBroadcast()"><span class="adm-icon">📢</span><span class="adm-label">Broadcast</span></div>
     <div class="admin-dropdown-item" onclick="closeAdminDropdown();openKeysCodes()"><span class="adm-icon">🔐</span><span class="adm-label">Keys & Codes</span></div>
     <div class="adm-tier-label">SETUP</div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openEventSettings()"><span class="adm-icon">⚙️</span><span class="adm-label">Event Settings</span></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openScoringPanel()"><span class="adm-icon">🎯</span><span class="adm-label">Scoring</span></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openRegistrationPanel()"><span class="adm-icon">📝</span><span class="adm-label">Registration</span></div>
-    <div class="adm-tier-label">SYSTEM</div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openAppearancePanel()"><span class="adm-icon">🎨</span><span class="adm-label">Appearance</span></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openPortalUsers()"><span class="adm-icon">👥</span><span class="adm-label">Portal Users</span></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openSessionMgmt()"><span class="adm-icon">🛡️</span><span class="adm-label">Sessions</span></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openTutorialConfig()"><span class="adm-icon">📖</span><span class="adm-label">Tutorial & Briefing</span></div>
-    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openChangePassword()"><span class="adm-icon">🔑</span><span class="adm-label">Change Password</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openSetup('adminPanel')"><span class="adm-icon">⚙️</span><span class="adm-label">Event</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openSetup('scoringPanel')"><span class="adm-icon">🎯</span><span class="adm-label">Scoring</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openSetup('appearancePanel')"><span class="adm-icon">🎨</span><span class="adm-label">Appearance</span></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openSetup('portalUsersPanel')"><span class="adm-icon">👥</span><span class="adm-label">Users & Sessions</span></div>
     <div class="admin-dropdown-sep"></div>
+    <div class="admin-dropdown-item" onclick="closeAdminDropdown();openChangePassword()"><span class="adm-icon">🔑</span><span class="adm-label">Change Password</span></div>
     <div class="admin-dropdown-toggle pp-toggle" onclick="togglePlayerPreview()"><span class="adm-icon">👁</span><span class="adm-label">View as Player</span><span class="adm-toggle off" id="admPreviewToggle">OFF</span></div>
   </div>
 </div>
@@ -5990,6 +5993,54 @@ function onLeaderboardStyleChange(){
 
 // ── Admin Panel ──
 const adminPanelIds=['adminPanel','broadcastPanel','leaderboardModule','keysCodesPanel','dashboardPanel','portalUsersPanel','scoringPanel','registrationPanel','appearancePanel','sessionMgmtPanel','tutorialConfigPanel'];
+
+// ══════ SETUP GROUP — sub-nav between related panels ══════
+const setupGroupTabs=[
+  {id:'adminPanel',label:'Event',icon:'⚙️',subs:[
+    {id:'registrationPanel',label:'Registration'},
+    {id:'tutorialConfigPanel',label:'Tutorial'}
+  ]},
+  {id:'scoringPanel',label:'Scoring',icon:'🎯'},
+  {id:'appearancePanel',label:'Appearance',icon:'🎨'},
+  {id:'portalUsersPanel',label:'Users',icon:'👥',subs:[
+    {id:'sessionMgmtPanel',label:'Sessions'}
+  ]}
+];
+const setupGroupIds=[];
+const setupAllIds={};
+setupGroupTabs.forEach(t=>{setupGroupIds.push(t.id);setupAllIds[t.id]=t.id;if(t.subs)t.subs.forEach(s=>{setupGroupIds.push(s.id);setupAllIds[s.id]=t.id})});
+
+function injectSetupNav(activePanelId){
+  document.querySelectorAll('.setup-nav').forEach(n=>n.remove());
+  const panel=document.getElementById(activePanelId);
+  if(!panel)return;
+  const header=panel.querySelector('.ap-header,.kc-header,.bc-header,.lb-header');
+  if(!header)return;
+  let html='';
+  setupGroupTabs.forEach(t=>{
+    const isParentActive=(t.id===activePanelId)||(t.subs&&t.subs.some(s=>s.id===activePanelId));
+    // Main tab
+    html+='<button class="setup-nav-btn'+(t.id===activePanelId?' active':'')+'" onclick="switchSetupTab(\''+t.id+'\')">'+t.icon+' '+t.label+'</button>';
+    // Sub-tabs (show only if this parent group is active)
+    if(t.subs&&isParentActive){
+      t.subs.forEach(s=>{
+        html+='<button class="setup-nav-btn'+(s.id===activePanelId?' active':'')+'" onclick="switchSetupTab(\''+s.id+'\')" style="font-size:8px;opacity:.7;padding-left:6px">· '+s.label+'</button>';
+      });
+    }
+  });
+  const nav=document.createElement('div');
+  nav.className='setup-nav';
+  nav.innerHTML=html;
+  header.after(nav);
+}
+
+function switchSetupTab(panelId){
+  switchAdminTab(panelId);
+}
+
+function openSetup(subTab){
+  switchAdminTab(subTab||'adminPanel');
+}
 function closeAllAdminPanels(){
   adminPanelIds.forEach(id=>{
     const el=document.getElementById(id);
@@ -6009,7 +6060,9 @@ function showAdminTabs(activeId){
   if(!bar)return;
   bar.classList.add('visible');
   bar.querySelectorAll('.anb-btn').forEach(btn=>{
-    const isActive=btn.id==='anb-'+activeId;
+    // For setup group panels, highlight the Setup button (anb-adminPanel)
+    let isActive=btn.id==='anb-'+activeId;
+    if(!isActive&&btn.id==='anb-adminPanel'&&setupGroupIds.includes(activeId))isActive=true;
     btn.classList.toggle('active',isActive);
   });
 }
@@ -6017,6 +6070,7 @@ function hideAdminTabs(){
   const bar=document.getElementById('adminNavBar');
   if(bar)bar.classList.remove('visible');
   document.querySelectorAll('.anb-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.setup-nav').forEach(n=>n.remove());
 }
 function switchAdminTab(panelId){
   adminPanelIds.forEach(id=>{
@@ -6034,6 +6088,11 @@ function switchAdminTab(panelId){
   if(panelId==='scoringPanel'){renderScoringEditor()}
   if(panelId==='registrationPanel'){syncRegistrationSettings()}
   if(panelId==='appearancePanel'){updateThemeLabel();initTypographyPanel()}
+  if(panelId==='tutorialConfigPanel'){renderTutorialStepList();const tg=document.getElementById('tutGlobalToggle');if(tg)tg.classList.toggle('on',tutorialEnabled)}
+  if(panelId==='sessionMgmtPanel'){/* no extra init needed */}
+  // Inject setup sub-nav for setup group panels
+  document.querySelectorAll('.setup-nav').forEach(n=>n.remove());
+  if(setupGroupIds.includes(panelId)){injectSetupNav(panelId)}
   saveSession();
 }
 function syncAdminPanelSettings(){
@@ -6082,10 +6141,8 @@ function closeChangePassword(){
 
 // ══════ PORTAL USERS PANEL ══════
 function openPortalUsers(){
-  closeAllAdminPanels();
-  _instantShow(document.getElementById('portalUsersPanel'));
-  showAdminTabs('portalUsersPanel');
-  refreshAdminList(); // fetch fresh from backend
+  switchAdminTab('portalUsersPanel');
+  refreshAdminList();
   onManualTypeChange();
 }
 function closePortalUsers(){
@@ -6129,12 +6186,9 @@ function removeManualTeam(i){removeTeam(i)}
 
 // ══════ EVENT CONTROL PANEL ══════
 function openEventControl(){
-  closeAllAdminPanels();
-  _instantShow(document.getElementById('adminPanel'));
-  showAdminTabs('adminPanel');
+  switchAdminTab('adminPanel');
   syncAdminPanelSettings();
   initTypographyPanel();
-  // Start live timer sync
   if(apTimerInterval)clearInterval(apTimerInterval);
   apTimerInterval=setInterval(()=>{const el=document.getElementById('apTimerDisplay');if(el)el.textContent=document.getElementById('cTimer').textContent},250);
 }
@@ -6149,7 +6203,7 @@ function closeAdminPanel(){closeEventControl()} // backward compat alias
 // ══════ REORGANIZED ADMIN PANEL FUNCTIONS (BUILD 20260223-0600) ══════
 let _previewReturnPanel=null;
 
-function openDashboard(){closeAllAdminPanels();_instantShow(document.getElementById('dashboardPanel'));showAdminTabs('dashboardPanel');renderTeamMonitor();startTeamMonitor();saveSession()}
+function openDashboard(){switchAdminTab('dashboardPanel');renderTeamMonitor();startTeamMonitor()}
 function closeDashboard(){const el=document.getElementById('dashboardPanel');if(el){el.classList.remove('active');el.style.cssText=''}hideAdminTabs()}
 
 function switchDashTab(tab){
@@ -6170,13 +6224,13 @@ function switchDashTab(tab){
   saveSession();
 }
 
-function openEventSettings(){closeAllAdminPanels();_instantShow(document.getElementById('adminPanel'));showAdminTabs('adminPanel');syncAdminPanelSettings();saveSession()}
+function openEventSettings(){switchAdminTab('adminPanel')}
 function closeEventSettings(){closeEventControl()}
 
-function openScoringPanel(){closeAllAdminPanels();_instantShow(document.getElementById('scoringPanel'));showAdminTabs('scoringPanel');renderScoringEditor();saveSession()}
+function openScoringPanel(){switchAdminTab('scoringPanel')}
 function closeScoringPanel(){const el=document.getElementById('scoringPanel');if(el){el.classList.remove('active');el.style.cssText=''}hideAdminTabs()}
 
-function openRegistrationPanel(){closeAllAdminPanels();_instantShow(document.getElementById('registrationPanel'));showAdminTabs('registrationPanel');syncRegistrationSettings();saveSession()}
+function openRegistrationPanel(){switchAdminTab('registrationPanel')}
 function closeRegistrationPanel(){const el=document.getElementById('registrationPanel');if(el){el.classList.remove('active');el.style.cssText=''}hideAdminTabs()}
 function syncRegistrationSettings(){
   const minEl=document.getElementById('apMinSize');const maxEl=document.getElementById('apMaxSize');const maxTEl=document.getElementById('apMaxTeams');
@@ -6189,7 +6243,7 @@ function syncRegistrationSettings(){
   if(st){st.textContent=regSettings.registrationOpen?'● OPEN':'● CLOSED';st.style.color=regSettings.registrationOpen?'var(--green)':'var(--red)'}
 }
 
-function openAppearancePanel(){closeAllAdminPanels();_instantShow(document.getElementById('appearancePanel'));showAdminTabs('appearancePanel');updateThemeLabel();initTypographyPanel();saveSession()}
+function openAppearancePanel(){switchAdminTab('appearancePanel')}
 function closeAppearancePanel(){const el=document.getElementById('appearancePanel');if(el){el.classList.remove('active');el.style.cssText=''}hideAdminTabs()}
 function openTeamMonitor(){openDashboard()}
 function closeTeamMonitor(){closeDashboard()}
@@ -6482,11 +6536,8 @@ let lbFilter='all';
 let lbExpandedTeam=null;
 
 function openLeaderboard(){
-  closeAllAdminPanels();
-  _instantShow(document.getElementById('leaderboardModule'));
-  showAdminTabs('leaderboardModule');
+  switchAdminTab('leaderboardModule');
   renderFullLeaderboard();
-  saveSession();
 }
 function closeLeaderboard(){
   const el=document.getElementById('leaderboardModule');
@@ -6717,11 +6768,8 @@ function desubmitAll(){
 
 // ── Keys & Codes Panel ──
 function openKeysCodes(){
-  closeAllAdminPanels();
-  _instantShow(document.getElementById('keysCodesPanel'));
-  showAdminTabs('keysCodesPanel');
+  switchAdminTab('keysCodesPanel');
   renderKeysCodes();
-  saveSession();
 }
 function closeKeysCodes(){const el=document.getElementById('keysCodesPanel');el.style.cssText='';el.classList.remove('active');hideAdminTabs()}
 
@@ -6823,10 +6871,7 @@ let bcRecordedBlob=null;
 let bcBannerAudio=null;
 
 function openBroadcast(){
-  closeAllAdminPanels();
-  _instantShow(document.getElementById('broadcastPanel'));
-  showAdminTabs('broadcastPanel');
-  saveSession();
+  switchAdminTab('broadcastPanel');
   setTimeout(()=>{
     if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
       navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{s.getTracks().forEach(t=>t.stop())}).catch(e=>{
@@ -8466,7 +8511,7 @@ function getEventState(){
 
 
 // ══════ SESSION MANAGEMENT ══════
-function openSessionMgmt(){closeAllAdminPanels();_instantShow(document.getElementById('sessionMgmtPanel'));showAdminTabs('sessionMgmtPanel');saveSession()}
+function openSessionMgmt(){switchAdminTab('sessionMgmtPanel')}
 function closeSessionMgmt(){const el=document.getElementById('sessionMgmtPanel');el.classList.remove('active');el.style.cssText='';hideAdminTabs()}
 function destroySessions(mode){
   const labels={all:'DESTROY ALL SESSIONS (including yours)',teams:'DESTROY ALL TEAM SESSIONS',exceptMe:'DESTROY ALL SESSIONS EXCEPT YOURS'};
@@ -8548,13 +8593,12 @@ function _isTutorialRunning(){return document.getElementById('tutorialOverlay')?
 let _tutIsPreview=false;
 
 function openTutorialConfig(){
-  closeAllAdminPanels();_instantShow(document.getElementById('tutorialConfigPanel'));showAdminTabs('tutorialConfigPanel');
+  switchAdminTab('tutorialConfigPanel');
   renderTutorialStepList();
   const tg=document.getElementById('tutGlobalToggle');
   tg.classList.toggle('on',tutorialEnabled);
   const bg=document.getElementById('briefingGlobalToggle');
   bg.classList.toggle('on',!!briefingConfig.enabled);
-  // Restore briefing form
   const st=document.getElementById('briefingSourceType');
   st.value=briefingConfig.sourceType||'upload';
   onBriefingTypeChange();
@@ -10073,21 +10117,8 @@ function confirmVaultLock(){
     <span class="anb-icon">🔐</span><span class="anb-label">Keys</span>
   </div>
   <div class="anb-sep"></div>
-  <div class="anb-btn" id="anb-adminPanel" onclick="switchAdminTab('adminPanel')" title="Event Settings">
-    <span class="anb-icon">⚙️</span><span class="anb-label">Event</span>
-  </div>
-  <div class="anb-btn" id="anb-scoringPanel" onclick="switchAdminTab('scoringPanel')" title="Scoring">
-    <span class="anb-icon">🎯</span><span class="anb-label">Scoring</span>
-  </div>
-  <div class="anb-btn" id="anb-registrationPanel" onclick="switchAdminTab('registrationPanel')" title="Registration">
-    <span class="anb-icon">📝</span><span class="anb-label">Reg</span>
-  </div>
-  <div class="anb-sep"></div>
-  <div class="anb-btn" id="anb-appearancePanel" onclick="switchAdminTab('appearancePanel')" title="Appearance">
-    <span class="anb-icon">🎨</span><span class="anb-label">Theme</span>
-  </div>
-  <div class="anb-btn" id="anb-portalUsersPanel" onclick="switchAdminTab('portalUsersPanel')" title="Users">
-    <span class="anb-icon">👥</span><span class="anb-label">Users</span>
+  <div class="anb-btn" id="anb-adminPanel" onclick="openSetup()" title="Setup">
+    <span class="anb-icon">⚙️</span><span class="anb-label">Setup</span>
   </div>
 </div>
 
