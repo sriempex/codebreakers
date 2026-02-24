@@ -3516,8 +3516,12 @@ function submitLogin(){
       updateConsoleForTeam(currentVaultTeam);saveSession();loginSuccess();startBroadcastPolling();
       apiCall('getEventConfig').then(cfg=>{
         if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
-        // Load drafts from backend after intel fields are rendered
-        loadDraftsFromBackend();
+        // Load content (posts, media, intel) so grid badges reflect actual counts
+        _loadTeamContent().then(()=>{
+          renderGrid();
+          // Load drafts from backend after intel fields are rendered
+          loadDraftsFromBackend();
+        });
       });
     }else{
       apiCall('validateUsername',{username:idVal}).then(vResult=>{
@@ -4056,6 +4060,35 @@ function renderMedia(){
 // ══════ PANELS ══════
 const overlay=document.getElementById('panelOverlay');
 let currentFeedView='grid';
+
+// Fetch content (posts, media, intel) for team players — called on first login
+async function _loadTeamContent(){
+  const feedResult=await apiCall('getFeedPosts');
+  if(feedResult.ok&&Array.isArray(feedResult.posts)){
+    posts.length=0;feedResult.posts.forEach(p=>posts.push(p));
+    _cacheContent('cb_posts',posts);
+  }
+  const mediaResult=await apiCall('getMediaItems');
+  if(mediaResult.ok&&Array.isArray(mediaResult.items)){
+    mediaItems.length=0;mediaResult.items.forEach(m=>mediaItems.push({
+      icon:m.filename||'📄',name:m.title||'',nameFont:m.titleFont||'',
+      desc:m.desc||'',descFont:m.descFont||'',
+      type:m.type||'doc',fileUrl:m.url||'',
+      vaultLocked:m.vaultLocked||false,unlockKey:m.unlockKey||'',
+      unlocked:m.unlocked||false,vaultCode:m.vaultCode||'',vaultCodename:m.vaultCodename||''
+    }));
+    syncVaultCodesFromMedia();restoreGameState();
+    _cacheContent('cb_media',mediaItems);
+  }
+  const intelResult=await apiCall('getIntelFields');
+  if(intelResult.ok&&Array.isArray(intelResult.fields)){
+    intelFields.length=0;intelResult.fields.forEach(f=>intelFields.push({
+      label:f.label||'',emoji:f.emoji||'',type:f.fieldType||'text',
+      font:f.font||'',inputFont:f.inputFont||''
+    }));
+    _cacheContent('cb_intel',intelFields);
+  }
+}
 function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);if(window._histPush)window._histPush('panel');saveSession();
   if(t==='feed'){renderFeed();setFeedView('grid');_refreshPanelData('feed')}if(t==='media'){renderMedia();_refreshPanelData('media')}if(t==='intel'){renderIntelForm();restoreIntelDraft();_refreshPanelData('intel')}if(t==='vault'){renderVaultPanel();_refreshPanelData('vault')}}
 
@@ -4705,7 +4738,7 @@ function finalSubmit(){
     document.getElementById('confirmModal').classList.remove('active');
     document.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});
     const btn=document.getElementById('intelSubmitBtn');if(btn){btn.textContent='◈ TRANSMITTED ◈';btn.disabled=true}
-    document.getElementById('intelBadge').textContent='SUBMITTED';
+    document.getElementById('intelBadge').textContent='SUBMITTED '+document.querySelectorAll('.intel-exp-input').length+' RESPONSES';
     playSuccess();
     document.getElementById('flashG').classList.add('on');
     setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
@@ -4729,7 +4762,7 @@ function finalSubmit(){
   // Show neutral checkmarks — NO indication of right/wrong
     document.getElementById('intelSubmitBtn').disabled=true;
   const _sl=document.getElementById('intelSubmitBtn');if(_sl){_sl.textContent='◈ TRANSMITTED ◈';_sl.disabled=true;}
-  document.getElementById('intelBadge').textContent='SUBMITTED';
+  document.getElementById('intelBadge').textContent='SUBMITTED '+document.querySelectorAll('.intel-exp-input').length+' RESPONSES';
   document.getElementById('intelBadge').classList.remove('amber');
   playSuccess();
   document.getElementById('flashG').classList.add('on');
@@ -5180,7 +5213,15 @@ async function apiCall(action,data={}){
       body:body.toString()
     });
     const text=await resp.text();
-    try{const result=JSON.parse(text);_showConnToast(true);return result}
+    try{const result=JSON.parse(text);_showConnToast(true);
+      // Detect session invalidation — force logout if backend says session expired
+      if(!result.ok&&result.error&&(result.error.includes('expired')&&result.error.includes('session')||result.error.includes('Invalid or expired'))){
+        _showConnToast(true);
+        clearSession();
+        location.reload();
+        return result;
+      }
+      return result}
     catch(e){console.error('Parse error:',text.substring(0,200));return {ok:false,error:'Invalid response from server'}}
   }catch(err){
     console.error('API error:',err);
@@ -5297,6 +5338,10 @@ async function loadEventData(){
       if(team){
         team.submitTime=s.submittedAt;
         team.submissionResults={totalScore:s.score,totalPossible:s.totalPossible||0,correctCount:s.correct,totalFields:s.total};
+        // Count non-empty answers for fieldsCompleted
+        let filled=0;
+        try{const ans=typeof s.answers==='string'?JSON.parse(s.answers):s.answers;if(ans)Object.values(ans).forEach(v=>{if(v&&String(v).trim())filled++})}catch(e){}
+        team.fieldsCompleted=filled||s.correct||0;
       }
     });
   }
@@ -5913,6 +5958,7 @@ function closeAllAdminPanels(){
   if(bcMediaRecorder&&bcMediaRecorder.state==='recording')bcMediaRecorder.stop();
   lbExpandedTeam=null;
   hideAdminTabs();
+  saveSession();
 }
 function showAdminTabs(activeId){
   const bar=document.getElementById('adminNavBar');
@@ -5922,6 +5968,7 @@ function showAdminTabs(activeId){
     const isActive=btn.id==='anb-'+activeId;
     btn.classList.toggle('active',isActive);
   });
+  saveSession();
 }
 function hideAdminTabs(){
   const bar=document.getElementById('adminNavBar');
@@ -6222,10 +6269,13 @@ initDemoTeams();
 
 function isTeamActive(t){return(Date.now()-t.lastActive)<INACTIVE_THRESHOLD}
 function isTeamGhost(t){
-  // Ghost: registered but never meaningfully engaged — lastActive within 45s of registeredAt
+  // Ghost: registered but never meaningfully engaged
+  // NOT a ghost if they have submitted, have a score, or have any fieldsCompleted
+  if(t.submitTime||t.submissionResults||t.fieldsCompleted>0)return false;
   if(!t.registeredAt)return false;
   const regTime=new Date(t.registeredAt).getTime();
-  return(t.lastActive-regTime)<300000; // 5 minutes — never meaningfully engaged
+  // If lastActive is within 5 minutes of registration AND no engagement signals → ghost
+  return(t.lastActive-regTime)<300000;
 }
 function removeGhostTeam(teamId){
   const idx=registeredTeams.findIndex(t=>t.id===teamId);
@@ -6790,6 +6840,7 @@ function startBroadcastPolling(){
   if(_broadcastPollInterval)clearInterval(_broadcastPollInterval);
   if(isAdmin)return; // Admins don't need to poll — they send
   _lastBroadcastTime=new Date().toISOString();
+  let _pollCount=0;
   _broadcastPollInterval=setInterval(async()=>{
     if(!currentVaultTeam)return;
     const r=await apiCall('getBroadcasts',{since:_lastBroadcastTime});
@@ -6798,6 +6849,19 @@ function startBroadcastPolling(){
         showPlayerBanner(b.type,b.message);
         _lastBroadcastTime=b.sentAt;
       });
+    }
+    // Every 4th poll (~32s), check if session generation changed via a config fetch
+    _pollCount++;
+    if(_pollCount%4===0){
+      const cfg=await apiCall('getEventConfig');
+      if(cfg.ok&&cfg.config){
+        const serverGen=String(cfg.config.sessionGenTeam||'0');
+        const localGen=localStorage.getItem('cb_sessionGen')||'0';
+        if(localGen!=='0'&&serverGen!=='0'&&localGen!==serverGen){
+          clearSession();location.reload();return;
+        }
+        try{localStorage.setItem('cb_sessionGen',serverGen)}catch(e){}
+      }
     }
   },8000); // Poll every 8 seconds
 }
@@ -7196,7 +7260,7 @@ function renderIntelForm(){
   }
   // Restore values
   form.querySelectorAll('.intel-exp-input').forEach(inp=>{if(prevVals[inp.dataset.idx])inp.value=prevVals[inp.dataset.idx]});
-  if(isSubmitted){form.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});const btn=document.getElementById('intelSubmitBtn');if(btn){btn.disabled=true;btn.textContent='◈ TRANSMITTED ◈'}}
+  if(isSubmitted){form.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});const btn=document.getElementById('intelSubmitBtn');if(btn){btn.disabled=true;btn.textContent='◈ TRANSMITTED ◈'}const ib=document.getElementById('intelBadge');if(ib)ib.textContent='SUBMITTED '+form.querySelectorAll('.intel-exp-input').length+' RESPONSES'}
   // Sync intelLabels array
   syncIntelLabels();
 }
@@ -8714,6 +8778,11 @@ function saveSession(){
     // Save which panel is open so refresh restores exactly where the user was
     const openPanelEl=document.querySelector('.expanded-panel.visible');
     if(openPanelEl)data.panel=openPanelEl.id;
+    // Save active admin panel so admin refresh restores dashboard/leaderboard/etc
+    if(isAdmin){
+      const activeAdmin=document.querySelector('#dashboardPanel.active,#leaderboardModule.active,#broadcastPanel.active,#keysCodesPanel.active,#portalUsersPanel.active,#scoringPanel.active,#registrationPanel.active,#appearancePanel.active,#sessionMgmtPanel.active,#tutorialConfigPanel.active');
+      if(activeAdmin)data.adminPanel=activeAdmin.id;
+    }
     // Save feed view state so focus mode + post index survive refresh
     data.feedView=currentFeedView;
     data.feedPost=currentPost;
@@ -8964,7 +9033,13 @@ function restoreSession(){
       renderGrid(); // Render grid with cached data + theme immediately
       startElapsedTimer();
       // Load fresh data from backend in background — UI already showing
-      loadEventData();
+      loadEventData().then(()=>{
+        // Restore admin panel (dashboard, leaderboard, etc.) after data is loaded
+        if(data.adminPanel){
+          const apEl=document.getElementById(data.adminPanel);
+          if(apEl){_instantShow(apEl);showAdminTabs(data.adminPanel);renderTeamMonitor();renderFullLeaderboard();renderLeaderboard()}
+        }
+      });
       return true;
     }else if(data.type==='team'&&data.team.id){
       currentVaultTeam=data.team;
