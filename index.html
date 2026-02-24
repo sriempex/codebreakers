@@ -6202,7 +6202,7 @@ function removeTeam(i){
 function renderTeamList(){renderPortalUsersList()} // backward compat
 
 // ── Team Monitor (Activity Tracking) ──
-const INACTIVE_THRESHOLD=5*60*1000; // 5 minutes
+const INACTIVE_THRESHOLD=5*60*1000; // fallback
 let registeredTeams=[]; // Will be populated from backend; for now demo data
 let teamMonitorInterval=null;
 
@@ -6215,12 +6215,13 @@ function initDemoTeams(){
 }
 initDemoTeams();
 
-function isTeamActive(t){return(Date.now()-t.lastActive)<INACTIVE_THRESHOLD}
+function isTeamActive(t){
+  const threshold=(activityThresholds.activeToIdle||60)*1000;
+  return(Date.now()-t.lastActive)<threshold;
+}
 function isTeamGhost(t){
-  // Ghost: registered but never meaningfully engaged — lastActive within 45s of registeredAt
-  if(!t.registeredAt)return false;
-  const regTime=new Date(t.registeredAt).getTime();
-  return(t.lastActive-regTime)<300000; // 5 minutes — never meaningfully engaged
+  const ghostThreshold=(activityThresholds.idleToSilent||300)*1000;
+  return(Date.now()-t.lastActive)>=ghostThreshold;
 }
 function removeGhostTeam(teamId){
   const idx=registeredTeams.findIndex(t=>t.id===teamId);
