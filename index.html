@@ -7210,21 +7210,20 @@ let pendingMediaFileUrl='';
 let _uploadingIndicator=null;
 
 async function uploadFileToDrive(file,subfolder){
-  // Convert file to base64 and upload via cb-api proxy (bypasses cb-media ticket validation)
-  const base64=await new Promise((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onload=()=>resolve(reader.result.split(',')[1]);
-    reader.onerror=()=>reject(new Error('Failed to read file'));
-    reader.readAsDataURL(file);
+  // Upload via cb-api proxy using multipart FormData (bypasses cb-media ticket validation)
+  const formData=new FormData();
+  formData.append('file',file);
+  formData.append('fileName',file.name||'upload_'+Date.now());
+  formData.append('mimeType',file.type||'application/octet-stream');
+  formData.append('subfolder',subfolder||'');
+  if(adminSession)formData.append('adminToken',adminSession.adminToken);
+  
+  const resp=await fetch(API_URL+'?action=proxyUpload',{
+    method:'POST',
+    body:formData
   });
   
-  const result=await apiCall('proxyUpload',{
-    fileData:base64,
-    fileName:file.name||'upload_'+Date.now(),
-    mimeType:file.type||'application/octet-stream',
-    subfolder:subfolder||''
-  });
-  
+  const result=await resp.json();
   if(!result.ok)throw new Error(result.error||'Upload failed');
   
   return{
