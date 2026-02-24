@@ -9427,7 +9427,7 @@ function clearGameState(){
 // Auto-save game state periodically and on visibility change
 setInterval(()=>{if(currentVaultTeam&&_currentScreen==='consoleScreen')saveGameState()},5000);
 document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='hidden'&&currentVaultTeam&&_currentScreen==='consoleScreen'){
+  if(document.visibilityState==='hidden'&&currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){
     saveGameState();saveSession();
   }
 });
