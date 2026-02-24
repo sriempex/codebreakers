@@ -1993,6 +1993,10 @@
   .briefing-footer{padding:16px 24px 20px;text-align:center}
   .briefing-continue{padding:10px 32px;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.25);border-radius:4px;color:var(--green);font-family:'Saira',sans-serif;font-size:11px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:all .15s}
   .briefing-continue:hover{background:rgba(0,255,136,.2);border-color:rgba(0,255,136,.4)}
+  /* Connection toast */
+  #connToast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);z-index:9999;padding:10px 20px;border-radius:6px;border:1px solid rgba(255,80,80,.3);background:linear-gradient(180deg,rgba(30,10,10,.95),rgba(20,5,5,.98));backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 20px rgba(255,80,80,.1);transition:transform .4s ease,opacity .4s ease;opacity:0;max-width:90vw;text-align:center;font-family:'Exo 2',sans-serif;font-size:12px;color:#ff8888;pointer-events:none}
+  #connToast.visible{opacity:1;transform:translateX(-50%) translateY(0)}
+  #connToast.ok{border-color:rgba(0,255,136,.3);background:linear-gradient(180deg,rgba(10,20,15,.95),rgba(5,15,10,.98));box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 20px rgba(0,255,136,.1);color:#88ffaa}
 </style>
 <script>
 // Pre-render theme injection — runs before body paints
@@ -2043,6 +2047,7 @@
 <canvas id="grainCanvas"></canvas>
 <div class="flash-green" id="flashG"></div>
 <div class="flash-red" id="flashR"></div>
+<div id="connToast">⚠ Connection issue — retrying…</div>
 
 <div class="admin-trigger" id="adminTrigger" onclick="handleAdminTrigger()" title="System"><svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53a7.76 7.76 0 0 0 0-1.94l2.11-1.65a.5.5 0 0 0 .12-.64l-2-3.46a.5.5 0 0 0-.61-.22l-2.49 1a7.2 7.2 0 0 0-1.69-.98l-.38-2.65A.49.49 0 0 0 14 2h-4a.49.49 0 0 0-.49.42l-.38 2.65a7.2 7.2 0 0 0-1.69.98l-2.49-1a.5.5 0 0 0-.61.22l-2 3.46a.49.49 0 0 0 .12.64l2.11 1.65a7.9 7.9 0 0 0 0 1.94l-2.11 1.65a.5.5 0 0 0-.12.64l2 3.46a.5.5 0 0 0 .61.22l2.49-1c.52.4 1.08.72 1.69.98l.38 2.65c.05.24.26.42.49.42h4c.24 0 .44-.18.49-.42l.38-2.65a7.2 7.2 0 0 0 1.69-.98l2.49 1a.5.5 0 0 0 .61-.22l2-3.46a.49.49 0 0 0-.12-.64z"/></svg></div>
 
@@ -3133,9 +3138,9 @@ function buildRegForm(){
     }
     // Show individual-specific optional fields instead of member slots
     let html='';
-    if(regSettings.requireDept||true){html+=`<div class="reg-field full" style="margin-bottom:10px"><label>Department${regSettings.requireDept?'':' (optional)'}</label><input type="text" id="regIndDept" placeholder="Department"></div>`}
-    if(regSettings.requireEmail||true){html+=`<div class="reg-field full" style="margin-bottom:10px"><label>Email${regSettings.requireEmail?'':' (optional)'}</label><input type="email" id="regIndEmail" placeholder="email@company.com"></div>`}
-    if(regSettings.requirePhone||true){html+=`<div class="reg-field full" style="margin-bottom:10px"><label>Cell #${regSettings.requirePhone?'':' (optional)'}</label><input type="tel" id="regIndPhone" placeholder="(XXX) XXX-XXXX" oninput="formatRegPhone(this)"></div>`}
+    html+=`<div class="reg-field full" style="margin-bottom:10px"><label>Department${regSettings.requireDept?'':' (optional)'}</label><input type="text" id="regIndDept" placeholder="Department"></div>`;
+    html+=`<div class="reg-field full" style="margin-bottom:10px"><label>Email${regSettings.requireEmail?'':' (optional)'}</label><input type="email" id="regIndEmail" placeholder="email@company.com"></div>`;
+    html+=`<div class="reg-field full" style="margin-bottom:10px"><label>Cell #${regSettings.requirePhone?'':' (optional)'}</label><input type="tel" id="regIndPhone" placeholder="(XXX) XXX-XXXX" oninput="formatRegPhone(this)"></div>`;
     container.innerHTML=html;
   }else{
     // Team mode — restore standard team form
@@ -3170,11 +3175,11 @@ function rebuildMemberSlots(){
       <div class="reg-member-label"><span class="reg-member-num">${m}</span> Team Member ${m}</div>
       <div class="reg-row">
         <div class="reg-field"><label>Full Name</label><input type="text" id="reg${m}Name" placeholder="First & Last Name"></div>
-        ${regSettings.requireDept||true?`<div class="reg-field"><label>Department${regSettings.requireDept?'':' (optional)'}</label><input type="text" id="reg${m}Dept" placeholder="Department"></div>`:''}
+        <div class="reg-field"><label>Department${regSettings.requireDept?'':' (optional)'}</label><input type="text" id="reg${m}Dept" placeholder="Department"></div>
       </div>
       <div class="reg-row">
-        ${regSettings.requireEmail||true?`<div class="reg-field"><label>Email${regSettings.requireEmail?'':' (optional)'}</label><input type="email" id="reg${m}Email" placeholder="email@company.com"></div>`:''}
-        ${regSettings.requirePhone||true?`<div class="reg-field"><label>Cell #${regSettings.requirePhone?'':' (optional)'}</label><input type="tel" id="reg${m}Phone" placeholder="(XXX) XXX-XXXX" oninput="formatRegPhone(this)"></div>`:''}
+        <div class="reg-field"><label>Email${regSettings.requireEmail?'':' (optional)'}</label><input type="email" id="reg${m}Email" placeholder="email@company.com"></div>
+        <div class="reg-field"><label>Cell #${regSettings.requirePhone?'':' (optional)'}</label><input type="tel" id="reg${m}Phone" placeholder="(XXX) XXX-XXXX" oninput="formatRegPhone(this)"></div>
       </div>
     </div>`;
   }
@@ -4087,8 +4092,11 @@ function _refreshPanelData(panel){
       }
     });
   }else if(panel==='vault'){
-    apiCall('getEventConfig').then(cfg=>{
-      if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
+    apiCall('getMediaItems').then(r=>{
+      if(r.ok&&r.items){
+        const changed=r.items.length!==mediaItems.length||JSON.stringify(r.items)!==JSON.stringify(mediaItems.map(m=>({type:m.type||'',title:m.title||'',titleFont:m.titleFont||'',desc:m.desc||'',descFont:m.descFont||'',url:m.url||'',filename:m.filename||'',vaultLocked:m.vaultLocked||false,unlockKey:m.unlockKey||'',unlocked:m.unlocked||false,vaultCode:m.vaultCode||'',vaultCodename:m.vaultCodename||''})));
+        if(changed){mediaItems=r.items;_cacheContent("cb_media",mediaItems)}
+      }
       syncVaultCodesFromMedia();restoreGameState();renderVaultPanel();renderGrid();
     });
   }
@@ -5135,6 +5143,16 @@ function _checkRateLimit(){
   _apiRateLimit.lastCall=now;
   return true;
 }
+let _connFails=0;let _connToastTimer=null;
+function _showConnToast(ok){
+  const el=document.getElementById('connToast');if(!el)return;
+  if(ok){
+    if(_connFails>0){_connFails=0;el.textContent='✓ Connection restored';el.classList.add('ok');el.classList.add('visible');clearTimeout(_connToastTimer);_connToastTimer=setTimeout(()=>{el.classList.remove('visible');el.classList.remove('ok')},2500)}
+    return;
+  }
+  _connFails++;
+  if(_connFails>=2){el.textContent='⚠ Connection issue — retrying…';el.classList.remove('ok');el.classList.add('visible');clearTimeout(_connToastTimer);_connToastTimer=setTimeout(()=>{el.classList.remove('visible')},8000)}
+}
 async function apiCall(action,data={}){
   if(!_checkRateLimit()&&!['loginTeam','login','getEventConfig'].includes(action)){
     console.warn('Rate limited:',action);
@@ -5162,10 +5180,11 @@ async function apiCall(action,data={}){
       body:body.toString()
     });
     const text=await resp.text();
-    try{return JSON.parse(text)}
+    try{const result=JSON.parse(text);_showConnToast(true);return result}
     catch(e){console.error('Parse error:',text.substring(0,200));return {ok:false,error:'Invalid response from server'}}
   }catch(err){
     console.error('API error:',err);
+    _showConnToast(false);
     return {ok:false,error:'Network error — check connection'};
   }
 }
@@ -6694,9 +6713,7 @@ function openBroadcast(){
   showAdminTabs('broadcastPanel');
   setTimeout(()=>{
     if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
-      navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{s.getTracks().forEach(t=>t.stop())}).catch(e=>{
-        console.log('Mic permission prompt:',e.name);
-      });
+      navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{s.getTracks().forEach(t=>t.stop())}).catch(e=>{});
     }
   },100);
 }
