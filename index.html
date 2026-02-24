@@ -870,6 +870,7 @@
   .intel-exp-input:focus{border-color:rgba(0,255,136,.5);box-shadow:0 0 10px rgba(0,255,136,.08),inset 0 0 15px rgba(0,255,136,.03)}
   .intel-exp-input::placeholder{color:rgba(0,255,136,.1);text-shadow:none}
   .intel-exp-input:disabled{opacity:.35;cursor:not-allowed}
+  input,textarea,select,.intel-exp-input{user-select:text;-webkit-user-select:text}
   .intel-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%230f8'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px;cursor:pointer}
   .intel-select option{background:#0a0e18;color:#0f8}
   .intel-exp-clear{width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(0,255,136,.15);font-size:10px;border-radius:50%;transition:all .2s;flex-shrink:0;font-family:'IBM Plex Mono',monospace}
@@ -5440,20 +5441,21 @@ function applyEventConfig(cfg){
     applyFontConfig();
   }
   // Grid tile customisations (label, icon, sub, fonts)
+  let _gridTilesChanged=false;
   if(cfg.gridTiles&&Array.isArray(cfg.gridTiles)){
     cfg.gridTiles.forEach(saved=>{
       const tile=gridTiles.find(t=>t.id===saved.id);
       if(tile){
-        if(saved.icon)tile.icon=saved.icon;
-        if(saved.label)tile.label=saved.label;
-        if(saved.sub!==undefined)tile.sub=saved.sub;
-        tile.labelFont=saved.labelFont||'';
-        tile.subFont=saved.subFont||'';
+        if(saved.icon&&tile.icon!==saved.icon){tile.icon=saved.icon;_gridTilesChanged=true}
+        if(saved.label&&tile.label!==saved.label){tile.label=saved.label;_gridTilesChanged=true}
+        if(saved.sub!==undefined&&tile.sub!==saved.sub){tile.sub=saved.sub;_gridTilesChanged=true}
+        if((saved.labelFont||'')!==tile.labelFont){tile.labelFont=saved.labelFont||'';_gridTilesChanged=true}
+        if((saved.subFont||'')!==tile.subFont){tile.subFont=saved.subFont||'';_gridTilesChanged=true}
       }
     });
   }
-  // Always render grid after config — even with defaults
-  renderGrid();
+  // Only rebuild grid if tile config actually changed
+  if(_gridTilesChanged)forceRenderGrid();
   // Sync threshold UI
   const idleInp=document.getElementById('apThresholdIdle');if(idleInp)idleInp.value=activityThresholds.activeToIdle;
   const silentInp=document.getElementById('apThresholdSilent');if(silentInp)silentInp.value=activityThresholds.idleToSilent;
@@ -6928,21 +6930,17 @@ function startBroadcastPolling(){
         // Check for targeted message: [TO:TEAM-XXXX] prefix
         const targetMatch=b.message.match(/^\[TO:([^\]]+)\]\s*/);
         if(targetMatch){
-          // Targeted — only show if this team is the recipient
           if(currentVaultTeam&&targetMatch[1]===currentVaultTeam.id){
             showPlayerBanner(b.type,b.message.replace(/^\[TO:[^\]]+\]\s*/,''));
           }
         }else{
-          // Global broadcast — show to everyone
           showPlayerBanner(b.type,b.message);
         }
       });
     }
-    // Check session generation on every poll to detect session destruction quickly
+    // Lightweight session generation check — no full config apply
     const cfg=await apiCall('getEventConfig');
     if(cfg.ok&&cfg.config){
-      // Apply any config changes (theme, operation name, etc.)
-      applyEventConfig(cfg.config);
       const serverGen=String(cfg.config.sessionGenTeam||'0');
       const localGen=localStorage.getItem('cb_sessionGen')||'0';
       if(localGen!=='0'&&serverGen!=='0'&&localGen!==serverGen){
@@ -6950,7 +6948,7 @@ function startBroadcastPolling(){
       }
       try{localStorage.setItem('cb_sessionGen',serverGen)}catch(e){}
     }
-  },10000); // Poll every 10 seconds
+  },10000);
 }
 
 let bannerDismissTimer=null;
@@ -7384,9 +7382,41 @@ function saveDraftsToBackend(){
 function loadDraftsFromBackend(){
   if(!currentVaultTeam||isAdmin)return;
   apiCall('getDrafts',{teamId:currentVaultTeam.id}).then(r=>{
-    if(!r||!r.ok||!r.drafts)return;
+    if(!r||!r.ok)return;
+    // Restore submission state from backend
+    if(r.submitted&&!isSubmitted){
+      isSubmitted=true;
+      try{localStorage.setItem(_gsKey('isSubmitted'),'1')}catch(e){}
+      // Store submitted answers as draft so restoreIntelDraft can populate them
+      if(r.answers&&typeof r.answers==='object'&&Object.keys(r.answers).length>0){
+        // Map label-keyed answers to index-keyed for restoreIntelDraft
+        const indexedAnswers={};
+        intelFields.forEach((f,i)=>{
+          if(r.answers[f.label])indexedAnswers[String(i)]=r.answers[f.label];
+        });
+        try{localStorage.setItem(_gsKey('intelDraft'),JSON.stringify(indexedAnswers))}catch(e){}
+      }
+      // If intel panel is already rendered, lock it immediately
+      const intelInputs=document.querySelectorAll('.intel-exp-input');
+      if(intelInputs.length>0){
+        intelFields.forEach((f,i)=>{
+          const inp=intelInputs[i];
+          if(inp&&r.answers&&r.answers[f.label]){inp.value=r.answers[f.label]}
+        });
+        intelInputs.forEach(inp=>inp.disabled=true);
+        const btn=document.getElementById('intelSubmitBtn');
+        if(btn){btn.disabled=true;btn.textContent='◈ TRANSMITTED ◈'}
+      }
+      // Update grid badge
+      renderGrid();
+      return;
+    }
+    // Not submitted — restore drafts
     const drafts=typeof r.drafts==='string'?JSON.parse(r.drafts):r.drafts;
     if(!drafts||typeof drafts!=='object')return;
+    // Store for later panel open
+    try{localStorage.setItem(_gsKey('intelDraft'),JSON.stringify(drafts))}catch(e){}
+    // If panel is open, populate now
     document.querySelectorAll('.intel-exp-input').forEach(inp=>{
       const idx=inp.dataset.idx;
       if(idx!==undefined&&drafts[idx]&&!inp.value.trim()){inp.value=drafts[idx]}
@@ -9729,16 +9759,13 @@ function applyFontConfig(){
   // Vault keypad display
   const vDisp=document.getElementById('vDisp');
   if(vDisp){const fam=getFontFamily(fontConfig.vaultDisplay||'');vDisp.style.fontFamily=fam||'';}
-  // Vault panel codenames — re-render picks up fontConfig.vaultDisplay via CSS var
+  // Set CSS custom properties — panels pick these up on next render
   document.documentElement.style.setProperty('--fc-vault',getFontFamily(fontConfig.vaultDisplay||'')||'inherit');
   document.documentElement.style.setProperty('--fc-feed-cap',getFontFamily(fontConfig.feedCap||'')||'inherit');
   document.documentElement.style.setProperty('--fc-media-name',getFontFamily(fontConfig.mediaName||'')||'inherit');
   document.documentElement.style.setProperty('--fc-media-desc',getFontFamily(fontConfig.mediaDesc||'')||'inherit');
-  // Re-render content panels if open
-  const overlay=document.getElementById('panelOverlay');
-  if(overlay&&overlay.style.display!=='none'){
-    renderFeed();renderMedia();renderIntelForm();
-  }
+  // Do NOT re-render panels here — causes flicker and input focus loss
+  // Panels will pick up new fonts on their next natural render
 }
 
 function resetFontConfig(){
