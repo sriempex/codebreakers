@@ -5940,6 +5940,7 @@ function switchAdminTab(panelId){
   if(panelId==='scoringPanel'){renderScoringEditor()}
   if(panelId==='registrationPanel'){syncRegistrationSettings()}
   if(panelId==='appearancePanel'){updateThemeLabel();initTypographyPanel()}
+  saveSession();
 }
 function syncAdminPanelSettings(){
   renderScoringEditor();
@@ -6054,7 +6055,7 @@ function closeAdminPanel(){closeEventControl()} // backward compat alias
 // ══════ REORGANIZED ADMIN PANEL FUNCTIONS (BUILD 20260223-0600) ══════
 let _previewReturnPanel=null;
 
-function openDashboard(){closeAllAdminPanels();_instantShow(document.getElementById('dashboardPanel'));showAdminTabs('dashboardPanel');renderTeamMonitor();startTeamMonitor()}
+function openDashboard(){closeAllAdminPanels();_instantShow(document.getElementById('dashboardPanel'));showAdminTabs('dashboardPanel');renderTeamMonitor();startTeamMonitor();saveSession()}
 function closeDashboard(){const el=document.getElementById('dashboardPanel');if(el){el.classList.remove('active');el.style.cssText=''}if(teamMonitorInterval){clearInterval(teamMonitorInterval);teamMonitorInterval=null}hideAdminTabs()}
 
 function switchDashTab(tab){
@@ -6072,15 +6073,16 @@ function switchDashTab(tab){
   });
   if(isLb){renderFullLeaderboard()}
   else{renderTeamMonitor();startTeamMonitor()}
+  saveSession();
 }
 
-function openEventSettings(){closeAllAdminPanels();_instantShow(document.getElementById('adminPanel'));showAdminTabs('adminPanel');syncAdminPanelSettings()}
+function openEventSettings(){closeAllAdminPanels();_instantShow(document.getElementById('adminPanel'));showAdminTabs('adminPanel');syncAdminPanelSettings();saveSession()}
 function closeEventSettings(){closeEventControl()}
 
-function openScoringPanel(){closeAllAdminPanels();_instantShow(document.getElementById('scoringPanel'));showAdminTabs('scoringPanel');renderScoringEditor()}
+function openScoringPanel(){closeAllAdminPanels();_instantShow(document.getElementById('scoringPanel'));showAdminTabs('scoringPanel');renderScoringEditor();saveSession()}
 function closeScoringPanel(){const el=document.getElementById('scoringPanel');if(el){el.classList.remove('active');el.style.cssText=''}hideAdminTabs()}
 
-function openRegistrationPanel(){closeAllAdminPanels();_instantShow(document.getElementById('registrationPanel'));showAdminTabs('registrationPanel');syncRegistrationSettings()}
+function openRegistrationPanel(){closeAllAdminPanels();_instantShow(document.getElementById('registrationPanel'));showAdminTabs('registrationPanel');syncRegistrationSettings();saveSession()}
 function closeRegistrationPanel(){const el=document.getElementById('registrationPanel');if(el){el.classList.remove('active');el.style.cssText=''}hideAdminTabs()}
 function syncRegistrationSettings(){
   const minEl=document.getElementById('apMinSize');const maxEl=document.getElementById('apMaxSize');const maxTEl=document.getElementById('apMaxTeams');
@@ -6093,7 +6095,7 @@ function syncRegistrationSettings(){
   if(st){st.textContent=regSettings.registrationOpen?'● OPEN':'● CLOSED';st.style.color=regSettings.registrationOpen?'var(--green)':'var(--red)'}
 }
 
-function openAppearancePanel(){closeAllAdminPanels();_instantShow(document.getElementById('appearancePanel'));showAdminTabs('appearancePanel');updateThemeLabel();initTypographyPanel()}
+function openAppearancePanel(){closeAllAdminPanels();_instantShow(document.getElementById('appearancePanel'));showAdminTabs('appearancePanel');updateThemeLabel();initTypographyPanel();saveSession()}
 function closeAppearancePanel(){const el=document.getElementById('appearancePanel');if(el){el.classList.remove('active');el.style.cssText=''}hideAdminTabs()}
 function openTeamMonitor(){openDashboard()}
 function closeTeamMonitor(){closeDashboard()}
@@ -6383,6 +6385,7 @@ function openLeaderboard(){
   _instantShow(document.getElementById('leaderboardModule'));
   showAdminTabs('leaderboardModule');
   renderFullLeaderboard();
+  saveSession();
 }
 function closeLeaderboard(){
   const el=document.getElementById('leaderboardModule');
@@ -6617,6 +6620,7 @@ function openKeysCodes(){
   _instantShow(document.getElementById('keysCodesPanel'));
   showAdminTabs('keysCodesPanel');
   renderKeysCodes();
+  saveSession();
 }
 function closeKeysCodes(){const el=document.getElementById('keysCodesPanel');el.style.cssText='';el.classList.remove('active');hideAdminTabs()}
 
@@ -6721,6 +6725,7 @@ function openBroadcast(){
   closeAllAdminPanels();
   _instantShow(document.getElementById('broadcastPanel'));
   showAdminTabs('broadcastPanel');
+  saveSession();
   setTimeout(()=>{
     if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
       navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{s.getTracks().forEach(t=>t.stop())}).catch(e=>{
@@ -8346,7 +8351,7 @@ function getEventState(){
 
 
 // ══════ SESSION MANAGEMENT ══════
-function openSessionMgmt(){closeAllAdminPanels();_instantShow(document.getElementById('sessionMgmtPanel'));showAdminTabs('sessionMgmtPanel')}
+function openSessionMgmt(){closeAllAdminPanels();_instantShow(document.getElementById('sessionMgmtPanel'));showAdminTabs('sessionMgmtPanel');saveSession()}
 function closeSessionMgmt(){const el=document.getElementById('sessionMgmtPanel');el.classList.remove('active');el.style.cssText='';hideAdminTabs()}
 function destroySessions(mode){
   const labels={all:'DESTROY ALL SESSIONS (including yours)',teams:'DESTROY ALL TEAM SESSIONS',exceptMe:'DESTROY ALL SESSIONS EXCEPT YOURS'};
@@ -8857,8 +8862,16 @@ function saveSession(){
     if(_currentScreen!=='consoleScreen')return;
     if(!currentVaultTeam)return;
     const data={type:isAdmin?'admin':'team',team:currentVaultTeam,savedAt:Date.now()};
-    if(isAdmin)data.adminSession=adminSession;
-    // Save which panel is open so refresh restores exactly where the user was
+    if(isAdmin){
+      data.adminSession=adminSession;
+      // Save which admin panel is open
+      const activeAdminPanel=adminPanelIds.find(id=>{const el=document.getElementById(id);return el&&el.classList.contains('active')});
+      if(activeAdminPanel)data.adminPanel=activeAdminPanel;
+      // Save which dashboard tab is active (TEAMS vs LEADERBOARD)
+      const dashLbView=document.getElementById('dashLeaderboardView');
+      if(activeAdminPanel==='dashboardPanel'&&dashLbView&&dashLbView.style.display!=='none')data.dashTab='leaderboard';
+    }
+    // Save which player panel is open so refresh restores exactly where the user was
     const openPanelEl=document.querySelector('.expanded-panel.visible');
     if(openPanelEl)data.panel=openPanelEl.id;
     // Save feed view state so focus mode + post index survive refresh
@@ -9120,7 +9133,16 @@ function restoreSession(){
       renderGrid(); // Render grid with cached data + theme immediately
       startElapsedTimer();
       // Load fresh data from backend in background — UI already showing
-      loadEventData();
+      loadEventData().then(function(){
+        // Restore admin panel after data is loaded
+        if(data.adminPanel){
+          switchAdminTab(data.adminPanel);
+          // Restore dashboard sub-tab if applicable
+          if(data.adminPanel==='dashboardPanel'&&data.dashTab==='leaderboard'){
+            switchDashTab('leaderboard');
+          }
+        }
+      });
       return true;
     }else if(data.type==='team'&&data.team.id){
       currentVaultTeam=data.team;
