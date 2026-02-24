@@ -6354,7 +6354,7 @@ function startTeamMonitor(){
       _tmLastHash=tmHash;
       renderTeamMonitor();
     }
-    if(document.getElementById('leaderboardModule').classList.contains('active')&&tmHash!==_lbLastHash){
+    if(document.getElementById('leaderboardModule').classList.contains('active')&&tmHash!==_lbLastHash&&(Date.now()-_lbUserInteractedAt)>2000){
       _lbLastHash=tmHash;
       renderFullLeaderboard();
     }
@@ -6369,6 +6369,8 @@ function _teamDataHash(){
     h=((h<<5)-h+(t.submissionResults?t.submissionResults.totalScore:0))|0;
     for(let j=0;j<t.name.length;j++)h=((h<<5)-h+t.name.charCodeAt(j))|0;
   }
+  // Include expanded team so user interaction doesn't get stomped
+  if(lbExpandedTeam)for(let j=0;j<lbExpandedTeam.length;j++)h=((h<<5)-h+lbExpandedTeam.charCodeAt(j))|0;
   return String(h);
 }
 
@@ -6500,10 +6502,11 @@ function renderFullLeaderboard(){
   renderPagination('lbPagination',teams.length,lbPerPage,lbCurrentPage,function(p){lbCurrentPage=p;renderFullLeaderboard()});
 }
 
+let _lbUserInteractedAt=0;
 function toggleLbTeam(id){
   lbExpandedTeam=lbExpandedTeam===id?null:id;
   _lbLastHash='';
-  _tmLastHash='';
+  _lbUserInteractedAt=Date.now();
   renderFullLeaderboard();
 }
 
