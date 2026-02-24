@@ -775,6 +775,8 @@
   .feed-mute-btn:hover{background:rgba(0,0,0,.8);border-color:rgba(255,255,255,.3)}
   /* Video indicator on grid thumbnails */
   .feed-video-badge{position:absolute;top:8px;left:8px;font-size:8px;letter-spacing:1px;color:#fff;background:rgba(0,0,0,.6);padding:2px 6px;border-radius:2px;font-family:'IBM Plex Mono',monospace;z-index:3}
+  .feed-video-play-icon{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(255,255,255,.7);padding-left:3px;transition:all .2s}
+  .feed-card:hover .feed-video-play-icon{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4);color:#fff}
   .feed-card-cap{padding:10px 12px;border-top:1px solid var(--border);display:none}
   .feed-card{border-radius:0;border:none;border-right:1px solid rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.03)}
   .feed-card-cap p{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#bbb;font-weight:500;line-height:1.6}
@@ -3975,7 +3977,7 @@ function renderFeed(){
     grid.innerHTML=isA
       ?'<div style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px;opacity:.3">📡</div><div style="font-family:Chakra Petch,sans-serif;font-size:11px;color:#444;letter-spacing:1px;margin-bottom:16px">No intelligence feed items yet</div><div class="admin-add-btn" onclick="addFeedPost()">+ Add Post</div></div>'
       :'<div style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px;opacity:.3">📡</div><div style="font-family:Chakra Petch,sans-serif;font-size:11px;color:#333;letter-spacing:1px">No intelligence available yet</div></div>';
-    document.getElementById('feedBadge').textContent='0 ITEMS';
+    document.getElementById('feedBadge').textContent=tileBadgeText('feed',isA);
     const fci=document.getElementById('feedCountIndicator');if(fci)fci.textContent='0 posts';
     return;
   }
@@ -3992,7 +3994,7 @@ function renderFeed(){
     } else if(isEmbeddable||isExternal){
       media=buildVideoThumbnail(resolved);
     } else if(isVid){
-      media=`<video class="feed-card-video" src="${resolved.url}" muted loop playsinline preload="auto"></video><div class="feed-video-badge">▶ VIDEO</div>`;
+      media=`<div class="feed-card-poster" style="width:100%;height:100%;background:#0a0a0e;display:flex;align-items:center;justify-content:center"><div class="feed-video-play-icon">▶</div></div><div class="feed-video-badge">VIDEO</div>`;
     } else {
       media=`<span style="opacity:.5">${p.emoji}</span>`;
     }
@@ -4000,10 +4002,8 @@ function renderFeed(){
     const _capFont=resolveFont('feedCap',p.capFont||'');
     return `<div class="feed-card" data-idx="${i}" onclick="openPost(${i})">${isA?`<div class="drag-handle" onpointerdown="startDrag(event,'feed',${i})" onclick="event.stopPropagation()">⋮⋮</div><div class="admin-edit-btn" onclick="event.stopPropagation();editFeedPost(${i})">✎</div>`:''}<div class="feed-card-img" style="${bgStyle}" oncontextmenu="return false">${media}</div><div class="feed-card-cap"><p style="${fontStyle(_capFont)}">${p.cap}</p></div></div>`;
   }).join('')+(isA?'<div class="admin-add-btn" onclick="addFeedPost()">+ Add Post</div>':'');
-  document.getElementById('feedBadge').textContent=posts.length+' ITEMS';
+  document.getElementById('feedBadge').textContent=tileBadgeText('feed',isA);
   const fci=document.getElementById('feedCountIndicator');if(fci)fci.textContent=posts.length+' posts';
-  // Force-play all grid videos after DOM insertion
-  setTimeout(()=>{grid.querySelectorAll('video.feed-card-video').forEach(v=>{v.muted=true;v.play().catch(()=>{})})},50);
 }
 let _mediaSelectMode=false;
 let _mediaSelected=new Set();
@@ -4043,7 +4043,7 @@ function renderMedia(){
     const newBadge=m._isNew?'<span style="position:absolute;top:6px;right:40px;font-family:IBM Plex Mono,monospace;font-size:8px;letter-spacing:1.5px;color:var(--cyan);background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);border-radius:2px;padding:1px 6px">NEW</span>':'';
     return `<div class="media-exp-item" data-idx="${realIdx}" style="${lockedStyle}${vlStyle}${selStyle}${newGlow}" ${clickHandler}>${isEdit&&!_mediaSelectMode?`<div class="drag-handle" onpointerdown="startDrag(event,'media',${realIdx})" onclick="event.stopPropagation()">⋮⋮</div><div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${realIdx})" style="position:absolute;top:8px;right:8px">✎</div>`:''}${checkHtml}${crosshatch}${newBadge}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(_mNameFont)}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(_mDescFont)}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${badge}</span></div>`;
   }).join('')+(isEdit&&!_mediaSelectMode?'<div class="admin-add-btn" onclick="addMediaItem()">+ Add Item</div>':'');
-  const mbadge=document.getElementById('mediaBadge');if(mbadge)mbadge.textContent=visibleItems.length+' ITEMS';
+  const mbadge=document.getElementById('mediaBadge');if(mbadge)mbadge.textContent=tileBadgeText('media',isAdmin);
 }
 
 // ══════ PANELS ══════
@@ -4054,6 +4054,7 @@ function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(
 
 // Fresh data fetch on panel open — ensures frontend matches backend
 function _refreshPanelData(panel){
+  if(_isTutorialRunning())return; // Don't refresh during tutorial — causes badge flicker
   if(panel==='feed'){
     apiCall('getFeedPosts').then(r=>{
       if(r.ok&&r.posts){
@@ -4090,7 +4091,7 @@ function _refreshPanelData(panel){
     });
   }
 }
-function closePanel(){overlay.style.cssText='';overlay.classList.remove('active');setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession()},120)}
+function closePanel(){_stopAllFeedVideos();overlay.style.cssText='';overlay.classList.remove('active');setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession()},120)}
 
 // Feed view modes
 function feedClose(){
@@ -4138,6 +4139,8 @@ function setFeedView(mode){
     gridEl.style.display='';
     singleEl.classList.remove('visible');toggleEl.style.display='';
     if(body)body.classList.remove('focus-active');
+    // Stop all videos/audio when returning to grid
+    _stopAllFeedVideos();
   } else {
     gridEl.style.display='none';singleEl.classList.add('visible');
     toggleEl.style.display='';renderSinglePost();
@@ -4145,6 +4148,12 @@ function setFeedView(mode){
   }
   updateFeedCloseBtn();
   saveSession();
+}
+function _stopAllFeedVideos(){
+  document.querySelectorAll('#expFeed video, #expFeed iframe').forEach(el=>{
+    if(el.tagName==='VIDEO'){el.pause();el.muted=true;el.currentTime=0}
+    else if(el.tagName==='IFRAME'){try{el.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}','*')}catch(e){}}
+  });
 }
 
 let currentPost=0;
@@ -8249,6 +8258,7 @@ const TUTORIAL_STEPS_DEFAULT=[
 let tutorialSteps=JSON.parse(JSON.stringify(TUTORIAL_STEPS_DEFAULT));
 let tutorialEnabled=true;
 let _tutCurrentStep=0;
+function _isTutorialRunning(){return document.getElementById('tutorialOverlay')?.classList.contains('active')}
 let _tutIsPreview=false;
 
 function openTutorialConfig(){
@@ -8478,6 +8488,7 @@ function replayTutorial(){
 function endTutorial(){
   document.getElementById('tutorialOverlay').classList.remove('active');
   document.getElementById('tutSpotlight').style.display='none';
+  renderGrid(); // Sync grid with latest data after tutorial
   if(!_tutIsPreview){
     const teamId=currentVaultTeam?.id||'unknown';
     try{localStorage.setItem('cb_tutSeen_'+teamId,localStorage.getItem('cb_tutorialGen')||'1')}catch(e){}
