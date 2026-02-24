@@ -5148,7 +5148,7 @@ async function apiCall(action,data={}){
     if(adminSession)body.set('adminToken',adminSession.adminToken);
     const simpleKeys=['username','password','currentPassword','newPassword',
       'newUsername','newPassword','targetUsername','teamId','teamName','type',
-      'code','recoveryKey'];
+      'code','recoveryKey','mode','since','message'];
     let hasComplex=false;
     Object.entries(data).forEach(([k,v])=>{
       if(typeof v==='object'){hasComplex=true}
@@ -5164,7 +5164,16 @@ async function apiCall(action,data={}){
       body:body.toString()
     });
     const text=await resp.text();
-    try{return JSON.parse(text)}
+    try{const result=JSON.parse(text);
+      // Detect session invalidation — force re-login
+      if(!result.ok&&result.error&&(result.error.includes('expired')||result.error.includes('Invalid or expired'))){
+        if(isAdmin){
+          alert('Admin session expired. Please log in again.');
+          clearSession();location.reload();
+          return result;
+        }
+      }
+      return result}
     catch(e){console.error('Parse error:',text.substring(0,200));return {ok:false,error:'Invalid response from server'}}
   }catch(err){
     console.error('API error:',err);
@@ -8357,13 +8366,16 @@ function destroySessions(mode){
   const msg=document.getElementById('sessionMgmtMsg');
   msg.className='ap-msg';msg.textContent='Destroying sessions...';
   apiCall('destroySessions',{mode}).then(r=>{
+    console.log('destroySessions response:',JSON.stringify(r));
     if(r.ok){
       msg.className='ap-msg ok';msg.textContent='✓ '+r.message;
       if(mode==='exceptMe'&&r.newToken){
         adminSession.adminToken=r.newToken;
         saveSession();
+        msg.textContent+=' — Your token has been refreshed.';
       }else if(mode==='all'){
-        setTimeout(()=>{localStorage.removeItem('cb_session');sessionStorage.removeItem('cb_session');location.reload()},1500);
+        msg.textContent+=' — Reloading in 2s...';
+        setTimeout(()=>{localStorage.removeItem('cb_session');sessionStorage.removeItem('cb_session');location.reload()},2000);
       }
     }else{
       msg.className='ap-msg err';msg.textContent='✗ '+(r.error||'Failed');
