@@ -6070,7 +6070,7 @@ function switchDashTab(tab){
     const active=(i===0&&!isLb)||(i===1&&isLb);
     if(btn){btn.style.background=active?'rgba(0,255,136,.08)':'transparent';btn.style.borderColor=active?'rgba(0,255,136,.15)':'transparent';btn.style.color=active?'var(--green)':'#666'}
   });
-  if(isLb){renderFullLeaderboard();const src=document.getElementById('lbBody');const dst=document.getElementById('dashLbContent');if(src&&dst)dst.innerHTML=src.innerHTML}
+  if(isLb){renderFullLeaderboard()}
   else{renderTeamMonitor();startTeamMonitor()}
 }
 
@@ -6354,7 +6354,7 @@ function startTeamMonitor(){
       _tmLastHash=tmHash;
       renderTeamMonitor();
     }
-    if(document.getElementById('leaderboardModule').classList.contains('active')&&tmHash!==_lbLastHash&&(Date.now()-_lbUserInteractedAt)>2000){
+    if(document.getElementById('leaderboardModule').classList.contains('active')&&tmHash!==_lbLastHash&&(Date.now()-_lbUserInteractedAt)>5000){
       _lbLastHash=tmHash;
       renderFullLeaderboard();
     }
@@ -6500,6 +6500,9 @@ function renderFullLeaderboard(){
     return '<div class="lb-row'+(expanded?' expanded':'')+(ghost?' ghost':'')+'" onclick="toggleLbTeam(\''+t.id+'\')"><div class="lb-row-main">'+checkbox+'<div class="lb-rank '+rc+'">#'+rank+'</div><div class="lb-team-status '+(on?'on':'off')+'"></div><div class="lb-team-info"><div class="lb-team-name">'+t.name+'</div><div class="lb-team-meta">'+metaHtml+'</div></div><div class="lb-score-block"><div class="lb-score-pct '+rc+'">'+(t.submitTime?scorePct:0)+'%</div><div class="lb-score-label">'+(t.submitTime?actualScore+' PTS':'—')+'</div></div></div><div class="lb-progress"><div class="lb-progress-fill" style="width:'+(t.submitTime?scorePct:0)+'%;background:'+barColor+'"></div></div>'+detailHtml+'</div>';
   }).join('');
   renderPagination('lbPagination',teams.length,lbPerPage,lbCurrentPage,function(p){lbCurrentPage=p;renderFullLeaderboard()});
+  // Sync dashboard's embedded leaderboard view
+  var dashLb=document.getElementById('dashLbContent');
+  if(dashLb)dashLb.innerHTML=body.innerHTML;
 }
 
 let _lbUserInteractedAt=0;
