@@ -4126,7 +4126,7 @@ function _refreshPanelData(panel){
     });
   }
 }
-function closePanel(){_stopAllFeedVideos();overlay.style.cssText='';overlay.classList.remove('active');setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession()},120)}
+function closePanel(){_stopAllFeedVideos();overlay.style.cssText='';overlay.classList.remove('active');saveGameState();setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession();renderGrid()},120)}
 
 // Feed view modes
 function feedClose(){
@@ -7127,27 +7127,22 @@ function tileBadgeText(id,isAdmin){
     return count?count+' ITEMS':'0 ITEMS';
   }
   if(id==='vault')return vaultBadgeText();
-  // intel — check submission state and count filled inputs
-  if(isSubmitted){
-    const correct=0;const total=intelFields.length;
-    // Try to get real submission count from DOM or localStorage
-    const inputs=document.querySelectorAll('.intel-exp-input');
-    let filled=0;
-    if(inputs.length>0){inputs.forEach(inp=>{if(inp.value&&inp.value.trim())filled++})}
-    else{try{const tid=currentVaultTeam?.id||'UNKNOWN';const raw=localStorage.getItem('cb_gs_'+tid+'_intelDraft');if(raw){const d=JSON.parse(raw);filled=Object.keys(d).filter(k=>d[k]&&String(d[k]).trim()).length}}catch(e){}}
-    return filled+' OF '+total+' SUBMITTED';
-  }
+  // intel — count filled fields from best available source
+  let filled=0;
+  // 1. Try DOM inputs (most current when panel is open)
   const inputs=document.querySelectorAll('.intel-exp-input');
   if(inputs.length>0){
-    let filled=0;inputs.forEach(inp=>{if(inp.value&&inp.value.trim())filled++});
-    return filled+' OF '+intelFields.length+' ENTERED';
+    inputs.forEach(inp=>{if(inp.value&&inp.value.trim())filled++});
+  }else{
+    // 2. Fall back to localStorage drafts (reliable when panel is closed)
+    try{
+      const tid=currentVaultTeam?.id||'UNKNOWN';
+      const raw=localStorage.getItem('cb_gs_'+tid+'_intelDraft');
+      if(raw){const d=JSON.parse(raw);filled=Object.keys(d).filter(k=>d[k]&&String(d[k]).trim()).length}
+    }catch(e){}
   }
-  try{
-    const tid=currentVaultTeam?.id||'UNKNOWN';
-    const raw=localStorage.getItem('cb_gs_'+tid+'_intelDraft');
-    if(raw){const d=JSON.parse(raw);const filled=Object.keys(d).filter(k=>d[k]&&String(d[k]).trim()).length;return filled+' OF '+intelFields.length+' ENTERED'}
-  }catch(e){}
-  return '0 OF '+intelFields.length+' ENTERED';
+  if(isSubmitted) return filled+' OF '+intelFields.length+' SUBMITTED';
+  return filled+' OF '+intelFields.length+' ENTERED';
 }
 function renderGrid(){
   updateTileStates(); // Always recalculate orb states before rendering
