@@ -9163,7 +9163,9 @@ function restoreSession(){
       // Load fresh data from backend in background — UI already showing
       loadEventData().then(function(){
         // Re-render the active admin panel now that data has arrived
-        if(data.adminPanel==='dashboardPanel'){renderTeamMonitor();renderLeaderboard()}
+        if(data.adminPanel==='dashboardPanel'){
+          renderTeamMonitor();renderLeaderboard();renderFullLeaderboard();
+        }
         if(data.adminPanel==='leaderboardModule')renderFullLeaderboard();
         if(data.adminPanel==='keysCodesPanel')renderKeysCodes();
         if(data.adminPanel==='scoringPanel')renderScoringEditor();
