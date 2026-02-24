@@ -3515,7 +3515,11 @@ function submitLogin(){
       if(!registeredTeams.find(r=>r.id===t.teamId)){registeredTeams.push(currentVaultTeam)}
       updateConsoleForTeam(currentVaultTeam);saveSession();loginSuccess();startBroadcastPolling();
       apiCall('getEventConfig').then(cfg=>{
-        if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
+        if(cfg.ok&&cfg.config){
+          applyEventConfig(cfg.config);
+          // Store session generation for destroy detection
+          try{localStorage.setItem('cb_sessionGen',String(cfg.config.sessionGenTeam||'0'))}catch(e){}
+        }
         // Load content (posts, media, intel) so grid badges reflect actual counts
         _loadTeamContent().then(()=>{
           renderGrid();
@@ -4098,27 +4102,27 @@ function _refreshPanelData(panel){
   if(panel==='feed'){
     apiCall('getFeedPosts').then(r=>{
       if(r.ok&&r.posts){
-        const changed=JSON.stringify(r.posts)!==JSON.stringify(posts.map(p=>({emoji:p.emoji,bg:p.bg,cap:p.cap,capFont:p.capFont||'',mediaUrl:p.mediaUrl||'',mediaType:p.mediaType||'image',focalX:p.focalX||50,focalY:p.focalY||50})));
-        if(changed){posts=r.posts;renderFeed();renderGrid();_cacheContent("cb_posts",posts)}
+        // Only re-render if count changed or content differs
+        if(r.posts.length!==posts.length||_quickHash(r.posts)!==_quickHash(posts)){
+          posts=r.posts;renderFeed();renderGrid();_cacheContent("cb_posts",posts)
+        }
       }
     });
   }else if(panel==='media'){
     apiCall('getMediaItems').then(r=>{
       if(r.ok&&r.items){
-        const changed=r.items.length!==mediaItems.length||JSON.stringify(r.items)!==JSON.stringify(mediaItems.map(m=>({name:m.name,desc:m.desc||'',url:m.url,type:m.type||'image',nameFont:m.nameFont||'',descFont:m.descFont||'',vaultLocked:m.vaultLocked||false})));
-        if(changed){mediaItems=r.items;syncVaultCodesFromMedia();restoreGameState();renderMedia();renderGrid();_cacheContent("cb_media",mediaItems)}
+        if(r.items.length!==mediaItems.length||_quickHash(r.items)!==_quickHash(mediaItems)){
+          mediaItems=r.items;syncVaultCodesFromMedia();restoreGameState();renderMedia();renderGrid();_cacheContent("cb_media",mediaItems)
+        }
       }
     });
   }else if(panel==='intel'){
     apiCall('getIntelFields').then(r=>{
       if(r.ok&&r.fields){
-        const changed=r.fields.length!==intelFields.length||JSON.stringify(r.fields)!==JSON.stringify(intelFields);
-        if(changed){
-          // Preserve current input values before re-render
+        if(r.fields.length!==intelFields.length||_quickHash(r.fields)!==_quickHash(intelFields)){
           const curVals={};
           document.querySelectorAll('.intel-exp-input').forEach(inp=>{if(inp.dataset.idx&&inp.value.trim())curVals[inp.dataset.idx]=inp.value});
           intelFields=r.fields;renderIntelForm();
-          // Restore typed values
           document.querySelectorAll('.intel-exp-input').forEach(inp=>{if(curVals[inp.dataset.idx])inp.value=curVals[inp.dataset.idx]});
           renderGrid();_cacheContent("cb_intel",intelFields);
         }
@@ -4127,12 +4131,28 @@ function _refreshPanelData(panel){
   }else if(panel==='vault'){
     apiCall('getMediaItems').then(r=>{
       if(r.ok&&r.items){
-        const changed=r.items.length!==mediaItems.length||JSON.stringify(r.items)!==JSON.stringify(mediaItems.map(m=>({type:m.type||'',title:m.title||'',titleFont:m.titleFont||'',desc:m.desc||'',descFont:m.descFont||'',url:m.url||'',filename:m.filename||'',vaultLocked:m.vaultLocked||false,unlockKey:m.unlockKey||'',unlocked:m.unlocked||false,vaultCode:m.vaultCode||'',vaultCodename:m.vaultCodename||''})));
-        if(changed){mediaItems=r.items;_cacheContent("cb_media",mediaItems)}
+        if(r.items.length!==mediaItems.length||_quickHash(r.items)!==_quickHash(mediaItems)){
+          mediaItems=r.items;_cacheContent("cb_media",mediaItems)
+        }
       }
       syncVaultCodesFromMedia();restoreGameState();renderVaultPanel();renderGrid();
     });
   }
+}
+// Fast content hash — avoids false positives from key ordering in JSON.stringify
+function _quickHash(arr){
+  if(!arr||!arr.length)return '0';
+  let h=arr.length;
+  for(let i=0;i<arr.length;i++){
+    const keys=Object.keys(arr[i]);
+    for(let j=0;j<keys.length;j++){
+      const v=arr[i][keys[j]];
+      if(typeof v==='string')h=((h<<5)-h+v.length)|0;
+      else if(typeof v==='number')h=((h<<5)-h+v)|0;
+      else if(typeof v==='boolean')h=((h<<5)-h+(v?1:0))|0;
+    }
+  }
+  return String(h);
 }
 function closePanel(){_stopAllFeedVideos();overlay.style.cssText='';overlay.classList.remove('active');setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession()},120)}
 
@@ -5510,7 +5530,7 @@ function togglePlayerPreview(){
     const pill=document.getElementById('previewExitPill');
     if(pill)pill.style.display='none';
   }
-  renderGrid();renderFeed();renderMedia();renderIntelForm();renderVaultPanel();
+  forceRenderGrid();renderFeed();renderMedia();renderIntelForm();renderVaultPanel();
   if(document.getElementById('fvSingle')?.classList.contains('active'))renderSinglePost();
   syncAdminDropdownToggles();
   closeAdminDropdown();
@@ -5601,7 +5621,7 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('contextmenu',e=>{
   if(e.target.closest('.feed-card-img')||e.target.closest('.feed-single-img')||e.target.closest('.mv-body')||e.target.closest('.no-download-shield'))e.preventDefault();
 });
-function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');closeAdminDropdown();closeAdminPanel();closeBroadcast();closeLeaderboard();closeKeysCodes();renderGrid();renderIntelForm()}
+function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');closeAdminDropdown();closeAdminPanel();closeBroadcast();closeLeaderboard();closeKeysCodes();forceRenderGrid();renderIntelForm()}
 
 // ══════ SCREEN NAVIGATION ══════
 let _currentScreen='landingScreen';
@@ -6374,10 +6394,37 @@ function renderLeaderboard(){
   }).join('');
 }
 
-// Simulate activity changes for demo (remove in production)
+// Team monitor — re-fetch from backend periodically for live data
 function startTeamMonitor(){
   if(teamMonitorInterval)clearInterval(teamMonitorInterval);
-  teamMonitorInterval=setInterval(()=>{
+  let _tmFetchCount=0;
+  teamMonitorInterval=setInterval(async()=>{
+    _tmFetchCount++;
+    // Every 5th tick (15s), re-fetch teams and submissions from backend
+    if(_tmFetchCount%5===0){
+      const teamsResult=await apiCall('getTeams');
+      if(teamsResult.ok&&teamsResult.teams){
+        registeredTeams.length=0;manualTeams.length=0;
+        teamsResult.teams.forEach(t=>{
+          const team={id:t.teamId,name:t.teamName,type:t.type,members:t.members.map(m=>typeof m==='string'?m:m.name),memberDetails:t.members,lastActive:new Date(t.lastActive).getTime(),fieldsCompleted:0,submitTime:null,registeredAt:t.registeredAt,submissionResults:null};
+          if(t.manual)manualTeams.push(team);
+          registeredTeams.push(team);
+        });
+      }
+      const subResult=await apiCall('getSubmissions');
+      if(subResult.ok&&subResult.submissions){
+        subResult.submissions.forEach(s=>{
+          const team=registeredTeams.find(t=>t.id===s.teamId);
+          if(team){
+            team.submitTime=s.submittedAt;
+            team.submissionResults={totalScore:s.score,totalPossible:s.totalPossible||0,correctCount:s.correct,totalFields:s.total};
+            let filled=0;
+            try{const ans=typeof s.answers==='string'?JSON.parse(s.answers):s.answers;if(ans)Object.values(ans).forEach(v=>{if(v&&String(v).trim())filled++})}catch(e){}
+            team.fieldsCompleted=filled||s.correct||0;
+          }
+        });
+      }
+    }
     if(document.getElementById('dashboardPanel').classList.contains('active')){
       renderTeamMonitor();
     }
@@ -6840,7 +6887,6 @@ function startBroadcastPolling(){
   if(_broadcastPollInterval)clearInterval(_broadcastPollInterval);
   if(isAdmin)return; // Admins don't need to poll — they send
   _lastBroadcastTime=new Date().toISOString();
-  let _pollCount=0;
   _broadcastPollInterval=setInterval(async()=>{
     if(!currentVaultTeam)return;
     const r=await apiCall('getBroadcasts',{since:_lastBroadcastTime});
@@ -6850,20 +6896,19 @@ function startBroadcastPolling(){
         _lastBroadcastTime=b.sentAt;
       });
     }
-    // Every 4th poll (~32s), check if session generation changed via a config fetch
-    _pollCount++;
-    if(_pollCount%4===0){
-      const cfg=await apiCall('getEventConfig');
-      if(cfg.ok&&cfg.config){
-        const serverGen=String(cfg.config.sessionGenTeam||'0');
-        const localGen=localStorage.getItem('cb_sessionGen')||'0';
-        if(localGen!=='0'&&serverGen!=='0'&&localGen!==serverGen){
-          clearSession();location.reload();return;
-        }
-        try{localStorage.setItem('cb_sessionGen',serverGen)}catch(e){}
+    // Check session generation on every poll to detect session destruction quickly
+    const cfg=await apiCall('getEventConfig');
+    if(cfg.ok&&cfg.config){
+      // Apply any config changes (theme, operation name, etc.)
+      applyEventConfig(cfg.config);
+      const serverGen=String(cfg.config.sessionGenTeam||'0');
+      const localGen=localStorage.getItem('cb_sessionGen')||'0';
+      if(localGen!=='0'&&serverGen!=='0'&&localGen!==serverGen){
+        clearSession();location.reload();return;
       }
+      try{localStorage.setItem('cb_sessionGen',serverGen)}catch(e){}
     }
-  },8000); // Poll every 8 seconds
+  },10000); // Poll every 10 seconds
 }
 
 let bannerDismissTimer=null;
@@ -7129,30 +7174,47 @@ function tileBadgeText(id,isAdmin){
   // intel
   return '0 / '+intelFields.length+' ENTERED';
 }
+let _gridRenderedMode=null; // Track last render mode to detect structural changes
 function renderGrid(){
-  updateTileStates(); // Always recalculate orb states before rendering
+  updateTileStates();
   const isA=document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview');
   const g=document.getElementById('consoleGrid');
-  g.innerHTML=gridTiles.map((t,i)=>{
-    const isIntel=t.id==='intel';
-    const isVault=t.id==='vault';
-    const badgeCls=isVault?' crimson':isIntel?' violet':'';
-    return `<div class="crt-monitor" data-tile="${t.id}" onclick="openPanel('${t.id}')">
-      ${isA?`<div class="admin-edit-btn" onclick="event.stopPropagation();editGridTile(${i})">✎</div>`:''}
-      <div class="crt-screw s1"></div><div class="crt-screw s2"></div><div class="crt-screw s3"></div><div class="crt-screw s4"></div>
-      <div class="crt-led"></div>
-      <div class="crt-screen">
-        <div class="tile-glow"></div>
-        <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:48px;height:48px;object-fit:contain">`:t.icon}</div>
-        <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
-        <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
-        <div class="tile-badge${badgeCls}" id="${t.badgeId}">${tileBadgeText(t.id,isA)}</div>
-        <div class="tile-status" title="${t.dotClass==='active'?'Activity detected recently':t.dotClass==='idle'?'No recent activity':'No activity recorded yet'}"><div class="tile-dot ${t.dotClass}"></div><span class="tile-status-label ${t.dotClass}">${t.status}</span></div>
-      </div>
-    </div>`;
-  }).join('');
+  // Full rebuild only when structure changes (first render, mode switch, or forced)
+  const needsRebuild=!g.children.length||_gridRenderedMode!==isA;
+  if(needsRebuild){
+    _gridRenderedMode=isA;
+    g.innerHTML=gridTiles.map((t,i)=>{
+      const isIntel=t.id==='intel';
+      const isVault=t.id==='vault';
+      const badgeCls=isVault?' crimson':isIntel?' violet':'';
+      return `<div class="crt-monitor" data-tile="${t.id}" onclick="openPanel('${t.id}')">
+        ${isA?`<div class="admin-edit-btn" onclick="event.stopPropagation();editGridTile(${i})">✎</div>`:''}
+        <div class="crt-screw s1"></div><div class="crt-screw s2"></div><div class="crt-screw s3"></div><div class="crt-screw s4"></div>
+        <div class="crt-led"></div>
+        <div class="crt-screen">
+          <div class="tile-glow"></div>
+          <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:48px;height:48px;object-fit:contain">`:t.icon}</div>
+          <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
+          <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
+          <div class="tile-badge${badgeCls}" id="${t.badgeId}">${tileBadgeText(t.id,isA)}</div>
+          <div class="tile-status" title="${t.dotClass==='active'?'Activity detected recently':t.dotClass==='idle'?'No recent activity':'No activity recorded yet'}"><div class="tile-dot ${t.dotClass}"></div><span class="tile-status-label ${t.dotClass}">${t.status}</span></div>
+        </div>
+      </div>`;
+    }).join('');
+  }else{
+    // Light update — only update badges and status dots in place (no flicker)
+    gridTiles.forEach(t=>{
+      const badgeEl=document.getElementById(t.badgeId);
+      if(badgeEl){const newText=tileBadgeText(t.id,isA);if(badgeEl.textContent!==newText)badgeEl.textContent=newText}
+      const dotEl=document.querySelector(`[data-tile="${t.id}"] .tile-dot`);
+      if(dotEl)dotEl.className='tile-dot '+t.dotClass;
+      const labelEl=document.querySelector(`[data-tile="${t.id}"] .tile-status-label`);
+      if(labelEl){labelEl.className='tile-status-label '+t.dotClass;labelEl.textContent=t.status}
+    });
+  }
   updateVaultBadgeColor();
 }
+function forceRenderGrid(){_gridRenderedMode=null;renderGrid()}
 function editGridTile(i){
   const t=gridTiles[i];
   const isImgIcon=t.icon.startsWith('http')||t.icon.startsWith('data:');
@@ -7198,7 +7260,7 @@ function saveGridTile(i){
   gridTiles[i].subFont=sf;
   if(document.getElementById('eg_label_all').checked)gridTiles.forEach(t=>t.labelFont=lf);
   if(document.getElementById('eg_sub_all').checked)gridTiles.forEach(t=>t.subFont=sf);
-  hideEditModal();renderGrid();saveEventConfigToBackend();
+  hideEditModal();forceRenderGrid();saveEventConfigToBackend();
 }
 
 // ── Intel Fields ──
@@ -8828,12 +8890,16 @@ function saveGameState(){
     }
 
     // 4. Intel form answers (typed but not yet submitted)
-    const intelAnswers={};
-    document.querySelectorAll('.intel-exp-input').forEach(inp=>{
-      const idx=inp.dataset.idx;
-      if(idx!==undefined&&inp.value.trim())intelAnswers[idx]=inp.value;
-    });
-    localStorage.setItem(_gsKey('intelDraft'),JSON.stringify(intelAnswers));
+    // Only save if intel inputs exist in DOM — otherwise we'd overwrite valid data with empty
+    const intelInputs=document.querySelectorAll('.intel-exp-input');
+    if(intelInputs.length>0){
+      const intelAnswers={};
+      intelInputs.forEach(inp=>{
+        const idx=inp.dataset.idx;
+        if(idx!==undefined&&inp.value.trim())intelAnswers[idx]=inp.value;
+      });
+      localStorage.setItem(_gsKey('intelDraft'),JSON.stringify(intelAnswers));
+    }
 
     // 5. Submission status
     localStorage.setItem(_gsKey('isSubmitted'),isSubmitted?'1':'0');
@@ -8909,12 +8975,27 @@ function restoreIntelDraft(){
   try{
     if(!currentVaultTeam)return;
     const raw=localStorage.getItem(_gsKey('intelDraft'));
-    if(!raw)return;
-    const answers=JSON.parse(raw);
-    document.querySelectorAll('.intel-exp-input').forEach(inp=>{
-      const idx=inp.dataset.idx;
-      if(idx!==undefined&&answers[idx]){inp.value=answers[idx]}
-    });
+    if(raw){
+      const answers=JSON.parse(raw);
+      if(Object.keys(answers).length>0){
+        document.querySelectorAll('.intel-exp-input').forEach(inp=>{
+          const idx=inp.dataset.idx;
+          if(idx!==undefined&&answers[idx]){inp.value=answers[idx]}
+        });
+        return;
+      }
+    }
+    // If no local draft and player has submitted, load answers from backend
+    if(isSubmitted&&currentVaultTeam.id!=='ADMIN'){
+      apiCall('getDrafts',{teamId:currentVaultTeam.id}).then(r=>{
+        if(r.ok&&r.drafts&&Object.keys(r.drafts).length>0){
+          document.querySelectorAll('.intel-exp-input').forEach(inp=>{
+            const idx=inp.dataset.idx;
+            if(idx!==undefined&&r.drafts[idx]){inp.value=r.drafts[idx]}
+          });
+        }
+      });
+    }
   }catch(e){}
 }
 
