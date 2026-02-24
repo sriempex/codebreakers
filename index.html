@@ -1256,8 +1256,8 @@
   .ap-status-dot.off{background:var(--amber);opacity:.6}
   .ap-monitor-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--border);border-radius:3px;margin-bottom:4px;transition:border-color .3s}
   .ap-monitor-row.active{border-color:rgba(0,255,136,.1)}
-  .ap-monitor-row.inactive{border-color:rgba(255,170,51,.08);opacity:.65}
-  .ap-monitor-row.ghost{border-color:rgba(255,51,51,.12);opacity:.65}
+  .ap-monitor-row.idle{border-color:rgba(240,200,120,.12);opacity:.75}
+  .ap-monitor-row.ghost{border-color:rgba(255,51,51,.12);opacity:.55}
   .ap-monitor-ghost-tag{font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:2px;color:#ff6666;padding:2px 6px;border:1px solid rgba(255,80,80,.4);border-radius:2px;flex-shrink:0;background:rgba(255,51,51,.12);text-shadow:0 0 6px rgba(255,80,80,.4)}
   .ap-monitor-remove{width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,51,51,.25);font-size:10px;border-radius:50%;transition:all .2s;flex-shrink:0;margin-left:2px}
   .ap-monitor-remove:hover{color:var(--red);background:rgba(255,51,51,.1)}
@@ -1265,7 +1265,9 @@
   .ap-lb-ghost-tag{font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1px;color:rgba(255,80,80,.5);padding:1px 5px;border:1px solid rgba(255,51,51,.15);border-radius:2px;margin-left:4px;vertical-align:middle}
   .ap-monitor-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
   .ap-monitor-dot.on{background:var(--green);box-shadow:0 0 6px rgba(0,255,136,.4)}
-  .ap-monitor-dot.off{background:var(--amber);opacity:.5}
+  .ap-monitor-dot.idle{background:#f0c878;box-shadow:0 0 4px rgba(240,200,120,.3)}
+  .ap-monitor-dot.off{background:#ff4444;opacity:.5}
+  .ap-monitor-idle-tag{font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:2px;color:#f0c878;padding:2px 6px;border:1px solid rgba(240,200,120,.3);border-radius:2px;flex-shrink:0;background:rgba(240,200,120,.08)}
   .ap-monitor-id{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--cyan);font-weight:600;min-width:90px}
   .ap-monitor-name{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#999;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .ap-monitor-time{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#555;letter-spacing:1px;flex-shrink:0}
@@ -2679,8 +2681,8 @@
       <p>Real-time view of all registered teams and their activity status. Teams inactive for 5+ minutes are flagged.</p>
       <div style="display:flex;gap:8px;margin-bottom:12px">
         <div class="ap-status-pill active"><span class="ap-status-dot on"></span> Active: <strong id="apActiveCount">0</strong></div>
-        <div class="ap-status-pill inactive"><span class="ap-status-dot off"></span> Inactive: <strong id="apInactiveCount">0</strong></div>
-        <div class="ap-status-pill" style="border:1px solid rgba(255,51,51,.15);background:rgba(255,51,51,.04);color:rgba(255,100,100,.7);display:none">Ghost: <strong id="apGhostCount">0</strong></div>
+        <div class="ap-status-pill idle" style="border:1px solid rgba(240,200,120,.15);background:rgba(240,200,120,.04);color:rgba(240,200,120,.7)"><span class="ap-status-dot" style="background:#f0c878"></span> Idle: <strong id="apInactiveCount">0</strong></div>
+        <div class="ap-status-pill" style="border:1px solid rgba(255,51,51,.15);background:rgba(255,51,51,.04);color:rgba(255,100,100,.7);display:none"><span class="ap-status-dot" style="background:#ff4444"></span> Ghost: <strong id="apGhostCount">0</strong></div>
         <div class="ap-status-pill total">Total: <strong id="apTotalCount">0</strong></div>
       </div>
       <div class="ap-team-list" id="apTeamMonitor" style="max-height:none"></div>
@@ -3519,7 +3521,7 @@ function submitLogin(){
         isAdmin=true;document.body.classList.add('admin-mode');
         currentVaultTeam={id:'ADMIN',name:'ADMIN',displayName:'ADMINISTRATOR',type:'admin',members:['Admin'],memberDetails:[]};
         updateConsoleForTeam(currentVaultTeam);syncAdminDropdownToggles();saveSession();
-        loginSuccess();loadEventData();document.dispatchEvent(new Event('adminReady'));
+        loginSuccess();loadEventData();startTeamMonitor();document.dispatchEvent(new Event('adminReady'));
       }else{
         setLoginLed('denied');setLoginStatus('ACCESS DENIED — AUTH FAILED','denied');
         btn.style.opacity='';btn.style.pointerEvents='';
@@ -3539,7 +3541,7 @@ function submitLogin(){
         memberDetails:t.members||[],lastActive:Date.now(),fieldsCompleted:0,
         submitTime:null,registeredAt:t.registeredAt,submissionResults:null};
       if(!registeredTeams.find(r=>r.id===t.teamId)){registeredTeams.push(currentVaultTeam)}
-      updateConsoleForTeam(currentVaultTeam);saveSession();loginSuccess();startBroadcastPolling();
+      updateConsoleForTeam(currentVaultTeam);saveSession();loginSuccess();startBroadcastPolling();startActivityTracker();
       apiCall('getEventConfig').then(cfg=>{
         if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
         // Load drafts from backend after intel fields are rendered
@@ -3923,7 +3925,7 @@ let gridTiles=[
 ];
 // Activity tracking for tile pulse system
 const tileActivity={feed:0,media:0,vault:0,intel:0};
-const activityThresholds={activeToIdle:60,idleToSilent:300}; // seconds, admin-configurable
+const activityThresholds={activeToIdle:120,idleToSilent:600}; // seconds — active<2min, idle 2-10min, ghost>10min
 const tileStateLabels={active:'ACTIVE',idle:'IDLE',silent:'SILENT'};
 function getTileState(id){
   const last=tileActivity[id];
@@ -5904,7 +5906,6 @@ function closeAllAdminPanels(){
   ov.classList.remove('active');
   ov.style.cssText='';
   document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));
-  if(teamMonitorInterval){clearInterval(teamMonitorInterval);teamMonitorInterval=null}
   if(bcMediaRecorder&&bcMediaRecorder.state==='recording')bcMediaRecorder.stop();
   lbExpandedTeam=null;
   hideAdminTabs();
@@ -5928,7 +5929,6 @@ function switchAdminTab(panelId){
     const el=document.getElementById(id);
     if(el){el.style.cssText='opacity:0;pointer-events:none;transition:none';el.classList.remove('active')}
   });
-  if(teamMonitorInterval){clearInterval(teamMonitorInterval);teamMonitorInterval=null}
   _instantShow(document.getElementById(panelId));
   showAdminTabs(panelId);
   if(panelId==='adminPanel'){syncAdminPanelSettings()}
@@ -6056,7 +6056,7 @@ function closeAdminPanel(){closeEventControl()} // backward compat alias
 let _previewReturnPanel=null;
 
 function openDashboard(){closeAllAdminPanels();_instantShow(document.getElementById('dashboardPanel'));showAdminTabs('dashboardPanel');renderTeamMonitor();startTeamMonitor();saveSession()}
-function closeDashboard(){const el=document.getElementById('dashboardPanel');if(el){el.classList.remove('active');el.style.cssText=''}if(teamMonitorInterval){clearInterval(teamMonitorInterval);teamMonitorInterval=null}hideAdminTabs()}
+function closeDashboard(){const el=document.getElementById('dashboardPanel');if(el){el.classList.remove('active');el.style.cssText=''}hideAdminTabs()}
 
 function switchDashTab(tab){
   const monView=document.getElementById('dashMonitorView');
@@ -6218,11 +6218,17 @@ function initDemoTeams(){
 initDemoTeams();
 
 function isTeamActive(t){
-  const threshold=(activityThresholds.activeToIdle||60)*1000;
+  const threshold=(activityThresholds.activeToIdle||120)*1000;
   return(Date.now()-t.lastActive)<threshold;
 }
+function isTeamIdle(t){
+  const activeThreshold=(activityThresholds.activeToIdle||120)*1000;
+  const ghostThreshold=(activityThresholds.idleToSilent||600)*1000;
+  const elapsed=Date.now()-t.lastActive;
+  return elapsed>=activeThreshold&&elapsed<ghostThreshold;
+}
 function isTeamGhost(t){
-  const ghostThreshold=(activityThresholds.idleToSilent||300)*1000;
+  const ghostThreshold=(activityThresholds.idleToSilent||600)*1000;
   return(Date.now()-t.lastActive)>=ghostThreshold;
 }
 function removeGhostTeam(teamId){
@@ -6242,17 +6248,17 @@ function timeSince(ts){
 function renderTeamMonitor(){
   var el=document.getElementById('apTeamMonitor');
   if(!el)return;
-  var active=registeredTeams.filter(function(t){return isTeamActive(t)&&!isTeamGhost(t)});
-  var inactive=registeredTeams.filter(function(t){return !isTeamActive(t)&&!isTeamGhost(t)});
-  var ghosts=registeredTeams.filter(isTeamGhost);
+  var active=registeredTeams.filter(function(t){return isTeamActive(t)});
+  var idle=registeredTeams.filter(function(t){return isTeamIdle(t)});
+  var ghosts=registeredTeams.filter(function(t){return isTeamGhost(t)});
   document.getElementById('apActiveCount').textContent=active.length;
-  document.getElementById('apInactiveCount').textContent=inactive.length;
+  document.getElementById('apInactiveCount').textContent=idle.length;
   document.getElementById('apTotalCount').textContent=registeredTeams.length;
   var ghostEl=document.getElementById('apGhostCount');
   if(ghostEl){ghostEl.closest('.ap-status-pill').style.display=ghosts.length?'':'none';ghostEl.textContent=ghosts.length}
   var sorted=[].concat(
     active.sort(function(a,b){return b.lastActive-a.lastActive}),
-    inactive.sort(function(a,b){return b.lastActive-a.lastActive}),
+    idle.sort(function(a,b){return b.lastActive-a.lastActive}),
     ghosts.sort(function(a,b){return b.lastActive-a.lastActive})
   );
   var totalPages=Math.max(1,Math.ceil(sorted.length/tmPerPage));
@@ -6262,12 +6268,14 @@ function renderTeamMonitor(){
   var headerRow='<div class="ap-monitor-row" style="border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:4px;opacity:.5"><input type="checkbox" onchange="tmToggleAll(this.checked)" style="margin-right:4px;accent-color:#ff4444"><div class="ap-monitor-dot" style="visibility:hidden"></div><span class="ap-monitor-id" style="font-size:8px;letter-spacing:2px">ID</span><span class="ap-monitor-name" style="font-size:8px;letter-spacing:2px;flex:1">TEAM</span></div>';
   el.innerHTML=pageTeams.length?headerRow+pageTeams.map(function(t){
     var ghost=isTeamGhost(t);
-    var on=!ghost&&isTeamActive(t);
-    var rowClass=ghost?'ghost':on?'active':'inactive';
-    var ghostTag=ghost?'<span class="ap-monitor-ghost-tag">GHOST</span>':'';
-    var removeBtn=ghost?'<span class="ap-monitor-remove" onclick="event.stopPropagation();removeGhostTeam(\''+t.id+'\')" title="Remove ghost">✕</span>':'';
-    var msgBtn='<span class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage(\''+t.id+'\',\''+t.name.replace(/'/g,"\\'")+'\')" style="margin-left:auto">💬</span>';
-    return '<div class="ap-monitor-row '+rowClass+'"><input type="checkbox" class="tm-nuke-check" data-team="'+t.id+'" onchange="tmUpdateNukeBar()" onclick="event.stopPropagation()" style="margin-right:4px;accent-color:#ff4444"><div class="ap-monitor-dot '+(on?'on':'off')+'"></div><span class="ap-monitor-id">'+t.id+'</span><span class="ap-monitor-name">'+t.name+'</span>'+ghostTag+msgBtn+removeBtn+'</div>';
+    var on=isTeamActive(t);
+    var idleState=isTeamIdle(t);
+    var dotClass=on?'on':idleState?'idle':'off';
+    var rowClass=ghost?'ghost':on?'active':'idle';
+    var statusTag=ghost?'<span class="ap-monitor-ghost-tag">GHOST</span>':idleState?'<span class="ap-monitor-idle-tag">IDLE</span>':'';
+    var removeBtn=ghost?'<span class="ap-monitor-remove" onclick="event.stopPropagation();removeGhostTeam(\''+t.id+'\')" title="Remove ghost">\u2715</span>':'';
+    var msgBtn='<span class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage(\''+t.id+'\',\''+t.name.replace(/'/g,"\\'")+'\')" style="margin-left:auto">\uD83D\uDCAC</span>';
+    return '<div class="ap-monitor-row '+rowClass+'"><input type="checkbox" class="tm-nuke-check" data-team="'+t.id+'" onchange="tmUpdateNukeBar()" onclick="event.stopPropagation()" style="margin-right:4px;accent-color:#ff4444"><div class="ap-monitor-dot '+dotClass+'"></div><span class="ap-monitor-id">'+t.id+'</span><span class="ap-monitor-name">'+t.name+'</span>'+statusTag+msgBtn+removeBtn+'</div>';
   }).join(''):'<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:12px 0;text-align:center">No teams registered yet</div>';
   renderPagination('tmPagination',sorted.length,tmPerPage,tmCurrentPage,function(p){tmCurrentPage=p;renderTeamMonitor()});
   tmUpdateNukeBar();
@@ -6806,6 +6814,22 @@ function sendBroadcast(){
 let _lastBroadcastTime='';
 let _broadcastPollInterval=null;
 
+// ── Player Activity Tracker ──
+// Tracks clicks, scrolls, keypresses, touches — debounced to avoid spam.
+// The broadcast poll reads _lastPlayerActivity to include in heartbeat.
+let _lastPlayerActivity=0;
+let _activityListenersAttached=false;
+function startActivityTracker(){
+  if(_activityListenersAttached||isAdmin)return;
+  _activityListenersAttached=true;
+  function markActive(){_lastPlayerActivity=Date.now()}
+  ['click','scroll','keydown','touchstart','pointerdown'].forEach(function(evt){
+    document.addEventListener(evt,markActive,{passive:true,capture:true});
+  });
+  // Mark active immediately on start
+  markActive();
+}
+
 function startBroadcastPolling(){
   if(_broadcastPollInterval)clearInterval(_broadcastPollInterval);
   if(isAdmin)return;
@@ -6814,7 +6838,7 @@ function startBroadcastPolling(){
     if(!currentVaultTeam)return;
     // Parallel fetch — broadcasts + config session check
     const [r, cfg] = await Promise.all([
-      apiCall('getBroadcasts',{since:_lastBroadcastTime,teamId:currentVaultTeam?.id}),
+      apiCall('getBroadcasts',{since:_lastBroadcastTime,teamId:(_lastPlayerActivity&&(Date.now()-_lastPlayerActivity)<(activityThresholds.activeToIdle||120)*1000)?currentVaultTeam?.id:undefined}),
       apiCall('getEventConfig')
     ]);
     if(r.ok&&r.broadcasts&&r.broadcasts.length>0){
@@ -9135,6 +9159,7 @@ function restoreSession(){
         }
       }
       startElapsedTimer();
+      startTeamMonitor();
       // Load fresh data from backend in background — UI already showing
       loadEventData().then(function(){
         // Re-render the active admin panel now that data has arrived
@@ -9189,6 +9214,7 @@ function restoreSession(){
         loadDraftsFromBackend();
       });
       startBroadcastPolling();
+      startActivityTracker();
       return true;
     }
   }catch(e){console.error('restoreSession error:',e);}
