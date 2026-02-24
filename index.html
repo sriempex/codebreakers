@@ -899,52 +899,78 @@
   .intel-dual-wrap input{flex:1;min-width:0;width:auto}
   .intel-dual-sep{color:rgba(0,255,136,.25);font-size:10px;letter-spacing:1px;flex-shrink:0}
 
-  /* ══════ INTEL CRT THEME ══════ */
-  .intel-theme-crt .intel-scroll-area{position:relative;border-radius:6px;
-    background:linear-gradient(180deg,#020604 0%,#030906 40%,#020503 100%);
-    border:1px solid #1a2a1e;
-    box-shadow:inset 0 0 40px rgba(0,0,0,.8),inset 0 0 80px rgba(0,20,8,.3),0 1px 0 rgba(255,255,255,.03),0 8px 32px rgba(0,0,0,.4);
-  }
-  /* CRT scanlines */
-  .intel-theme-crt .intel-scroll-area::after{
-    content:'';position:absolute;inset:0;border-radius:6px;
-    background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.08) 1px,rgba(0,0,0,.08) 2px);
-    pointer-events:none;z-index:3;
-  }
-  /* CRT header bar inside scroll area */
-  .intel-crt-header{display:none;font-family:'Saira',sans-serif;font-size:11px;letter-spacing:4px;color:var(--green);font-weight:700;text-transform:uppercase;padding:16px 20px 10px;border-bottom:1px solid rgba(0,255,136,.12);text-shadow:0 0 10px rgba(0,255,136,.2);align-items:center;gap:10px;width:100%;max-width:600px}
-  .intel-theme-crt .intel-crt-header{display:flex}
-  .intel-crt-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(0,255,136,.5);animation:intelCrtPulse 2s ease-in-out infinite}
-  @keyframes intelCrtPulse{0%,100%{opacity:1}50%{opacity:.5}}
-  /* CRT vignette */
-  .intel-theme-crt .intel-scroll-area::before{
-    content:'';position:absolute;inset:0;border-radius:6px;
-    background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.4) 100%);
-    pointer-events:none;z-index:2;
-  }
-  /* Phosphor glow labels with subtle flicker */
-  .intel-theme-crt .intel-exp-label{
-    color:#00ff88;
-    text-shadow:0 0 12px rgba(0,255,136,.35),0 0 24px rgba(0,255,136,.15);
-    animation:phosphorFlicker 4s ease-in-out infinite;
-  }
-  .intel-theme-crt .intel-exp-row:nth-child(2) .intel-exp-label{animation-delay:.7s}
-  .intel-theme-crt .intel-exp-row:nth-child(3) .intel-exp-label{animation-delay:1.4s}
-  .intel-theme-crt .intel-exp-row:nth-child(4) .intel-exp-label{animation-delay:2.1s}
-  .intel-theme-crt .intel-exp-row:nth-child(5) .intel-exp-label{animation-delay:2.8s}
-  .intel-theme-crt .intel-exp-row:nth-child(6) .intel-exp-label{animation-delay:3.5s}
-  .intel-theme-crt .intel-exp-row:nth-child(7) .intel-exp-label{animation-delay:.3s}
-  .intel-theme-crt .intel-exp-row:nth-child(8) .intel-exp-label{animation-delay:1.0s}
-  .intel-theme-crt .intel-exp-row:nth-child(9) .intel-exp-label{animation-delay:1.7s}
-  .intel-theme-crt .intel-exp-row:nth-child(10) .intel-exp-label{animation-delay:2.4s}
-  @keyframes phosphorFlicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.85}94%{opacity:1}}
-  /* Soften row borders inside CRT */
-  .intel-theme-crt .intel-exp-row{border-color:rgba(0,255,136,.06);background:transparent}
-  .intel-theme-crt .intel-exp-row:hover{border-color:rgba(0,255,136,.2);background:rgba(0,255,136,.015)}
-  /* Phosphor glow on numbers */
-  .intel-theme-crt .intel-exp-num{text-shadow:0 0 6px rgba(0,255,136,.3)}
-  /* Transmit button enhanced glow inside CRT */
-  .intel-theme-crt .intel-submit-btn{position:relative;z-index:4}
+  /* ══════ INTEL THEME: SLEEK MINIMAL ══════ */
+  .intel-theme-minimal .intel-scroll-area{background:#111215;border-radius:16px;border:1px solid rgba(255,255,255,.04);padding:24px 24px 0}
+  .intel-theme-minimal .intel-exp-row{border:none;border-radius:0;background:transparent;padding:8px 0;gap:12px}
+  .intel-theme-minimal .intel-exp-row:hover{background:transparent;border-color:transparent;box-shadow:none}
+  .intel-theme-minimal .intel-exp-row::before{display:none}
+  .intel-theme-minimal .intel-exp-num{display:none}
+  .intel-theme-minimal .intel-exp-label{font-family:'Saira',sans-serif;font-size:12px;color:#c0c0c0;letter-spacing:1.5px;font-weight:600;width:100%;flex:none;margin-bottom:2px}
+  .intel-theme-minimal .intel-exp-row{flex-wrap:wrap}
+  .intel-theme-minimal .intel-exp-input{width:100%;flex:1 1 100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:13px 16px;font-family:'Chakra Petch',sans-serif;font-size:14px;color:#fff;text-shadow:none;letter-spacing:.5px}
+  .intel-theme-minimal .intel-exp-input:focus{border-color:rgba(0,255,136,.2);background:rgba(0,255,136,.02);box-shadow:none}
+  .intel-theme-minimal .intel-exp-input::placeholder{color:rgba(255,255,255,.12)}
+  .intel-theme-minimal .intel-prefix-wrap{width:100%;flex:1 1 100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px}
+  .intel-theme-minimal .intel-prefix-wrap:focus-within{border-color:rgba(0,255,136,.2);background:rgba(0,255,136,.02);box-shadow:none}
+  .intel-theme-minimal .intel-prefix{color:#999;text-shadow:none;font-size:13px}
+  .intel-theme-minimal .intel-prefix-wrap input{color:#fff;text-shadow:none;font-family:'Chakra Petch',sans-serif;font-size:14px;letter-spacing:.5px}
+  .intel-theme-minimal .intel-prefix-wrap input::placeholder{color:rgba(255,255,255,.12)}
+  .intel-theme-minimal .intel-select{background-color:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06);border-radius:8px;color:#fff;text-shadow:none;font-family:'Chakra Petch',sans-serif;font-size:14px}
+  .intel-theme-minimal .intel-dual-wrap{width:100%;flex:1 1 100%}
+  .intel-theme-minimal .intel-dual-wrap input{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;color:#fff;text-shadow:none;font-family:'Chakra Petch',sans-serif;font-size:14px;letter-spacing:.5px}
+  .intel-theme-minimal .intel-dual-sep{color:#555}
+  .intel-theme-minimal .intel-exp-clear{color:rgba(255,255,255,.15)}
+  .intel-theme-minimal .intel-submit-btn{background:#00ff88;border:none;border-radius:8px;color:#000;font-family:'Chakra Petch',sans-serif;font-size:12px;letter-spacing:2px;font-weight:700;text-shadow:none;padding:14px 44px}
+  .intel-theme-minimal .intel-submit-btn:hover{background:#33ffaa;box-shadow:0 0 20px rgba(0,255,136,.2);text-shadow:none}
+  .intel-theme-minimal .intel-transmit-dock{background:linear-gradient(0deg,#111215 60%,transparent);border-top:1px solid rgba(255,255,255,.04)}
+  .intel-theme-minimal .intel-crt-header{display:none!important}
+
+  /* ══════ INTEL THEME: HOLO HUD GREEN ══════ */
+  .intel-theme-holo .intel-scroll-area{background:linear-gradient(170deg,rgba(0,20,10,.95),rgba(0,12,6,.98));border-radius:8px;border:1px solid rgba(0,255,136,.12);box-shadow:0 0 30px rgba(0,255,136,.04),0 0 80px rgba(0,255,136,.015);position:relative}
+  .intel-theme-holo .intel-scroll-area::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,255,136,.4),transparent);pointer-events:none;z-index:5}
+  .intel-theme-holo .intel-scroll-area::after{content:'';position:absolute;width:20px;height:20px;top:6px;left:6px;border-top:2px solid rgba(0,255,136,.3);border-left:2px solid rgba(0,255,136,.3);pointer-events:none;z-index:5}
+  .intel-theme-holo .intel-exp-row{border:none;background:transparent;padding:10px 14px;gap:12px}
+  .intel-theme-holo .intel-exp-row:hover{background:rgba(0,255,136,.015);border-color:transparent;box-shadow:none}
+  .intel-theme-holo .intel-exp-row::before{display:none}
+  .intel-theme-holo .intel-exp-num{font-family:'Orbitron',sans-serif;color:rgba(0,255,136,.3);text-shadow:0 0 8px rgba(0,255,136,.15)}
+  .intel-theme-holo .intel-exp-label{font-family:'Rajdhani',sans-serif;font-size:13px;color:rgba(0,255,136,.7);letter-spacing:3px;font-weight:700}
+  .intel-theme-holo .intel-exp-input{background:rgba(0,255,136,.03);border:1px solid rgba(0,255,136,.1);border-radius:4px;font-family:'Rajdhani',sans-serif;font-size:14px;color:#b0ffd8;letter-spacing:1px;text-shadow:none}
+  .intel-theme-holo .intel-exp-input:focus{border-color:rgba(0,255,136,.25);box-shadow:0 0 12px rgba(0,255,136,.06)}
+  .intel-theme-holo .intel-exp-input::placeholder{color:rgba(0,255,136,.15)}
+  .intel-theme-holo .intel-prefix-wrap{background:rgba(0,255,136,.03);border:1px solid rgba(0,255,136,.1);border-radius:4px}
+  .intel-theme-holo .intel-prefix-wrap:focus-within{border-color:rgba(0,255,136,.25);box-shadow:0 0 12px rgba(0,255,136,.06)}
+  .intel-theme-holo .intel-prefix{color:rgba(0,255,136,.5);text-shadow:none}
+  .intel-theme-holo .intel-prefix-wrap input{color:#b0ffd8;text-shadow:none;font-family:'Rajdhani',sans-serif;font-size:14px;letter-spacing:1px}
+  .intel-theme-holo .intel-select{background-color:rgba(0,255,136,.03);border-color:rgba(0,255,136,.1);border-radius:4px;color:#b0ffd8;text-shadow:none;font-family:'Rajdhani',sans-serif;font-size:14px}
+  .intel-theme-holo .intel-dual-wrap input{background:rgba(0,255,136,.03);border:1px solid rgba(0,255,136,.1);border-radius:4px;color:#b0ffd8;text-shadow:none;font-family:'Rajdhani',sans-serif;font-size:14px}
+  .intel-theme-holo .intel-submit-btn{background:linear-gradient(180deg,rgba(0,255,136,.1),rgba(0,255,136,.04));border:1px solid rgba(0,255,136,.25);border-radius:4px;color:#00ff88;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:4px;text-shadow:0 0 8px rgba(0,255,136,.3)}
+  .intel-theme-holo .intel-submit-btn:hover{background:rgba(0,255,136,.12);border-color:rgba(0,255,136,.4);box-shadow:0 0 20px rgba(0,255,136,.1)}
+  .intel-theme-holo .intel-transmit-dock{background:linear-gradient(0deg,rgba(0,12,6,.95) 60%,transparent);border-top:1px solid rgba(0,255,136,.08)}
+  .intel-theme-holo .intel-crt-header{display:none!important}
+
+  /* ══════ INTEL THEME: GREEN DOSSIER ══════ */
+  .intel-theme-dossier .intel-scroll-area{background:#0e0f11;border-radius:2px;border:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden}
+  .intel-theme-dossier .intel-scroll-area::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#00ff88,#00d4ff,#00ff88);pointer-events:none;z-index:5}
+  .intel-theme-dossier .intel-scroll-area::after{content:'CLASSIFIED';position:absolute;top:18px;right:16px;font-family:'Saira',sans-serif;font-size:8px;letter-spacing:3px;color:#00ff88;border:2px solid #00ff88;padding:4px 10px;transform:rotate(3deg);opacity:.5;pointer-events:none;z-index:5}
+  .intel-theme-dossier .intel-exp-row{border:none;border-radius:0;background:transparent;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.03);gap:12px}
+  .intel-theme-dossier .intel-exp-row:hover{background:transparent;border-color:transparent;box-shadow:none;border-bottom-color:rgba(0,255,136,.08)}
+  .intel-theme-dossier .intel-exp-row::before{display:none}
+  .intel-theme-dossier .intel-exp-num{font-family:'IBM Plex Mono',monospace;color:#00ff88;font-size:12px;font-weight:700;text-shadow:none}
+  .intel-theme-dossier .intel-exp-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#b0b8c0;letter-spacing:2px;font-weight:600}
+  .intel-theme-dossier .intel-exp-input{background:transparent;border:none;border-bottom:1px solid rgba(0,255,136,.12);border-radius:0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#ddd;text-shadow:none;padding:10px 4px}
+  .intel-theme-dossier .intel-exp-input:focus{border-bottom-color:rgba(0,255,136,.35);box-shadow:none}
+  .intel-theme-dossier .intel-exp-input::placeholder{color:rgba(255,255,255,.12);text-shadow:none}
+  .intel-theme-dossier .intel-prefix-wrap{background:transparent;border:none;border-bottom:1px solid rgba(0,255,136,.12);border-radius:0}
+  .intel-theme-dossier .intel-prefix-wrap:focus-within{border-bottom-color:rgba(0,255,136,.35);box-shadow:none}
+  .intel-theme-dossier .intel-prefix{color:#888;text-shadow:none}
+  .intel-theme-dossier .intel-prefix-wrap input{color:#ddd;text-shadow:none;font-family:'IBM Plex Mono',monospace}
+  .intel-theme-dossier .intel-select{background-color:transparent;border:none;border-bottom:1px solid rgba(0,255,136,.12);border-radius:0;color:#ddd;text-shadow:none}
+  .intel-theme-dossier .intel-dual-wrap input{background:transparent;border:none;border-bottom:1px solid rgba(0,255,136,.12);border-radius:0;color:#ddd;text-shadow:none}
+  .intel-theme-dossier .intel-dual-sep{color:#555}
+  .intel-theme-dossier .intel-submit-btn{background:#00ff88;border:none;border-radius:2px;color:#000;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:4px;font-weight:700;text-shadow:none;padding:13px 44px}
+  .intel-theme-dossier .intel-submit-btn:hover{background:#33ffaa;box-shadow:0 0 20px rgba(0,255,136,.2);text-shadow:none}
+  .intel-theme-dossier .intel-transmit-dock{background:linear-gradient(0deg,#0e0f11 60%,transparent);border-top:1px solid rgba(255,255,255,.04)}
+  .intel-theme-dossier .intel-crt-header{display:none!important}
   /* Transmit button — Neon Grid style */
   .intel-submit-wrap{margin-top:20px;display:flex;justify-content:center}
   .intel-submit-btn{padding:12px 44px;cursor:pointer;transition:all .3s;border-radius:2px;
@@ -9761,16 +9787,17 @@ function applyIntelTheme(id){
   _currentIntelTheme=id||'standard';
   const panel=document.getElementById('expIntel');
   if(!panel)return;
-  panel.classList.remove('intel-theme-crt');
-  if(id==='crt')panel.classList.add('intel-theme-crt');
+  panel.classList.remove('intel-theme-minimal','intel-theme-holo','intel-theme-dossier');
+  if(id&&id!=='standard')panel.classList.add('intel-theme-'+id);
   try{localStorage.setItem('cb_intelTheme',_currentIntelTheme)}catch(e){}
   // Update appearance panel UI
+  const names={standard:'Standard',minimal:'Sleek Minimal',holo:'Holo HUD Green',dossier:'Green Dossier'};
   const lbl=document.getElementById('currentIntelThemeLabel');
-  if(lbl)lbl.textContent='Current: '+(_currentIntelTheme==='crt'?'CRT Terminal':'Standard');
+  if(lbl)lbl.textContent='Current: '+(names[_currentIntelTheme]||'Standard');
 }
 
 // ══════ INTEL THEME PREVIEW ══════
-const _intelThemes=[{id:'standard',name:'Standard'},{id:'crt',name:'CRT Terminal'}];
+const _intelThemes=[{id:'standard',name:'Standard'},{id:'minimal',name:'Sleek Minimal'},{id:'holo',name:'Holo HUD Green'},{id:'dossier',name:'Green Dossier'}];
 let _intelPreviewIdx=0;
 let _intelPreviewOriginal='standard';
 
@@ -9810,7 +9837,6 @@ function updateIntelThemePreviewUI(){
 function renderIntelThemePreview(){
   const themeId=_intelThemes[_intelPreviewIdx].id;
   const container=document.getElementById('intelThemePreviewContent');
-  // Sample intel fields for preview
   const sampleFields=[
     {num:'01',label:'SUSPECT NAME',emoji:'🕵️',placeholder:'···'},
     {num:'02',label:'LOCATION',emoji:'📍',placeholder:'···'},
@@ -9819,8 +9845,7 @@ function renderIntelThemePreview(){
     {num:'05',label:'AMOUNT',emoji:'💰',placeholder:'···'},
     {num:'06',label:'LICENSE PLATE',emoji:'🚗',placeholder:'ABC-1234'}
   ];
-  const crtClass=themeId==='crt'?' intel-theme-crt':'';
-  const crtHeader=themeId==='crt'?'<div class="intel-crt-header" style="display:flex"><div class="intel-crt-dot"></div> INTEL SUBMISSIONS</div>':'';
+  const themeClass=themeId!=='standard'?' intel-theme-'+themeId:'';
   let rows='';
   sampleFields.forEach((f,i)=>{
     rows+=`<div class="intel-exp-row" style="max-width:600px;width:100%">
@@ -9829,11 +9854,10 @@ function renderIntelThemePreview(){
       <input class="intel-exp-input" placeholder="${f.placeholder}" disabled style="pointer-events:none">
     </div>`;
   });
-  container.innerHTML=`<div class="expanded-panel${crtClass}" style="position:relative;display:block;opacity:1;pointer-events:none;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.06);background:#10121a">
+  container.innerHTML=`<div class="expanded-panel${themeClass}" style="position:relative;display:block;opacity:1;pointer-events:none;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.06);background:#10121a">
     <div class="exp-header" style="pointer-events:none"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span></div>
     <div class="exp-body intel-exp-body" style="max-height:none;overflow:visible">
       <div class="intel-scroll-area" style="overflow:visible;padding:20px 20px 0">
-        ${crtHeader}
         <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
           ${rows}
         </div>
