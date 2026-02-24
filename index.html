@@ -1346,7 +1346,7 @@
   /* ══════ FULL LEADERBOARD MODULE ══════ */
   #leaderboardModule{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.95);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #leaderboardModule.active{opacity:1;pointer-events:all}
-  .lb-container{width:680px;max-width:96vw;height:85vh;display:flex;flex-direction:column;border-radius:8px;overflow:hidden;
+  .lb-container{width:700px;max-width:96vw;height:85vh;display:flex;flex-direction:column;border-radius:8px;overflow:hidden;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
     border:1px solid rgba(255,215,0,.06);box-shadow:0 25px 80px rgba(0,0,0,.7)}
   .lb-header{padding:16px 24px;border-bottom:1px solid rgba(255,215,0,.08);background:linear-gradient(180deg,#1a1d28,#14161e);display:flex;align-items:center;justify-content:space-between}
@@ -1411,7 +1411,7 @@
   /* ══════ KEYS & CODES PANEL ══════ */
   #keysCodesPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #keysCodesPanel.active{opacity:1;pointer-events:all}
-  .kc-container{width:520px;max-width:96vw;max-height:85vh;overflow-y:auto;border-radius:8px;
+  .kc-container{width:600px;max-width:96vw;max-height:85vh;overflow-y:auto;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
     border:1px solid rgba(255,255,255,.05);box-shadow:0 25px 80px rgba(0,0,0,.7)}
   .kc-header{padding:18px 24px;border-bottom:1px solid rgba(0,255,136,.08);background:linear-gradient(180deg,#1a1d28,#14161e);display:flex;align-items:center;justify-content:space-between}
@@ -1431,7 +1431,7 @@
   /* Broadcast Panel */
   #broadcastPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
   #broadcastPanel.active{opacity:1;pointer-events:all}
-  .bc-container{width:500px;max-width:96vw;border-radius:8px;
+  .bc-container{width:700px;max-width:96vw;border-radius:8px;
     background:linear-gradient(180deg,#14161e,#0e1018 40%,#0a0c12);
     border:1px solid rgba(255,255,255,.05);box-shadow:0 25px 80px rgba(0,0,0,.7)}
   .bc-header{padding:18px 24px;border-bottom:1px solid rgba(255,170,51,.08);background:linear-gradient(180deg,#1a1d28,#14161e);display:flex;align-items:center;justify-content:space-between}
@@ -2374,7 +2374,7 @@
 
 <!-- SESSION MANAGEMENT PANEL -->
 <div id="sessionMgmtPanel">
-  <div class="ap-container" style="width:480px">
+  <div class="ap-container" style="width:700px">
     <div class="ap-header"><h3>🛡️ Session Management</h3><button class="mv-close" onclick="closeSessionMgmt()">✕ CLOSE</button></div>
     <div class="ap-section">
       <h4>Active Sessions</h4>
@@ -2411,7 +2411,7 @@
 
 <!-- TUTORIAL & BRIEFING CONFIG PANEL -->
 <div id="tutorialConfigPanel">
-  <div class="ap-container" style="width:560px">
+  <div class="ap-container">
     <div class="ap-header"><h3>📖 Tutorial & Briefing</h3><button class="mv-close" onclick="closeTutorialConfig()">✕ CLOSE</button></div>
     <div class="ap-section">
       <h4>📍 Navigation Tutorial</h4>
@@ -5648,6 +5648,8 @@ document.addEventListener('keydown',e=>{
         else if(id==='scoringPanel')closeScoringPanel();
         else if(id==='registrationPanel')closeRegistrationPanel();
         else if(id==='appearancePanel')closeAppearancePanel();
+        else if(id==='sessionMgmtPanel')closeSessionMgmt();
+        else if(id==='tutorialConfigPanel')closeTutorialConfig();
         return;
       }
     }
@@ -6142,29 +6144,74 @@ function hideAdminTabs(){
   document.querySelectorAll('.dash-nav').forEach(n=>n.remove());
 }
 function switchAdminTab(panelId){
-  adminPanelIds.forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){el.style.cssText='opacity:0;pointer-events:none;transition:none';el.classList.remove('active')}
-  });
-  _instantShow(document.getElementById(panelId));
+  // Determine which group the target panel belongs to
+  const _findGroup=function(pid){
+    if(dashGroupIds.includes(pid))return 'live';
+    if(setupGroupIds.includes(pid))return 'setup';
+    return null;
+  };
+  // Find the currently active admin panel
+  const currentPanel=adminPanelIds.find(id=>{const el=document.getElementById(id);return el&&el.classList.contains('active')});
+  const currentGroup=currentPanel?_findGroup(currentPanel):null;
+  const targetGroup=_findGroup(panelId);
+  // If switching within the SAME group, do a smooth content crossfade
+  const isSameGroup=currentPanel&&currentPanel!==panelId&&currentGroup&&currentGroup===targetGroup;
+
+  // Common init function for after the panel is visible
+  const _initPanel=function(){
+    if(panelId==='adminPanel'){syncAdminPanelSettings()}
+    if(panelId==='leaderboardModule'){renderFullLeaderboard()}
+    if(panelId==='dashboardPanel'){renderTeamMonitor();startTeamMonitor()}
+    if(panelId==='keysCodesPanel'){renderKeysCodes()}
+    if(panelId==='portalUsersPanel'){renderPortalUsersList()}
+    if(panelId==='scoringPanel'){renderScoringEditor()}
+    if(panelId==='registrationPanel'){syncRegistrationSettings()}
+    if(panelId==='appearancePanel'){updateThemeLabel();initTypographyPanel()}
+    if(panelId==='tutorialConfigPanel'){renderTutorialStepList();const tg=document.getElementById('tutGlobalToggle');if(tg)tg.classList.toggle('on',tutorialEnabled)}
+    document.querySelectorAll('.setup-nav').forEach(n=>n.remove());
+    if(setupGroupIds.includes(panelId)){injectSetupNav(panelId)}
+    document.querySelectorAll('.dash-nav').forEach(n=>n.remove());
+    if(dashGroupIds.includes(panelId)){injectDashNav(panelId)}
+  };
+
+  if(isSameGroup){
+    const outEl=document.getElementById(currentPanel);
+    const inEl=document.getElementById(panelId);
+    const outContainer=outEl.querySelector('.ap-container,.kc-container,.bc-container,.lb-container');
+    const inContainer=inEl.querySelector('.ap-container,.kc-container,.bc-container,.lb-container');
+    // Fade out current container content
+    if(outContainer){outContainer.style.transition='opacity .1s ease';outContainer.style.opacity='0'}
+    setTimeout(function(){
+      // Hide old panel instantly
+      adminPanelIds.forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){el.style.cssText='opacity:0;pointer-events:none;transition:none';el.classList.remove('active')}
+      });
+      // Prep incoming — start container invisible
+      if(inContainer){inContainer.style.opacity='0';inContainer.style.transition='none'}
+      _instantShow(inEl);
+      // Init & inject nav while invisible
+      _initPanel();
+      // Force reflow then fade in
+      if(inContainer)inContainer.offsetHeight;
+      if(inContainer){inContainer.style.transition='opacity .1s ease';inContainer.style.opacity='1'}
+      // Clean up inline styles after animation
+      setTimeout(function(){
+        if(outContainer)outContainer.style.cssText='';
+        if(inContainer)inContainer.style.cssText='';
+      },130);
+    },100);
+  } else {
+    // Normal panel switch (different group or first open)
+    adminPanelIds.forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){el.style.cssText='opacity:0;pointer-events:none;transition:none';el.classList.remove('active')}
+    });
+    _instantShow(document.getElementById(panelId));
+    _initPanel();
+  }
+
   showAdminTabs(panelId);
-  if(panelId==='adminPanel'){syncAdminPanelSettings()}
-  if(panelId==='leaderboardModule'){renderFullLeaderboard()}
-  if(panelId==='dashboardPanel'){renderTeamMonitor();startTeamMonitor()}
-  if(panelId==='keysCodesPanel'){renderKeysCodes()}
-  if(panelId==='portalUsersPanel'){renderPortalUsersList()}
-  if(panelId==='broadcastPanel'){/* nothing extra */}
-  if(panelId==='scoringPanel'){renderScoringEditor()}
-  if(panelId==='registrationPanel'){syncRegistrationSettings()}
-  if(panelId==='appearancePanel'){updateThemeLabel();initTypographyPanel()}
-  if(panelId==='tutorialConfigPanel'){renderTutorialStepList();const tg=document.getElementById('tutGlobalToggle');if(tg)tg.classList.toggle('on',tutorialEnabled)}
-  if(panelId==='sessionMgmtPanel'){/* no extra init needed */}
-  // Inject setup sub-nav for setup group panels
-  document.querySelectorAll('.setup-nav').forEach(n=>n.remove());
-  if(setupGroupIds.includes(panelId)){injectSetupNav(panelId)}
-  // Inject dashboard sub-nav for live group panels
-  document.querySelectorAll('.dash-nav').forEach(n=>n.remove());
-  if(dashGroupIds.includes(panelId)){injectDashNav(panelId)}
   saveSession();
 }
 function syncAdminPanelSettings(){
@@ -9476,6 +9523,8 @@ if(!restoreSession()){
         else if(id==='scoringPanel')closeScoringPanel();
         else if(id==='registrationPanel')closeRegistrationPanel();
         else if(id==='appearancePanel')closeAppearancePanel();
+        else if(id==='sessionMgmtPanel')closeSessionMgmt();
+        else if(id==='tutorialConfigPanel')closeTutorialConfig();
         return;
       }
     }
