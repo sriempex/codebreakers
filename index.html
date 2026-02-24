@@ -4736,7 +4736,7 @@ function finalSubmit(){
   // Show neutral checkmarks — NO indication of right/wrong
     document.getElementById('intelSubmitBtn').disabled=true;
   const _sl=document.getElementById('intelSubmitBtn');if(_sl){_sl.textContent='◈ TRANSMITTED ◈';_sl.disabled=true;}
-  document.getElementById('intelBadge').textContent='SUBMITTED';
+  document.getElementById('intelBadge').textContent=tileBadgeText('intel',false);
   document.getElementById('intelBadge').classList.remove('amber');
   playSuccess();
   document.getElementById('flashG').classList.add('on');
@@ -6227,11 +6227,8 @@ function renderTeamMonitor(){
   document.getElementById('apActiveCount').textContent=active.length;
   document.getElementById('apInactiveCount').textContent=inactive.length;
   document.getElementById('apTotalCount').textContent=registeredTeams.length;
-  // Show ghost count if any
   const ghostEl=document.getElementById('apGhostCount');
   if(ghostEl){ghostEl.closest('.ap-status-pill').style.display=ghosts.length?'':'none';ghostEl.textContent=ghosts.length}
-
-  // Sort: active first, then inactive, then ghosts at bottom
   const sorted=[
     ...active.sort((a,b)=>b.lastActive-a.lastActive),
     ...inactive.sort((a,b)=>b.lastActive-a.lastActive),
@@ -6241,40 +6238,17 @@ function renderTeamMonitor(){
   if(tmCurrentPage>=totalPages)tmCurrentPage=totalPages-1;
   const start=tmCurrentPage*tmPerPage;
   const pageTeams=sorted.slice(start,start+tmPerPage);
-
-  const headerRow=`<div class="ap-monitor-row" style="border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:4px;opacity:.5">
-      <div class="ap-monitor-dot" style="visibility:hidden"></div>
-      <span class="ap-monitor-id" style="font-size:8px;letter-spacing:2px">ID</span>
-      <span class="ap-monitor-name" style="font-size:8px;letter-spacing:2px">TEAM</span>
-      <span class="ap-monitor-fields" style="font-size:8px;letter-spacing:2px">FIELDS</span>
-      <span style="font-size:8px;letter-spacing:2px;min-width:40px;text-align:center">SCORE</span>
-      <span style="font-size:8px;letter-spacing:2px;min-width:14px;text-align:center">SUB</span>
-      <span class="ap-monitor-time" style="font-size:8px;letter-spacing:2px">ACTIVITY</span>
-    </div>`;
-  el.innerHTML=pageTeams.length?headerRow+pageTeams.map(t=>{
-    const ghost=isTeamGhost(t);
-    const on=!ghost&&isTeamActive(t);
-    const rowClass=ghost?'ghost':on?'active':'inactive';
-    const ghostTag=ghost?`<span class="ap-monitor-ghost-tag">GHOST</span>`:'';
-    const removeBtn=ghost?`<span class="ap-monitor-remove" onclick="event.stopPropagation();removeGhostTeam('${t.id}')" title="Remove ghost">✕</span>`:'';
-    const msgBtn=!ghost?`<span class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage('${t.id}','${t.name.replace(/'/g,"\\'")}')">💬</span>`:'';
-    const sub=t.submitTime?'✓':'—';
-    const score=t.submissionResults?t.submissionResults.totalScore:0;
-    const correct=t.submissionResults?t.submissionResults.correctCount:0;
-    return `<div class="ap-monitor-row ${rowClass}">
-      <div class="ap-monitor-dot ${on?'on':'off'}"></div>
-      <span class="ap-monitor-id">${t.id}</span>
-      <span class="ap-monitor-name">${t.name} (${t.members.length})</span>
-      ${ghostTag}
-      <span class="ap-monitor-fields">${t.submitTime?correct:t.fieldsCompleted}/${intelFields.length}</span>
-      <span class="ap-monitor-score" style="font-size:9px;color:${score?'var(--green)':'#555'};min-width:40px;text-align:center">${score?score+'pts':'—'}</span>
-      <span style="font-size:10px;color:${t.submitTime?'var(--green)':'#444'};min-width:14px;text-align:center" title="${t.submitTime?'Submitted':'Not submitted'}">${sub}</span>
-      <span class="ap-monitor-time">${ghost?'Never active':timeSince(t.lastActive)}</span>
-      ${msgBtn}${removeBtn}
-    </div>`;
+  const headerRow='<div class="ap-monitor-row" style="border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:4px;opacity:.5"><div class="ap-monitor-dot" style="visibility:hidden"></div><span class="ap-monitor-id" style="font-size:8px;letter-spacing:2px">ID</span><span class="ap-monitor-name" style="font-size:8px;letter-spacing:2px;flex:1">TEAM</span></div>';
+  el.innerHTML=pageTeams.length?headerRow+pageTeams.map(function(t){
+    var ghost=isTeamGhost(t);
+    var on=!ghost&&isTeamActive(t);
+    var rowClass=ghost?'ghost':on?'active':'inactive';
+    var ghostTag=ghost?'<span class="ap-monitor-ghost-tag">GHOST</span>':'';
+    var removeBtn=ghost?'<span class="ap-monitor-remove" onclick="event.stopPropagation();removeGhostTeam(\''+t.id+'\')" title="Remove ghost">\u2715</span>':'';
+    var msgBtn=!ghost?'<span class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage(\''+t.id+'\',\''+t.name.replace(/'/g,"\\'")+'\')" style="margin-left:auto">\uD83D\uDCAC</span>':'';
+    return '<div class="ap-monitor-row '+rowClass+'"><div class="ap-monitor-dot '+(on?'on':'off')+'"></div><span class="ap-monitor-id">'+t.id+'</span><span class="ap-monitor-name">'+t.name+'</span>'+ghostTag+msgBtn+removeBtn+'</div>';
   }).join(''):'<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:12px 0;text-align:center">No teams registered yet</div>';
-
-  renderPagination('tmPagination',sorted.length,tmPerPage,tmCurrentPage,p=>{tmCurrentPage=p;renderTeamMonitor()});
+  renderPagination('tmPagination',sorted.length,tmPerPage,tmCurrentPage,function(p){tmCurrentPage=p;renderTeamMonitor()});
 }
 
 function renderLeaderboard(){
@@ -6430,113 +6404,70 @@ let lbPerPage=15,lbCurrentPage=0;
 let tmPerPage=15,tmCurrentPage=0;
 
 function renderFullLeaderboard(){
-  const body=document.getElementById('lbBody');
+  var body=document.getElementById('lbBody');
   if(!body)return;
-  const teams=getSortedTeams();
-  const maxFields=intelFields.length||1;
-  const totalPages=Math.max(1,Math.ceil(teams.length/lbPerPage));
+  var teams=getSortedTeams();
+  var maxFields=intelFields.length||1;
+  var totalPossiblePts=intelFields.reduce(function(s,f){return s+((f.answer&&f.answer.points)||10)},0);
+  var totalPages=Math.max(1,Math.ceil(teams.length/lbPerPage));
   if(lbCurrentPage>=totalPages)lbCurrentPage=totalPages-1;
-  const start=lbCurrentPage*lbPerPage;
-  const pageTeams=teams.slice(start,start+lbPerPage);
-
+  var startIdx=lbCurrentPage*lbPerPage;
+  var pageTeams=teams.slice(startIdx,startIdx+lbPerPage);
   document.getElementById('lbTeamCount').textContent=teams.length+' team'+(teams.length!==1?'s':'');
-
-  // Show admin actions if admin
-  const adminActions=document.getElementById('lbAdminActions');
+  var adminActions=document.getElementById('lbAdminActions');
   if(adminActions)adminActions.style.display=isAdmin?'':'none';
-
   if(!teams.length){
-    body.innerHTML='<div style="text-align:center;padding:40px 0"><div style="font-size:40px;opacity:.3;margin-bottom:12px">🏆</div><div style="font-family:Chakra Petch,sans-serif;font-size:11px;color:#555">No teams match your filters</div></div>';
-    renderPagination('lbPagination',teams.length,lbPerPage,lbCurrentPage,p=>{lbCurrentPage=p;renderFullLeaderboard()});
+    body.innerHTML='<div style="text-align:center;padding:40px 0"><div style="font-size:40px;opacity:.3;margin-bottom:12px">\uD83C\uDFC6</div><div style="font-family:Chakra Petch,sans-serif;font-size:11px;color:#555">No teams match your filters</div></div>';
+    renderPagination('lbPagination',teams.length,lbPerPage,lbCurrentPage,function(p){lbCurrentPage=p;renderFullLeaderboard()});
     return;
   }
-
-  body.innerHTML=pageTeams.map((t,idx)=>{
-    const rank=start+idx+1;
-    const rc=rank===1?'r1':rank===2?'r2':rank===3?'r3':'rn';
-    const pct=Math.round((t.fieldsCompleted/maxFields)*100);
-    const barColor=rank===1?'#ffd700':rank===2?'#c0c0c0':rank===3?'#cd7f32':'#333';
-    const on=isTeamActive(t);
-    const expanded=lbExpandedTeam===t.id;
-
-    let detailHtml='';
-    if(expanded){
-      const members=t.memberDetails||t.members?.map(n=>({name:n}))||[];
-      let membersHtml=members.map((m,mi)=>{
-        const name=typeof m==='string'?m:m.name;
-        const dept=m.dept||'';
-        const email=m.email||'';
-        return `<div class="lb-member-row"><div class="lb-member-num">${mi+1}</div><span class="lb-member-name">${name}</span><span class="lb-member-meta">${dept}${dept&&email?' · ':''}${email}</span></div>`;
-      }).join('');
-
-      let fieldsHtml='';
-      if(t.submissionResults){
-        if(t.submissionResults.results&&Array.isArray(t.submissionResults.results)){
-          fieldsHtml=t.submissionResults.results.map(r=>{
-            const st=r.correct?'correct':(r.submitted||r.submitted===''&&r.type==='dual'?'wrong':'empty');
-            const stText=r.correct?'✓ Correct':(st==='empty'?'— Empty':'✗ Wrong');
-            return `<div class="lb-field-row"><span class="lb-field-label">${r.field}</span><span class="lb-field-status ${st}">${stText}</span></div>`;
-          }).join('');
-        }else{
-          const sr=t.submissionResults;
-          fieldsHtml=`<div style="display:flex;flex-direction:column;gap:6px;padding:4px 0">
-            <div class="lb-field-row"><span class="lb-field-label">Correct Answers</span><span class="lb-field-status correct">${sr.correctCount||0} / ${sr.totalFields||maxFields}</span></div>
-            <div class="lb-field-row"><span class="lb-field-label">Score</span><span class="lb-field-status ${sr.totalScore>0?'correct':'empty'}">${sr.totalScore||0} / ${sr.totalPossible||maxFields*10} pts</span></div>
-          </div>`;
-        }
-      }else{
-        fieldsHtml=`<div style="font-family:IBM Plex Mono,monospace;font-size:9px;color:#555;padding:8px 0">${t.submitTime?'Submitted — awaiting scoring':'Awaiting submission'}</div>`;
-      }
-
-      const msgBtn=isAdmin?`<button class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage('${t.id}','${t.name.replace(/'/g,"\\'")}')">💬 Message Team</button>`:'';
-      const desubBtn=isAdmin&&t.submitTime?`<button class="lb-desub-btn" onclick="event.stopPropagation();desubmitTeam('${t.id}')">↩ De-submit</button>`:'';
-
-      detailHtml=`<div class="lb-detail">
-        <div class="lb-detail-section"><div class="lb-detail-title">👥 Team Members</div>${membersHtml}</div>
-        <div class="lb-detail-section"><div class="lb-detail-title">📋 Field Status</div>${fieldsHtml}</div>
-        <div class="lb-detail-section"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-          ${msgBtn}${desubBtn}
-        </div></div>
-        <div class="lb-detail-section"><div style="display:flex;gap:16px;flex-wrap:wrap;font-family:IBM Plex Mono,monospace;font-size:8px;color:#666;letter-spacing:1px">
-          <span>ID: ${t.id}</span>
-          <span>Registered: ${t.registeredAt?new Date(t.registeredAt).toLocaleTimeString():'-'}</span>
-          <span>Last Active: ${timeSince(t.lastActive)}</span>
-          ${t.submitTime?`<span>Submitted: ${t.submitTime}</span>`:''}
-        </div></div>
-      </div>`;
+  body.innerHTML=pageTeams.map(function(t,idx){
+    var rank=startIdx+idx+1;
+    var rc=rank===1?'r1':rank===2?'r2':rank===3?'r3':'rn';
+    var on=isTeamActive(t);
+    var ghost=isTeamGhost(t);
+    var expanded=lbExpandedTeam===t.id;
+    var actualScore=t.submissionResults?t.submissionResults.totalScore:0;
+    var correctCount=t.submissionResults?t.submissionResults.correctCount:0;
+    var scorePct=totalPossiblePts?Math.round((actualScore/totalPossiblePts)*100):0;
+    var barColor=rank===1?'#ffd700':rank===2?'#c0c0c0':rank===3?'#cd7f32':'#333';
+    // Meta line: score + submission status
+    var metaParts=[t.id];
+    if(t.submitTime){
+      metaParts.push(correctCount+'/'+maxFields+' correct');
+      metaParts.push(actualScore+' pts');
+      metaParts.push('\u2713 Submitted');
+    }else{
+      metaParts.push(actualScore>0?actualScore+' pts':'Awaiting submission');
     }
-
-    const checkbox=isAdmin&&t.submitTime?`<input type="checkbox" class="lb-desubmit-check" data-team="${t.id}" onclick="event.stopPropagation()">`:'';
-
-    const ghost=isTeamGhost(t);
-    const actualScore=t.submissionResults?t.submissionResults.totalScore:0;
-    const correctCount=t.submissionResults?t.submissionResults.correctCount:0;
-    const scorePct=t.submissionResults?Math.round((actualScore/(t.submissionResults.totalPossible||1))*100):0;
-    return `<div class="lb-row${expanded?' expanded':''}${ghost?' ghost':''}" onclick="toggleLbTeam('${t.id}')">
-      <div class="lb-row-main">
-        ${checkbox}
-        <div class="lb-rank ${rc}">#${rank}</div>
-        <div class="lb-team-status ${on?'on':'off'}"></div>
-        <div class="lb-team-info">
-          <div class="lb-team-name">${t.name}${ghost?'<span class="ap-lb-ghost-tag">GHOST</span>':''}</div>
-          <div class="lb-team-meta">
-            <span>${t.id}</span>
-            <span>${t.submitTime?correctCount+'/'+maxFields+' correct':t.fieldsCompleted+'/'+maxFields+' fields'}</span>
-            <span>${ghost?'Never active':on?'Active':'Inactive '+timeSince(t.lastActive)}</span>
-            ${t.submitTime?`<span style="color:var(--green)">✓ Submitted</span>`:''}
-          </div>
-        </div>
-        <div class="lb-score-block">
-          <div class="lb-score-pct ${rc}">${t.submitTime?scorePct:pct}%</div>
-          <div class="lb-score-label">${t.submitTime?actualScore+' PTS':'—'}</div>
-        </div>
-      </div>
-      <div class="lb-progress"><div class="lb-progress-fill" style="width:${t.submitTime?scorePct:pct}%;background:${barColor}"></div></div>
-      ${detailHtml}
-    </div>`;
+    var metaHtml=metaParts.map(function(p){
+      if(p.indexOf('\u2713')===0)return '<span style="color:var(--green)">'+p+'</span>';
+      return '<span>'+p+'</span>';
+    }).join('');
+    // Expanded detail
+    var detailHtml='';
+    if(expanded){
+      var members=t.memberDetails||t.members||[];
+      var membersHtml=members.map(function(m,mi){
+        var name=typeof m==='string'?m:m.name;
+        var dept=m.dept||'';var email=m.email||'';
+        return '<div class="lb-member-row"><div class="lb-member-num">'+(mi+1)+'</div><span class="lb-member-name">'+name+'</span><span class="lb-member-meta">'+(dept?dept:'')+(dept&&email?' \u00b7 ':'')+(email?email:'')+'</span></div>';
+      }).join('');
+      var fieldsHtml='';
+      if(t.submissionResults){
+        var sr=t.submissionResults;
+        fieldsHtml='<div style="display:flex;flex-direction:column;gap:6px;padding:4px 0"><div class="lb-field-row"><span class="lb-field-label">Correct Answers</span><span class="lb-field-status correct">'+(sr.correctCount||0)+' / '+(sr.totalFields||maxFields)+'</span></div><div class="lb-field-row"><span class="lb-field-label">Score</span><span class="lb-field-status '+(sr.totalScore>0?'correct':'empty')+'">'+(sr.totalScore||0)+' / '+totalPossiblePts+' pts</span></div></div>';
+      }else{
+        fieldsHtml='<div style="font-family:IBM Plex Mono,monospace;font-size:9px;color:#555;padding:8px 0">'+(t.submitTime?'Submitted \u2014 awaiting scoring':'Awaiting submission')+'</div>';
+      }
+      var msgBtn2=isAdmin?'<button class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage(\''+t.id+'\',\''+t.name.replace(/'/g,"\\'")+'\')">\uD83D\uDCAC Message Team</button>':'';
+      var desubBtn=isAdmin&&t.submitTime?'<button class="lb-desub-btn" onclick="event.stopPropagation();desubmitTeam(\''+t.id+'\')">\u21A9 De-submit</button>':'';
+      detailHtml='<div class="lb-detail"><div class="lb-detail-section"><div class="lb-detail-title">\uD83D\uDC65 Team Members</div>'+membersHtml+'</div><div class="lb-detail-section"><div class="lb-detail-title">\uD83D\uDCCB Field Status</div>'+fieldsHtml+'</div><div class="lb-detail-section"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+msgBtn2+desubBtn+'</div></div><div class="lb-detail-section"><div style="display:flex;gap:16px;flex-wrap:wrap;font-family:IBM Plex Mono,monospace;font-size:8px;color:#666;letter-spacing:1px"><span>Registered: '+(t.registeredAt?new Date(t.registeredAt).toLocaleTimeString():'-')+'</span>'+(t.submitTime?'<span>Submitted: '+new Date(t.submitTime).toLocaleTimeString()+'</span>':'')+'</div></div></div>';
+    }
+    var checkbox=isAdmin&&t.submitTime?'<input type="checkbox" class="lb-desubmit-check" data-team="'+t.id+'" onclick="event.stopPropagation()">':'';
+    return '<div class="lb-row'+(expanded?' expanded':'')+(ghost?' ghost':'')+'" onclick="toggleLbTeam(\''+t.id+'\')"><div class="lb-row-main">'+checkbox+'<div class="lb-rank '+rc+'">#'+rank+'</div><div class="lb-team-status '+(on?'on':'off')+'"></div><div class="lb-team-info"><div class="lb-team-name">'+t.name+'</div><div class="lb-team-meta">'+metaHtml+'</div></div><div class="lb-score-block"><div class="lb-score-pct '+rc+'">'+(t.submitTime?scorePct:0)+'%</div><div class="lb-score-label">'+(t.submitTime?actualScore+' PTS':'\u2014')+'</div></div></div><div class="lb-progress"><div class="lb-progress-fill" style="width:'+(t.submitTime?scorePct:0)+'%;background:'+barColor+'"></div></div>'+detailHtml+'</div>';
   }).join('');
-
-  renderPagination('lbPagination',teams.length,lbPerPage,lbCurrentPage,p=>{lbCurrentPage=p;renderFullLeaderboard()});
+  renderPagination('lbPagination',teams.length,lbPerPage,lbCurrentPage,function(p){lbCurrentPage=p;renderFullLeaderboard()});
 }
 
 function toggleLbTeam(id){
@@ -7131,22 +7062,30 @@ function tileBadgeText(id,isAdmin){
   if(id==='feed')return posts.length?posts.length+' ITEMS':'NO INTEL';
   if(id==='media'){
     const count=isAdmin?mediaItems.length:mediaItems.filter(m=>!m.vaultLocked||vaultCodes.find(c=>c.linkedMediaIdx===mediaItems.indexOf(m)&&c.unlocked)).length;
-    return count?count+' ITEMS':'NO EVIDENCE';
+    return count?count+' ITEMS':'0 ITEMS';
   }
   if(id==='vault')return vaultBadgeText();
   // intel — check submission state and count filled inputs
-  if(isSubmitted) return 'SUBMITTED';
+  if(isSubmitted){
+    const correct=0;const total=intelFields.length;
+    // Try to get real submission count from DOM or localStorage
+    const inputs=document.querySelectorAll('.intel-exp-input');
+    let filled=0;
+    if(inputs.length>0){inputs.forEach(inp=>{if(inp.value&&inp.value.trim())filled++})}
+    else{try{const tid=currentVaultTeam?.id||'UNKNOWN';const raw=localStorage.getItem('cb_gs_'+tid+'_intelDraft');if(raw){const d=JSON.parse(raw);filled=Object.keys(d).filter(k=>d[k]&&String(d[k]).trim()).length}}catch(e){}}
+    return filled+' OF '+total+' SUBMITTED';
+  }
   const inputs=document.querySelectorAll('.intel-exp-input');
   if(inputs.length>0){
     let filled=0;inputs.forEach(inp=>{if(inp.value&&inp.value.trim())filled++});
-    return filled+' / '+intelFields.length+' ENTERED';
+    return filled+' OF '+intelFields.length+' ENTERED';
   }
   try{
     const tid=currentVaultTeam?.id||'UNKNOWN';
     const raw=localStorage.getItem('cb_gs_'+tid+'_intelDraft');
-    if(raw){const d=JSON.parse(raw);const filled=Object.keys(d).filter(k=>d[k]&&String(d[k]).trim()).length;return filled+' / '+intelFields.length+' ENTERED'}
+    if(raw){const d=JSON.parse(raw);const filled=Object.keys(d).filter(k=>d[k]&&String(d[k]).trim()).length;return filled+' OF '+intelFields.length+' ENTERED'}
   }catch(e){}
-  return '0 / '+intelFields.length+' ENTERED';
+  return '0 OF '+intelFields.length+' ENTERED';
 }
 function renderGrid(){
   updateTileStates(); // Always recalculate orb states before rendering
@@ -8820,7 +8759,7 @@ function saveSession(){
     // Only save when user is authenticated on the console screen
     if(_currentScreen!=='consoleScreen')return;
     if(!currentVaultTeam)return;
-    const data={type:isAdmin?'admin':'team',team:currentVaultTeam};
+    const data={type:isAdmin?'admin':'team',team:currentVaultTeam,savedAt:Date.now()};
     if(isAdmin)data.adminSession=adminSession;
     // Save which panel is open so refresh restores exactly where the user was
     const openPanelEl=document.querySelector('.expanded-panel.visible');
@@ -8992,18 +8931,27 @@ function clearSession(){
 function restoreSession(){
   try{
     // Try sessionStorage first (always valid if tab is still open),
-    // then localStorage (only valid if sessionPersist is enabled)
+    // then localStorage with 2-minute grace window for team sessions
     let raw=sessionStorage.getItem('cb_session');
+    let fromLocalStorage=false;
     if(!raw){
-      // Check localStorage — need to determine if persist mode is on
-      // We don't know the config yet, so check a cached flag
-      const persistFlag=localStorage.getItem('cb_sessionPersist');
-      if(persistFlag==='false')return false; // Persist disabled, no localStorage restore
       raw=localStorage.getItem('cb_session');
+      fromLocalStorage=true;
     }
     if(!raw)return false;
     const data=JSON.parse(raw);
     if(!data||!data.team)return false;
+
+    // For team sessions restored from localStorage (browser was closed):
+    // enforce 2-minute grace window — if closed longer, require re-login
+    if(fromLocalStorage&&data.type==='team'&&data.savedAt){
+      const elapsed=Date.now()-data.savedAt;
+      const graceMs=2*60*1000; // 2 minutes
+      if(elapsed>graceMs){
+        localStorage.removeItem('cb_session');
+        return false;
+      }
+    }
 
     const targetScreen='consoleScreen';
     const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
@@ -9119,6 +9067,7 @@ function restoreSession(){
         }
         // Also update grid badges after vault state is restored
         renderGrid();
+        loadDraftsFromBackend();
       });
       startBroadcastPolling();
       return true;
