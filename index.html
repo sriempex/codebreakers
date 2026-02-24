@@ -900,84 +900,92 @@
   .intel-dual-sep{color:rgba(0,255,136,.25);font-size:10px;letter-spacing:1px;flex-shrink:0}
 
   /* ══════ INTEL THEME: SLEEK MINIMAL ══════ */
-  .intel-theme-minimal .intel-scroll-area{background:#111215;border-radius:16px;border:1px solid rgba(255,255,255,.04);padding:28px 28px 0}
-  .intel-theme-minimal .intel-exp-row{flex-direction:column;align-items:stretch;border:none;border-radius:0;background:transparent;padding:0;margin-bottom:20px;gap:8px}
-  .intel-theme-minimal .intel-exp-row:hover{background:transparent;border-color:transparent;box-shadow:none}
-  .intel-theme-minimal .intel-exp-row::before{display:none}
-  .intel-theme-minimal .intel-exp-num{display:none}
-  .intel-theme-minimal .intel-exp-label{font-family:'Saira',sans-serif;font-size:12px;color:#c0c0c0;letter-spacing:1.5px;font-weight:600;text-transform:uppercase;width:auto;flex-shrink:initial}
-  .intel-theme-minimal .intel-exp-input{width:100%;flex:none;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:13px 16px;font-family:'Chakra Petch',sans-serif;font-size:14px;color:#fff;text-shadow:none;letter-spacing:.5px}
-  .intel-theme-minimal .intel-exp-input:focus{border-color:rgba(0,255,136,.2);background:rgba(0,255,136,.02);box-shadow:none}
-  .intel-theme-minimal .intel-exp-input::placeholder{color:rgba(255,255,255,.12);text-shadow:none}
-  .intel-theme-minimal .intel-prefix-wrap{width:100%;flex:none;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px}
-  .intel-theme-minimal .intel-prefix-wrap:focus-within{border-color:rgba(0,255,136,.2);background:rgba(0,255,136,.02);box-shadow:none}
-  .intel-theme-minimal .intel-prefix{color:#999;text-shadow:none;font-size:13px;font-family:'Chakra Petch',sans-serif}
-  .intel-theme-minimal .intel-prefix-wrap input{color:#fff;text-shadow:none;font-family:'Chakra Petch',sans-serif;font-size:14px;letter-spacing:.5px}
-  .intel-theme-minimal .intel-prefix-wrap input::placeholder{color:rgba(255,255,255,.12);text-shadow:none}
-  .intel-theme-minimal .intel-select{width:100%;flex:none;background-color:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;color:#fff;text-shadow:none;font-family:'Chakra Petch',sans-serif;font-size:14px;padding:13px 30px 13px 16px}
-  .intel-theme-minimal .intel-dual-wrap{width:100%;flex:none}
-  .intel-theme-minimal .intel-dual-wrap input{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;color:#fff;text-shadow:none;font-family:'Chakra Petch',sans-serif;font-size:14px;letter-spacing:.5px;padding:13px 16px}
-  .intel-theme-minimal .intel-dual-sep{color:#555}
-  .intel-theme-minimal .intel-exp-clear{color:rgba(255,255,255,.15)}
-  .intel-theme-minimal .intel-exp-check{border-color:rgba(255,255,255,.1)}
-  .intel-theme-minimal .intel-submit-btn{width:100%;background:#00ff88;border:none;border-radius:8px;color:#000;font-family:'Chakra Petch',sans-serif;font-size:12px;letter-spacing:2px;font-weight:700;text-shadow:none;padding:14px 44px}
-  .intel-theme-minimal .intel-submit-btn:hover{background:#33ffaa;box-shadow:0 0 20px rgba(0,255,136,.2);border-color:transparent;text-shadow:none}
-  .intel-theme-minimal .intel-transmit-dock{background:linear-gradient(0deg,#111215 60%,transparent);border-top:1px solid rgba(255,255,255,.04)}
+  /* Exact match: mockup .sa-* classes */
+  .intel-theme-minimal .intel-scroll-area{background:#111215!important;border-radius:16px!important;border:1px solid rgba(255,255,255,.04)!important;box-shadow:none!important}
+  .intel-theme-minimal .intel-scroll-area::before,.intel-theme-minimal .intel-scroll-area::after{display:none!important}
+  .intel-theme-minimal #intelForm{padding:4px 28px 24px!important;gap:0!important}
+  .intel-theme-minimal .intel-exp-row{flex-direction:column!important;align-items:stretch!important;border:none!important;border-radius:0!important;background:transparent!important;padding:0!important;margin-bottom:20px!important;gap:0!important;overflow:visible!important;max-width:100%!important}
+  .intel-theme-minimal .intel-exp-row::before{display:none!important}
+  .intel-theme-minimal .intel-exp-row:hover{background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+  .intel-theme-minimal .intel-exp-row:hover .intel-exp-num{opacity:1!important}
+  .intel-theme-minimal .intel-exp-num{display:none!important}
+  .intel-theme-minimal .intel-exp-label{font-family:'Saira',sans-serif!important;font-size:12px!important;color:#c0c0c0!important;letter-spacing:1.5px!important;font-weight:600!important;text-transform:uppercase!important;width:auto!important;flex-shrink:initial!important;margin-bottom:8px!important}
+  .intel-theme-minimal .intel-exp-input{width:100%!important;flex:none!important;background:rgba(255,255,255,.03)!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:8px!important;padding:13px 16px!important;font-family:'Chakra Petch',sans-serif!important;font-size:14px!important;color:#fff!important;text-shadow:none!important;letter-spacing:.5px!important}
+  .intel-theme-minimal .intel-exp-input:focus{border-color:rgba(0,255,136,.2)!important;background:rgba(0,255,136,.02)!important;box-shadow:none!important}
+  .intel-theme-minimal .intel-exp-input::placeholder{color:rgba(255,255,255,.12)!important;text-shadow:none!important}
+  .intel-theme-minimal .intel-prefix-wrap{width:100%!important;flex:none!important;background:rgba(255,255,255,.03)!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:8px!important}
+  .intel-theme-minimal .intel-prefix-wrap:focus-within{border-color:rgba(0,255,136,.2)!important;background:rgba(0,255,136,.02)!important;box-shadow:none!important}
+  .intel-theme-minimal .intel-prefix{color:#999!important;text-shadow:none!important;font-size:13px!important;font-family:'Chakra Petch',sans-serif!important;opacity:1!important}
+  .intel-theme-minimal .intel-prefix-wrap input{color:#fff!important;text-shadow:none!important;font-family:'Chakra Petch',sans-serif!important;font-size:14px!important;letter-spacing:.5px!important}
+  .intel-theme-minimal .intel-prefix-wrap input::placeholder{color:rgba(255,255,255,.12)!important;text-shadow:none!important}
+  .intel-theme-minimal .intel-select{width:100%!important;flex:none!important;background-color:rgba(255,255,255,.03)!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:8px!important;color:#fff!important;text-shadow:none!important;font-family:'Chakra Petch',sans-serif!important;font-size:14px!important;padding:13px 30px 13px 16px!important}
+  .intel-theme-minimal .intel-dual-wrap{width:100%!important;flex:none!important}
+  .intel-theme-minimal .intel-dual-wrap input{width:auto!important;flex:1!important;background:rgba(255,255,255,.03)!important;border:1px solid rgba(255,255,255,.06)!important;border-radius:8px!important;color:#fff!important;text-shadow:none!important;font-family:'Chakra Petch',sans-serif!important;font-size:14px!important;letter-spacing:.5px!important;padding:13px 16px!important}
+  .intel-theme-minimal .intel-dual-sep{color:#555!important}
+  .intel-theme-minimal .intel-exp-clear{color:rgba(255,255,255,.15)!important}
+  .intel-theme-minimal .intel-submit-btn{width:100%!important;background:#00ff88!important;border:none!important;border-radius:8px!important;color:#000!important;font-family:'Chakra Petch',sans-serif!important;font-size:12px!important;letter-spacing:2px!important;font-weight:700!important;text-shadow:none!important;padding:14px!important}
+  .intel-theme-minimal .intel-submit-btn:hover{background:#33ffaa!important;box-shadow:0 0 20px rgba(0,255,136,.2)!important;border-color:transparent!important;text-shadow:none!important}
+  .intel-theme-minimal .intel-transmit-dock{background:linear-gradient(0deg,#111215 60%,transparent)!important;border-top:1px solid rgba(255,255,255,.04)!important}
   .intel-theme-minimal .intel-crt-header{display:none!important}
 
   /* ══════ INTEL THEME: HOLO HUD GREEN ══════ */
-  .intel-theme-holo .intel-scroll-area{background:linear-gradient(170deg,rgba(0,20,10,.95),rgba(0,12,6,.98));border-radius:8px;border:1px solid rgba(0,255,136,.12);box-shadow:0 0 30px rgba(0,255,136,.04),0 0 80px rgba(0,255,136,.015);position:relative;padding:20px 24px 0}
-  .intel-theme-holo .intel-scroll-area::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,255,136,.4),transparent);pointer-events:none;z-index:5}
-  .intel-theme-holo .intel-scroll-area::after{content:'';position:absolute;width:20px;height:20px;top:6px;left:6px;border-top:2px solid rgba(0,255,136,.3);border-left:2px solid rgba(0,255,136,.3);pointer-events:none;z-index:5}
-  .intel-theme-holo .intel-exp-row{flex-direction:column;align-items:stretch;border:none;background:transparent;padding:0;margin-bottom:18px;gap:6px}
-  .intel-theme-holo .intel-exp-row:hover{background:transparent;border-color:transparent;box-shadow:none}
-  .intel-theme-holo .intel-exp-row::before{display:none}
-  .intel-theme-holo .intel-exp-num{display:none}
-  .intel-theme-holo .intel-exp-label{font-family:'Rajdhani',sans-serif;font-size:13px;color:rgba(0,255,136,.7);letter-spacing:3px;font-weight:700;width:auto;flex-shrink:initial}
-  .intel-theme-holo .intel-exp-input{width:100%;flex:none;background:rgba(0,255,136,.03);border:1px solid rgba(0,255,136,.1);border-radius:4px;font-family:'Rajdhani',sans-serif;font-size:14px;color:#b0ffd8;letter-spacing:1px;text-shadow:none;padding:12px 14px}
-  .intel-theme-holo .intel-exp-input:focus{border-color:rgba(0,255,136,.25);box-shadow:0 0 12px rgba(0,255,136,.06)}
-  .intel-theme-holo .intel-exp-input::placeholder{color:rgba(0,255,136,.15);text-shadow:none}
-  .intel-theme-holo .intel-prefix-wrap{width:100%;flex:none;background:rgba(0,255,136,.03);border:1px solid rgba(0,255,136,.1);border-radius:4px}
-  .intel-theme-holo .intel-prefix-wrap:focus-within{border-color:rgba(0,255,136,.25);box-shadow:0 0 12px rgba(0,255,136,.06)}
-  .intel-theme-holo .intel-prefix{color:rgba(0,255,136,.5);text-shadow:none;font-family:'Rajdhani',sans-serif}
-  .intel-theme-holo .intel-prefix-wrap input{color:#b0ffd8;text-shadow:none;font-family:'Rajdhani',sans-serif;font-size:14px;letter-spacing:1px}
-  .intel-theme-holo .intel-prefix-wrap input::placeholder{color:rgba(0,255,136,.15);text-shadow:none}
-  .intel-theme-holo .intel-select{width:100%;flex:none;background-color:rgba(0,255,136,.03);border:1px solid rgba(0,255,136,.1);border-radius:4px;color:#b0ffd8;text-shadow:none;font-family:'Rajdhani',sans-serif;font-size:14px;padding:12px 30px 12px 14px}
-  .intel-theme-holo .intel-dual-wrap{width:100%;flex:none}
-  .intel-theme-holo .intel-dual-wrap input{background:rgba(0,255,136,.03);border:1px solid rgba(0,255,136,.1);border-radius:4px;color:#b0ffd8;text-shadow:none;font-family:'Rajdhani',sans-serif;font-size:14px;padding:12px 14px}
-  .intel-theme-holo .intel-exp-clear{color:rgba(0,255,136,.2)}
-  .intel-theme-holo .intel-exp-check{border-color:rgba(0,255,136,.15)}
-  .intel-theme-holo .intel-submit-btn{width:100%;background:linear-gradient(180deg,rgba(0,255,136,.1),rgba(0,255,136,.04));border:1px solid rgba(0,255,136,.25);border-radius:4px;color:#00ff88;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:4px;text-shadow:0 0 8px rgba(0,255,136,.3);padding:13px 44px}
-  .intel-theme-holo .intel-submit-btn:hover{background:rgba(0,255,136,.12);border-color:rgba(0,255,136,.4);box-shadow:0 0 20px rgba(0,255,136,.1)}
-  .intel-theme-holo .intel-transmit-dock{background:linear-gradient(0deg,rgba(0,12,6,.95) 60%,transparent);border-top:1px solid rgba(0,255,136,.08)}
+  /* Exact match: mockup .sb-* classes */
+  .intel-theme-holo .intel-scroll-area{background:linear-gradient(170deg,rgba(0,20,10,.95),rgba(0,12,6,.98))!important;border-radius:8px!important;border:1px solid rgba(0,255,136,.12)!important;box-shadow:0 0 30px rgba(0,255,136,.04),0 0 80px rgba(0,255,136,.015)!important;position:relative!important}
+  .intel-theme-holo .intel-scroll-area::before{content:''!important;display:block!important;position:absolute!important;top:0!important;left:0!important;right:0!important;height:1px!important;background:linear-gradient(90deg,transparent,rgba(0,255,136,.4),transparent)!important;pointer-events:none!important;z-index:5!important;border:none!important;border-radius:0!important;inset:auto!important}
+  .intel-theme-holo .intel-scroll-area::after{display:none!important}
+  .intel-theme-holo #intelForm{padding:18px 24px 0!important;gap:0!important}
+  .intel-theme-holo .intel-exp-row{flex-direction:column!important;align-items:stretch!important;border:none!important;background:transparent!important;padding:0!important;margin-bottom:18px!important;gap:0!important;overflow:visible!important;max-width:100%!important}
+  .intel-theme-holo .intel-exp-row::before{display:none!important}
+  .intel-theme-holo .intel-exp-row:hover{background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+  .intel-theme-holo .intel-exp-row:hover .intel-exp-num{opacity:1!important}
+  .intel-theme-holo .intel-exp-num{display:none!important}
+  .intel-theme-holo .intel-exp-label{font-family:'Rajdhani',sans-serif!important;font-size:13px!important;color:rgba(0,255,136,.7)!important;letter-spacing:3px!important;font-weight:700!important;text-transform:uppercase!important;width:auto!important;flex-shrink:initial!important;margin-bottom:6px!important}
+  .intel-theme-holo .intel-exp-input{width:100%!important;flex:none!important;background:rgba(0,255,136,.03)!important;border:1px solid rgba(0,255,136,.1)!important;border-radius:4px!important;font-family:'Rajdhani',sans-serif!important;font-size:14px!important;color:#b0ffd8!important;letter-spacing:1px!important;text-shadow:none!important;padding:12px 14px!important}
+  .intel-theme-holo .intel-exp-input:focus{border-color:rgba(0,255,136,.25)!important;box-shadow:0 0 12px rgba(0,255,136,.06)!important}
+  .intel-theme-holo .intel-exp-input::placeholder{color:rgba(0,255,136,.15)!important;text-shadow:none!important}
+  .intel-theme-holo .intel-prefix-wrap{width:100%!important;flex:none!important;background:rgba(0,255,136,.03)!important;border:1px solid rgba(0,255,136,.1)!important;border-radius:4px!important}
+  .intel-theme-holo .intel-prefix-wrap:focus-within{border-color:rgba(0,255,136,.25)!important;box-shadow:0 0 12px rgba(0,255,136,.06)!important}
+  .intel-theme-holo .intel-prefix{color:rgba(0,255,136,.5)!important;text-shadow:none!important;font-family:'Rajdhani',sans-serif!important;opacity:1!important}
+  .intel-theme-holo .intel-prefix-wrap input{color:#b0ffd8!important;text-shadow:none!important;font-family:'Rajdhani',sans-serif!important;font-size:14px!important;letter-spacing:1px!important}
+  .intel-theme-holo .intel-prefix-wrap input::placeholder{color:rgba(0,255,136,.15)!important;text-shadow:none!important}
+  .intel-theme-holo .intel-select{width:100%!important;flex:none!important;background-color:rgba(0,255,136,.03)!important;border:1px solid rgba(0,255,136,.1)!important;border-radius:4px!important;color:#b0ffd8!important;text-shadow:none!important;font-family:'Rajdhani',sans-serif!important;font-size:14px!important;padding:12px 30px 12px 14px!important}
+  .intel-theme-holo .intel-dual-wrap{width:100%!important;flex:none!important}
+  .intel-theme-holo .intel-dual-wrap input{width:auto!important;flex:1!important;background:rgba(0,255,136,.03)!important;border:1px solid rgba(0,255,136,.1)!important;border-radius:4px!important;color:#b0ffd8!important;text-shadow:none!important;font-family:'Rajdhani',sans-serif!important;font-size:14px!important;padding:12px 14px!important}
+  .intel-theme-holo .intel-dual-sep{color:rgba(0,255,136,.25)!important}
+  .intel-theme-holo .intel-exp-clear{color:rgba(0,255,136,.2)!important}
+  .intel-theme-holo .intel-submit-btn{width:100%!important;background:linear-gradient(180deg,rgba(0,255,136,.1),rgba(0,255,136,.04))!important;border:1px solid rgba(0,255,136,.25)!important;border-radius:4px!important;color:#00ff88!important;font-family:'Orbitron',sans-serif!important;font-size:9px!important;letter-spacing:4px!important;text-shadow:0 0 8px rgba(0,255,136,.3)!important;padding:13px!important}
+  .intel-theme-holo .intel-submit-btn:hover{background:rgba(0,255,136,.12)!important;border-color:rgba(0,255,136,.4)!important;box-shadow:0 0 20px rgba(0,255,136,.1)!important}
+  .intel-theme-holo .intel-transmit-dock{background:linear-gradient(0deg,rgba(0,12,6,.95) 60%,transparent)!important;border-top:1px solid rgba(0,255,136,.08)!important}
   .intel-theme-holo .intel-crt-header{display:none!important}
 
   /* ══════ INTEL THEME: GREEN DOSSIER ══════ */
-  .intel-theme-dossier .intel-scroll-area{background:#0e0f11;border-radius:2px;border:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden;padding:22px 22px 0}
-  .intel-theme-dossier .intel-scroll-area::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#00ff88,#00d4ff,#00ff88);pointer-events:none;z-index:5}
-  .intel-theme-dossier .intel-scroll-area::after{content:'CLASSIFIED';position:absolute;top:18px;right:16px;font-family:'Saira',sans-serif;font-size:8px;letter-spacing:3px;color:#00ff88;border:2px solid #00ff88;padding:4px 10px;transform:rotate(3deg);opacity:.6;pointer-events:none;z-index:5}
-  .intel-theme-dossier .intel-exp-row{flex-direction:column;align-items:stretch;border:none;border-radius:0;background:transparent;padding:0;margin-bottom:18px;gap:6px}
-  .intel-theme-dossier .intel-exp-row:hover{background:transparent;border-color:transparent;box-shadow:none}
-  .intel-theme-dossier .intel-exp-row::before{display:none}
-  .intel-theme-dossier .intel-exp-num{font-family:'IBM Plex Mono',monospace;color:#00ff88;font-size:12px;font-weight:700;text-shadow:none;width:auto;display:inline}
-  .intel-theme-dossier .intel-exp-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#b0b8c0;letter-spacing:2px;font-weight:600;width:auto;flex-shrink:initial;display:flex;align-items:center;gap:8px}
-  .intel-theme-dossier .intel-exp-input{width:100%;flex:none;background:transparent;border:none;border-bottom:1px solid rgba(0,255,136,.12);border-radius:0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#ddd;text-shadow:none;padding:10px 4px}
-  .intel-theme-dossier .intel-exp-input:focus{border-color:transparent;border-bottom-color:rgba(0,255,136,.35);box-shadow:none}
-  .intel-theme-dossier .intel-exp-input::placeholder{color:rgba(255,255,255,.12);text-shadow:none}
-  .intel-theme-dossier .intel-prefix-wrap{width:100%;flex:none;background:transparent;border:none;border-bottom:1px solid rgba(0,255,136,.12);border-radius:0}
-  .intel-theme-dossier .intel-prefix-wrap:focus-within{border-bottom-color:rgba(0,255,136,.35);box-shadow:none}
-  .intel-theme-dossier .intel-prefix{color:#888;text-shadow:none;font-family:'IBM Plex Mono',monospace}
-  .intel-theme-dossier .intel-prefix-wrap input{color:#ddd;text-shadow:none;font-family:'IBM Plex Mono',monospace;font-size:12px;padding:10px 4px}
-  .intel-theme-dossier .intel-prefix-wrap input::placeholder{color:rgba(255,255,255,.12);text-shadow:none}
-  .intel-theme-dossier .intel-select{width:100%;flex:none;background-color:transparent;border:none;border-bottom:1px solid rgba(0,255,136,.12);border-radius:0;color:#ddd;text-shadow:none;font-family:'IBM Plex Mono',monospace;font-size:12px;padding:10px 30px 10px 4px}
-  .intel-theme-dossier .intel-dual-wrap{width:100%;flex:none}
-  .intel-theme-dossier .intel-dual-wrap input{background:transparent;border:none;border-bottom:1px solid rgba(0,255,136,.12);border-radius:0;color:#ddd;text-shadow:none;font-family:'IBM Plex Mono',monospace;font-size:12px;padding:10px 4px}
-  .intel-theme-dossier .intel-dual-sep{color:#555}
-  .intel-theme-dossier .intel-exp-clear{color:rgba(255,255,255,.15)}
-  .intel-theme-dossier .intel-exp-check{border-color:rgba(255,255,255,.1)}
-  .intel-theme-dossier .intel-submit-btn{width:100%;background:#00ff88;border:none;border-radius:2px;color:#000;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:4px;font-weight:700;text-shadow:none;padding:13px 44px}
-  .intel-theme-dossier .intel-submit-btn:hover{background:#33ffaa;box-shadow:0 0 20px rgba(0,255,136,.2);border-color:transparent;text-shadow:none}
-  .intel-theme-dossier .intel-transmit-dock{background:linear-gradient(0deg,#0e0f11 60%,transparent);border-top:1px solid rgba(255,255,255,.04)}
+  /* Exact match: mockup .sc-* classes */
+  .intel-theme-dossier .intel-scroll-area{background:#0e0f11!important;border-radius:2px!important;border:1px solid rgba(255,255,255,.06)!important;position:relative!important;overflow:hidden!important;box-shadow:none!important}
+  .intel-theme-dossier .intel-scroll-area::before{content:''!important;display:block!important;position:absolute!important;top:0!important;left:0!important;right:0!important;height:4px!important;background:linear-gradient(90deg,#00ff88,#00d4ff,#00ff88)!important;pointer-events:none!important;z-index:5!important;border:none!important;border-radius:0!important;inset:auto!important}
+  .intel-theme-dossier .intel-scroll-area::after{content:'CLASSIFIED'!important;display:block!important;position:absolute!important;top:18px!important;right:16px!important;font-family:'Saira',sans-serif!important;font-size:8px!important;letter-spacing:3px!important;color:#00ff88!important;border:2px solid #00ff88!important;padding:4px 10px!important;transform:rotate(3deg)!important;opacity:.6!important;pointer-events:none!important;z-index:5!important;width:auto!important;height:auto!important;background:transparent!important;border-radius:0!important;inset:auto!important;top:18px!important;right:16px!important}
+  .intel-theme-dossier #intelForm{padding:18px 22px 0!important;gap:0!important}
+  .intel-theme-dossier .intel-exp-row{flex-direction:column!important;align-items:stretch!important;border:none!important;border-radius:0!important;background:transparent!important;padding:0!important;margin-bottom:18px!important;gap:0!important;overflow:visible!important;max-width:100%!important}
+  .intel-theme-dossier .intel-exp-row::before{display:none!important}
+  .intel-theme-dossier .intel-exp-row:hover{background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+  .intel-theme-dossier .intel-exp-row:hover .intel-exp-num{opacity:1!important;color:#00ff88!important}
+  .intel-theme-dossier .intel-exp-num{font-family:'IBM Plex Mono',monospace!important;color:#00ff88!important;font-size:12px!important;font-weight:700!important;text-shadow:none!important;width:auto!important;display:inline!important;flex-shrink:0!important}
+  .intel-theme-dossier .intel-exp-label{font-family:'IBM Plex Mono',monospace!important;font-size:11px!important;color:#b0b8c0!important;letter-spacing:2px!important;font-weight:600!important;text-transform:uppercase!important;width:auto!important;flex-shrink:initial!important;display:flex!important;align-items:center!important;gap:8px!important;margin-bottom:6px!important}
+  .intel-theme-dossier .intel-exp-input{width:100%!important;flex:none!important;background:transparent!important;border:none!important;border-bottom:1px solid rgba(0,255,136,.12)!important;border-radius:0!important;font-family:'IBM Plex Mono',monospace!important;font-size:12px!important;color:#ddd!important;text-shadow:none!important;padding:10px 4px!important}
+  .intel-theme-dossier .intel-exp-input:focus{border-color:transparent!important;border-bottom-color:rgba(0,255,136,.35)!important;box-shadow:none!important}
+  .intel-theme-dossier .intel-exp-input::placeholder{color:rgba(255,255,255,.12)!important;text-shadow:none!important}
+  .intel-theme-dossier .intel-prefix-wrap{width:100%!important;flex:none!important;background:transparent!important;border:none!important;border-bottom:1px solid rgba(0,255,136,.12)!important;border-radius:0!important}
+  .intel-theme-dossier .intel-prefix-wrap:focus-within{border-bottom-color:rgba(0,255,136,.35)!important;box-shadow:none!important}
+  .intel-theme-dossier .intel-prefix{color:#888!important;text-shadow:none!important;font-family:'IBM Plex Mono',monospace!important;opacity:1!important}
+  .intel-theme-dossier .intel-prefix-wrap input{color:#ddd!important;text-shadow:none!important;font-family:'IBM Plex Mono',monospace!important;font-size:12px!important;padding:10px 4px!important}
+  .intel-theme-dossier .intel-prefix-wrap input::placeholder{color:rgba(255,255,255,.12)!important;text-shadow:none!important}
+  .intel-theme-dossier .intel-select{width:100%!important;flex:none!important;background-color:transparent!important;border:none!important;border-bottom:1px solid rgba(0,255,136,.12)!important;border-radius:0!important;color:#ddd!important;text-shadow:none!important;font-family:'IBM Plex Mono',monospace!important;font-size:12px!important;padding:10px 30px 10px 4px!important}
+  .intel-theme-dossier .intel-dual-wrap{width:100%!important;flex:none!important}
+  .intel-theme-dossier .intel-dual-wrap input{width:auto!important;flex:1!important;background:transparent!important;border:none!important;border-bottom:1px solid rgba(0,255,136,.12)!important;border-radius:0!important;color:#ddd!important;text-shadow:none!important;font-family:'IBM Plex Mono',monospace!important;font-size:12px!important;padding:10px 4px!important}
+  .intel-theme-dossier .intel-dual-sep{color:#555!important}
+  .intel-theme-dossier .intel-exp-clear{color:rgba(255,255,255,.15)!important}
+  .intel-theme-dossier .intel-submit-btn{width:100%!important;background:#00ff88!important;border:none!important;border-radius:2px!important;color:#000!important;font-family:'Saira',sans-serif!important;font-size:10px!important;letter-spacing:4px!important;font-weight:700!important;text-shadow:none!important;padding:13px!important}
+  .intel-theme-dossier .intel-submit-btn:hover{background:#33ffaa!important;box-shadow:0 0 20px rgba(0,255,136,.2)!important;border-color:transparent!important;text-shadow:none!important}
+  .intel-theme-dossier .intel-transmit-dock{background:linear-gradient(0deg,#0e0f11 60%,transparent)!important;border-top:1px solid rgba(255,255,255,.04)!important}
   .intel-theme-dossier .intel-crt-header{display:none!important}
   /* Transmit button — Neon Grid style */
   .intel-submit-wrap{margin-top:20px;display:flex;justify-content:center}
