@@ -5122,7 +5122,7 @@ let adminUsers=[]; // populated from backend on admin list fetch
 let manualTeams=[];
 
 // Security: Rate limiter for API calls
-const _apiRateLimit={lastCall:0,minInterval:200,burst:0,maxBurst:20};
+const _apiRateLimit={lastCall:0,minInterval:100,burst:0,maxBurst:30};
 function _checkRateLimit(){
   const now=Date.now();
   if(now-_apiRateLimit.lastCall<_apiRateLimit.minInterval){
@@ -5208,22 +5208,27 @@ function _restoreContentCache(){
 }
 
 async function loadEventData(){
-  // Sequential calls — Google Apps Script has concurrency limits that break
-  // login/auth when too many parallel requests hit it simultaneously
-  const config=await apiCall('getEventConfig');
+  // Parallel fetch — Cloudflare Workers handle concurrent requests efficiently
+  const [config, feedResult, mediaResult, intelResult, teamsResult, subResult] = await Promise.all([
+    apiCall('getEventConfig'),
+    apiCall('getFeedPosts'),
+    apiCall('getMediaItems'),
+    apiCall('getIntelFields'),
+    isAdmin ? apiCall('getTeams') : Promise.resolve({ok:false}),
+    isAdmin ? apiCall('getSubmissions') : Promise.resolve({ok:false})
+  ]);
+
+  // Apply config first (affects rendering of everything else)
   if(config.ok&&config.config)applyEventConfig(config.config);
 
-  const feedResult=await apiCall('getFeedPosts');
   if(feedResult.ok&&Array.isArray(feedResult.posts)){
     posts.length=0;
     feedResult.posts.forEach(p=>posts.push(p));
     _cacheContent('cb_posts',posts);
     renderFeed();renderGrid();
-    // If user was in focus mode, re-render the single post with fresh data
     if(currentFeedView==='single')renderSinglePost();
   }
 
-  const mediaResult=await apiCall('getMediaItems');
   if(mediaResult.ok&&Array.isArray(mediaResult.items)){
     mediaItems.length=0;
     mediaResult.items.forEach(m=>mediaItems.push({
@@ -5241,7 +5246,6 @@ async function loadEventData(){
     renderMedia();renderGrid();
   }
 
-  const intelResult=await apiCall('getIntelFields');
   if(intelResult.ok&&Array.isArray(intelResult.fields)){
     intelFields.length=0;
     intelResult.fields.forEach(f=>intelFields.push({
@@ -5252,7 +5256,6 @@ async function loadEventData(){
     renderIntelForm();renderGrid();
   }
 
-  const teamsResult=await apiCall('getTeams');
   if(teamsResult.ok&&teamsResult.teams){
     registeredTeams.length=0;manualTeams.length=0;
     teamsResult.teams.forEach(t=>{
@@ -5265,7 +5268,6 @@ async function loadEventData(){
 
   renderVaultPanel();renderKeysCodes();
 
-  const subResult=await apiCall('getSubmissions');
   if(subResult.ok&&subResult.submissions){
     subResult.submissions.forEach(s=>{
       const team=registeredTeams.find(t=>t.id===s.teamId);
@@ -6317,9 +6319,12 @@ function startTeamMonitor(){
   let _tmFetchCount=0;
   teamMonitorInterval=setInterval(async()=>{
     _tmFetchCount++;
-    // Every 5th tick (15s), re-fetch teams and submissions from backend
-    if(_tmFetchCount%5===0){
-      const teamsResult=await apiCall('getTeams');
+    // Every 3rd tick (9s), re-fetch teams and submissions in parallel
+    if(_tmFetchCount%3===0){
+      const [teamsResult, subResult] = await Promise.all([
+        apiCall('getTeams'),
+        apiCall('getSubmissions')
+      ]);
       if(teamsResult.ok&&teamsResult.teams){
         registeredTeams.length=0;manualTeams.length=0;
         teamsResult.teams.forEach(t=>{
@@ -6328,7 +6333,6 @@ function startTeamMonitor(){
           registeredTeams.push(team);
         });
       }
-      const subResult=await apiCall('getSubmissions');
       if(subResult.ok&&subResult.submissions){
         subResult.submissions.forEach(s=>{
           const team=registeredTeams.find(t=>t.id===s.teamId);
@@ -6839,7 +6843,11 @@ function startBroadcastPolling(){
   _lastBroadcastTime=new Date().toISOString();
   _broadcastPollInterval=setInterval(async()=>{
     if(!currentVaultTeam)return;
-    const r=await apiCall('getBroadcasts',{since:_lastBroadcastTime});
+    // Parallel fetch — broadcasts + config session check
+    const [r, cfg] = await Promise.all([
+      apiCall('getBroadcasts',{since:_lastBroadcastTime}),
+      apiCall('getEventConfig')
+    ]);
     if(r.ok&&r.broadcasts&&r.broadcasts.length>0){
       r.broadcasts.forEach(b=>{
         _lastBroadcastTime=b.sentAt;
@@ -6854,8 +6862,7 @@ function startBroadcastPolling(){
         }
       });
     }
-    // Lightweight session generation check
-    const cfg=await apiCall('getEventConfig');
+    // Lightweight session generation check (cfg already fetched in parallel above)
     if(cfg.ok&&cfg.config){
       const serverGen=String(cfg.config.sessionGenTeam||'0');
       const localGen=localStorage.getItem('cb_sessionGen')||'0';
@@ -6864,7 +6871,7 @@ function startBroadcastPolling(){
       }
       try{localStorage.setItem('cb_sessionGen',serverGen)}catch(e){}
     }
-  },10000);
+  },5000);
 }
 
 let bannerDismissTimer=null;
