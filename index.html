@@ -1033,13 +1033,16 @@
 
 
   /* ══════ ADMIN PAGE SCREENS ══════ */
-  #settingsScreen{background:#0e1019;min-height:100vh;padding:0}
+  #settingsScreen{background:#0e1019;min-height:100vh;padding:0;z-index:850;position:relative}
   .admin-page{display:flex;flex-direction:column;height:100vh;overflow:hidden}
   .admin-page-header{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 24px 0;background:linear-gradient(180deg,#161a26,#10131c);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
   .admin-page-header-row{display:flex;align-items:center;justify-content:center;width:100%;position:relative}
   .admin-page-title{font-family:'Staatliches',cursive;font-size:15px;letter-spacing:5px;color:#ffd699;text-transform:uppercase}
-  .admin-page-close{position:absolute;right:0;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:4px;color:#777;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;padding:6px 14px;cursor:pointer;transition:all .15s}
-  .admin-page-close:hover{color:#ff6655;border-color:rgba(255,80,60,.2);background:rgba(255,50,50,.05)}
+  .admin-page-close{position:absolute;right:0;top:50%;transform:translateY(-50%);border-radius:4px;cursor:pointer;transition:all .2s;
+    background:rgba(255,50,50,.06);border:1px solid rgba(255,50,50,.2);border-bottom:2px solid rgba(255,50,50,.1);
+    color:var(--red);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;padding:7px 18px;font-weight:600;
+    text-shadow:0 0 6px rgba(255,50,50,.2)}
+  .admin-page-close:hover{border-color:rgba(255,50,50,.45);background:rgba(255,50,50,.12);text-shadow:0 0 12px rgba(255,50,50,.4);box-shadow:0 0 14px rgba(255,50,50,.1)}
   .admin-page-tabs{display:flex;gap:0;flex-wrap:wrap;justify-content:center}
   .admin-page-tab{padding:11px 20px;font-family:'Saira',sans-serif;font-size:12px;letter-spacing:1.5px;color:#556;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;font-weight:700;white-space:nowrap}
   .admin-page-tab:hover{color:#aab;background:rgba(255,255,255,.02)}
@@ -1082,7 +1085,7 @@
     .admin-page-tab{padding:9px 14px;font-size:10px;letter-spacing:1px}
     .admin-page-tab-sep{margin:4px 4px}
     .admin-page-body{padding:16px 12px 60px}
-    .admin-page-close{padding:5px 10px;font-size:10px}
+    .admin-page-close{padding:6px 14px;font-size:9px}
   }
 
   /* Panels as page sections — override overlay positioning */
@@ -10534,7 +10537,7 @@ togglePlayerPreview=function(){
     <div class="admin-page-header">
       <div class="admin-page-header-row">
         <span class="admin-page-title">◈ Admin Console</span>
-        <button class="admin-page-close" onclick="returnFromAdminPage()" title="Return to console">✕</button>
+        <button class="admin-page-close" onclick="returnFromAdminPage()" title="Return to console">✕ CLOSE</button>
       </div>
       <div class="admin-page-tabs">
         <button class="admin-page-tab active" onclick="switchPageTab('settingsScreen','set-event',this)">⚙️ Event</button>
