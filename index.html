@@ -12,9 +12,8 @@
   body{background:var(--bg-deep);overflow:hidden;width:100vw;height:100vh;font-family:'Chakra Petch',sans-serif;font-weight:500;color:#ccc;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overscroll-behavior:none}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#2a2d35;border-radius:2px}
 
-  .screen{position:fixed;inset:0;transition:opacity .3s;opacity:0;pointer-events:none;z-index:1;will-change:opacity;transform:translateZ(0)}
+  .screen{position:fixed;inset:0;opacity:0;pointer-events:none;z-index:1;will-change:opacity;transform:translateZ(0)}
   .screen.active{opacity:1;pointer-events:all;z-index:10}
-  .panel-screen{transition:none}
   #grainCanvas{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.03;image-rendering:pixelated;image-rendering:crisp-edges}
 
   /* ══════ REGISTRATION ══════ */
@@ -1059,60 +1058,68 @@
 
 
   /* ══════ ADMIN PAGE SCREENS ══════ */
-  #settingsScreen{background:#0e1019;min-height:100vh;padding:0}
+  #settingsScreen{background:#0c0e16;min-height:100vh;padding:0}
   #settingsScreen.active{z-index:850}
   .admin-page{display:flex;flex-direction:column;height:100vh;overflow:hidden}
-  .admin-page-header{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 24px 0;background:linear-gradient(180deg,#161a26,#10131c);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+  .admin-page-header{display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 24px 0;background:linear-gradient(180deg,#13161f,#0e1019);border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0}
   .admin-page-header-row{display:flex;align-items:center;justify-content:center;width:100%;position:relative}
-  .admin-page-title{font-family:'Staatliches',cursive;font-size:15px;letter-spacing:5px;color:#ffd699;text-transform:uppercase}
+  .admin-page-title{font-family:'Staatliches',cursive;font-size:16px;letter-spacing:6px;color:#ffd699;text-transform:uppercase}
   .admin-page-close{position:absolute;right:0;top:50%;transform:translateY(-50%);border-radius:4px;cursor:pointer;transition:all .2s;
-    background:rgba(255,50,50,.06);border:1px solid rgba(255,50,50,.2);border-bottom:2px solid rgba(255,50,50,.1);
-    color:var(--red);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;padding:7px 18px;font-weight:600;
-    text-shadow:0 0 6px rgba(255,50,50,.2)}
-  .admin-page-close:hover{border-color:rgba(255,50,50,.45);background:rgba(255,50,50,.12);text-shadow:0 0 12px rgba(255,50,50,.4);box-shadow:0 0 14px rgba(255,50,50,.1)}
+    background:rgba(255,50,50,.05);border:1px solid rgba(255,50,50,.18);
+    color:var(--red);font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2.5px;padding:8px 20px;font-weight:700;text-transform:uppercase}
+  .admin-page-close:hover{border-color:rgba(255,50,50,.4);background:rgba(255,50,50,.1);box-shadow:0 0 12px rgba(255,50,50,.08)}
   .admin-page-tabs{display:flex;gap:0;flex-wrap:wrap;justify-content:center}
-  .admin-page-tab{padding:11px 20px;font-family:'Saira',sans-serif;font-size:12px;letter-spacing:1.5px;color:#556;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;font-weight:700;white-space:nowrap}
-  .admin-page-tab:hover{color:#aab;background:rgba(255,255,255,.02)}
-  .admin-page-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);background:rgba(0,212,255,.03)}
-  .admin-page-tab-sep{width:1px;height:20px;background:rgba(255,255,255,.06);margin:6px 8px;align-self:center;flex-shrink:0}
+  .admin-page-tab{padding:12px 22px;font-family:'Saira',sans-serif;font-size:11px;letter-spacing:2px;color:#4a5060;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;font-weight:700;white-space:nowrap}
+  .admin-page-tab:hover{color:#8890a0;background:rgba(255,255,255,.015)}
+  .admin-page-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);background:rgba(0,212,255,.02)}
+  .admin-page-tab-sep{width:1px;height:18px;background:rgba(255,255,255,.05);margin:8px 10px;align-self:center;flex-shrink:0}
   .admin-page-body{flex:1;overflow-y:auto;display:flex;justify-content:center;padding:28px 24px 60px}
   .admin-page-section{display:none;width:100%;max-width:740px}
   .admin-page-section.active{display:block}
 
-  /* Better section styling inside pages */
+  /* ══════ UNIFIED SECTION STYLING ══════ */
   .admin-page-section .ap-section,
-  .admin-page-section .kc-section{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:8px;margin-bottom:16px;padding:24px 28px}
-  .admin-page-section .ap-section:last-child{border-bottom:1px solid rgba(255,255,255,.06)}
+  .admin-page-section .kc-section{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:6px;margin-bottom:16px;padding:24px 28px}
+  .admin-page-section .ap-section:last-child{border-bottom:1px solid rgba(255,255,255,.05)}
   .admin-page-section .bc-body{padding:20px 0}
   .admin-page-section .kc-body{padding:0}
 
-  /* ══════ READABILITY — larger text in admin pages ══════ */
-  .admin-page-section .ap-section h4{font-size:14px;letter-spacing:2.5px;margin-bottom:16px}
-  .admin-page-section .ap-section p{font-size:12px;color:#b0b8c8;line-height:1.7;margin-bottom:14px}
-  .admin-page-section .ap-field label{font-size:11px;letter-spacing:1.5px;color:#c0c8d8;margin-bottom:6px}
+  /* ══════ TYPOGRAPHY — consistent across all admin panels ══════ */
+  .admin-page-section .ap-section h4{font-family:'Saira',sans-serif;font-size:13px;letter-spacing:3px;color:#d0dce8;text-transform:uppercase;margin:0 0 16px;font-weight:700}
+  .admin-page-section .ap-section p{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#8a94a8;line-height:1.7;margin-bottom:14px;font-weight:500}
+  .admin-page-section .ap-field label{font-family:'Chakra Petch',sans-serif;font-size:10px;letter-spacing:2px;color:#8a94a8;text-transform:uppercase;margin-bottom:6px;display:block;font-weight:600}
   .admin-page-section .ap-field input,
-  .admin-page-section .ap-field select{font-size:13px;padding:10px 14px}
-  .admin-page-section .ap-btn{font-size:11px;padding:8px 16px;letter-spacing:1.5px}
-  .admin-page-section .kc-section-title{font-size:13px}
-  .admin-page-section .kc-row{padding:10px 14px}
-  .admin-page-section .kc-label{font-size:12px}
-  .admin-page-section .kc-value{font-size:11px}
-  .admin-page-section .session-btn .sb-title{font-size:11px}
-  .admin-page-section .session-btn .sb-desc{font-size:10px;color:#999}
-  .admin-page-section .lb-toolbar{padding:12px 16px}
-  .admin-page-section .lb-search{font-size:12px;padding:10px 14px}
-  .admin-page-section .bc-textarea{font-size:13px;min-height:120px}
-  .admin-page-section .ap-team-row{padding:10px 14px}
-  .admin-page-section .ap-status-pill{font-size:11px;padding:6px 12px}
-  .admin-page-section .tut-step-list .tut-step{padding:10px 12px}
+  .admin-page-section .ap-field select{font-size:13px;padding:10px 14px;background:#080a10;border:1px solid rgba(255,255,255,.07);border-radius:4px;color:#ccc;font-family:'IBM Plex Mono',monospace;outline:none;transition:border-color .15s}
+  .admin-page-section .ap-field input:focus,
+  .admin-page-section .ap-field select:focus{border-color:rgba(0,212,255,.25)}
+  .admin-page-section .ap-btn{font-family:'Saira',sans-serif;font-size:11px;padding:9px 18px;letter-spacing:2px;font-weight:700;border-radius:4px;cursor:pointer;transition:all .15s;text-transform:uppercase}
+  .admin-page-section .kc-section-title{font-family:'Saira',sans-serif;font-size:12px;letter-spacing:3px;color:#d0dce8;font-weight:700}
+  .admin-page-section .kc-row{padding:10px 16px;border:1px solid rgba(255,255,255,.05);border-radius:4px;margin-bottom:4px}
+  .admin-page-section .kc-label{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#b0b8c8;font-weight:500;letter-spacing:.3px}
+  .admin-page-section .kc-value{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#d0f0d8;font-weight:700;letter-spacing:2px;padding:4px 10px;background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.12);border-radius:3px}
+  .admin-page-section .session-btn{border-radius:6px;border:1px solid rgba(255,255,255,.06);transition:all .15s}
+  .admin-page-section .session-btn:hover{border-color:rgba(255,255,255,.12)}
+  .admin-page-section .session-btn .sb-title{font-family:'Saira',sans-serif;font-size:11px;letter-spacing:2px;font-weight:700}
+  .admin-page-section .session-btn .sb-desc{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#6a7080;font-weight:500}
+  .admin-page-section .lb-toolbar{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.05)}
+  .admin-page-section .lb-search{font-size:12px;padding:10px 14px;background:#080a10;border:1px solid rgba(255,255,255,.06);border-radius:4px;color:#ccc;font-family:'IBM Plex Mono',monospace}
+  .admin-page-section .lb-search:focus{border-color:rgba(255,215,0,.2)}
+  .admin-page-section .bc-textarea{font-family:'Chakra Petch',sans-serif;font-size:13px;min-height:120px;background:#080a10;border:1px solid rgba(255,255,255,.06);border-radius:4px;color:#ccc;padding:14px;line-height:1.7}
+  .admin-page-section .bc-textarea:focus{border-color:rgba(255,170,51,.2)}
+  .admin-page-section .ap-team-row{padding:10px 16px;border:1px solid rgba(255,255,255,.05);border-radius:4px;margin-bottom:4px}
+  .admin-page-section .ap-status-pill{font-family:'Saira',sans-serif;font-size:10px;padding:6px 14px;letter-spacing:1.5px;font-weight:700;border-radius:4px}
+  .admin-page-section .tut-step-list .tut-step{padding:12px 14px;border:1px solid rgba(255,255,255,.05);border-radius:4px;margin-bottom:4px}
 
   @media(max-width:600px){
     .admin-page-header{padding:12px 16px 0;gap:4px}
     .admin-page-tabs{gap:0}
-    .admin-page-tab{padding:9px 14px;font-size:10px;letter-spacing:1px}
+    .admin-page-tab{padding:10px 14px;font-size:9px;letter-spacing:1.5px}
     .admin-page-tab-sep{margin:4px 4px}
     .admin-page-body{padding:16px 12px 60px}
-    .admin-page-close{padding:6px 14px;font-size:9px}
+    .admin-page-close{padding:7px 16px;font-size:9px;letter-spacing:2px}
+    .admin-page-section .ap-section,
+    .admin-page-section .kc-section{padding:18px 16px}
+    .admin-page-section .ap-section h4{font-size:12px;letter-spacing:2.5px}
   }
 
   /* Panels as page sections — override overlay positioning */
@@ -4390,14 +4397,7 @@ function _refreshPanelData(panel){
     });
   }
 }
-function closePanelScreen(){_stopAllFeedVideos();saveGameState();
-  // Disable transition for instant return to console
-  const cs=document.getElementById('consoleScreen');
-  cs.style.transition='none';
-  showScreen('consoleScreen');
-  // Re-enable transition after paint
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{cs.style.transition=''}));
-  saveSession();renderGrid()}
+function closePanelScreen(){_stopAllFeedVideos();saveGameState();showScreen('consoleScreen');saveSession();renderGrid()}
 function closePanel(){closePanelScreen()}
 
 // Feed view modes
