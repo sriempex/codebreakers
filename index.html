@@ -758,17 +758,15 @@
   #expFeed #feedViewToggle{position:absolute;left:50%;transform:translateX(-50%);margin-right:0}
   #expFeed #feedCloseBtn{min-width:110px;text-align:center}
   /* Keep grid comfortably within viewport (show 2 rows / 6 posts without scroll on typical screens) */
-  #expFeed .exp-body{padding:10px;display:flex;flex-direction:column;overflow:hidden}
-  #expFeed .feed-expanded{flex:1;min-height:0;height:100%;width:100%;max-width:100%;margin:0 auto;align-content:stretch;grid-template-rows:repeat(2,1fr)}
+  #expFeed .exp-body{padding:14px;display:flex;flex-direction:column;overflow:hidden}
+  #expFeed .feed-expanded{max-width:min(900px, calc((88vh - 140px) * 1.5));margin:0 auto;flex:1}
 
-  .feed-expanded{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;max-width:900px;margin:0 auto}
-  /* Feed grid fill vertical space in expFeed */
-  #expFeed .feed-card{display:flex;flex-direction:column}
-  #expFeed .feed-card-img{aspect-ratio:auto;flex:1;min-height:0}
-  #expFeed .feed-card-img img, #expFeed .feed-card-video{height:100%}
-  .feed-card-img{aspect-ratio:1;overflow:hidden}
+  .feed-expanded{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,minmax(0,1fr));gap:3px;max-width:900px;margin:0 auto;height:100%;align-content:stretch}
+  /* Feed cards: keep width the same, let image area stretch vertically to fill available height */
+  .feed-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:3px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;touch-action:pan-y;display:flex;flex-direction:column}
+  .feed-card-img{flex:1;min-height:0;overflow:hidden;aspect-ratio:auto}
   .feed-card-img img{width:100%;height:100%;object-fit:cover}
-  .feed-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:3px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;touch-action:pan-y}
+
   .feed-card:hover{border-color:var(--green-dim);box-shadow:0 6px 20px rgba(0,0,0,.3)}
   .feed-card-img{width:100%;display:flex;align-items:center;justify-content:center;font-size:40px;background-size:cover;background-position:center;position:relative;min-height:120px}
   .feed-card-img img{width:100%;display:block;pointer-events:none;-webkit-user-drag:none;user-select:none}
