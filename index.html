@@ -9299,9 +9299,10 @@ function saveSession(){
   try{
     // Only save when user is authenticated on a game screen
     const _savableScreens=['consoleScreen','settingsScreen','feedScreen','mediaScreen','intelScreen','vaultScreen'];
-    if(!_savableScreens.includes(_currentScreen))return;
-    if(!currentVaultTeam)return;
+    if(!_savableScreens.includes(_currentScreen)){console.log('[SAVE] skipped — screen:',_currentScreen);return}
+    if(!currentVaultTeam){console.log('[SAVE] skipped — no team');return}
     const data={type:isAdmin?'admin':'team',team:currentVaultTeam,savedAt:Date.now(),screen:_currentScreen};
+    console.log('[SAVE] screen='+_currentScreen+' admin='+isAdmin+' adminPage='+_currentAdminPage);
     if(isAdmin){
       data.adminSession=adminSession;
       // Save which admin page is open
@@ -9501,6 +9502,7 @@ function restoreSession(){
     // Restore the exact screen the user was on
     // Migrate old sessions: if data.screen missing but data.panel exists, convert it
     let targetScreen=data.screen||'consoleScreen';
+    console.log('[RESTORE] data.screen='+data.screen+' targetScreen='+targetScreen+' data.adminPage='+data.adminPage+' data.adminTab='+data.adminTab);
     if(!data.screen&&data.panel){
       const _oldPanelToScreen={expFeed:'feedScreen',expMedia:'mediaScreen',expIntel:'intelScreen',expVault:'vaultScreen'};
       targetScreen=_oldPanelToScreen[data.panel]||'consoleScreen';
