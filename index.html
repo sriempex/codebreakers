@@ -9488,7 +9488,10 @@ function restoreSession(){
     }
 
     // Restore the exact screen the user was on
-    const targetScreen=data.screen||'consoleScreen';
+    // For admin on settings page, we'll use consoleScreen as base then navigateToAdmin handles it
+    let targetScreen=data.screen||'consoleScreen';
+    // Validate the screen ID exists
+    if(!document.getElementById(targetScreen))targetScreen='consoleScreen';
     // Map screen IDs to panel tile names for content rendering
     const _screenToPanelType={feedScreen:'feed',mediaScreen:'media',intelScreen:'intel',vaultScreen:'vault'};
 
@@ -9529,6 +9532,8 @@ function restoreSession(){
       updateConsoleForTeam(currentVaultTeam);
       syncAdminDropdownToggles();
       restoreGameState();
+      // If admin was on settings, show console as base — navigateToAdmin will handle settings
+      if(data.adminPage&&targetScreen==='settingsScreen')targetScreen='consoleScreen';
       applyScreenAndPanel();
       // Apply cached theme + operation name BEFORE first renderGrid
       try{
@@ -9542,7 +9547,10 @@ function restoreSession(){
       renderGrid(); // Render grid with cached data + theme immediately
       // Restore admin panel IMMEDIATELY — before data loads — to prevent console flash
       if(data.adminPage){
-        _gearReturnScreen='consoleScreen';
+        // Admin was on settings page — remember where to return to
+        // If admin had a panel open before going to settings, data.screen would be that panel
+        // Otherwise default to consoleScreen
+        _gearReturnScreen=(targetScreen==='settingsScreen')?'consoleScreen':targetScreen;
         navigateToAdmin('settingsScreen',data.adminTab||null);
       }
       startElapsedTimer();
