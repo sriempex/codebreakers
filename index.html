@@ -4163,9 +4163,7 @@ function triggerVaultLockout(seconds,title,subtitle){
       _vaultLockoutEnd=null;
       saveGameState();
     }
-  };
-  if(runOnce)_tick();
-  _globalTimerInterval=setInterval(_tick,1000);
+  },1000);
 }
 
 function formatLockoutTime(s){
@@ -8645,7 +8643,14 @@ function startGlobalEventTimer(runOnce=false){
       onTimerExpired();
     }
     updateEventStatus();
-  },1000);
+  };
+  if(typeof _globalTimerInterval!=='undefined' && _globalTimerInterval){
+    clearInterval(_globalTimerInterval);
+    _globalTimerInterval=null;
+  }
+  if(runOnce){ _tick(); return; }
+  _tick();
+  _globalTimerInterval=setInterval(_tick,1000);
 }
 
 // handleEventExpiry — now handled by onTimerExpired + showEventLockOverlay
