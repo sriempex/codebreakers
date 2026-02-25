@@ -4108,8 +4108,8 @@ function vkSubmit(){
     match.unlocked=true;match.unlockedAt=new Date().toISOString();
     let releasedName='Classified File';
     if(match.linkedMediaIdx!==null&&match.linkedMediaIdx!==undefined&&mediaItems[match.linkedMediaIdx]){
-      mediaItems[match.linkedMediaIdx].vaultLocked=false;
       mediaItems[match.linkedMediaIdx]._isNew=true;
+      // NOTE: Do not mutate vaultLocked here; unlock visibility is team-scoped via vaultCodes + localStorage.
       releasedName=mediaItems[match.linkedMediaIdx].name||match.label;
     }
     playVaultUnlock();
@@ -10016,7 +10016,7 @@ function restoreGameState(){
         if(u){c.unlocked=true;c.unlockedAt=u.at||new Date().toISOString();
           // Also unlock the linked media item
           if(typeof c.linkedMediaIdx==='number'&&mediaItems[c.linkedMediaIdx]){
-            mediaItems[c.linkedMediaIdx].vaultLocked=false;
+            // NOTE: Do not mutate vaultLocked here; unlock visibility is team-scoped via vaultCodes + localStorage.
           }
         }
       });
