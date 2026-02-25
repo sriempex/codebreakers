@@ -9565,14 +9565,28 @@ function restoreSession(){
       }catch(e){}
 
       if(data.adminPage||targetScreen==='settingsScreen'){
-        // Admin was on settings page — go directly to settings via navigateToAdmin
-        document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-        document.getElementById('consoleScreen').classList.add('active');
-        _currentScreen='consoleScreen';
-        document.getElementById('notepadTrigger').classList.add('visible');
-        renderGrid();
+        // Settings is a full screen — restore it directly like any other screen
+        _currentAdminPage='settingsScreen';
         _gearReturnScreen='consoleScreen';
-        navigateToAdmin('settingsScreen',data.adminTab||null);
+        // Activate settings screen directly
+        document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+        document.getElementById('settingsScreen').classList.add('active');
+        _currentScreen='settingsScreen';
+        document.getElementById('notepadTrigger').classList.add('visible');
+        // Mount admin panels and init
+        mountAdminPanels();
+        initSettingsPage();
+        // Switch to saved tab if any
+        if(data.adminTab){
+          _switchToTab('settingsScreen',data.adminTab);
+        }else{
+          var as=document.querySelector('#settingsScreen .admin-page-section.active');
+          if(as)_switchToTab('settingsScreen',as.id);
+        }
+        updateGearIcon();
+        updatePreviewIcon();
+        // Also render grid in background so console is ready when they close settings
+        renderGrid();
       }else{
         // Admin was on console or a panel screen — restore directly
         applyScreenAndPanel();
