@@ -9313,9 +9313,9 @@ function saveSession(){
     // Save feed view state so focus mode + post index survive refresh
     data.feedView=currentFeedView;
     data.feedPost=currentPost;
-    // Write to both storages — localStorage for persist mode, sessionStorage for session mode
-    // This ensures switching modes doesn't leave orphan sessions
+    // Write to both storages
     const json=JSON.stringify(data);
+    console.log('[SAVE] screen='+data.screen+' adminPage='+data.adminPage+' adminTab='+data.adminTab);
     localStorage.setItem('cb_session',json);
     sessionStorage.setItem('cb_session',json);
   }catch(e){}
@@ -9501,6 +9501,10 @@ function restoreSession(){
     // Restore the exact screen the user was on
     // Migrate old sessions: if data.screen missing but data.panel exists, convert it
     let targetScreen=data.screen||'consoleScreen';
+    console.log('[RESTORE] raw screen='+data.screen+' adminPage='+data.adminPage+' adminTab='+data.adminTab);
+    // Also log what's actually in storage right now
+    console.log('[RESTORE] localStorage=', localStorage.getItem('cb_session')?.substring(0,200));
+    console.log('[RESTORE] sessionStorage=', sessionStorage.getItem('cb_session')?.substring(0,200));
     if(!data.screen&&data.panel){
       const _oldPanelToScreen={expFeed:'feedScreen',expMedia:'mediaScreen',expIntel:'intelScreen',expVault:'vaultScreen'};
       targetScreen=_oldPanelToScreen[data.panel]||'consoleScreen';
