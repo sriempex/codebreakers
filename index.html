@@ -9498,8 +9498,13 @@ function restoreSession(){
     }
 
     // Restore the exact screen the user was on
-    // For admin on settings page, we'll use consoleScreen as base then navigateToAdmin handles it
+    // Migrate old sessions: if data.screen missing but data.panel exists, convert it
     let targetScreen=data.screen||'consoleScreen';
+    if(!data.screen&&data.panel){
+      const _oldPanelToScreen={expFeed:'feedScreen',expMedia:'mediaScreen',expIntel:'intelScreen',expVault:'vaultScreen'};
+      targetScreen=_oldPanelToScreen[data.panel]||'consoleScreen';
+    }
+    console.log('[RESTORE] data.screen=',data.screen,'targetScreen=',targetScreen,'adminPage=',data.adminPage);
     // Validate the screen ID exists
     if(!document.getElementById(targetScreen))targetScreen='consoleScreen';
     // Map screen IDs to panel tile names for content rendering
