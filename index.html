@@ -7,9 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Staatliches&family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Saira:wght@400;500;600;700&family=Oxanium:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Share+Tech+Mono&family=Russo+One&family=Exo+2:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&family=Teko:wght@400;500;600;700&family=Play:wght@400;700&family=Audiowide&family=Press+Start+2P&family=VT323&family=Silkscreen&family=Major+Mono+Display&family=Nova+Mono&family=Aldrich&family=Electrolize&family=Michroma&family=Quantico:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
-  :root{--green:#00ff88;--green-dim:rgba(0,255,136,.4);--green-glow:rgba(0,255,136,.12);--red:#ff3333;--amber:#ffaa33;--cyan:#00d4ff;--steel-light:#4a4e54;--steel-dark:#22252a;--bg-deep:#11131a;--bg-panel:#1b1f2b;--bg-surface:#242a3a;--border:#3a4152;--op-font:inherit;--fc-vault:inherit;--fc-feed-cap:inherit;--fc-media-name:inherit;--fc-media-desc:inherit}
+  :root{--green:#00ff88;--green-dim:rgba(0,255,136,.4);--green-glow:rgba(0,255,136,.12);--red:#ff3333;--amber:#ffaa33;--cyan:#00d4ff;--steel-light:#4a4e54;--steel-dark:#22252a;--bg-deep:#08090b;--bg-panel:#10121a;--bg-surface:#171a24;--border:#252830;--op-font:inherit;--fc-vault:inherit;--fc-feed-cap:inherit;--fc-media-name:inherit;--fc-media-desc:inherit}
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--bg-deep);overflow:hidden;width:100vw;height:100vh;font-family:'Chakra Petch',sans-serif;font-weight:500;color:rgba(240,248,255,.92);user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overscroll-behavior:none}
+  body{background:var(--bg-deep);overflow:hidden;width:100vw;height:100vh;font-family:'Chakra Petch',sans-serif;font-weight:500;color:#ccc;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overscroll-behavior:none}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#2a2d35;border-radius:2px}
 
   .screen{position:fixed;inset:0;transition:opacity .3s;opacity:0;pointer-events:none;z-index:1;will-change:opacity;transform:translateZ(0)}
@@ -411,7 +411,7 @@
 
   /* ══════ CONSOLE ══════ */
   #consoleScreen{display:flex;flex-direction:column;position:relative;height:100vh;
-    background:linear-gradient(180deg, #121622 0%, #141a27 15%, #121725 50%, #101420 85%, #0e111b 100%);
+    background:linear-gradient(180deg, #050607 0%, #070809 15%, #08090c 50%, #060708 85%, #040506 100%);
   }
   /* Brushed zinc streaks */
   #consoleScreen::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
@@ -1070,7 +1070,7 @@
 
 
   /* ══════ ADMIN PAGE SCREENS ══════ */
-  #settingsScreen{background:#141a27;min-height:100vh;padding:0}
+  #settingsScreen{background:#0e1019;min-height:100vh;padding:0}
   #settingsScreen.active{z-index:850}
   .admin-page{display:flex;flex-direction:column;height:100vh;overflow:hidden}
   .admin-page-header{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 24px 0;background:linear-gradient(180deg,#161a26,#10131c);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
@@ -2355,32 +2355,6 @@
 }
 #settingsScreen .mv-close:hover{opacity:1}
 
-
-  /* ── VISIBILITY / CONTRAST BOOST (office / daylight) ── */
-  #consoleScreen::before{opacity:.35}
-  #consoleScreen::after{opacity:.20}
-  .crt-monitor{
-    border-color:rgba(255,255,255,.12);
-    box-shadow:0 6px 28px rgba(0,0,0,.45), 0 14px 60px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.06);
-    background:
-      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.010) 1px,rgba(255,255,255,.010) 2px,transparent 2px,transparent 4px),
-      linear-gradient(170deg,#2b3142 0%,#212638 30%,#181c29 60%,#121521 100%);
-  }
-  .tile-label,.tile-sub,.tile-status-label{color:rgba(245,250,255,.92) !important}
-  .tile-sub{opacity:.85}
-  .tile-status-label{opacity:.9}
-  .tile-dot{filter:brightness(1.15) saturate(1.05)}
-  .expanded-panel{background:linear-gradient(180deg, rgba(22,26,39,.95), rgba(16,19,29,.95)) !important}
-  .exp-body{color:rgba(245,250,255,.92)}
-  /* Settings visibility */
-  #settingsScreen .admin-page-body{
-    background: radial-gradient(1200px 600px at 20% 0%, rgba(0,255,136,.08), transparent 60%),
-                radial-gradient(900px 500px at 85% 15%, rgba(64,160,255,.10), transparent 60%),
-                rgba(16,20,32,.92) !important;
-  }
-  #settingsScreen .admin-page-tab{border-color:rgba(255,255,255,.10) !important}
-  #settingsScreen .admin-page-tab{color:rgba(245,250,255,.92) !important}
-  #settingsScreen .admin-page-tab:hover{filter:brightness(1.12)}
 </style>
 <script>
 // Pre-render theme injection — runs before body paints
@@ -2405,7 +2379,25 @@
         obs.observe(document.documentElement,{childList:true,subtree:true});
       }
     }
-}catch(e){}
+    // Intel theme pre-render
+    var it=localStorage.getItem('cb_intelTheme');
+    if(it&&it!=='standard'){
+      var obs2=new MutationObserver(function(m,o){
+        var p=document.getElementById('expIntel');
+        if(p){p.classList.add('intel-theme-'+it);o.disconnect()}
+      });
+      if(document.body){
+        var p=document.getElementById('expIntel');
+        if(p)p.classList.add('intel-theme-'+it);
+      }else{
+        document.addEventListener('DOMContentLoaded',function(){
+          var p=document.getElementById('expIntel');
+          if(p)p.classList.add('intel-theme-'+it);
+        });
+        obs2.observe(document.documentElement,{childList:true,subtree:true});
+      }
+    }
+  }catch(e){}
 })();
 </script>
 </head>
@@ -2970,6 +2962,52 @@
       <div style="display:flex;align-items:center;gap:14px;margin-top:8px">
         <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--green);letter-spacing:1px" id="currentThemeLabel">Current: CRT Monitor</div>
         <button class="ap-btn ap-btn-cyan" onclick="openThemePreview()" style="font-size:10px;padding:8px 20px">👁 Preview & Select Theme</button>
+      </div>
+    </div>
+    <div class="ap-section"><h4>🌐 Console Background <span class="save-blip" id="blipConsoleBg">✓ Saved</span></h4>
+      <p>Set the background color and overlay texture for the console screen. Affects all users in real-time.</p>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:12px">
+        <div style="flex:1;min-width:200px">
+          <label style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#666;text-transform:uppercase;display:block;margin-bottom:8px">Background Color</label>
+          <div style="display:flex;align-items:center;gap:10px">
+            <input type="color" id="consoleBgColor" value="#080a10" onchange="updateConsoleBg()" style="width:48px;height:36px;border:1px solid var(--border);border-radius:4px;background:transparent;cursor:pointer;padding:2px">
+            <input id="consoleBgHex" value="#080a10" onchange="document.getElementById('consoleBgColor').value=this.value;updateConsoleBg()" style="width:90px;font-family:IBM Plex Mono,monospace;font-size:11px;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:6px 8px;color:#aaa;outline:none;letter-spacing:1px">
+          </div>
+          <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+            <button class="cbg-preset" onclick="setConsoleBgColor('#080a10')" title="Default Black" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#080a10;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#0a1628')" title="Dark Navy" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#0a1628;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#1a1f2e')" title="Dark Slate" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1a1f2e;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#1e1e24')" title="Deep Charcoal" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1e1e24;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#0d1a0d')" title="Dark Green" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#0d1a0d;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#1a0a0a')" title="Dark Red" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1a0a0a;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#12121a')" title="Dark Purple" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#12121a;cursor:pointer"></button>
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px">
+          <label style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#666;text-transform:uppercase;display:block;margin-bottom:8px">Texture Overlay</label>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="consoleBgTextureGrid">
+            <button class="cbg-tex active" data-tex="none" onclick="setConsoleTexture('none')"><span class="cbg-tex-preview" style="background:#080a10"></span><span class="cbg-tex-label">None</span></button>
+            <button class="cbg-tex" data-tex="scanlines" onclick="setConsoleTexture('scanlines')"><span class="cbg-tex-preview" style="background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.03) 2px,rgba(255,255,255,.03) 4px)"></span><span class="cbg-tex-label">Scanlines</span></button>
+            <button class="cbg-tex" data-tex="grid" onclick="setConsoleTexture('grid')"><span class="cbg-tex-preview" style="background:repeating-linear-gradient(0deg,transparent,transparent 11px,rgba(0,255,136,.04) 11px,rgba(0,255,136,.04) 12px),repeating-linear-gradient(90deg,transparent,transparent 11px,rgba(0,255,136,.04) 11px,rgba(0,255,136,.04) 12px)"></span><span class="cbg-tex-label">Grid</span></button>
+            <button class="cbg-tex" data-tex="noise" onclick="setConsoleTexture('noise')"><span class="cbg-tex-preview cbg-noise-preview"></span><span class="cbg-tex-label">Noise</span></button>
+            <button class="cbg-tex" data-tex="circuit" onclick="setConsoleTexture('circuit')"><span class="cbg-tex-preview" style="background:repeating-linear-gradient(90deg,transparent,transparent 20px,rgba(0,212,255,.03) 20px,rgba(0,212,255,.03) 21px),repeating-linear-gradient(0deg,transparent,transparent 30px,rgba(0,212,255,.03) 30px,rgba(0,212,255,.03) 31px),repeating-linear-gradient(45deg,transparent 0px,transparent 28px,rgba(0,212,255,.02) 28px,rgba(0,212,255,.02) 29px)"></span><span class="cbg-tex-label">Circuit</span></button>
+            <button class="cbg-tex" data-tex="hex" onclick="setConsoleTexture('hex')"><span class="cbg-tex-preview cbg-hex-preview"></span><span class="cbg-tex-label">Hex</span></button>
+          </div>
+          <div style="margin-top:10px">
+            <label style="font-family:Saira,sans-serif;font-size:8px;letter-spacing:2px;color:#555;text-transform:uppercase;display:block;margin-bottom:4px">Texture Opacity: <span id="texOpacityVal">40%</span></label>
+            <input type="range" id="consoleBgTexOpacity" min="10" max="100" value="40" oninput="updateTexOpacity()" style="width:100%;accent-color:var(--cyan)">
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:14px;text-align:center">
+        <button class="ap-btn ap-btn-ghost" onclick="resetConsoleBg()" style="font-size:9px;padding:7px 20px">↺ Reset to Default</button>
+      </div>
+    </div>
+    <div class="ap-section"><h4>🔍 Intel Theme <span class="save-blip" id="blipIntelTheme">✓ Saved</span></h4>
+      <p>Visual style for the Intel Submissions screen. Standard is clean and minimal. CRT adds scanlines, phosphor glow, and vignette for an immersive terminal feel.</p>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:8px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--green);letter-spacing:1px" id="currentIntelThemeLabel">Current: Standard</div>
+        <button class="ap-btn ap-btn-cyan" onclick="openIntelThemePreview()" style="font-size:10px;padding:8px 20px">👁 Preview & Select</button>
       </div>
     </div>
     <div class="ap-section"><h4>🖋 Typography <span class="save-blip" id="blipTypography">✓ Saved</span></h4>
@@ -3911,8 +3949,6 @@ function submitLogin(){
           setLoginStatus('ENTER PASSWORD','');setLoginLed('active');
           btn.style.opacity='';btn.style.pointerEvents='';
         }else{
-          // If this team was removed/nuked, clear any cached state for this ID on this device
-          clearGameStateForTeamId(idVal);
           setLoginLed('denied');setLoginStatus('ACCESS DENIED — INVALID ID','denied');
           btn.style.opacity='';btn.style.pointerEvents='';
           playDenied();document.getElementById('flashR').classList.add('on');
@@ -5191,67 +5227,28 @@ function downloadCurrentMedia(){
 
 function _resetZoomCursor(){
   try{
-    // Force-release any inherited cursor state
-    document.documentElement.style.cursor='default';
     document.body.style.cursor='default';
-
     // Clear any stuck zoom classes/cursors in viewers
     document.querySelectorAll('.mv-image-viewer.zoomed').forEach(el=>el.classList.remove('zoomed'));
     document.querySelectorAll('.feed-single-img.zoomed').forEach(el=>{el.classList.remove('zoomed'); el.classList.remove('dragging');});
-
     // Remove any inline cursor styles that may have been applied
     document.querySelectorAll('[style*="cursor"]').forEach(el=>{
-      try{
-        if(el && el.style && el.style.cursor){
-          const c=el.style.cursor;
-          if(c.includes('zoom')||c==='grab'||c==='grabbing') el.style.cursor='';
-        }
-      }catch(e){}
+      if(el && el.style && el.style.cursor && (el.style.cursor.includes('zoom')||el.style.cursor==='grab'||el.style.cursor==='grabbing')) el.style.cursor='';
     });
-
     // Next tick: fully release cursor to stylesheet defaults
-    setTimeout(()=>{
-      try{
-        document.documentElement.style.cursor='';
-        document.body.style.cursor='';
-      }catch(e){}
-    },0);
+    setTimeout(()=>{try{document.body.style.cursor='';}catch(e){}},0);
   }catch(e){}
 }
 
 
-
 function closeMediaViewer(){
-  const mv=document.getElementById('mediaViewer');
-  if(mv)mv.classList.remove('active');
-
-  // Hard stop any media handlers and remove preview DOM so no cursor/handlers can linger
+  document.getElementById('mediaViewer').classList.remove('active');
   stopMvAudio();
-  const vid=document.querySelector('.mv-video');if(vid)try{vid.pause();}catch(e){}
-  const body=document.getElementById('mvBody'); if(body) body.innerHTML='';
-
-  // Release any cursor state
-  try{ if(mv) mv.style.cursor=''; }catch(e){}
+  // Stop any video
+  const vid=document.querySelector('.mv-video');
+  if(vid)vid.pause();
   _resetZoomCursor();
 }
-
-
-
-// Cursor watchdog — if any zoom/grab cursor leaks outside the viewer, force reset.
-// (Fixes rare cases where the cursor appears as zoom-in on other UI after closing an image.)
-(function(){
-  document.addEventListener('mousemove',function(){
-    try{
-      const mv=document.getElementById('mediaViewer');
-      if(mv && mv.classList.contains('active')) return;
-      const c1=document.body && document.body.style ? document.body.style.cursor : '';
-      const c2=document.documentElement && document.documentElement.style ? document.documentElement.style.cursor : '';
-      if((c1 && c1.includes('zoom'))||(c2 && c2.includes('zoom'))||c1==='grab'||c1==='grabbing'||c2==='grab'||c2==='grabbing'){
-        _resetZoomCursor();
-      }
-    }catch(e){}
-  },{passive:true});
-})();
 
 function navMedia(d){
   stopMvAudio();
@@ -7525,7 +7522,7 @@ function startBroadcastPolling(){
       const serverGen=String(cfg.config.sessionGenTeam||'0');
       const localGen=localStorage.getItem('cb_sessionGen')||'0';
       if(localGen!=='0'&&serverGen!=='0'&&localGen!==serverGen){
-        if(isAdmin){clearSession();}else{try{clearAuthSessionOnly();}catch(e){} currentVaultTeam=null;isSubmitted=false;}location.reload();return;
+        clearSession();location.reload();return;
       }
       try{localStorage.setItem('cb_sessionGen',serverGen)}catch(e){}
       // Sync appearance settings pushed by admin
@@ -9818,21 +9815,6 @@ function clearGameState(){
   }catch(e){}
 }
 
-// Clear cached game state for a specific team id (used when a team is nuked/removed
-// and the user attempts to log back in on this device)
-function clearGameStateForTeamId(teamId){
-  try{
-    if(!teamId)return;
-    const tid=String(teamId).trim();
-    if(!tid)return;
-    const prefixes=['vaultUnlocks','vaultFails','vaultLockout','intelDraft','isSubmitted','sessionStart'];
-    prefixes.forEach(p=>{
-      try{localStorage.removeItem('cb_gs_'+tid+'_'+p)}catch(e){}
-    });
-  }catch(e){}
-}
-
-
 // Auto-save game state periodically and on visibility change
 setInterval(()=>{if(currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){saveGameState();saveSession()}},5000);
 function _saveAll(){if(currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){saveGameState();saveSession()}}
@@ -9840,27 +9822,18 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('beforeunload',_saveAll);
 window.addEventListener('pagehide',_saveAll);
 
-// Clear only authentication/session artifacts (keeps team game progress like drafts/unlocks)
-function clearAuthSessionOnly(){
+function clearSession(){
   try{
+    clearGameState();
     localStorage.removeItem('cb_session');
     sessionStorage.removeItem('cb_session');
+    localStorage.removeItem('cb_posts');
+    localStorage.removeItem('cb_media');
+    localStorage.removeItem('cb_intel');
     _vaultLockoutEnd=null;
     _sessionStartTime=null;
   }catch(e){}
 }
-
-// Full local wipe (session + cached content + team game state)
-function clearSession(){
-  try{
-    clearGameState();
-    clearAuthSessionOnly();
-    localStorage.removeItem('cb_posts');
-    localStorage.removeItem('cb_media');
-    localStorage.removeItem('cb_intel');
-  }catch(e){}
-}
-
 
 function restoreSession(){
   try{
@@ -9876,9 +9849,13 @@ function restoreSession(){
     const data=JSON.parse(raw);
     if(!data||!data.team)return false;
 
-    // For team sessions restored from localStorage (browser was closed):
-    // enforce 2-minute grace window — if closed longer, require re-login
-    if(fromLocalStorage&&data.type==='team'&&data.savedAt){
+    // For sessions restored from localStorage (browser was closed):
+    // enforce a 2-minute grace window — if closed longer, require re-login.
+    //
+    // NOTE: We apply this to BOTH team + admin sessions. Admin tokens can expire
+    // server-side; auto-restoring an old admin session on mobile can look like a
+    // "login loop" ("Admin session expired") even though the user is trying to log in.
+    if(fromLocalStorage&&data.savedAt){
       const elapsed=Date.now()-data.savedAt;
       const graceMs=2*60*1000; // 2 minutes
       if(elapsed>graceMs){
@@ -10499,17 +10476,25 @@ function applyGridTheme(id){
 // ══════ INTEL DISPLAY THEME ══════
 let _currentIntelTheme='standard';
 function setIntelTheme(id){
-  // Intel submissions theme options are disabled for now.
-  applyIntelTheme('standard');
+  _currentIntelTheme=id;
+  applyIntelTheme(id);
+  // Save to backend
+  apiCall('saveEventConfig',{config:{intelTheme:id}});
+  // Flash save blip
+  const blip=document.getElementById('blipIntelTheme');
+  if(blip){blip.classList.add('show');setTimeout(()=>blip.classList.remove('show'),1500)}
 }
 function applyIntelTheme(id){
-  // Intel submissions theme options are disabled for now.
-  _currentIntelTheme='standard';
+  _currentIntelTheme=id||'standard';
   const panel=document.getElementById('expIntel');
-  if(panel){
-    panel.classList.remove('intel-theme-minimal','intel-theme-holo','intel-theme-dossier','intel-theme-standard');
-  }
-  try{localStorage.removeItem('cb_intelTheme');}catch(e){}
+  if(!panel)return;
+  panel.classList.remove('intel-theme-minimal','intel-theme-holo','intel-theme-dossier');
+  if(id&&id!=='standard')panel.classList.add('intel-theme-'+id);
+  try{localStorage.setItem('cb_intelTheme',_currentIntelTheme)}catch(e){}
+  // Update appearance panel UI
+  const names={standard:'Standard',minimal:'Sleek Minimal',holo:'Holo HUD Green',dossier:'Green Dossier'};
+  const lbl=document.getElementById('currentIntelThemeLabel');
+  if(lbl)lbl.textContent='Current: '+(names[_currentIntelTheme]||'Standard');
 }
 
 // ══════ INTEL THEME PREVIEW ══════
