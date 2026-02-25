@@ -718,8 +718,9 @@
   .grid-theme-terminal .tile-status-label.active{color:rgba(0,255,136,.5)!important}
 
   /* ══════ EXPANDED OVERLAY ══════ */
-  #panelOverlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
-  #panelOverlay.active{opacity:1;pointer-events:all}
+  /* Panel screens — full-viewport screens that replace the old overlay system */
+  .panel-screen{background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center}
+  .panel-screen .expanded-panel.visible{display:flex}
   .expanded-panel{width:92vw;height:88vh;border-radius:6px;display:none;flex-direction:column;overflow:hidden;
     background:
       repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.003) 1px,rgba(255,255,255,.003) 2px,transparent 2px,transparent 4px),
@@ -3105,12 +3106,18 @@
 </div>
 
 <!-- EXPANDED -->
-<div id="panelOverlay">
-  <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter"></span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
-  <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
-  <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area"><div class="intel-crt-header" style="text-align:center;justify-content:center"><div class="intel-crt-dot"></div> INTEL SUBMISSIONS</div><div class="intel-notice" id="intelNotice"><span class="intel-notice-icon">💾</span> Your answers save automatically as you type — feel free to edit, revise, and change them as many times as you need. Once you press <strong>Submit Intel</strong>, your answers are locked in and cannot be changed.</div><div id="intelForm"></div></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
-  <div class="expanded-panel" id="expVault">
-    <div class="exp-header"><span class="panel-icon">🔐</span><span class="exp-title">The Vault</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div>
+<div class="screen panel-screen" id="feedScreen">
+  <div class="expanded-panel visible" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter"></span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
+</div>
+<div class="screen panel-screen" id="mediaScreen">
+  <div class="expanded-panel visible" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanelScreen()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
+</div>
+<div class="screen panel-screen" id="intelScreen">
+  <div class="expanded-panel visible" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanelScreen()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area"><div class="intel-crt-header" style="text-align:center;justify-content:center"><div class="intel-crt-dot"></div> INTEL SUBMISSIONS</div><div class="intel-notice" id="intelNotice"><span class="intel-notice-icon">💾</span> Your answers save automatically as you type — feel free to edit, revise, and change them as many times as you need. Once you press <strong>Submit Intel</strong>, your answers are locked in and cannot be changed.</div><div id="intelForm"></div></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
+</div>
+<div class="screen panel-screen" id="vaultScreen">
+  <div class="expanded-panel visible" id="expVault">
+    <div class="exp-header"><span class="panel-icon">🔐</span><span class="exp-title">The Vault</span><button class="exp-close" onclick="closePanelScreen()">✕ CLOSE</button></div>
     <div class="exp-body">
       <div class="vault-puzzle-layout">
         <div class="vault-keypad-section">
@@ -4035,7 +4042,7 @@ function renderVaultPanel(){
     if(c.unlocked){
       let viewLink='';
       if(c.linkedMediaIdx!==null&&c.linkedMediaIdx!==undefined){
-        viewLink=`<div class="vui-media-link" onclick="event.stopPropagation();closePanel();setTimeout(()=>{openPanel('media');setTimeout(()=>openMediaViewer(${c.linkedMediaIdx}),300)},350)">▸ View in Evidence Locker</div>`;
+        viewLink=`<div class="vui-media-link" onclick="event.stopPropagation();openPanel('media');setTimeout(()=>openMediaViewer(${c.linkedMediaIdx}),300)">▸ View in Evidence Locker</div>`;
       }
       return `<div class="vault-unlock-item">
         <span class="vui-icon">🔓</span>
@@ -4321,9 +4328,9 @@ function renderMedia(){
 }
 
 // ══════ PANELS ══════
-const overlay=document.getElementById('panelOverlay');
+const _panelScreenMap={feed:'feedScreen',media:'mediaScreen',intel:'intelScreen',vault:'vaultScreen'};
 let currentFeedView='grid';
-function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);if(window._histPush)window._histPush('panel');saveSession();if(!isAdmin&&currentVaultTeam)apiCall('heartbeat',{teamId:currentVaultTeam.id});
+function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});const screenId=_panelScreenMap[t];if(!screenId)return;showScreen(screenId);if(window._histPush)window._histPush('panel');saveSession();if(!isAdmin&&currentVaultTeam)apiCall('heartbeat',{teamId:currentVaultTeam.id});
   if(t==='feed'){renderFeed();setFeedView('grid');_refreshPanelData('feed')}if(t==='media'){renderMedia();_refreshPanelData('media')}if(t==='intel'){renderIntelForm();restoreIntelDraft();_refreshPanelData('intel')}if(t==='vault'){renderVaultPanel();_refreshPanelData('vault')}}
 
 // Fresh data fetch on panel open — ensures frontend matches backend
@@ -4372,7 +4379,8 @@ function _refreshPanelData(panel){
     });
   }
 }
-function closePanel(){_stopAllFeedVideos();overlay.style.cssText='';overlay.classList.remove('active');saveGameState();setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession();renderGrid()},120)}
+function closePanelScreen(){_stopAllFeedVideos();saveGameState();showScreen('consoleScreen');saveSession();renderGrid()}
+function closePanel(){closePanelScreen()}
 
 // Feed view modes
 function feedClose(){
@@ -4380,7 +4388,7 @@ function feedClose(){
   if(currentFeedView==='single'){
     setFeedView('grid');
   }else{
-    closePanel();
+    closePanelScreen();
   }
 }
 function toggleFeedCaption(){
@@ -5734,7 +5742,7 @@ document.addEventListener('keydown',e=>{
     return;
   }
   // Feed focus mode — arrow keys navigate posts
-  const feedOpen=document.getElementById('expFeed')?.classList.contains('visible');
+  const feedOpen=_currentScreen==='feedScreen';
   if(feedOpen&&currentFeedView==='single'){
     if(e.key==='ArrowLeft'){e.preventDefault();navPost(-1)}
     if(e.key==='ArrowRight'){e.preventDefault();navPost(1)}
@@ -5742,7 +5750,7 @@ document.addEventListener('keydown',e=>{
     return;
   }
   // Vault keypad — type with physical keyboard
-  const vaultOpen=document.getElementById('expVault')?.classList.contains('visible');
+  const vaultOpen=_currentScreen==='vaultScreen';
   if(vaultOpen&&!e.target.closest('input,textarea,select')){
     const key=e.key;
     if(key==='Enter'){e.preventDefault();vkSubmit();return}
@@ -5752,9 +5760,9 @@ document.addEventListener('keydown',e=>{
     if(/^[a-zA-Z0-9]$/.test(key)){e.preventDefault();vkType(key.toUpperCase());return}
     if(vkSymMode&&/^[!@#$%^&*()\-_=+\[\]{};:'",.<>/?\\|`~]$/.test(key)){e.preventDefault();vkType(key);return}
   }
-  // Escape closes expanded panel
-  if(overlay.classList.contains('active')&&e.key==='Escape'){
-    e.preventDefault();closePanel();return;
+  // Escape closes panel screen
+  if(['feedScreen','mediaScreen','intelScreen','vaultScreen'].includes(_currentScreen)&&e.key==='Escape'){
+    e.preventDefault();closePanelScreen();return;
   }
   // Escape closes landing preview
   if(document.getElementById('landingPreviewOverlay').classList.contains('active')&&e.key==='Escape'){
@@ -6274,11 +6282,6 @@ function closeAllAdminPanels(){
     const el=document.getElementById(id);
     if(el){el.classList.remove('active');el.style.cssText=''}
   });
-  // Also instant-close content panels
-  const ov=document.getElementById('panelOverlay');
-  ov.classList.remove('active');
-  ov.style.cssText='';
-  document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));
   if(bcMediaRecorder&&bcMediaRecorder.state==='recording')bcMediaRecorder.stop();
   lbExpandedTeam=null;
   hideAdminTabs();
@@ -9283,10 +9286,11 @@ updateLandingForMode();
 function _sessionStore(){return regSettings.sessionPersist?localStorage:sessionStorage}
 function saveSession(){
   try{
-    // Only save when user is authenticated on the console screen
-    if(_currentScreen!=='consoleScreen'&&_currentScreen!=='settingsScreen')return;
+    // Only save when user is authenticated on a game screen
+    const _savableScreens=['consoleScreen','settingsScreen','feedScreen','mediaScreen','intelScreen','vaultScreen'];
+    if(!_savableScreens.includes(_currentScreen))return;
     if(!currentVaultTeam)return;
-    const data={type:isAdmin?'admin':'team',team:currentVaultTeam,savedAt:Date.now()};
+    const data={type:isAdmin?'admin':'team',team:currentVaultTeam,savedAt:Date.now(),screen:_currentScreen};
     if(isAdmin){
       data.adminSession=adminSession;
       // Save which admin page is open
@@ -9295,9 +9299,6 @@ function saveSession(){
       var activeTab=document.querySelector('#settingsScreen .admin-page-section.active');
       if(activeTab)data.adminTab=activeTab.id;
     }
-    // Save which player panel is open so refresh restores exactly where the user was
-    const openPanelEl=document.querySelector('.expanded-panel.visible');
-    if(openPanelEl)data.panel=openPanelEl.id;
     // Save feed view state so focus mode + post index survive refresh
     data.feedView=currentFeedView;
     data.feedPost=currentPost;
@@ -9442,8 +9443,8 @@ function clearGameState(){
 }
 
 // Auto-save game state periodically and on visibility change
-setInterval(()=>{if(currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){saveGameState();saveSession()}},5000);
-function _saveAll(){if(currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){saveGameState();saveSession()}}
+setInterval(()=>{if(currentVaultTeam&&['consoleScreen','settingsScreen','feedScreen','mediaScreen','intelScreen','vaultScreen'].includes(_currentScreen)){saveGameState();saveSession()}},5000);
+function _saveAll(){if(currentVaultTeam&&['consoleScreen','settingsScreen','feedScreen','mediaScreen','intelScreen','vaultScreen'].includes(_currentScreen)){saveGameState();saveSession()}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')_saveAll()});
 window.addEventListener('beforeunload',_saveAll);
 window.addEventListener('pagehide',_saveAll);
@@ -9486,53 +9487,37 @@ function restoreSession(){
       }
     }
 
-    // Always restore to consoleScreen as the base — panels overlay on top of it,
-    // and admin settingsScreen is handled separately via navigateToAdmin()
-    const targetScreen='consoleScreen';
-    const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
+    // Restore the exact screen the user was on
+    const targetScreen=data.screen||'consoleScreen';
+    // Map screen IDs to panel tile names for content rendering
+    const _screenToPanelType={feedScreen:'feed',mediaScreen:'media',intelScreen:'intel',vaultScreen:'vault'};
 
     // Restore cached content (posts/media/intel) from localStorage BEFORE rendering
     // This makes images appear instantly instead of waiting 3-5s for backend API
     _restoreContentCache();
 
-    // Detect mobile for conditional panel restore
-    const _isMobileRestore=window.innerWidth<=768;
-
     function applyScreenAndPanel(){
-      // Set up screen first (hidden — opacity:0 via .screen default)
+      // Activate the saved screen directly
       document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
       document.getElementById(targetScreen).classList.add('active');
       _currentScreen=targetScreen;
       document.getElementById('notepadTrigger').classList.add('visible');
 
-      // Open panel SYNCHRONOUSLY before any paint if one was saved
-      // On mobile: skip panel restore — land on console grid so user has context
-      // On desktop: restore exactly where they were (prevents flash)
-      if(data.panel&&panelMap[data.panel]&&!_isMobileRestore){
-        const panelEl=document.getElementById(data.panel);
-        if(panelEl){
-          document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));
-          panelEl.classList.add('visible');
-          // Show overlay immediately, no transition
-          overlay.style.cssText='opacity:1;pointer-events:all;transition:none';
-          overlay.classList.add('active');
-          // Render panel content immediately with whatever is in memory
-          // Backend refresh will update it in the background
-          const t=panelMap[data.panel];
-          if(t==='feed'){
-            renderFeed();
-            // Restore exact feed view state — grid or focus mode + post index
-            if(data.feedView==='single'&&typeof data.feedPost==='number'){
-              currentPost=data.feedPost;
-              setFeedView('single');
-            }else{
-              setFeedView('grid');
-            }
+      // If restoring to a panel screen, render its content immediately
+      const panelType=_screenToPanelType[targetScreen];
+      if(panelType){
+        if(panelType==='feed'){
+          renderFeed();
+          if(data.feedView==='single'&&typeof data.feedPost==='number'){
+            currentPost=data.feedPost;
+            setFeedView('single');
+          }else{
+            setFeedView('grid');
           }
-          if(t==='media')renderMedia();
-          if(t==='intel'){renderIntelForm();restoreIntelDraft()}
-          if(t==='vault')renderVaultPanel();
         }
+        if(panelType==='media')renderMedia();
+        if(panelType==='intel'){renderIntelForm();restoreIntelDraft()}
+        if(panelType==='vault')renderVaultPanel();
       }
     }
 
@@ -9592,11 +9577,10 @@ function restoreSession(){
         // Re-sync vault codes after fresh data arrives, then re-apply unlock state
         syncVaultCodesFromMedia();
         restoreGameState();
-        // Re-render panel with fresh backend data once it arrives
-        // On mobile: skip — user is on console grid
-        if(data.panel&&panelMap[data.panel]&&!_isMobileRestore){
-          const t=panelMap[data.panel];
-          if(t==='feed'){
+        // Re-render active panel screen with fresh backend data
+        const _panelType2=_screenToPanelType[targetScreen];
+        if(_panelType2){
+          if(_panelType2==='feed'){
             renderFeed();
             if(data.feedView==='single'&&typeof data.feedPost==='number'){
               currentPost=data.feedPost;
@@ -9605,9 +9589,9 @@ function restoreSession(){
               setFeedView(currentFeedView);
             }
           }
-          if(t==='media')renderMedia();
-          if(t==='intel'){renderIntelForm();restoreIntelDraft()}
-          if(t==='vault')renderVaultPanel();
+          if(_panelType2==='media')renderMedia();
+          if(_panelType2==='intel'){renderIntelForm();restoreIntelDraft()}
+          if(_panelType2==='vault')renderVaultPanel();
         }
         // Also update grid badges after vault state is restored
         renderGrid();
@@ -9663,10 +9647,11 @@ if(!restoreSession()){
       setFeedView('grid');return;
     }
 
-    // 3. Any expanded panel open?
-    const openExpPanel=document.querySelector('.expanded-panel.visible');
-    if(openExpPanel){
-      closePanel();return;
+    // 3. On a panel screen? Go back to console.
+    const _panelScreenIds=['feedScreen','mediaScreen','intelScreen','vaultScreen'];
+    const curScreen=document.querySelector('.screen.active')?.id||'';
+    if(_panelScreenIds.includes(curScreen)){
+      closePanelScreen();return;
     }
 
     // 4. Any admin panel open?
@@ -9690,7 +9675,6 @@ if(!restoreSession()){
     }
 
     // 5. On console screen — go back to landing
-    const curScreen=document.querySelector('.screen.active')?.id||'';
     if(curScreen==='consoleScreen'&&!isAdmin){
       // Don't actually log out — just show landing. User can log back in easily.
       showScreen('landingScreen');return;
@@ -10368,7 +10352,6 @@ function confirmVaultLock(){
 
 // ══════ PAGE-BASED ADMIN NAVIGATION ══════
 let _gearReturnScreen='consoleScreen';
-let _gearReturnPanel=null;
 let _currentAdminPage=null; // 'settingsScreen' when on admin page, null otherwise
 
 function handleGearClick(){
@@ -10405,9 +10388,6 @@ function navigateToAdmin(screenId,tabId){
   // Remember where we came from (only if coming from non-admin screen)
   if(!_currentAdminPage){
     _gearReturnScreen=_currentScreen;
-    // Remember open panel
-    const openPanelEl=document.querySelector('.expanded-panel.visible');
-    _gearReturnPanel=openPanelEl?openPanelEl.id:null;
   }
   _currentAdminPage='settingsScreen';
   // Move panels into page sections if not already done
@@ -10441,15 +10421,17 @@ function _switchToTab(screenId,tabId){
 }
 
 function returnFromAdminPage(){
-  // Unmount panels back to body so overlays still work for backward compat
   _currentAdminPage=null;
   showScreen(_gearReturnScreen);
-  // Restore open panel if any
-  if(_gearReturnPanel){
-    const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
-    const tileId=panelMap[_gearReturnPanel];
-    if(tileId)setTimeout(function(){openPanel(tileId)},100);
-    _gearReturnPanel=null;
+  // If returning to a panel screen, re-render its content
+  const _rPanelType={feedScreen:'feed',mediaScreen:'media',intelScreen:'intel',vaultScreen:'vault'}[_gearReturnScreen];
+  if(_rPanelType){
+    if(_rPanelType==='feed'){renderFeed();setFeedView(currentFeedView)}
+    if(_rPanelType==='media')renderMedia();
+    if(_rPanelType==='intel'){renderIntelForm();restoreIntelDraft()}
+    if(_rPanelType==='vault')renderVaultPanel();
+  }else{
+    renderGrid();
   }
   updateGearIcon();
   updatePreviewIcon();
