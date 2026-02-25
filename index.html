@@ -4390,7 +4390,14 @@ function _refreshPanelData(panel){
     });
   }
 }
-function closePanelScreen(){_stopAllFeedVideos();saveGameState();showScreen('consoleScreen');saveSession();renderGrid()}
+function closePanelScreen(){_stopAllFeedVideos();saveGameState();
+  // Disable transition for instant return to console
+  const cs=document.getElementById('consoleScreen');
+  cs.style.transition='none';
+  showScreen('consoleScreen');
+  // Re-enable transition after paint
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{cs.style.transition=''}));
+  saveSession();renderGrid()}
 function closePanel(){closePanelScreen()}
 
 // Feed view modes
