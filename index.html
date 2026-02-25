@@ -3949,6 +3949,8 @@ function submitLogin(){
           setLoginStatus('ENTER PASSWORD','');setLoginLed('active');
           btn.style.opacity='';btn.style.pointerEvents='';
         }else{
+          // If this team was removed/nuked, clear any cached state for this ID on this device
+          clearGameStateForTeamId(idVal);
           setLoginLed('denied');setLoginStatus('ACCESS DENIED — INVALID ID','denied');
           btn.style.opacity='';btn.style.pointerEvents='';
           playDenied();document.getElementById('flashR').classList.add('on');
@@ -4533,15 +4535,7 @@ function _refreshPanelData(panel){
     });
   }
 }
-function closePanel(){
-  _stopAllFeedVideos();
-  // Defensive UI cleanup (prevents stuck zoom cursor/icons after viewing images)
-  _resetUIState();
-  overlay.style.cssText='';
-  overlay.classList.remove('active');
-  saveGameState();
-  setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession();renderGrid()},120)
-}
+function closePanel(){_stopAllFeedVideos();overlay.style.cssText='';overlay.classList.remove('active');saveGameState();setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession();renderGrid()},120)}
 
 // Feed view modes
 function feedClose(){
@@ -5235,74 +5229,67 @@ function downloadCurrentMedia(){
 
 function _resetZoomCursor(){
   try{
+    // Force-release any inherited cursor state
+    document.documentElement.style.cursor='default';
     document.body.style.cursor='default';
+
     // Clear any stuck zoom classes/cursors in viewers
     document.querySelectorAll('.mv-image-viewer.zoomed').forEach(el=>el.classList.remove('zoomed'));
     document.querySelectorAll('.feed-single-img.zoomed').forEach(el=>{el.classList.remove('zoomed'); el.classList.remove('dragging');});
+
     // Remove any inline cursor styles that may have been applied
     document.querySelectorAll('[style*="cursor"]').forEach(el=>{
-      if(el && el.style && el.style.cursor && (el.style.cursor.includes('zoom')||el.style.cursor==='grab'||el.style.cursor==='grabbing')) el.style.cursor='';
-    });
-    // Next tick: fully release cursor to stylesheet defaults
-    setTimeout(()=>{try{document.body.style.cursor='';}catch(e){}},0);
-  }catch(e){}
-}
-
-// ── Global UI state reset ──
-// Defensive cleanup to prevent “stuck” cursors/icons/transforms when navigating between panels/screens.
-// Conservative: only resets transient UI (viewers, cursors, playback, dropdowns/modals).
-function _resetUIState(opts){
-  opts=opts||{};
-  try{
-    // Cursor / zoom artifacts
-    _resetZoomCursor();
-
-    // Stop any media playback (safe even if nothing is playing)
-    try{stopMvAudio()}catch(e){}
-    try{const vid=document.querySelector('.mv-video'); if(vid)vid.pause()}catch(e){}
-    try{const mv=document.getElementById('mvVideo'); if(mv&&mv.pause)mv.pause()}catch(e){}
-
-    // Close media viewer unless explicitly preserved
-    if(!opts.keepMediaViewer){
-      const mvw=document.getElementById('mediaViewer');
-      if(mvw)mvw.classList.remove('active');
-    }
-
-    // Clear lingering swipe/transform styles from feed single view
-    try{
-      document.querySelectorAll('.feed-single-view,[data-feed-single]').forEach(el=>{
-        if(el && el.style){
-          if(el.style.transform)el.style.transform='';
-          if(el.style.opacity)el.style.opacity='';
-          if(el.style.transition)el.style.transition='';
+      try{
+        if(el && el.style && el.style.cursor){
+          const c=el.style.cursor;
+          if(c.includes('zoom')||c==='grab'||c==='grabbing') el.style.cursor='';
         }
-      });
-    }catch(e){}
+      }catch(e){}
+    });
 
-    // Close dropdowns / transient overlays
-    if(!opts.keepDropdowns){
-      try{if(typeof closeGearDropdown==='function')closeGearDropdown()}catch(e){}
-      try{if(typeof closeAdminDropdown==='function')closeAdminDropdown()}catch(e){}
-    }
-
-    // Close modals/overlays that can otherwise “stick” visually
-    if(!opts.keepModals){
-      try{const em=document.getElementById('adminEditModal'); if(em)em.classList.remove('active')}catch(e){}
-      try{const tp=document.getElementById('tutorialOverlay'); if(tp)tp.classList.remove('active')}catch(e){}
-      try{const lp=document.getElementById('landingPreviewOverlay'); if(lp)lp.classList.remove('active')}catch(e){}
-    }
+    // Next tick: fully release cursor to stylesheet defaults
+    setTimeout(()=>{
+      try{
+        document.documentElement.style.cursor='';
+        document.body.style.cursor='';
+      }catch(e){}
+    },0);
   }catch(e){}
 }
+
 
 
 function closeMediaViewer(){
-  document.getElementById('mediaViewer').classList.remove('active');
+  const mv=document.getElementById('mediaViewer');
+  if(mv)mv.classList.remove('active');
+
+  // Hard stop any media handlers and remove preview DOM so no cursor/handlers can linger
   stopMvAudio();
-  // Stop any video
-  const vid=document.querySelector('.mv-video');
-  if(vid)vid.pause();
+  const vid=document.querySelector('.mv-video');if(vid)try{vid.pause();}catch(e){}
+  const body=document.getElementById('mvBody'); if(body) body.innerHTML='';
+
+  // Release any cursor state
+  try{ if(mv) mv.style.cursor=''; }catch(e){}
   _resetZoomCursor();
 }
+
+
+
+// Cursor watchdog — if any zoom/grab cursor leaks outside the viewer, force reset.
+// (Fixes rare cases where the cursor appears as zoom-in on other UI after closing an image.)
+(function(){
+  document.addEventListener('mousemove',function(){
+    try{
+      const mv=document.getElementById('mediaViewer');
+      if(mv && mv.classList.contains('active')) return;
+      const c1=document.body && document.body.style ? document.body.style.cursor : '';
+      const c2=document.documentElement && document.documentElement.style ? document.documentElement.style.cursor : '';
+      if((c1 && c1.includes('zoom'))||(c2 && c2.includes('zoom'))||c1==='grab'||c1==='grabbing'||c2==='grab'||c2==='grabbing'){
+        _resetZoomCursor();
+      }
+    }catch(e){}
+  },{passive:true});
+})();
 
 function navMedia(d){
   stopMvAudio();
@@ -6125,20 +6112,7 @@ function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');
 if(window.__configHydrated===undefined)window.__configHydrated=false;
 
 let _currentScreen='landingScreen';
-function showScreen(id){
-  // Light reset when switching screens (cursor/media cleanup without nuking in-progress modals)
-  _resetUIState({keepModals:true});
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  _currentScreen=id;
-  const lb=document.getElementById('logoutBtn');
-  if(lb)lb.classList.toggle('visible',id==='consoleScreen');
-  if(id!=='settingsScreen'){
-    _currentAdminPage=null;
-    updateGearIcon();
-  }
-  if(currentVaultTeam)saveSession()
-}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',id==='consoleScreen');if(id!=='settingsScreen'){_currentAdminPage=null;updateGearIcon()}if(currentVaultTeam)saveSession()}
 function goToRegistration(){
   const mode=regSettings.participantMode||'team';
   // Update registration screen text based on mode
@@ -7589,7 +7563,7 @@ function startBroadcastPolling(){
       const serverGen=String(cfg.config.sessionGenTeam||'0');
       const localGen=localStorage.getItem('cb_sessionGen')||'0';
       if(localGen!=='0'&&serverGen!=='0'&&localGen!==serverGen){
-        clearSession();location.reload();return;
+        if(isAdmin){clearSession();}else{try{clearAuthSessionOnly();}catch(e){} currentVaultTeam=null;isSubmitted=false;}location.reload();return;
       }
       try{localStorage.setItem('cb_sessionGen',serverGen)}catch(e){}
       // Sync appearance settings pushed by admin
@@ -9882,6 +9856,21 @@ function clearGameState(){
   }catch(e){}
 }
 
+// Clear cached game state for a specific team id (used when a team is nuked/removed
+// and the user attempts to log back in on this device)
+function clearGameStateForTeamId(teamId){
+  try{
+    if(!teamId)return;
+    const tid=String(teamId).trim();
+    if(!tid)return;
+    const prefixes=['vaultUnlocks','vaultFails','vaultLockout','intelDraft','isSubmitted','sessionStart'];
+    prefixes.forEach(p=>{
+      try{localStorage.removeItem('cb_gs_'+tid+'_'+p)}catch(e){}
+    });
+  }catch(e){}
+}
+
+
 // Auto-save game state periodically and on visibility change
 setInterval(()=>{if(currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){saveGameState();saveSession()}},5000);
 function _saveAll(){if(currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){saveGameState();saveSession()}}
@@ -9889,18 +9878,27 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('beforeunload',_saveAll);
 window.addEventListener('pagehide',_saveAll);
 
-function clearSession(){
+// Clear only authentication/session artifacts (keeps team game progress like drafts/unlocks)
+function clearAuthSessionOnly(){
   try{
-    clearGameState();
     localStorage.removeItem('cb_session');
     sessionStorage.removeItem('cb_session');
-    localStorage.removeItem('cb_posts');
-    localStorage.removeItem('cb_media');
-    localStorage.removeItem('cb_intel');
     _vaultLockoutEnd=null;
     _sessionStartTime=null;
   }catch(e){}
 }
+
+// Full local wipe (session + cached content + team game state)
+function clearSession(){
+  try{
+    clearGameState();
+    clearAuthSessionOnly();
+    localStorage.removeItem('cb_posts');
+    localStorage.removeItem('cb_media');
+    localStorage.removeItem('cb_intel');
+  }catch(e){}
+}
+
 
 function restoreSession(){
   try{
