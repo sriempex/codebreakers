@@ -449,12 +449,10 @@
     border-bottom:1px solid rgba(255,255,255,.04);
     box-shadow:0 2px 10px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.015)}
   .console-title{font-family:'Staatliches',cursive;font-size:17px;letter-spacing:2px;color:#b0e8cc;text-transform:uppercase}
-  .timer-block{text-align:center;position:absolute;left:50%;transform:translateX(-50%);padding-bottom:4px}
+  .timer-block{text-align:center;position:absolute;left:50%;transform:translateX(-50%)}
   .timer-digits{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:22px;color:#ff6655;letter-spacing:4px}
-  .timer-digits.is-infinity{font-size:38px;letter-spacing:2px}
   .timer-digits.paused{color:var(--amber);animation:ledPulse 1s infinite}
-  .timer-label{font-family:'Saira',sans-serif;font-size:9px;color:#888;letter-spacing:3px;font-weight:600;text-transform:uppercase;margin-top:3px;position:relative;top:-3px}
-  body.config-hydrating .timer-digits,body.config-hydrating .timer-label{opacity:0}
+  .timer-label{font-family:'Saira',sans-serif;font-size:9px;color:#888;letter-spacing:3px;font-weight:600;text-transform:uppercase;margin-top:3px}
   .topbar-identity{position:relative;cursor:pointer;display:flex;align-items:center}
   body.admin-mode .team-card-section{display:none}
   body.admin-mode .team-card-notifs{display:none}
@@ -470,7 +468,7 @@
   body.event-locked .v-key{pointer-events:none;opacity:.4}
   body.event-locked .intel-submit-btn{pointer-events:none;opacity:.4}
   body.player-preview .team-card-notifs{display:block!important}
-  .console-team{font-family:'Saira',sans-serif;font-size:13px;color:var(--cyan);letter-spacing:2.5px;font-weight:600;transition:color .2s;padding:6px 14px;border:1px solid rgba(0,212,255,.25);border-radius:3px;background:rgba(0,212,255,.04);display:inline-flex;align-items:center;line-height:1;box-sizing:border-box;height:28px}
+  .console-team{font-family:'Saira',sans-serif;font-size:13px;color:var(--cyan);letter-spacing:2.5px;font-weight:600;transition:color .2s;padding:6px 14px;border:1px solid rgba(0,212,255,.25);border-radius:3px;background:rgba(0,212,255,.04)}
   .console-team:hover{color:#b0e8cc;border-color:rgba(0,212,255,.3)}
   .team-chevron{font-size:18px;color:#555;margin-left:6px;transition:color .2s;line-height:1}
   .topbar-identity:hover .team-chevron{color:#999}
@@ -592,7 +590,7 @@
   /* Admin edit btn repositioned for monitor */
   .crt-monitor .admin-edit-btn{top:4px;right:4px;z-index:10}
   /* Force edit buttons visible above ALL theme effects in admin mode */
-  body.admin-mode:not(.player-preview) .crt-monitor{clip-path:none!important;overflow:hidden!important}
+  body.admin-mode:not(.player-preview) .crt-monitor{clip-path:none!important;overflow:visible!important}
   body.admin-mode:not(.player-preview) .crt-monitor .admin-edit-btn{z-index:20}
 
   /* ══════ CONSOLE GRID THEMES ══════ */
@@ -755,20 +753,10 @@
   .feed-view-btn.active{color:#b0e8cc;border-color:rgba(0,255,136,.1);border-bottom-color:rgba(0,255,136,.2);background:linear-gradient(180deg,rgba(15,40,25,.4),rgba(10,30,18,.5))}
   .feed-view-btn:hover{border-color:rgba(255,255,255,.08);color:#aaa}
 
-  /* Feed header centering + no layout shift */
-  #expFeed .exp-header{position:relative}
-  #expFeed #feedViewToggle{position:absolute;left:50%;transform:translateX(-50%);margin-right:0}
-  #expFeed #feedCloseBtn{min-width:110px;text-align:center}
-  /* Keep grid comfortably within viewport (show 2 rows / 6 posts without scroll on typical screens) */
-  #expFeed .exp-body{padding:14px;display:flex;flex-direction:column;overflow:hidden}
-  #expFeed .feed-expanded{max-width:min(900px, calc((88vh - 140px) * 1.5));margin:0 auto;flex:1}
-
-  .feed-expanded{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,minmax(0,1fr));gap:3px;max-width:900px;margin:0 auto;height:100%;align-content:stretch}
-  /* Feed cards: keep width the same, let image area stretch vertically to fill available height */
-  .feed-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:3px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;touch-action:pan-y;display:flex;flex-direction:column}
-  .feed-card-img{flex:1;min-height:0;overflow:hidden;aspect-ratio:auto}
+  .feed-expanded{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;max-width:900px;margin:0 auto}
+  .feed-card-img{aspect-ratio:1;overflow:hidden}
   .feed-card-img img{width:100%;height:100%;object-fit:cover}
-
+  .feed-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:3px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;touch-action:pan-y}
   .feed-card:hover{border-color:var(--green-dim);box-shadow:0 6px 20px rgba(0,0,0,.3)}
   .feed-card-img{width:100%;display:flex;align-items:center;justify-content:center;font-size:40px;background-size:cover;background-position:center;position:relative;min-height:120px}
   .feed-card-img img{width:100%;display:block;pointer-events:none;-webkit-user-drag:none;user-select:none}
@@ -1074,11 +1062,10 @@
   #settingsScreen.active{z-index:850}
   .admin-page{display:flex;flex-direction:column;height:100vh;overflow:hidden}
   .admin-page-header{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 24px 0;background:linear-gradient(180deg,#161a26,#10131c);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
-  .admin-page-header-row{display:flex;align-items:center;justify-content:space-between;width:100%}
-  .admin-page-title{font-family:'Staatliches',cursive;font-size:20px;letter-spacing:6px;color:#ffd699;text-transform:uppercase;flex:1;text-align:center;text-shadow:0 2px 10px rgba(255,214,153,.18)}
-  .admin-page-close{margin-left:auto;border-radius:4px;cursor:pointer;transition:all .2s;
-    background:rgba(255,50,50,.06);
-    border:1px solid rgba(255,50,50,.2);border-bottom:2px solid rgba(255,50,50,.1);
+  .admin-page-header-row{display:flex;align-items:center;justify-content:center;width:100%;position:relative}
+  .admin-page-title{font-family:'Staatliches',cursive;font-size:15px;letter-spacing:5px;color:#ffd699;text-transform:uppercase}
+  .admin-page-close{position:absolute;right:0;top:50%;transform:translateY(-50%);border-radius:4px;cursor:pointer;transition:all .2s;
+    background:rgba(255,50,50,.06);border:1px solid rgba(255,50,50,.2);border-bottom:2px solid rgba(255,50,50,.1);
     color:var(--red);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;padding:7px 18px;font-weight:600;
     text-shadow:0 0 6px rgba(255,50,50,.2)}
   .admin-page-close:hover{border-color:rgba(255,50,50,.45);background:rgba(255,50,50,.12);text-shadow:0 0 12px rgba(255,50,50,.4);box-shadow:0 0 14px rgba(255,50,50,.1)}
@@ -1095,7 +1082,7 @@
   .admin-page-section .ap-section,
   .admin-page-section .kc-section{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:8px;margin-bottom:16px;padding:24px 28px}
   .admin-page-section .ap-section:last-child{border-bottom:1px solid rgba(255,255,255,.06)}
-  .admin-page-section .bc-body{padding:20px}
+  .admin-page-section .bc-body{padding:20px 0}
   .admin-page-section .kc-body{padding:0}
 
   /* ══════ READABILITY — larger text in admin pages ══════ */
@@ -1113,7 +1100,7 @@
   .admin-page-section .session-btn .sb-desc{font-size:10px;color:#999}
   .admin-page-section .lb-toolbar{padding:12px 16px}
   .admin-page-section .lb-search{font-size:12px;padding:10px 14px}
-  .admin-page-section .bc-textarea{font-size:13px;min-height:120px;width:100%;box-sizing:border-box;padding:12px 14px;border-radius:8px}
+  .admin-page-section .bc-textarea{font-size:13px;min-height:120px}
   .admin-page-section .ap-team-row{padding:10px 14px}
   .admin-page-section .ap-status-pill{font-size:11px;padding:6px 12px}
   .admin-page-section .tut-step-list .tut-step{padding:10px 12px}
@@ -1368,7 +1355,7 @@
   .logout-btn span{font-family:'Saira',sans-serif;font-size:12px;letter-spacing:3px;color:var(--red);font-weight:700;text-transform:uppercase}
 
   /* Notification bell */
-  .admin-topbar-label{display:none;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:2.5px;color:var(--amber);font-weight:600;text-transform:uppercase;padding:6px 14px;border:1px solid rgba(255,170,51,.25);border-radius:3px;background:rgba(255,170,51,.06);align-items:center;line-height:1;box-sizing:border-box;height:28px}
+  .admin-topbar-label{display:none;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:2.5px;color:var(--amber);font-weight:600;text-transform:uppercase;padding:6px 14px;border:1px solid rgba(255,170,51,.25);border-radius:3px;background:rgba(255,170,51,.06)}
   body.admin-mode .admin-topbar-label{display:inline-flex}
   .notif-empty{padding:12px 8px;text-align:center;font-family:'Chakra Petch',sans-serif;font-size:10px;color:#555}
 
@@ -1559,10 +1546,10 @@
   .lb-row.expanded .lb-detail{display:block}
   .lb-detail-section{margin-top:12px}
   .lb-detail-title{font-family:'Saira',sans-serif;font-size:9px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:8px;font-weight:700}
-  .lb-member-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(0,212,255,.02);border:1px solid rgba(0,212,255,.08);border-radius:4px;margin-bottom:4px}
+  .lb-member-row{display:flex;align-items:center;gap:10px;padding:6px 10px;background:rgba(0,212,255,.02);border:1px solid rgba(0,212,255,.06);border-radius:3px;margin-bottom:3px}
   .lb-member-num{font-family:'Oxanium',sans-serif;font-size:10px;color:var(--cyan);font-weight:700;flex-shrink:0}
-  .lb-member-name{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#d2d2d2;font-weight:600;flex:1;line-height:1.2}
-  .lb-member-meta{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#6a6a6a}
+  .lb-member-name{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#bbb;font-weight:600;flex:1}
+  .lb-member-meta{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#555}
   .lb-field-row{display:flex;align-items:center;gap:8px;padding:4px 10px;border-bottom:1px solid rgba(255,255,255,.02)}
   .lb-field-label{font-family:'Chakra Petch',sans-serif;font-size:9px;color:#888;flex:1}
   .lb-field-status{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;min-width:60px;text-align:right}
@@ -2227,134 +2214,6 @@
   .briefing-footer{padding:16px 24px 20px;text-align:center}
   .briefing-continue{padding:10px 32px;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.25);border-radius:4px;color:var(--green);font-family:'Saira',sans-serif;font-size:11px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:all .15s}
   .briefing-continue:hover{background:rgba(0,255,136,.2);border-color:rgba(0,255,136,.4)}
-
-/* ── Admin console polish + hydration (prevents settings flicker on refresh) ── */
-:root{
-  --admin-surface: rgba(10,14,22,.82);
-  --admin-surface-2: rgba(6,9,15,.72);
-  --admin-stroke: rgba(110,170,200,.18);
-  --admin-stroke-2: rgba(255,255,255,.08);
-  --admin-shadow: 0 18px 70px rgba(0,0,0,.55);
-  --admin-radius: 18px;
-}
-
-/* Hide settings body while config is hydrating to avoid “flash then revert” values */
-.is-hydrating-settings #settingsScreen .admin-page-body{
-  visibility:hidden;
-}
-.is-hydrating-settings #settingsScreen .admin-page-header{
-  /* header can remain visible */
-}
-.is-hydrating-settings #settingsScreen .admin-page{
-  box-shadow: none;
-}
-
-/* Admin page shell */
-#settingsScreen .admin-page{
-  width:min(1220px, calc(100vw - 60px));
-  margin: 0 auto;
-  border-radius: var(--admin-radius);
-  border: 1px solid var(--admin-stroke);
-  background: linear-gradient(180deg, var(--admin-surface), rgba(8,12,18,.88));
-  box-shadow: var(--admin-shadow);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  overflow:hidden;
-}
-#settingsScreen .admin-page-header{
-  border-bottom: 1px solid var(--admin-stroke);
-  background: linear-gradient(180deg, rgba(18,24,35,.85), rgba(10,14,22,.65));
-}
-#settingsScreen .admin-page-header-row{
-  padding: 18px 18px 10px 18px;
-}
-#settingsScreen .admin-page-title{
-  font-family:'Staatliches',cursive;
-  font-size:17px;
-  letter-spacing:3px;
-  text-transform:uppercase;
-  font-weight:600;
-  opacity:.98;
-}
-#settingsScreen .admin-page-close{
-  /* Match console panel close button */
-}
-#settingsScreen .admin-page-close:hover{ /* no positional shift */ }
-#settingsScreen .admin-page-tabs{
-  padding: 10px 12px 14px 12px;
-  gap: 10px;
-  overflow-x:auto;
-}
-#settingsScreen .admin-page-tab{
-  border-radius: 999px;
-  border: 1px solid var(--admin-stroke);
-  background: rgba(8,10,16,.35);
-  padding: 10px 14px;
-  font-weight: 700;
-  letter-spacing: .03em;
-  transition: transform .12s ease, filter .12s ease, background .12s ease;
-}
-#settingsScreen .admin-page-tab:hover{transform: translateY(-1px);filter:brightness(1.08)}
-#settingsScreen .admin-page-tab.active{
-  background: linear-gradient(180deg, rgba(0,255,136,.14), rgba(0,255,136,.06));
-  border-color: rgba(0,255,136,.22);
-  box-shadow: 0 0 0 3px rgba(0,255,136,.08) inset;
-}
-
-#settingsScreen .admin-page-body{
-  padding: 18px;
-  background: radial-gradient(1200px 600px at 20% 0%, rgba(0,255,136,.06), transparent 60%),
-              radial-gradient(900px 500px at 85% 15%, rgba(64,160,255,.07), transparent 60%),
-              rgba(6,9,15,.35);
-}
-#settingsScreen .admin-page-section.active{
-  display:block;
-}
-#settingsScreen .admin-page-section{
-  display:none;
-}
-
-/* Panels that are moved into the settings page */
-#settingsScreen .ap-container,
-#settingsScreen .keys-container,
-#settingsScreen .scoring-container,
-#settingsScreen .portal-container,
-#settingsScreen #dashboardPanel,
-#settingsScreen #leaderboardModule,
-#settingsScreen #sessionMgmtPanel,
-#settingsScreen #broadcastPanel{
-  border-radius: 16px;
-  border: 1px solid var(--admin-stroke);
-  background: linear-gradient(180deg, var(--admin-surface-2), rgba(6,9,15,.55));
-  box-shadow: 0 14px 50px rgba(0,0,0,.45);
-}
-
-/* Standardize form controls inside admin panels (override inline where needed) */
-#settingsScreen select,
-#settingsScreen input[type="text"],
-#settingsScreen input[type="number"],
-#settingsScreen input[type="datetime-local"],
-#settingsScreen textarea{
-  border-radius: 12px !important;
-  border: 1px solid var(--admin-stroke) !important;
-  background: rgba(7,9,14,.70) !important;
-  color: rgba(240,250,255,.92) !important;
-  outline: none !important;
-  box-shadow: 0 0 0 1px rgba(255,255,255,.04) inset;
-}
-#settingsScreen select:focus,
-#settingsScreen input:focus,
-#settingsScreen textarea:focus{
-  box-shadow: 0 0 0 3px rgba(64,160,255,.16), 0 0 0 1px rgba(255,255,255,.06) inset !important;
-  border-color: rgba(64,160,255,.28) !important;
-}
-
-/* Tidy “close” buttons embedded in panels now that the page has its own close */
-#settingsScreen .mv-close{
-  opacity:.6;
-}
-#settingsScreen .mv-close:hover{opacity:1}
-
 </style>
 <script>
 // Pre-render theme injection — runs before body paints
@@ -2401,7 +2260,7 @@
 })();
 </script>
 </head>
-<body class="config-hydrating">
+<body>
 <canvas id="grainCanvas"></canvas>
 <div class="flash-green" id="flashG"></div>
 <div class="flash-red" id="flashR"></div>
@@ -2420,7 +2279,7 @@
 <!-- GEAR DROPDOWN -->
 <div class="gear-dropdown" id="gearDropdown">
   <div class="gear-dropdown-item" onclick="closeGearDropdown();navigateToAdmin('settingsScreen')"><span class="gd-icon">⚙️</span><span class="gd-label">Settings</span></div>
-  <div class="gear-dropdown-item" onclick="closeGearDropdown();navigateToAdmin('settingsScreen','dash-teams')"><span class="gd-icon">📊</span><span class="gd-label">Teams</span></div>
+  <div class="gear-dropdown-item" onclick="closeGearDropdown();navigateToAdmin('settingsScreen','dash-teams')"><span class="gd-icon">📊</span><span class="gd-label">Dashboard</span></div>
   <div class="gear-dropdown-item" onclick="closeGearDropdown();navigateToAdmin('settingsScreen','dash-broadcast')"><span class="gd-icon">📢</span><span class="gd-label">Broadcast</span></div>
 </div>
 
@@ -2452,7 +2311,7 @@
 
 <div id="adminEditModal"><div class="edit-box" id="editBox"></div></div>
 
-<div id="confirmModal"><div class="confirm-box"><div class="confirm-header"><h3>⚠ Confirm Transmission</h3><p>Review your intel before final submission. This action cannot be undone.</p></div><div class="confirm-body" id="confirmBody"></div><div class="confirm-footer"><button class="btn-standard btn-ghost" onclick="hideConfirm()">◂ Go Back</button><button class="btn-standard btn-green" onclick="finalSubmit()">Confirm and Submit</button></div></div></div>
+<div id="confirmModal"><div class="confirm-box"><div class="confirm-header"><h3>⚠ Confirm Transmission</h3><p>Review your intel before final submission. This action cannot be undone.</p></div><div class="confirm-body" id="confirmBody"></div><div class="confirm-footer"><button class="btn-standard btn-ghost" onclick="hideConfirm()">◂ Go Back</button><button class="btn-standard btn-green" onclick="finalSubmit()">Confirm & Transmit ◈</button></div></div></div>
 
 <!-- ADMIN CHOICE MODAL (after auth from landing) -->
 <div id="adminChoiceModal"><div class="admin-choice-box"><h3>◈ Navigation</h3><p>Where would you like to go?</p><div class="admin-choice-btns"><button class="btn-standard btn-cyan" onclick="adminGoVault()">Go to Vault</button><button class="btn-standard btn-green" onclick="adminGoConsole()">Go to Console</button></div></div></div>
@@ -3086,7 +2945,7 @@
       </div>
       <div class="lb-pagination" id="tmPagination"></div>
       <div style="display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--border);margin-top:8px">
-        <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#666;font-size:10px">Per page:</span>
+        <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555">Per page:</span>
         <select id="tmPerPage" onchange="tmPerPage=parseInt(this.value);tmCurrentPage=0;renderTeamMonitor()" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:3px 6px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:9px;outline:none">
           <option value="15" selected>15</option><option value="20">20</option><option value="25">25</option><option value="50">50</option>
         </select>
@@ -3156,7 +3015,7 @@
       </div>
       <div class="lb-sort">
         <span style="font-family:Chakra Petch,sans-serif;font-size:8px;color:#666;letter-spacing:1px">Sort:</span>
-        <select id="lbSort" onchange="renderFullLeaderboard()" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:6px 10px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:10px;outline:none">
+        <select id="lbSort" onchange="renderFullLeaderboard()" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:4px 8px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:9px;outline:none">
           <option value="score">Score (High→Low)</option>
           <option value="fields">Fields Completed</option>
           <option value="recent">Most Recent</option>
@@ -3168,12 +3027,13 @@
     <div class="lb-body" id="lbBody"></div>
     <div class="lb-pagination" id="lbPagination"></div>
     <div class="lb-admin-actions" id="lbAdminActions" style="display:none">
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--border)">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--border)">
+        <span style="font-family:Saira,sans-serif;font-size:9px;color:#888;letter-spacing:2px;font-weight:600">ADMIN:</span>
         <button class="ap-btn ap-btn-amber" onclick="desubmitSelected()" style="font-size:9px;padding:5px 12px">↩ De-submit Selected</button>
         <button class="ap-btn ap-btn-red" onclick="desubmitAll()" style="font-size:9px;padding:5px 12px">↩ De-submit All</button>
         <div style="flex:1"></div>
-        <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#666;font-size:10px">Per page:</span>
-        <select id="lbPerPage" onchange="lbPerPage=parseInt(this.value);lbCurrentPage=0;renderFullLeaderboard()" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:5px 10px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:10px;outline:none">
+        <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555">Per page:</span>
+        <select id="lbPerPage" onchange="lbPerPage=parseInt(this.value);lbCurrentPage=0;renderFullLeaderboard()" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:3px 6px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:9px;outline:none">
           <option value="15" selected>15</option><option value="20">20</option><option value="25">25</option><option value="50">50</option>
         </select>
       </div>
@@ -3194,7 +3054,7 @@
       <span id="buildStamp" style="display:none;font-family:'IBM Plex Mono',monospace;font-size:8px;color:#333;letter-spacing:1px"></span>
     </div>
     <div style="display:flex;align-items:center">
-      <div class="timer-block"><div class="timer-digits" id="cTimer">∞</div><div class="timer-label">Time Remaining</div></div>
+      <div class="timer-block"><div class="timer-digits" id="cTimer">01:28:45</div><div class="timer-label">Time Remaining</div></div>
     </div>
     <div class="topbar-identity" onclick="toggleTeamCard(event)">
       <span class="console-team">—</span>
@@ -3242,6 +3102,7 @@
 </div>
 
 <!-- Logout button — body level for z-index independence -->
+<div class="logout-btn" id="logoutBtn" onclick="showLogout()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span>Logout</span></div>
 
 <div id="notepadPanel">
   <div class="notepad-header">
@@ -4165,7 +4026,6 @@ function triggerVaultLockout(seconds,title,subtitle){
     }
   },1000);
 }
-
 function formatLockoutTime(s){
   if(s>=60){const m=Math.floor(s/60);const sec=s%60;return m+':'+String(sec).padStart(2,'0')}
   return String(s);
@@ -4504,8 +4364,56 @@ function _refreshPanelData(panel){
     if(_saveMediaTimer||_mediaSaveInFlight||Date.now()<_mediaSaveCooldown){return} // Save pending/cooldown
     apiCall('getMediaItems').then(r=>{
       if(r.ok&&r.items){
-        const changed=r.items.length!==mediaItems.length||JSON.stringify(r.items)!==JSON.stringify(mediaItems.map(m=>({name:m.name,desc:m.desc||'',url:m.url,type:m.type||'image',nameFont:m.nameFont||'',descFont:m.descFont||'',vaultLocked:m.vaultLocked||false})));
-        if(changed){mediaItems=r.items;syncVaultCodesFromMedia();restoreGameState();renderMedia();renderGrid();_cacheContent("cb_media",mediaItems)}
+        // Normalize backend media items (supports both canonical + legacy schemas)
+        const normalized=(r.items||[]).map(it=>{
+          const name=(it.name||it.title||'').trim();
+          const fileUrl=(it.fileUrl||it.url||'').trim();
+          const icon=(it.icon||it.filename||detectIcon(it.type||detectType(name||''))).trim();
+          return{
+            type:it.type||detectType(name||''),
+            name:name,
+            desc:it.desc||'',
+            fileUrl:fileUrl,
+            icon:icon,
+            nameFont:it.nameFont||it.titleFont||'',
+            descFont:it.descFont||'',
+            vaultLocked:!!it.vaultLocked,
+            unlockKey:it.unlockKey||'',
+            unlocked:!!it.unlocked,
+            vaultCode:it.vaultCode||'',
+            vaultCodename:it.vaultCodename||''
+          };
+        });
+
+        // Guard against KV eventual consistency: don't overwrite local media that has fileUrl with backend items missing it
+        const localHasMedia=mediaItems.some(m=>m && m.fileUrl);
+        const backendMissingMedia=localHasMedia && normalized.length===mediaItems.length &&
+          normalized.some((bm,i)=>!bm.fileUrl && mediaItems[i] && mediaItems[i].fileUrl);
+        if(backendMissingMedia){console.log('[MEDIA] Refresh skipped — backend appears stale (missing fileUrl local has)');return}
+
+        const changed=normalized.length!==mediaItems.length ||
+          JSON.stringify(normalized)!==JSON.stringify(mediaItems.map(m=>({
+            type:m.type||'',
+            name:(m.name||''),
+            desc:(m.desc||''),
+            fileUrl:(m.fileUrl||''),
+            icon:(m.icon||''),
+            nameFont:(m.nameFont||''),
+            descFont:(m.descFont||''),
+            vaultLocked:!!m.vaultLocked,
+            unlockKey:(m.unlockKey||''),
+            unlocked:!!m.unlocked,
+            vaultCode:(m.vaultCode||''),
+            vaultCodename:(m.vaultCodename||'')
+          })));
+        if(changed){
+          mediaItems=normalized;
+          syncVaultCodesFromMedia();
+          restoreGameState();
+          renderMedia();
+          renderGrid();
+          _cacheContent("cb_media",mediaItems);
+        }
       }
     });
   }else if(panel==='intel'){
@@ -4516,10 +4424,7 @@ function _refreshPanelData(panel){
           // Preserve current input values before re-render
           const curVals={};
           document.querySelectorAll('.intel-exp-input').forEach(inp=>{if(inp.dataset.idx&&inp.value.trim())curVals[inp.dataset.idx]=inp.value});
-          intelFields=r.fields||[];
-          // Normalize shapes (type vs fieldType) so money/phone/etc render correctly immediately
-          intelFields.forEach(f=>{try{if(f&&typeof f==='object'){if(!f.type&&f.fieldType)f.type=f.fieldType;if(!f.fieldType&&f.type)f.fieldType=f.type}}catch(e){}});
-          renderIntelForm();
+          intelFields=r.fields;renderIntelForm();
           // Restore typed values
           document.querySelectorAll('.intel-exp-input').forEach(inp=>{if(curVals[inp.dataset.idx])inp.value=curVals[inp.dataset.idx]});
           renderGrid();_cacheContent("cb_intel",intelFields);
@@ -4616,7 +4521,7 @@ function renderSinglePost(){
 
   if(resolved&&resolved.type==='direct'){
     img.style.background='#000';img.style.backgroundSize='';img.textContent='';
-    img.innerHTML=`<video class="feed-single-video" id="feedSingleVid" src="${resolved.url}" loop playsinline preload="auto" ${muted?'muted':''} controls></video>${editBtn}`;
+    img.innerHTML=`<video class="feed-single-video" id="feedSingleVid" src="${resolved.url}" loop playsinline preload="auto" ${muted?'muted':''} controls></video><div class="feed-mute-btn" onclick="event.stopPropagation();toggleFeedMute()">${muted?'🔇':'🔊'}</div>${editBtn}`;
     setTimeout(()=>{const v=document.getElementById('feedSingleVid');if(v){v.muted=muted;v.play().catch(()=>{})}},50);
   }else if(resolved&&resolved.type==='external'){
     img.style.background='#000';img.style.backgroundSize='';img.textContent='';
@@ -5611,23 +5516,34 @@ function _restoreContentCache(){
   }catch(e){}
   try{
     const cm=localStorage.getItem('cb_media');
-    if(cm){const arr=JSON.parse(cm);mediaItems.length=0;arr.forEach(m=>mediaItems.push(m));syncVaultCodesFromMedia();restored=true;}
+    if(cm){
+      const arr=JSON.parse(cm);
+      mediaItems.length=0;
+      arr.forEach(it=>{
+        // Normalize cached media items (handles older schema)
+        const name=(it.name||it.title||'').trim();
+        mediaItems.push({
+          type:it.type||detectType(name||''),
+          name:name,
+          desc:it.desc||'',
+          fileUrl:(it.fileUrl||it.url||''),
+          icon:(it.icon||it.filename||detectIcon(it.type||detectType(name||''))),
+          nameFont:it.nameFont||it.titleFont||'',
+          descFont:it.descFont||'',
+          vaultLocked:!!it.vaultLocked,
+          unlockKey:it.unlockKey||'',
+          unlocked:!!it.unlocked,
+          vaultCode:it.vaultCode||'',
+          vaultCodename:it.vaultCodename||''
+        });
+      });
+      syncVaultCodesFromMedia();
+      restored=true;
+    }
   }catch(e){}
   try{
     const ci=localStorage.getItem('cb_intel');
-    if(ci){
-      const arr=JSON.parse(ci);
-      intelFields.length=0;
-      arr.forEach(f=>{
-        // Normalize legacy shapes so money/phone/etc render correctly on first open (pre-refresh)
-        if(f && typeof f==='object'){
-          if(!f.type && f.fieldType) f.type=f.fieldType;
-          if(!f.fieldType && f.type) f.fieldType=f.type;
-        }
-        intelFields.push(f);
-      });
-      restored=true;
-    }
+    if(ci){const arr=JSON.parse(ci);intelFields.length=0;arr.forEach(f=>intelFields.push(f));restored=true;}
   }catch(e){}
   // Restore grid theme immediately so first paint uses the correct theme
   try{
@@ -5792,24 +5708,7 @@ function applyEventConfig(cfg){
   if(cfg.eventAutoLock!==undefined){eventSettings.autoLock=cfg.eventAutoLock==='true'||cfg.eventAutoLock===true;const cb=document.getElementById('eventAutoLock');if(cb)cb.checked=eventSettings.autoLock}
   if(cfg.eventShowLeaderboardOnExpiry!==undefined){eventSettings.showLeaderboardOnExpiry=cfg.eventShowLeaderboardOnExpiry==='true'||cfg.eventShowLeaderboardOnExpiry===true;const cb=document.getElementById('eventShowLeaderboard');if(cb)cb.checked=eventSettings.showLeaderboardOnExpiry}
   if(cfg.allowDownloads!==undefined){allowDownloads=cfg.allowDownloads==='true'||cfg.allowDownloads===true}
-  if(cfg.timerMode){
-    timerMode=cfg.timerMode;
-    if(cfg.timerSec!==undefined){timerSec=parseInt(cfg.timerSec)||0;}
-    if(cfg.timerOriginal!==undefined){timerOriginal=parseInt(cfg.timerOriginal)||timerSec;}
-    if(cfg.timerPaused!==undefined){timerPaused=(cfg.timerPaused==='true'||cfg.timerPaused===true);}
-    if(cfg.timerStarted!==undefined){timerStarted=(cfg.timerStarted==='true'||cfg.timerStarted===true);}
-    if(cfg.eventStartTime!==undefined){eventSettings.startTime=cfg.eventStartTime||null;}
-    if(cfg.eventEndTime!==undefined){eventSettings.endTime=cfg.eventEndTime||null;}
-    if(cfg.eventExpired!==undefined){eventSettings.expired=(cfg.eventExpired==='true'||cfg.eventExpired===true);}
-    const sel=document.getElementById('timerMode');
-    if(sel){sel.value=timerMode;}
-    // Apply mode UI without overwriting restored values
-    window.__applyingCfg=true;
-    onTimerModeChange();
-    window.__applyingCfg=false;
-    updateAdminTimerDisplay();
-    renderTimer();
-  }
+  if(cfg.timerMode){timerMode=cfg.timerMode;const sel=document.getElementById('timerMode');if(sel){sel.value=timerMode;onTimerModeChange()}}
   // Scoring config
   if(cfg.scoringConfig){try{Object.assign(scoringConfig,JSON.parse(cfg.scoringConfig))}catch(e){}}
   // Typography fontConfig
@@ -5841,17 +5740,6 @@ function applyEventConfig(cfg){
   startGlobalEventTimer();
   // Tutorial & briefing config
   applyTutorialBriefingConfig(cfg);
-
-  // Mark config hydration complete — prevents settings values flashing then reverting on refresh
-  if(!window.__configHydrated){
-    window.__configHydrated=true;
-    _eventCfgHydrated=true;
-    try{document.body.classList.remove('config-hydrating')}catch(e){}
-    try{renderTimer()}catch(e){}
-    document.documentElement.classList.remove('is-hydrating-settings');
-    try{document.dispatchEvent(new Event('cb:configHydrated'))}catch(e){}
-  }
-
 }
 
 // Admin auth now handled via login screen (submitLogin)
@@ -6022,9 +5910,6 @@ document.addEventListener('contextmenu',e=>{
 function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');closeAdminDropdown();closeAdminPanel();closeBroadcast();closeLeaderboard();closeKeysCodes();renderGrid();renderIntelForm()}
 
 // ══════ SCREEN NAVIGATION ══════
-// Config hydration flag (prevents settings value flicker on refresh)
-if(window.__configHydrated===undefined)window.__configHydrated=false;
-
 let _currentScreen='landingScreen';
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',id==='consoleScreen');if(id!=='settingsScreen'){_currentAdminPage=null;updateGearIcon()}if(currentVaultTeam)saveSession()}
 function goToRegistration(){
@@ -6271,14 +6156,7 @@ function saveEventConfigToBackend(){
       eventShowLeaderboardOnExpiry:eventSettings.showLeaderboardOnExpiry,
       allowDownloads:allowDownloads,
       sessionPersist:regSettings.sessionPersist,
-      timerMode:timerMode,
-      timerSec:timerSec,
-      timerOriginal:timerOriginal,
-      timerPaused:timerPaused,
-      timerStarted:timerStarted,
-      eventStartTime:eventSettings.startTime,
-      eventEndTime:eventSettings.endTime,
-      eventExpired:eventSettings.expired
+      timerMode:timerMode
     }}).then(r=>{});
   },1000); // 1 second debounce
 }
@@ -6355,15 +6233,30 @@ function saveMediaItemsToBackend(){
   _saveMediaTimer=setTimeout(()=>{
     bumpContentVersion();
     apiCall('saveMediaItems',{items:mediaItems.map(m=>{
-      const url=(m.fileUrl&&(m.fileUrl.startsWith('data:')||m.fileUrl.startsWith('blob:')))?'':m.fileUrl||'';
-      return{type:m.type||'',title:m.name||'',titleFont:m.nameFont||'',
-        desc:m.desc||'',descFont:m.descFont||'',
-        url:url,filename:m.icon||'',
-        vaultLocked:m.vaultLocked||false,
+      // Persist a stable schema, but include legacy keys for backward compatibility
+      const fileUrl=(m.fileUrl&&(m.fileUrl.startsWith('data:')||m.fileUrl.startsWith('blob:')))?'':(m.fileUrl||'');
+      const name=(m.name||m.title||'').trim();
+      const icon=(m.icon||m.filename||'').trim();
+      return{
+        // canonical
+        type:m.type||'',
+        name:name,
+        desc:m.desc||'',
+        fileUrl:fileUrl,
+        icon:icon,
+        nameFont:m.nameFont||m.titleFont||'',
+        descFont:m.descFont||'',
+        vaultLocked:!!m.vaultLocked,
         unlockKey:m.unlockKey||'',
-        unlocked:m.unlocked||false,
+        unlocked:!!m.unlocked,
         vaultCode:m.vaultCode||'',
-        vaultCodename:m.vaultCodename||''};
+        vaultCodename:m.vaultCodename||'',
+        // legacy mirror fields (older code paths)
+        title:name,
+        titleFont:m.nameFont||m.titleFont||'',
+        url:fileUrl,
+        filename:icon
+      };
     })}).then(r=>{if(!r.ok)console.warn('Media save failed:',r.error)}).finally(()=>{_mediaSaveInFlight=false;_mediaSaveCooldown=Date.now()+60000});
     _cacheContent('cb_media',mediaItems);
     _saveMediaTimer=null;
@@ -7848,7 +7741,7 @@ function renderIntelForm(){
     const clearBtn=`<div class="intel-saved-blip" data-save-idx="${i}">✓</div><div class="intel-exp-clear" onclick="clearIntelSlot(this)" title="Clear">✕</div>`;
     const keyHandler='onkeydown="if(event.key===\'Enter\'){this.blur()}"';
     const ph=f.placeholder||'···';
-    if((f.type||f.fieldType)==='money'){
+    if(f.type==='money'){
       const _moneyIStyle=_iFont?`border:none;background:transparent;box-shadow:none;${fontStyle(_iFont)}`:'border:none;background:transparent;box-shadow:none';
       html+=`<div class="intel-exp-row" data-idx="${i}">${adminTools}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="${_moneyIStyle}" placeholder="${ph}" data-idx="${i}" oninput="formatMoney(this)" ${keyHandler}></div>${clearBtn}</div>`;
     }else if(f.type==='phone'){
@@ -8489,9 +8382,8 @@ function startDrag(e,type,idx){
 }
 
 // ══════ TIMER ══════
-let timerSec=0,timerPaused=true,timerOriginal=0,timerStarted=false;
-let timerMode='none'; // 'countdown' or 'event'
-let _eventCfgHydrated=false;
+let timerSec=5325,timerPaused=false,timerOriginal=5325;
+let timerMode='countdown'; // 'countdown' or 'event'
 let eventSettings={
   startTime:null, // ISO string
   endTime:null,   // ISO string
@@ -8502,73 +8394,20 @@ let eventSettings={
 
 function onTimerModeChange(){
   timerMode=document.getElementById('timerMode').value;
-  // Stop schedule interval when leaving Event Schedule
-  if(timerMode!=='event' && _globalTimerInterval){clearInterval(_globalTimerInterval);_globalTimerInterval=null;}
   document.getElementById('timerCountdownControls').style.display=timerMode==='countdown'?'':'none';
   document.getElementById('timerEventControls').style.display=timerMode==='event'?'':'none';
   if(timerMode==='event')updateEventStatus();
-  if(timerMode==='countdown'){
-    if(!window.__applyingCfg){ timerPaused=true; timerStarted=false; }
-    const pb=document.getElementById('pauseBtn');
-    if(pb){
-      pb.textContent = (!timerStarted) ? '▶ START' : (timerPaused ? '▶ RESUME' : '⏸ PAUSE');
-    }
-    const ct=document.getElementById('cTimer');
-    if(ct)ct.classList.toggle('paused', !timerStarted || timerPaused);
-    renderTimerLabel('Manual Countdown');
-    renderTimer();
-    updateAdminTimerDisplay();
-    if(!window.__applyingCfg) saveEventConfigToBackend();
-  }
-  if(timerMode==='event'){
-    if(!window.__applyingCfg) eventSettings.expired=false;
-    // Reflect current config in inputs
-    try{
-      const si=document.getElementById('eventStartInput');
-      const ei=document.getElementById('eventEndInput');
-      const toLocal=(iso)=>{ if(!iso) return ''; const d=new Date(iso); const pad=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes()); };
-      if(si) si.value = toLocal(eventSettings.startTime);
-      if(ei) ei.value = toLocal(eventSettings.endTime);
-    }catch(e){}
-    startGlobalEventTimer(true);
-    updateAdminTimerDisplay();
-    if(!window.__applyingCfg) saveEventConfigToBackend();
-  }
-  // No timer mode — show infinity symbol, stop any running timer updates
+  // No timer mode — hide the timer display from players, clear countdown
   if(timerMode==='none'){
     var timerBlock=document.querySelector('.timer-block');
-    if(timerBlock)timerBlock.style.display='';
+    if(timerBlock)timerBlock.style.display='none';
     if(_globalTimerInterval){clearInterval(_globalTimerInterval);_globalTimerInterval=null}
-    timerPaused=true;
-    var el=document.getElementById('cTimer');
-    if(el){el.textContent='∞';el.classList.add('is-infinity');}
-    renderTimerLabel('No Timer');
-    var ap=document.getElementById('apTimerDisplay');
-    if(ap)ap.textContent='∞';
+    document.getElementById('apTimerDisplay').textContent='OFF';
     saveEventConfigToBackend();
   }else{
     var timerBlock2=document.querySelector('.timer-block');
     if(timerBlock2)timerBlock2.style.display='';
   }
-}
-
-function updateAdminTimerDisplay(){
-  const ap=document.getElementById('apTimerDisplay');
-  if(!ap)return;
-  if(timerMode==='none'){
-    ap.textContent='∞';
-    return;
-  }
-  if(timerMode==='event'){
-    const s=eventSettings.startTime?new Date(eventSettings.startTime):null;
-    const e=eventSettings.endTime?new Date(eventSettings.endTime):null;
-    const fmt=(d)=> d ? d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '—';
-    ap.textContent = (s||e) ? (fmt(s)+(e?('–'+fmt(e)):'') ) : '—';
-    return;
-  }
-  // manual countdown
-  const h=Math.floor(timerSec/3600),m=Math.floor((timerSec%3600)/60),s=timerSec%60;
-  ap.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 }
 function onEventTimeChange(){
   const startVal=document.getElementById('eventStartInput').value;
@@ -8577,24 +8416,17 @@ function onEventTimeChange(){
   eventSettings.endTime=endVal?new Date(endVal).toISOString():null;
   eventSettings.expired=false;
   updateEventStatus();
-  startGlobalEventTimer(true);
-  updateAdminTimerDisplay();
+  startGlobalEventTimer();
   saveEventConfigToBackend();
 }
 
 let _globalTimerInterval=null;
-function startGlobalEventTimer(runOnce=false){
+function startGlobalEventTimer(){
   if(_globalTimerInterval)clearInterval(_globalTimerInterval);
-  if(timerMode!=='event' && timerMode!=='none'){
-    return;
-  }
-  // No timer mode — show infinity symbol and stop
+  // No timer mode — hide timer block for players
   if(timerMode==='none'){
     var tb=document.querySelector('.timer-block');
-    if(tb)tb.style.display='';
-    var el=document.getElementById('cTimer');
-    if(el){el.textContent='∞';el.classList.add('is-infinity');}
-    renderTimerLabel('No Timer');
+    if(tb)tb.style.display='none';
     return;
   }
   // Show timer block if it was hidden
@@ -8602,7 +8434,7 @@ function startGlobalEventTimer(runOnce=false){
   if(tb2)tb2.style.display='';
   if(!eventSettings.startTime||!eventSettings.endTime)return;
   
-  const _tick=()=>{
+  _globalTimerInterval=setInterval(()=>{
     const timerEl=document.getElementById('cTimer');
     
     // Paused — show frozen time
@@ -8643,14 +8475,7 @@ function startGlobalEventTimer(runOnce=false){
       onTimerExpired();
     }
     updateEventStatus();
-  };
-  if(typeof _globalTimerInterval!=='undefined' && _globalTimerInterval){
-    clearInterval(_globalTimerInterval);
-    _globalTimerInterval=null;
-  }
-  if(runOnce){ _tick(); return; }
-  _tick();
-  _globalTimerInterval=setInterval(_tick,1000);
+  },1000);
 }
 
 // handleEventExpiry — now handled by onTimerExpired + showEventLockOverlay
@@ -8809,9 +8634,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;c
 .section h2{font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#1a1a1a;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #eee}
 table{width:100%;border-collapse:collapse;font-size:12px}
 thead th{background:#1a1a1a;color:#fff;padding:10px 12px;text-align:left;font-size:10px;letter-spacing:1px;text-transform:uppercase}
-
-tbody td{padding:10px 12px;vertical-align:middle}
-
 tbody tr{border-bottom:1px solid #eee}
 tbody tr:hover{background:#f5f5f5}
 .stats{display:flex;gap:20px;margin-bottom:24px;flex-wrap:wrap}
@@ -8822,7 +8644,7 @@ tbody tr:hover{background:#f5f5f5}
 .toolbar{position:fixed;top:10px;right:10px;display:flex;gap:8px;z-index:100}
 .toolbar button{padding:8px 16px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:11px}
 .toolbar button:hover{background:#f5f5f5}
-</style></head><body class=\"config-hydrating\">
+</style></head><body>
 <div class="toolbar">
   <button onclick="window.print()">🖨 Print / Save as PDF</button>
 </div>
@@ -8964,58 +8786,11 @@ function updateEventStatus(){
 }
 
 // Countdown mode functions
-function togglePause(){
-  // Manual countdown start/pause/resume
-  const pb=document.getElementById('pauseBtn');
-  const timerEl=document.getElementById('cTimer');
-  if(timerMode!=='countdown')return;
-  if(!timerStarted){
-    if(timerSec<=0)return;
-    timerStarted=true;
-    timerPaused=false;
-    if(pb)pb.textContent='⏸ PAUSE';
-    timerEl?.classList.remove('paused');
-  }else{
-    timerPaused=!timerPaused;
-    if(pb)pb.textContent=timerPaused?'▶ RESUME':'⏸ PAUSE';
-    timerEl?.classList.toggle('paused',timerPaused);
-  }
-  updateAdminTimerDisplay();
-  saveEventConfigToBackend();
-}
-function setNewTime(){const v=document.getElementById('timerInput').value.trim();const parts=v.split(':');if(parts.length===3){timerSec=parseInt(parts[0])*3600+parseInt(parts[1])*60+parseInt(parts[2]);timerOriginal=timerSec;renderTimer()
-  timerPaused=true; timerStarted=false;
-  const pb=document.getElementById('pauseBtn'); if(pb)pb.textContent='▶ START';
-  document.getElementById('cTimer')?.classList.add('paused');
-  updateAdminTimerDisplay();
-  saveEventConfigToBackend();
-}else if(parts.length===2){timerSec=parseInt(parts[0])*60+parseInt(parts[1]);timerOriginal=timerSec;renderTimer()}}
-function resetTimer(){
-  timerSec=timerOriginal;
-  timerPaused=true;
-  timerStarted=false;
-  const pb=document.getElementById('pauseBtn');
-  if(pb)pb.textContent='▶ START';
-  const ct=document.getElementById('cTimer');
-  ct?.classList.add('paused');
-  renderTimer();
-  updateAdminTimerDisplay();
-  saveEventConfigToBackend();
-}
+function togglePause(){timerPaused=!timerPaused;document.getElementById('pauseBtn').textContent=timerPaused?'▶ RESUME':'⏸ PAUSE';document.getElementById('cTimer').classList.toggle('paused',timerPaused)}
+function setNewTime(){const v=document.getElementById('timerInput').value.trim();const parts=v.split(':');if(parts.length===3){timerSec=parseInt(parts[0])*3600+parseInt(parts[1])*60+parseInt(parts[2]);timerOriginal=timerSec;renderTimer()}else if(parts.length===2){timerSec=parseInt(parts[0])*60+parseInt(parts[1]);timerOriginal=timerSec;renderTimer()}}
+function resetTimer(){timerSec=timerOriginal;timerPaused=false;document.getElementById('pauseBtn').textContent='⏸ PAUSE';document.getElementById('cTimer').classList.remove('paused');renderTimer()}
 function renderTimer(){
   const el=document.getElementById('cTimer');
-  if(!el)return;
-  if(!_eventCfgHydrated)return;
-  if(timerMode==='event'){
-    // schedule mode renders via startGlobalEventTimer
-    return;
-  }
-  if(timerMode==='none'){
-    el.textContent='∞';
-    el.classList.add('is-infinity');
-    return;
-  }
-  el.classList.remove('is-infinity');
   const h=Math.floor(timerSec/3600),m=Math.floor((timerSec%3600)/60),s=timerSec%60;
   el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 }
@@ -9025,12 +8800,38 @@ function renderTimerLabel(label){
 }
 
 function tickTimer(){
-  if(!_eventCfgHydrated)return;
   if(timerMode==='none')return; // Open-ended, no timer
   if(timerMode==='countdown'){
     if(timerPaused||timerSec<=0)return;
     timerSec--;renderTimer();
     if(timerSec<=0)onTimerExpired();
+  }else if(timerMode==='event'){
+    if(!eventSettings.startTime||!eventSettings.endTime)return;
+    const now=Date.now();
+    const start=new Date(eventSettings.startTime).getTime();
+    const end=new Date(eventSettings.endTime).getTime();
+    const el=document.getElementById('cTimer');
+    if(now<start){
+      // Pre-event: count down to start
+      const diff=Math.max(0,Math.floor((start-now)/1000));
+      const h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60),s=diff%60;
+      el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+      el.classList.add('paused');
+      renderTimerLabel('Starts In');
+    }else if(now>=start&&now<end){
+      // Live: count down to end
+      const diff=Math.max(0,Math.floor((end-now)/1000));
+      const h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60),s=diff%60;
+      el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+      el.classList.remove('paused');
+      renderTimerLabel('Time Remaining');
+    }else{
+      // Expired
+      el.textContent='00:00:00';
+      el.classList.remove('paused');
+      renderTimerLabel('Event Ended');
+      if(!eventSettings.expired)onTimerExpired();
+    }
   }
 }
 function onTimerExpired(){
@@ -9112,12 +8913,7 @@ function nukeAllTeams(){
   if(answer!=='YES'){alert('Cancelled.');return}
   var msg=document.getElementById('nukeMgmtMsg');
   msg.className='ap-msg';msg.textContent='Nuking all teams...';
-  Promise.all([
-    apiCall('clearAllData',{scope:'teams'}),
-    apiCall('clearAllData',{scope:'submissions'})
-  ]).then(function(results){
-    var r=results[0]||{ok:false};
-
+  apiCall('nukeTeams',{mode:'all'}).then(function(r){
     if(r.ok){
       msg.className='ap-msg ok';msg.textContent='☢ '+r.message;
       registeredTeams.length=0;manualTeams.length=0;
@@ -9134,25 +8930,10 @@ function nukeSelectedTeams(){
   var ids=[];checks.forEach(function(cb){ids.push(cb.dataset.team)});
   if(!confirm('☢ NUKE '+ids.length+' TEAM'+(ids.length>1?'S':'')+'?\n\nIDs: '+ids.join(', ')+'\n\nThis permanently deletes their data. Cannot be undone.'))return;
   var msg=document.getElementById('tmNukeBar');
-  (async function(){
-    // Remove team submissions (if any) and team records
-    var draftResp = await apiCall('getDrafts',{});
-    var draftsObj = (draftResp&&draftResp.ok&&draftResp.drafts)?draftResp.drafts:null;
-    for(var i=0;i<ids.length;i++){
-      var tid=ids[i];
-      try{await apiCall('desubmitTeam',{teamId:tid})}catch(e){}
-      try{await apiCall('removeTeam',{teamId:tid})}catch(e){}
-      if(draftsObj && draftsObj[tid]){delete draftsObj[tid]}
-    }
-    if(draftsObj){
-      try{await apiCall('saveDrafts',{drafts:draftsObj})}catch(e){}
-    }
-    return {ok:true,message:'Selected teams removed'};
-  })().then(function(r){
+  apiCall('nukeTeams',{mode:'selected',teamIds:ids}).then(function(r){
     if(r.ok){
       ids.forEach(function(id){
-        var idx=registeredTeams.findIndex(function(t){return t.id===id});
-        if(idx>=0)registeredTeams.splice(idx,1);
+        registeredTeams.splice(registeredTeams.findIndex(function(t){return t.id===id}),1);
         var mi=manualTeams.findIndex(function(t){return t.id===id});
         if(mi>=0)manualTeams.splice(mi,1);
       });
@@ -9613,7 +9394,7 @@ function saveSession(){
     if(isAdmin){
       data.adminSession=adminSession;
       // Save which admin page is open
-      if(_currentAdminPage||_currentScreen==='settingsScreen')data.adminPage='settingsScreen';
+      if(_currentAdminPage)data.adminPage='settingsScreen';
       // Save active tab within settings page
       var activeTab=document.querySelector('#settingsScreen .admin-page-section.active');
       if(activeTab)data.adminTab=activeTab.id;
@@ -9817,7 +9598,7 @@ function restoreSession(){
     _restoreContentCache();
 
     // Detect mobile for conditional panel restore
-    const _isMobileRestore=window.innerWidth<=768; // (kept for other responsive logic)
+    const _isMobileRestore=window.innerWidth<=768;
 
     function applyScreenAndPanel(){
       // Set up screen first (hidden — opacity:0 via .screen default)
@@ -9830,7 +9611,7 @@ function restoreSession(){
       // Open panel SYNCHRONOUSLY before any paint if one was saved
       // On mobile: skip panel restore — land on console grid so user has context
       // On desktop: restore exactly where they were (prevents flash)
-      if(data.panel&&panelMap[data.panel]){
+      if(data.panel&&panelMap[data.panel]&&!_isMobileRestore){
         const panelEl=document.getElementById(data.panel);
         if(panelEl){
           document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));
@@ -9884,7 +9665,7 @@ function restoreSession(){
       // navigateToAdmin() accesses _panelsMounted, _currentAdminPage, _currentGridTheme etc.
       // which are declared with let/const AFTER this point in the file
       if(data.adminPage){
-        window._deferredAdminRestore={page:data.adminPage||'settingsScreen',tab:data.adminTab||null};
+        window._deferredAdminRestore={tab:data.adminTab||null};
       }
       startElapsedTimer();
       startTeamMonitor();
@@ -9919,7 +9700,8 @@ function restoreSession(){
         syncVaultCodesFromMedia();
         restoreGameState();
         // Re-render panel with fresh backend data once it arrives
-        if(data.panel&&panelMap[data.panel]){
+        // On mobile: skip — user is on console grid
+        if(data.panel&&panelMap[data.panel]&&!_isMobileRestore){
           const t=panelMap[data.panel];
           if(t==='feed'){
             renderFeed();
@@ -10838,16 +10620,7 @@ function initSettingsPage(){
     var el=document.getElementById(id);
     if(el){el.style.cssText='';el.classList.add('active')}
   });
-  // Init the active tab's content (after config hydration to avoid value flicker)
-  if(!window.__configHydrated){
-    document.documentElement.classList.add('is-hydrating-settings');
-    // Run once config lands
-    document.addEventListener('cb:configHydrated', function _once(){
-      // Re-run init now that config is in place
-      try{initSettingsPage()}catch(e){}
-    }, {once:true});
-    return;
-  }
+  // Init the active tab's content
   var activeSection=document.querySelector('#settingsScreen .admin-page-section.active');
   if(activeSection){
     var sid=activeSection.id;
@@ -10870,22 +10643,7 @@ function switchPageTab(screenId,sectionId,btn){
   screen.querySelectorAll('.admin-page-section').forEach(function(s){s.classList.remove('active')});
   var section=document.getElementById(sectionId);
   if(section)section.classList.add('active');
-  // Init content for the activated section (after config hydration to avoid value flicker)
-  if(!window.__configHydrated){
-    document.documentElement.classList.add('is-hydrating-settings');
-    // Remember desired tab and hydrate later
-    window.__pendingSettingsTab=sectionId;
-    document.addEventListener('cb:configHydrated', function _once(){
-      try{
-        var target=window.__pendingSettingsTab||'set-event';
-        window.__pendingSettingsTab=null;
-        // Re-run tab activation now that config is ready
-        switchPageTab(screenId,target,screen.querySelector('.admin-page-tab.active'));
-      }catch(e){}
-    }, {once:true});
-    saveSession();
-    return;
-  }
+  // Init content for the activated section
   if(sectionId==='set-event'){syncAdminPanelSettings();syncRegistrationSettings();renderTutorialStepList();var tg=document.getElementById('tutGlobalToggle');if(tg)tg.classList.toggle('on',tutorialEnabled)}
   if(sectionId==='set-intel'){renderKeysCodes();renderScoringEditor()}
   if(sectionId==='set-appearance'){updateThemeLabel();initTypographyPanel()}
@@ -10915,27 +10673,13 @@ togglePlayerPreview=function(){
     _currentGridTheme=window._deferredGridTheme;
     delete window._deferredGridTheme;
   }
-  // Execute deferred admin navigation (after DOM is ready)
-  function _runDeferredAdminRestore(){
-    if(!window._deferredAdminRestore) return;
-    var page=window._deferredAdminRestore.page||'settingsScreen';
-    var tab=window._deferredAdminRestore.tab||null;
-
-    _gearReturnScreen='consoleScreen';
-
-    // Ensure the target screen exists before navigating.
-    // IMPORTANT: do NOT delete the deferred object until we successfully navigate,
-    // otherwise the DOMContentLoaded retry will have nothing to restore.
-    var el=document.getElementById(page);
-    if(!el){
-      document.addEventListener('DOMContentLoaded',function(){_runDeferredAdminRestore();},{once:true});
-      return;
-    }
-
+  // Execute deferred admin settings navigation
+  if(window._deferredAdminRestore){
+    var tab=window._deferredAdminRestore.tab;
     delete window._deferredAdminRestore;
-    navigateToAdmin(page,tab);
+    _gearReturnScreen='consoleScreen';
+    navigateToAdmin('settingsScreen',tab);
   }
-  _runDeferredAdminRestore()
 })();
 
 </script>
@@ -10947,7 +10691,7 @@ togglePlayerPreview=function(){
   <div class="admin-page">
     <div class="admin-page-header">
       <div class="admin-page-header-row">
-        <span class="admin-page-title">Admin Console</span>
+        <span class="admin-page-title">◈ Admin Console</span>
         <button class="admin-page-close" onclick="returnFromAdminPage()" title="Return to console">✕ CLOSE</button>
       </div>
       <div class="admin-page-tabs">
