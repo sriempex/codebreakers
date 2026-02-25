@@ -1665,12 +1665,12 @@
   .notepad-dot{width:6px;height:6px;border-radius:50%;background:#444;margin-left:4px;transition:background .3s}
   .notepad-dot.has-notes{background:var(--green);box-shadow:0 0 4px var(--green)}
 
-  #notepadPanel{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);z-index:650;width:480px;max-height:60vh;border:1px solid rgba(255,255,255,.06);border-bottom:none;border-radius:8px 8px 0 0;display:flex;flex-direction:column;overflow:hidden;transition:transform .35s cubic-bezier(.25,.46,.45,.94);
+  #notepadPanel{position:fixed;bottom:0;left:12px;transform:translateY(100%);z-index:650;width:480px;max-height:60vh;border:1px solid rgba(255,255,255,.06);border-bottom:none;border-radius:8px 8px 0 0;display:flex;flex-direction:column;overflow:hidden;transition:transform .35s cubic-bezier(.25,.46,.45,.94);
     background:
       repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.003) 1px,rgba(255,255,255,.003) 2px,transparent 2px,transparent 4px),
       linear-gradient(175deg,#141620,#0e1018 40%,#0a0c12);
     box-shadow:0 -8px 40px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.02)}
-  #notepadPanel.open{transform:translateX(-50%) translateY(0)}
+  #notepadPanel.open{transform:translateY(0)}
   .notepad-header{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid rgba(0,255,136,.08);background:linear-gradient(180deg,#1a1d28,#14161e);flex-shrink:0}
   .notepad-header-title{font-family:'Staatliches',cursive;font-size:15px;letter-spacing:3px;color:#d0f0e0;text-transform:uppercase}
   .notepad-header-icon{font-size:14px;margin-right:10px}
@@ -1937,8 +1937,8 @@
     .mv-video-controls{padding:8px 12px}
 
     /* Notepad */
-    #notepadPanel{width:100vw;max-height:85vh;border-radius:12px 12px 0 0;left:0;transform:translateX(0) translateY(100%)}
-    #notepadPanel.open{transform:translateX(0) translateY(0)}
+    #notepadPanel{width:100vw;max-height:85vh;border-radius:12px 12px 0 0;left:0;transform:translateY(100%)}
+    #notepadPanel.open{transform:translateY(0)}
     .notepad-header{padding:12px 16px}
     .notepad-header-title{font-size:10px;letter-spacing:2px}
     .notepad-hint{padding:8px 16px;font-size:9px}
@@ -9426,9 +9426,14 @@ function clearGameState(){
 }
 
 // Auto-save game state periodically and on visibility change
-setInterval(()=>{if(currentVaultTeam&&_currentScreen==='consoleScreen')saveGameState()},5000);
+setInterval(()=>{if(currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen'))saveGameState()},5000);
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'&&currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){
+    saveGameState();saveSession();
+  }
+});
+window.addEventListener('beforeunload',()=>{
+  if(currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){
     saveGameState();saveSession();
   }
 });
@@ -10410,6 +10415,11 @@ function navigateToAdmin(screenId,tabId){
     }
     switchPageTab('settingsScreen',tabId,tabBtn);
   }
+  // Refresh data to ensure dashboard tabs have current info
+  loadEventData().then(function(){
+    var as=document.querySelector('#settingsScreen .admin-page-section.active');
+    if(as)switchPageTab('settingsScreen',as.id,null);
+  });
   updateGearIcon();
   updatePreviewIcon();
 }
@@ -10511,14 +10521,14 @@ function switchPageTab(screenId,sectionId,btn){
   var section=document.getElementById(sectionId);
   if(section)section.classList.add('active');
   // Init content for the activated section
-  if(sectionId==='dash-teams'){renderTeamMonitor();startTeamMonitor()}
-  if(sectionId==='dash-leaderboard'){renderFullLeaderboard()}
   if(sectionId==='set-event'){syncAdminPanelSettings();syncRegistrationSettings();renderTutorialStepList();var tg=document.getElementById('tutGlobalToggle');if(tg)tg.classList.toggle('on',tutorialEnabled)}
   if(sectionId==='set-intel'){renderKeysCodes();renderScoringEditor()}
   if(sectionId==='set-appearance'){updateThemeLabel();initTypographyPanel()}
   if(sectionId==='set-users'){renderPortalUsersList();refreshAdminList()}
   if(sectionId==='dash-teams'){renderTeamMonitor();startTeamMonitor()}
   if(sectionId==='dash-leaderboard'){renderFullLeaderboard()}
+  if(sectionId==='dash-sessions'){renderSessionMgmt&&renderSessionMgmt()}
+  if(sectionId==='dash-broadcast'){initBroadcastPanel&&initBroadcastPanel()}
 }
 
 // Override togglePlayerPreview to update icon
