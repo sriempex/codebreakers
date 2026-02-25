@@ -753,6 +753,14 @@
   .feed-view-btn.active{color:#b0e8cc;border-color:rgba(0,255,136,.1);border-bottom-color:rgba(0,255,136,.2);background:linear-gradient(180deg,rgba(15,40,25,.4),rgba(10,30,18,.5))}
   .feed-view-btn:hover{border-color:rgba(255,255,255,.08);color:#aaa}
 
+  /* Feed header centering + no layout shift */
+  #expFeed .exp-header{position:relative}
+  #expFeed #feedViewToggle{position:absolute;left:50%;transform:translateX(-50%);margin-right:0}
+  #expFeed #feedCloseBtn{min-width:110px;text-align:center}
+  /* Keep grid comfortably within viewport (show 2 rows / 6 posts without scroll on typical screens) */
+  #expFeed .exp-body{padding:14px}
+  #expFeed .feed-expanded{max-width:min(900px, calc((88vh - 140px) * 1.5));margin:0 auto}
+
   .feed-expanded{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;max-width:900px;margin:0 auto}
   .feed-card-img{aspect-ratio:1;overflow:hidden}
   .feed-card-img img{width:100%;height:100%;object-fit:cover}
@@ -3102,7 +3110,6 @@
 </div>
 
 <!-- Logout button — body level for z-index independence -->
-<div class="logout-btn" id="logoutBtn" onclick="showLogout()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span>Logout</span></div>
 
 <div id="notepadPanel">
   <div class="notepad-header">
