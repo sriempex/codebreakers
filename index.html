@@ -4602,7 +4602,7 @@ function _refreshPanelData(panel){
     apiCall('getMediaItems').then(r=>{
       if(r.ok&&r.items){
         const changed=r.items.length!==mediaItems.length||JSON.stringify(r.items)!==JSON.stringify(mediaItems.map(m=>({name:m.name,desc:m.desc||'',url:m.url,type:m.type||'image',nameFont:m.nameFont||'',descFont:m.descFont||'',vaultLocked:m.vaultLocked||false})));
-        if(changed){mediaItems=_normalizeMediaItems(r.items);syncVaultCodesFromMedia();restoreGameState();renderMedia();renderGrid();_cacheContent("cb_media",mediaItems)}
+        if(changed){mediaItems=_normalizeMediaItems(r.items);syncVaultCodesFromMedia();resetTeamLockedState();restoreGameState();renderMedia();renderGrid();_cacheContent("cb_media",mediaItems)}
       }
     });
   }else if(panel==='intel'){
@@ -4626,7 +4626,7 @@ function _refreshPanelData(panel){
   }else if(panel==='vault'){
     apiCall('getEventConfig').then(cfg=>{
       if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
-      syncVaultCodesFromMedia();restoreGameState();renderVaultPanel();
+      syncVaultCodesFromMedia();resetTeamLockedState();restoreGameState();renderVaultPanel();
     });
   }
 }
@@ -5289,25 +5289,48 @@ function finalSubmit(){
 let currentMediaIdx=0;
 let mvAudio=null;
 let mvAudioInterval=null;
+let currentMediaPos=0;
 
-function openMediaViewer(i){
-  const m=mediaItems[i];
-  if(m._isNew){m._isNew=false;renderMedia()}
-  if(m.type==='locked'&&!m.unlocked){renderLockedView(i);showViewer(i);return}
-  currentMediaIdx=i;
-  showViewer(i);
-  renderMediaContent(m);
+function _isAdminFullMedia(){return document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview');}
+function _visibleMediaIndices(){
+  const showAll=_isAdminFullMedia();
+  const vis=[];
+  for(let i=0;i<mediaItems.length;i++){
+    const m=mediaItems[i];
+    if(showAll){vis.push(i);continue;}
+    if(!m || !m.vaultLocked) vis.push(i);
+  }
+  return vis;
 }
 
-function showViewer(i){
-  currentMediaIdx=i;
+
+function openMediaViewer(i){
+  const vis=_visibleMediaIndices();
+  if(vis.indexOf(i)<0){
+    // Vault-locked items should not be visible/openable for players
+    return;
+  }
   const m=mediaItems[i];
-  document.getElementById('mvIcon').textContent=m.icon;
-  document.getElementById('mvName').textContent=m.name;
-  document.getElementById('mvDesc').textContent=m.desc;
+  if(m && m._isNew){m._isNew=false;renderMedia()}
+  if(m && m.type==='locked'&&!m.unlocked){renderLockedView(i);showViewer(i,vis);return}
+  currentMediaIdx=i;
+  currentMediaPos=Math.max(0,vis.indexOf(i));
+  showViewer(i,vis);
+  if(m)renderMediaContent(m);
+}
+
+function showViewer(i,visOverride){
+  const vis=visOverride||_visibleMediaIndices();
+  currentMediaIdx=i;
+  const m=mediaItems[i]||{};
+  const pos=vis.indexOf(i);
+  currentMediaPos=pos>=0?pos:0;
+  document.getElementById('mvIcon').textContent=m.icon||'';
+  document.getElementById('mvName').textContent=m.name||'';
+  document.getElementById('mvDesc').textContent=m.desc||'';
   const badge=document.getElementById('mvBadge');
-  badge.textContent=m.type;badge.className='mv-badge '+m.type;
-  document.getElementById('mvCounter').textContent=(i+1)+' / '+mediaItems.length;
+  badge.textContent=m.type||'';badge.className='mv-badge '+(m.type||'');
+  document.getElementById('mvCounter').textContent=(currentMediaPos+1)+' / '+vis.length;
   // Download button: only show if admin enabled downloads and file exists
   const dlBtn=document.getElementById('mvDownload');
   dlBtn.style.display=(allowDownloads&&m.fileUrl)?'':'none';
@@ -5412,11 +5435,15 @@ function closeMediaViewer(){
 function navMedia(d){
   stopMvAudio();
   const vid=document.querySelector('.mv-video');if(vid)vid.pause();
-  currentMediaIdx=(currentMediaIdx+d+mediaItems.length)%mediaItems.length;
-  const m=mediaItems[currentMediaIdx];
-  showViewer(currentMediaIdx);
-  if(m.type==='locked'&&!m.unlocked)renderLockedView(currentMediaIdx);
-  else renderMediaContent(m);
+  const vis=_visibleMediaIndices();
+  if(!vis.length) return;
+  if(currentMediaPos==null || currentMediaPos<0) currentMediaPos=0;
+  currentMediaPos=(currentMediaPos+d+vis.length)%vis.length;
+  const idx=vis[currentMediaPos];
+  const m=mediaItems[idx];
+  showViewer(idx,vis);
+  if(m && m.type==='locked' && !m.unlocked) renderLockedView(idx);
+  else if(m) renderMediaContent(m);
 }
 
 function renderMediaContent(m){
@@ -9855,6 +9882,24 @@ function _gsKey(suffix){
   return 'cb_gs_'+tid+'_'+suffix;
 }
 
+
+// ── Vault-locked visibility isolation per team ──
+// When switching teams (without a full page refresh), we must reset in-memory
+// vault unlock state so one team's unlocked files do NOT leak to another team.
+function resetTeamLockedState(){
+  try{
+    if(Array.isArray(vaultCodes)){
+      vaultCodes.forEach(c=>{ if(c){ c.unlocked=false; c.unlockedAt=null; } });
+    }
+    if(Array.isArray(mediaItems)){
+      mediaItems.forEach(m=>{
+        if(!m) return;
+        if(m._initialVaultLocked===undefined) m._initialVaultLocked=!!m.vaultLocked;
+        m.vaultLocked=!!m._initialVaultLocked;
+      });
+    }
+  }catch(e){}
+}
 function saveGameState(){
   try{
     if(!currentVaultTeam)return;
@@ -10137,8 +10182,7 @@ if(fromLocalStorage&&data.type==='admin'){
       apiCall('getEventConfig').then(cfg=>{
         if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
         // Re-sync vault codes after fresh data arrives, then re-apply unlock state
-        syncVaultCodesFromMedia();
-        restoreGameState();
+        syncVaultCodesFromMedia();resetTeamLockedState();restoreGameState();
         // Re-render panel with fresh backend data once it arrives
         if(data.panel&&panelMap[data.panel]){
           const t=panelMap[data.panel];
