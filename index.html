@@ -455,6 +455,22 @@
   .timer-digits.paused{color:var(--amber);animation:ledPulse 1s infinite}
   .timer-label{font-family:'Saira',sans-serif;font-size:9px;color:#888;letter-spacing:3px;font-weight:600;text-transform:uppercase;margin-top:3px;position:relative;top:-3px}
   body.config-hydrating .timer-digits,body.config-hydrating .timer-label{opacity:0}
+  /* Saved blip / toast */
+  #saveToast{
+    position:fixed; right:16px; bottom:16px; z-index:9999;
+    padding:10px 12px; border-radius:12px;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(5,10,16,.72);
+    box-shadow:0 12px 30px rgba(0,0,0,.45);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px; letter-spacing:1px; text-transform:uppercase;
+    color:var(--green);
+    opacity:0; transform:translateY(8px);
+    pointer-events:none;
+    transition:opacity .18s ease, transform .18s ease;
+  }
+  #saveToast.show{opacity:1; transform:translateY(0)}
+
   .topbar-identity{position:relative;cursor:pointer;display:flex;align-items:center}
   body.admin-mode .team-card-section{display:none}
   body.admin-mode .team-card-notifs{display:none}
@@ -3537,6 +3553,8 @@ function updateRegSettings(){
   }
   // Rebuild registration form with new member count
   buildRegForm();
+  if(!_fromHydration)try{updateAdminTimerDisplay()}catch(e){}
+  try{ensureConsoleTimerReflectsMode()}catch(e){}
   saveEventConfigToBackend();
 }
 
@@ -5577,7 +5595,8 @@ async function apiCall(action,data={}){
         if(isAdmin){
           alert('Admin session expired. Please log in again.');
           clearSession();location.reload();
-          return result;
+          try{if(result&&result.ok)maybeShowSaved(action)}catch(e){}
+      return result;
         }
       }
       return result}
@@ -5791,7 +5810,7 @@ function applyEventConfig(cfg){
   if(cfg.eventAutoLock!==undefined){eventSettings.autoLock=cfg.eventAutoLock==='true'||cfg.eventAutoLock===true;const cb=document.getElementById('eventAutoLock');if(cb)cb.checked=eventSettings.autoLock}
   if(cfg.eventShowLeaderboardOnExpiry!==undefined){eventSettings.showLeaderboardOnExpiry=cfg.eventShowLeaderboardOnExpiry==='true'||cfg.eventShowLeaderboardOnExpiry===true;const cb=document.getElementById('eventShowLeaderboard');if(cb)cb.checked=eventSettings.showLeaderboardOnExpiry}
   if(cfg.allowDownloads!==undefined){allowDownloads=cfg.allowDownloads==='true'||cfg.allowDownloads===true}
-  if(cfg.timerMode){timerMode=cfg.timerMode;const sel=document.getElementById('timerMode');if(sel){sel.value=timerMode;onTimerModeChange()}}
+  if(cfg.timerMode){timerMode=cfg.timerMode;const sel=document.getElementById('timerMode');if(sel){sel.value=timerMode;onTimerModeChange(true)}}
   // Scoring config
   if(cfg.scoringConfig){try{Object.assign(scoringConfig,JSON.parse(cfg.scoringConfig))}catch(e){}}
   // Typography fontConfig
@@ -5830,6 +5849,8 @@ function applyEventConfig(cfg){
     _eventCfgHydrated=true;
     try{document.body.classList.remove('config-hydrating')}catch(e){}
     try{renderTimer()}catch(e){}
+    try{ensureConsoleTimerReflectsMode()}catch(e){}
+    try{updateAdminTimerDisplay()}catch(e){}
     document.documentElement.classList.remove('is-hydrating-settings');
     try{document.dispatchEvent(new Event('cb:configHydrated'))}catch(e){}
   }
@@ -6575,7 +6596,7 @@ function syncAdminPanelSettings(){
   const status=document.getElementById('apRegStatus');
   if(status){status.textContent=regSettings.registrationOpen?'● OPEN':'● CLOSED';status.style.color=regSettings.registrationOpen?'var(--green)':'var(--red)'}
   const apTimer=document.getElementById('apTimerDisplay');
-  if(apTimer) apTimer.textContent = getTimerSummaryText();
+  try{updateAdminTimerDisplay()}catch(e){}
   // Sync activity thresholds
   const thIdle=document.getElementById('apThresholdIdle');if(thIdle)thIdle.value=activityThresholds.activeToIdle;
   const thSilent=document.getElementById('apThresholdSilent');if(thSilent)thSilent.value=activityThresholds.idleToSilent;
@@ -6655,7 +6676,7 @@ function openEventControl(){
   syncAdminPanelSettings();
   initTypographyPanel();
   if(apTimerInterval)clearInterval(apTimerInterval);
-  apTimerInterval=setInterval(()=>{const el=document.getElementById('apTimerDisplay'); if(el) el.textContent = getTimerSummaryText();},250);
+  apTimerInterval=setInterval(()=>{try{updateAdminTimerDisplay()}catch(e){}},250);
 }
 function openAdminPanel(){openEventControl()} // backward compat alias
 function closeEventControl(){
@@ -8475,8 +8496,10 @@ let eventSettings={
   expired:false
 };
 
-function onTimerModeChange(){
+function onTimerModeChange(_fromHydration){
   timerMode=document.getElementById('timerMode').value;
+  // Ensure admin-side value display updates by mode
+  try{updateAdminTimerDisplay()}catch(e){}
   document.getElementById('timerCountdownControls').style.display=timerMode==='countdown'?'':'none';
   document.getElementById('timerEventControls').style.display=timerMode==='event'?'':'none';
   if(timerMode==='event')updateEventStatus();
@@ -8496,7 +8519,10 @@ function onTimerModeChange(){
     var timerBlock2=document.querySelector('.timer-block');
     if(timerBlock2)timerBlock2.style.display='';
   }
-  updateTimerSummaryDisplay();
+  // Always force the console timer to reflect the selected mode
+  try{ensureConsoleTimerReflectsMode()}catch(e){}
+  // Persist mode changes (except during initial hydration)
+  if(!_fromHydration && timerMode!=='none'){saveEventConfigToBackend();}
 }
 function onEventTimeChange(){
   const startVal=document.getElementById('eventStartInput').value;
@@ -8506,7 +8532,6 @@ function onEventTimeChange(){
   eventSettings.expired=false;
   updateEventStatus();
   startGlobalEventTimer();
-  updateTimerSummaryDisplay();
   saveEventConfigToBackend();
 }
 
@@ -8770,6 +8795,7 @@ tbody tr:hover{background:#f5f5f5}
   <p>${esc(eventName)} — Code Breakers Platform</p>
   <p style="margin-top:4px">Confidential — For internal use only</p>
 </div>
+<div id="saveToast">SAVED</div>
 </body></html>`;
 
   const blob=new Blob([report],{type:'text/html;charset=utf-8'});
@@ -8883,8 +8909,74 @@ function updateEventStatus(){
 
 // Countdown mode functions
 function togglePause(){timerPaused=!timerPaused;document.getElementById('pauseBtn').textContent=timerPaused?'▶ RESUME':'⏸ PAUSE';document.getElementById('cTimer').classList.toggle('paused',timerPaused)}
-function setNewTime(){const v=document.getElementById('timerInput').value.trim();const parts=v.split(':');if(parts.length===3){timerSec=parseInt(parts[0])*3600+parseInt(parts[1])*60+parseInt(parts[2]);timerOriginal=timerSec;renderTimer();updateTimerSummaryDisplay();}else if(parts.length===2){timerSec=parseInt(parts[0])*60+parseInt(parts[1]);timerOriginal=timerSec;renderTimer();updateTimerSummaryDisplay();}}
-function resetTimer(){timerSec=timerOriginal;timerPaused=false;document.getElementById('pauseBtn').textContent='⏸ PAUSE';document.getElementById('cTimer').classList.remove('paused');renderTimer();updateTimerSummaryDisplay();}
+function setNewTime(){const v=document.getElementById('timerInput').value.trim();const parts=v.split(':');if(parts.length===3){timerSec=parseInt(parts[0])*3600+parseInt(parts[1])*60+parseInt(parts[2]);timerOriginal=timerSec;renderTimer()}else if(parts.length===2){timerSec=parseInt(parts[0])*60+parseInt(parts[1]);timerOriginal=timerSec;renderTimer()}}
+function resetTimer(){timerSec=timerOriginal;timerPaused=false;document.getElementById('pauseBtn').textContent='⏸ PAUSE';document.getElementById('cTimer').classList.remove('paused');renderTimer()}
+
+let _saveToastTimer=null;
+function showSaveToast(msg){
+  const t=document.getElementById('saveToast');
+  if(!t)return;
+  t.textContent=msg||'SAVED';
+  t.classList.add('show');
+  if(_saveToastTimer)clearTimeout(_saveToastTimer);
+  _saveToastTimer=setTimeout(()=>{t.classList.remove('show')},850);
+  try{updateAdminTimerDisplay()}catch(e){}
+  try{ensureConsoleTimerReflectsMode()}catch(e){}
+
+}
+function maybeShowSaved(action){
+  const savey=new Set(['setConfig','saveEventConfig','saveIntelFields','saveDrafts','savePosts','saveMedia','updateGridTile','updateScoring','updateFonts','destroySessions','clearAllData','removeTeam','desubmitTeam','resetTeam','bulkUpdateTeams']);
+  const destructive=new Set(['destroySessions','clearAllData','removeTeam','desubmitTeam','resetTeam','bulkUpdateTeams']);
+  if(savey.has(action)){
+    showSaveToast(destructive.has(action)?'DONE':'SAVED');
+  }
+}
+function _fmtHMS(sec){
+  sec=Math.max(0,Math.floor(sec||0));
+  const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;
+  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function _fmtSchedule(){
+  if(!eventSettings.startTime && !eventSettings.endTime) return '—';
+  try{
+    const s=eventSettings.startTime?new Date(eventSettings.startTime):null;
+    const e=eventSettings.endTime?new Date(eventSettings.endTime):null;
+    const opts={hour:'2-digit',minute:'2-digit'};
+    const ds=s? s.toLocaleString([],opts):'—';
+    const de=e? e.toLocaleString([],opts):'—';
+    return (s&&e)?(ds+'–'+de):(s?ds:de);
+  }catch(e){ return '—';}
+}
+function updateAdminTimerDisplay(){
+  const ap=document.getElementById('apTimerDisplay');
+  if(!ap)return;
+  if(timerMode==='none'){ap.textContent='∞';return;}
+  if(timerMode==='event'){ap.textContent=_fmtSchedule();return;}
+  // countdown
+  ap.textContent=_fmtHMS(timerSec);
+}
+function ensureConsoleTimerReflectsMode(){
+  const el=document.getElementById('cTimer');
+  if(!el)return;
+  if(timerMode==='none'){
+    el.textContent='∞';
+    el.classList.add('is-infinity');
+    renderTimerLabel('No Timer');
+    return;
+  }
+  el.classList.remove('is-infinity');
+  if(timerMode==='countdown'){
+    renderTimerLabel('Time Remaining');
+    renderTimer();
+    return;
+  }
+  if(timerMode==='event'){
+    // Force one immediate paint using current schedule
+    tickTimer();
+    return;
+  }
+}
+
 function renderTimer(){
   const el=document.getElementById('cTimer');
   if(!el)return;
@@ -8897,40 +8989,6 @@ function renderTimer(){
   el.classList.remove('is-infinity');
   const h=Math.floor(timerSec/3600),m=Math.floor((timerSec%3600)/60),s=timerSec%60;
   el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-}
-function formatHMS(sec){
-  sec = Math.max(0, Math.floor(sec||0));
-  const h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60;
-  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-}
-function formatTimeHM(iso){
-  try{
-    const d=new Date(iso);
-    if(isNaN(d.getTime())) return '';
-    return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-  }catch(e){ return ''; }
-}
-function getTimerSummaryText(){
-  if(timerMode==='none') return '∞';
-  if(timerMode==='countdown'){
-    // Show the configured countdown value (original) rather than the changing live timer.
-    return formatHMS((typeof timerOriginal==='number' && timerOriginal>0)?timerOriginal:timerSec);
-  }
-  if(timerMode==='event'){
-    const st = eventSettings && eventSettings.startTime ? formatTimeHM(eventSettings.startTime) : '';
-    const en = eventSettings && eventSettings.endTime ? formatTimeHM(eventSettings.endTime) : '';
-    if(st && en) return st+'–'+en;
-    if(st) return st;
-    if(en) return 'Ends '+en;
-    return '—';
-  }
-  // fallback
-  const el=document.getElementById('cTimer');
-  return el?el.textContent:'—';
-}
-function updateTimerSummaryDisplay(){
-  const ap=document.getElementById('apTimerDisplay');
-  if(ap) ap.textContent = getTimerSummaryText();
 }
 function renderTimerLabel(label){
   const labelEl=document.querySelector('.timer-label');
@@ -10987,5 +11045,6 @@ togglePlayerPreview=function(){
   </div>
 </div>
 
+<div id="saveToast">SAVED</div>
 </body>
 </html>
