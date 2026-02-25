@@ -411,7 +411,8 @@
 
   /* ══════ CONSOLE ══════ */
   #consoleScreen{display:flex;flex-direction:column;position:relative;height:100vh;
-    background:linear-gradient(180deg, #050607 0%, #070809 15%, #08090c 50%, #060708 85%, #040506 100%);
+    /* Brighter slate-blue base for office lighting */
+    background:linear-gradient(180deg, #182634 0%, #1c2b3a 15%, #16222f 50%, #121c27 85%, #0f1822 100%);
   }
   /* Brushed zinc streaks */
   #consoleScreen::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
@@ -433,10 +434,11 @@
   }
   /* Vignette — tight, dark edges */
   #consoleScreen::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
-    background:radial-gradient(ellipse at 50% 50%, transparent 25%, rgba(0,0,0,.7) 100%);
+    /* Softer vignette so panels stay readable in daylight */
+    background:radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,0,0,.38) 100%);
   }
   /* Subtle world map background */
-  .console-worldmap{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.08;
+  .console-worldmap{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.12;
     background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 500'%3E%3Cellipse cx='500' cy='250' rx='480' ry='240' fill='none' stroke='%23ffffff' stroke-width='.5'/%3E%3Cellipse cx='500' cy='250' rx='320' ry='240' fill='none' stroke='%23ffffff' stroke-width='.3'/%3E%3Cellipse cx='500' cy='250' rx='160' ry='240' fill='none' stroke='%23ffffff' stroke-width='.3'/%3E%3Cline x1='20' y1='250' x2='980' y2='250' stroke='%23ffffff' stroke-width='.3'/%3E%3Cline x1='500' y1='10' x2='500' y2='490' stroke='%23ffffff' stroke-width='.3'/%3E%3Cellipse cx='500' cy='250' rx='480' ry='80' fill='none' stroke='%23ffffff' stroke-width='.2'/%3E%3Cellipse cx='500' cy='250' rx='480' ry='160' fill='none' stroke='%23ffffff' stroke-width='.2'/%3E%3Ccircle cx='200' cy='180' r='35' fill='%23ffffff' opacity='.15'/%3E%3Ccircle cx='190' cy='140' r='20' fill='%23ffffff' opacity='.12'/%3E%3Ccircle cx='160' cy='160' r='15' fill='%23ffffff' opacity='.1'/%3E%3Cellipse cx='520' cy='160' rx='80' ry='55' fill='%23ffffff' opacity='.12'/%3E%3Cellipse cx='600' cy='140' rx='50' ry='30' fill='%23ffffff' opacity='.1'/%3E%3Cellipse cx='680' cy='180' rx='40' ry='50' fill='%23ffffff' opacity='.08'/%3E%3Cellipse cx='560' cy='220' rx='35' ry='25' fill='%23ffffff' opacity='.1'/%3E%3Cellipse cx='530' cy='280' rx='20' ry='40' fill='%23ffffff' opacity='.08'/%3E%3Cellipse cx='260' cy='270' rx='30' ry='55' fill='%23ffffff' opacity='.1'/%3E%3Cellipse cx='750' cy='340' rx='25' ry='20' fill='%23ffffff' opacity='.08'/%3E%3Cellipse cx='780' cy='300' rx='40' ry='25' fill='%23ffffff' opacity='.06'/%3E%3Cellipse cx='350' cy='170' rx='15' ry='12' fill='%23ffffff' opacity='.08'/%3E%3C/svg%3E") no-repeat center center;
     background-size:90% auto;
   }
@@ -799,9 +801,9 @@
   .feed-single.visible{display:flex}
   #feedExpBody.focus-active{display:flex;flex-direction:column;height:100%;overflow:hidden}
   #feedExpBody.focus-active #feedGridView{display:none}
-  .feed-single-img{flex:1;min-height:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:72px;background-size:cover;background-position:center;touch-action:none;position:relative;overflow:hidden;cursor:zoom-in}
-  .feed-single-img.zoomed{cursor:grab}
-  .feed-single-img.zoomed.dragging{cursor:grabbing}
+  .feed-single-img{flex:1;min-height:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:72px;background-size:cover;background-position:center;touch-action:none;position:relative;overflow:hidden;cursor:pointer}
+  .feed-single-img.zoomed{cursor:pointer}
+  .feed-single-img.zoomed.dragging{cursor:pointer}
   .feed-single-img .feed-zoom-wrapper{width:100%;height:100%;transform-origin:0 0;will-change:transform;display:flex;align-items:center;justify-content:center}
   .feed-single-img .feed-zoom-wrapper img{width:100%;height:100%;object-fit:contain;-webkit-user-drag:none;user-select:none;pointer-events:none}
   .feed-single-edit{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
@@ -837,6 +839,15 @@
   /* Media */
   .media-expanded{display:flex;flex-direction:column;gap:8px;max-width:800px;margin:0 auto}
   .media-exp-item{display:flex;align-items:center;gap:15px;background:var(--bg-surface);border:1px solid var(--border);border-radius:5px;padding:14px 18px;cursor:pointer;transition:border-color .2s;position:relative}
+
+  /* ── Player mode: prevent “admin-like” hand cursor on feed/media lists ── */
+  body:not(.admin-mode) .feed-card{cursor:default}
+  body:not(.admin-mode) .media-exp-item{cursor:default}
+  /* Keep pointer for actual controls inside cards (buttons/links) */
+  body:not(.admin-mode) .feed-card button,
+  body:not(.admin-mode) .feed-card a,
+  body:not(.admin-mode) .media-exp-item button,
+  body:not(.admin-mode) .media-exp-item a{cursor:pointer}
   .media-exp-item:hover{border-color:var(--green-dim)}
   .media-exp-icon{font-size:22px;flex-shrink:0}
   .media-exp-info{display:flex;flex-direction:column;gap:3px}
@@ -1083,7 +1094,7 @@
     text-shadow:0 0 6px rgba(255,50,50,.2)}
   .admin-page-close:hover{border-color:rgba(255,50,50,.45);background:rgba(255,50,50,.12);text-shadow:0 0 12px rgba(255,50,50,.4);box-shadow:0 0 14px rgba(255,50,50,.1)}
   .admin-page-tabs{display:flex;gap:0;flex-wrap:wrap;justify-content:center}
-  .admin-page-tab{padding:11px 20px;font-family:'Saira',sans-serif;font-size:12px;letter-spacing:1.5px;color:#556;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;font-weight:700;white-space:nowrap}
+  .admin-page-tab{padding:11px 20px;font-family:'Saira',sans-serif;font-size:12px;letter-spacing:1.5px;color:#8aa;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;font-weight:700;white-space:nowrap}
   .admin-page-tab:hover{color:#aab;background:rgba(255,255,255,.02)}
   .admin-page-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);background:rgba(0,212,255,.03)}
   .admin-page-tab-sep{width:1px;height:20px;background:rgba(255,255,255,.06);margin:6px 8px;align-self:center;flex-shrink:0}
