@@ -9579,7 +9579,7 @@ function restoreSession(){
       // navigateToAdmin() accesses _panelsMounted, _currentAdminPage, _currentGridTheme etc.
       // which are declared with let/const AFTER this point in the file
       if(data.adminPage){
-        window._deferredAdminRestore={tab:data.adminTab||null};
+        window._deferredAdminRestore={page:data.adminPage||'settingsScreen',tab:data.adminTab||null};
       }
       startElapsedTimer();
       startTeamMonitor();
@@ -10587,13 +10587,23 @@ togglePlayerPreview=function(){
     _currentGridTheme=window._deferredGridTheme;
     delete window._deferredGridTheme;
   }
-  // Execute deferred admin settings navigation
-  if(window._deferredAdminRestore){
-    var tab=window._deferredAdminRestore.tab;
+  // Execute deferred admin navigation (after DOM is ready)
+  function _runDeferredAdminRestore(){
+    if(!window._deferredAdminRestore) return;
+    var page=window._deferredAdminRestore.page||'settingsScreen';
+    var tab=window._deferredAdminRestore.tab||null;
     delete window._deferredAdminRestore;
     _gearReturnScreen='consoleScreen';
-    navigateToAdmin('settingsScreen',tab);
+    // Ensure the target screen exists before navigating
+    var el=document.getElementById(page);
+    if(!el){
+      // If markup isn't mounted yet, retry after DOMContentLoaded
+      document.addEventListener('DOMContentLoaded',function(){_runDeferredAdminRestore();},{once:true});
+      return;
+    }
+    navigateToAdmin(page,tab);
   }
+  _runDeferredAdminRestore()
 })();
 
 </script>
