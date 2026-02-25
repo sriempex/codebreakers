@@ -2450,7 +2450,7 @@
 
 <div id="adminEditModal"><div class="edit-box" id="editBox"></div></div>
 
-<div id="confirmModal"><div class="confirm-box"><div class="confirm-header"><h3>⚠ Confirm Transmission</h3><p>Review your intel before final submission. This action cannot be undone.</p></div><div class="confirm-body" id="confirmBody"></div><div class="confirm-footer"><button class="btn-standard btn-ghost" onclick="hideConfirm()">◂ Go Back</button><button class="btn-standard btn-green" onclick="finalSubmit()">Confirm & Transmit ◈</button></div></div></div>
+<div id="confirmModal"><div class="confirm-box"><div class="confirm-header"><h3>⚠ Confirm Transmission</h3><p>Review your intel before final submission. This action cannot be undone.</p></div><div class="confirm-body" id="confirmBody"></div><div class="confirm-footer"><button class="btn-standard btn-ghost" onclick="hideConfirm()">◂ Go Back</button><button class="btn-standard btn-green" onclick="finalSubmit()">Confirm and Submit</button></div></div></div>
 
 <!-- ADMIN CHOICE MODAL (after auth from landing) -->
 <div id="adminChoiceModal"><div class="admin-choice-box"><h3>◈ Navigation</h3><p>Where would you like to go?</p><div class="admin-choice-btns"><button class="btn-standard btn-cyan" onclick="adminGoVault()">Go to Vault</button><button class="btn-standard btn-green" onclick="adminGoConsole()">Go to Console</button></div></div></div>
@@ -5609,7 +5609,19 @@ function _restoreContentCache(){
   }catch(e){}
   try{
     const ci=localStorage.getItem('cb_intel');
-    if(ci){const arr=JSON.parse(ci);intelFields.length=0;arr.forEach(f=>intelFields.push(f));restored=true;}
+    if(ci){
+      const arr=JSON.parse(ci);
+      intelFields.length=0;
+      arr.forEach(f=>{
+        // Normalize legacy shapes so money/phone/etc render correctly on first open (pre-refresh)
+        if(f && typeof f==='object'){
+          if(!f.type && f.fieldType) f.type=f.fieldType;
+          if(!f.fieldType && f.type) f.fieldType=f.type;
+        }
+        intelFields.push(f);
+      });
+      restored=true;
+    }
   }catch(e){}
   // Restore grid theme immediately so first paint uses the correct theme
   try{
