@@ -746,11 +746,11 @@
 
   /* Feed — view modes */
   .feed-view-toggle{display:flex;gap:4px;flex-shrink:0;margin-right:12px}
-  .feed-view-btn{border-radius:4px;padding:8px 14px;text-align:center;cursor:pointer;font-family:'Saira',sans-serif;font-size:11px;letter-spacing:2.5px;color:#666;font-weight:700;transition:all .15s;text-transform:uppercase;white-space:nowrap;line-height:1;
+  .feed-view-btn{border-radius:4px;padding:8px 14px;text-align:center;cursor:pointer;font-family:'Saira',sans-serif;font-size:11px;letter-spacing:2.5px;color:#666;font-weight:700;transition:color .15s,background .15s,border-color .15s,box-shadow .15s;text-transform:uppercase;white-space:nowrap;line-height:1;min-width:80px;
     background:linear-gradient(180deg,rgba(30,32,38,.6),rgba(20,22,28,.7));
     border:1px solid rgba(255,255,255,.06);border-bottom:2px solid #08080c}
-  .feed-view-btn:hover{color:#999;border-color:rgba(255,255,255,.1)}
-  .feed-view-btn.active{color:#b0e8cc;border-color:rgba(0,255,136,.15);background:linear-gradient(180deg,rgba(15,40,25,.5),rgba(10,30,18,.6));box-shadow:0 0 8px rgba(0,255,136,.06)}
+  .feed-view-btn:hover{color:#999;border-color:rgba(255,255,255,.1);border-bottom-color:rgba(255,255,255,.1)}
+  .feed-view-btn.active{color:#b0e8cc;border-color:rgba(0,255,136,.15);border-bottom:2px solid rgba(0,255,136,.15);background:linear-gradient(180deg,rgba(15,40,25,.5),rgba(10,30,18,.6));box-shadow:0 0 8px rgba(0,255,136,.06)}
   .feed-view-btn:hover{border-color:rgba(255,255,255,.08);color:#aaa}
 
   .feed-expanded{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;max-width:900px;margin:0 auto}
@@ -3117,7 +3117,7 @@
 
 <!-- EXPANDED -->
 <div class="screen panel-screen" id="feedScreen">
-  <div class="expanded-panel visible" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter"></span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
+  <div class="expanded-panel visible" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px"></span><div style="margin-left:auto;display:flex;align-items:center;gap:12px"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div></div><div class="exp-body" id="feedExpBody"><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter"></span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
 </div>
 <div class="screen panel-screen" id="mediaScreen">
   <div class="expanded-panel visible" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanelScreen()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
@@ -4266,8 +4266,8 @@ function renderFeed(){
     grid.innerHTML=isA
       ?'<div style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px;opacity:.3">📡</div><div style="font-family:Chakra Petch,sans-serif;font-size:11px;color:#444;letter-spacing:1px;margin-bottom:16px">No intelligence feed items yet</div><div class="admin-add-btn" onclick="addFeedPost()">+ Add Post</div></div>'
       :'<div style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px;opacity:.3">📡</div><div style="font-family:Chakra Petch,sans-serif;font-size:11px;color:#333;letter-spacing:1px">No intelligence available yet</div></div>';
-    document.getElementById('feedBadge').textContent=tileBadgeText('feed',isA);
-    const fci=document.getElementById('feedCountIndicator');if(fci)fci.textContent='0 posts';
+    const _fb=document.getElementById('feedBadge');if(_fb)_fb.textContent=tileBadgeText('feed',isA);
+    const fci=document.getElementById('feedCountIndicator');if(fci)fci.textContent='(0 posts)';
     return;
   }
   grid.innerHTML=posts.map((p,i)=>{
@@ -4291,8 +4291,8 @@ function renderFeed(){
     const _capFont=resolveFont('feedCap',p.capFont||'');
     return `<div class="feed-card" data-idx="${i}" onclick="openPost(${i})">${isA?`<div class="drag-handle" onpointerdown="startDrag(event,'feed',${i})" onclick="event.stopPropagation()">⋮⋮</div><div class="admin-edit-btn" onclick="event.stopPropagation();editFeedPost(${i})">✎</div>`:''}<div class="feed-card-img" style="${bgStyle}" oncontextmenu="return false">${media}</div><div class="feed-card-cap"><p style="${fontStyle(_capFont)}">${p.cap}</p></div></div>`;
   }).join('')+(isA?'<div class="admin-add-btn" onclick="addFeedPost()">+ Add Post</div>':'');
-  document.getElementById('feedBadge').textContent=tileBadgeText('feed',isA);
-  const fci=document.getElementById('feedCountIndicator');if(fci)fci.textContent=posts.length+' posts';
+  const _fb=document.getElementById('feedBadge');if(_fb)_fb.textContent=tileBadgeText('feed',isA);
+  const fci=document.getElementById('feedCountIndicator');if(fci)fci.textContent='('+posts.length+' posts)';
   // Seek video thumbnails to 1s to show a real frame instead of black
   setTimeout(()=>{grid.querySelectorAll('video.feed-card-thumb').forEach(v=>{v.currentTime=1})},100);
 }
@@ -4994,7 +4994,7 @@ function finalSubmit(){
     document.getElementById('confirmModal').classList.remove('active');
     document.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});
     const btn=document.getElementById('intelSubmitBtn');if(btn){btn.textContent='SUBMITTED';btn.disabled=true}
-    document.getElementById('intelBadge').textContent='SUBMITTED';
+    const _ib=document.getElementById('intelBadge');if(_ib)_ib.textContent='SUBMITTED';
     playSuccess();
     document.getElementById('flashG').classList.add('on');
     setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
@@ -5018,7 +5018,7 @@ function finalSubmit(){
   // Show neutral checkmarks — NO indication of right/wrong
     document.getElementById('intelSubmitBtn').disabled=true;
   const _sl=document.getElementById('intelSubmitBtn');if(_sl){_sl.textContent='SUBMITTED';_sl.disabled=true;}
-  document.getElementById('intelBadge').textContent=tileBadgeText('intel',false);
+  const _ib=document.getElementById('intelBadge');if(_ib)_ib.textContent=tileBadgeText('intel',false);
   document.getElementById('intelBadge').classList.remove('amber');
   playSuccess();
   document.getElementById('flashG').classList.add('on');
@@ -9504,7 +9504,6 @@ function restoreSession(){
       const _oldPanelToScreen={expFeed:'feedScreen',expMedia:'mediaScreen',expIntel:'intelScreen',expVault:'vaultScreen'};
       targetScreen=_oldPanelToScreen[data.panel]||'consoleScreen';
     }
-    console.log('[RESTORE] data.screen=',data.screen,'targetScreen=',targetScreen,'adminPage=',data.adminPage);
     // Validate the screen ID exists
     if(!document.getElementById(targetScreen))targetScreen='consoleScreen';
     // Map screen IDs to panel tile names for content rendering
