@@ -1947,8 +1947,7 @@
     .feed-count-badge{font-size:10px;padding:3px 7px;letter-spacing:1px;margin-left:6px}
 
     /* Feed — keep 3 column grid on mobile, tight gaps like IG */
-    #expFeed .exp-body{overflow:auto;-webkit-overflow-scrolling:touch}
-    .feed-expanded{grid-template-columns:repeat(3,1fr);gap:2px;max-width:100%;height:auto;grid-template-rows:none;grid-auto-rows:auto;align-content:start}
+    .feed-expanded{grid-template-columns:repeat(3,1fr);gap:2px;max-width:100%}
     .feed-card-img{font-size:24px}
     .feed-card-cap p{font-size:9px}
     .feed-view-btn{padding:4px 7px;font-size:7px}
@@ -2376,6 +2375,16 @@
 }
 #settingsScreen .mv-close:hover{opacity:1}
 
+
+  /* PDF.js mobile-friendly viewer */
+  .mv-pdfjs-wrap{width:100%;height:100%;overflow:auto;border-radius:4px;background:#0b0c10;border:1px solid rgba(255,255,255,.04);padding:8px}
+  .mv-pdfjs-toolbar{display:flex;gap:8px;align-items:center;justify-content:center;margin:6px 0 10px 0;flex-wrap:wrap}
+  .mv-pdfjs-btn{padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:rgba(255,255,255,.02);color:#bbb;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer}
+  .mv-pdfjs-btn:hover{border-color:rgba(0,212,255,.25);color:#e0f7ff}
+  .mv-pdfjs-page{width:100%;display:flex;justify-content:center;margin:0 0 10px 0}
+  .mv-pdfjs-page canvas{width:100%;height:auto;max-width:980px;border-radius:3px;background:#111;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  .mv-pdfjs-status{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#777;letter-spacing:1px;text-align:center;margin-top:6px}
+
 </style>
 <script>
 // Pre-render theme injection — runs before body paints
@@ -2421,6 +2430,19 @@
   }catch(e){}
 })();
 </script>
+
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script defer>
+  // Configure PDF.js worker for in-app PDF rendering (used on mobile devices).
+  window.addEventListener('DOMContentLoaded',()=>{
+    try{
+      if(window.pdfjsLib){
+        pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+      }
+    }catch(e){}
+  });
+</script>
+
 </head>
 <body class="config-hydrating">
 <canvas id="grainCanvas"></canvas>
@@ -4603,7 +4625,7 @@ function _refreshPanelData(panel){
     apiCall('getMediaItems').then(r=>{
       if(r.ok&&r.items){
         const changed=r.items.length!==mediaItems.length||JSON.stringify(r.items)!==JSON.stringify(mediaItems.map(m=>({name:m.name,desc:m.desc||'',url:m.url,type:m.type||'image',nameFont:m.nameFont||'',descFont:m.descFont||'',vaultLocked:m.vaultLocked||false})));
-        if(changed){mediaItems=_normalizeMediaItems(r.items);syncVaultCodesFromMedia();resetTeamLockedState();restoreGameState();renderMedia();renderGrid();_cacheContent("cb_media",mediaItems)}
+        if(changed){mediaItems=_normalizeMediaItems(r.items);syncVaultCodesFromMedia();restoreGameState();renderMedia();renderGrid();_cacheContent("cb_media",mediaItems)}
       }
     });
   }else if(panel==='intel'){
@@ -4627,7 +4649,7 @@ function _refreshPanelData(panel){
   }else if(panel==='vault'){
     apiCall('getEventConfig').then(cfg=>{
       if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
-      syncVaultCodesFromMedia();resetTeamLockedState();restoreGameState();renderVaultPanel();
+      syncVaultCodesFromMedia();restoreGameState();renderVaultPanel();
     });
   }
 }
@@ -5290,48 +5312,25 @@ function finalSubmit(){
 let currentMediaIdx=0;
 let mvAudio=null;
 let mvAudioInterval=null;
-let currentMediaPos=0;
-
-function _isAdminFullMedia(){return document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview');}
-function _visibleMediaIndices(){
-  const showAll=_isAdminFullMedia();
-  const vis=[];
-  for(let i=0;i<mediaItems.length;i++){
-    const m=mediaItems[i];
-    if(showAll){vis.push(i);continue;}
-    if(!m || !m.vaultLocked) vis.push(i);
-  }
-  return vis;
-}
-
 
 function openMediaViewer(i){
-  const vis=_visibleMediaIndices();
-  if(vis.indexOf(i)<0){
-    // Vault-locked items should not be visible/openable for players
-    return;
-  }
   const m=mediaItems[i];
-  if(m && m._isNew){m._isNew=false;renderMedia()}
-  if(m && m.type==='locked'&&!m.unlocked){renderLockedView(i);showViewer(i,vis);return}
+  if(m._isNew){m._isNew=false;renderMedia()}
+  if(m.type==='locked'&&!m.unlocked){renderLockedView(i);showViewer(i);return}
   currentMediaIdx=i;
-  currentMediaPos=Math.max(0,vis.indexOf(i));
-  showViewer(i,vis);
-  if(m)renderMediaContent(m);
+  showViewer(i);
+  renderMediaContent(m);
 }
 
-function showViewer(i,visOverride){
-  const vis=visOverride||_visibleMediaIndices();
+function showViewer(i){
   currentMediaIdx=i;
-  const m=mediaItems[i]||{};
-  const pos=vis.indexOf(i);
-  currentMediaPos=pos>=0?pos:0;
-  document.getElementById('mvIcon').textContent=m.icon||'';
-  document.getElementById('mvName').textContent=m.name||'';
-  document.getElementById('mvDesc').textContent=m.desc||'';
+  const m=mediaItems[i];
+  document.getElementById('mvIcon').textContent=m.icon;
+  document.getElementById('mvName').textContent=m.name;
+  document.getElementById('mvDesc').textContent=m.desc;
   const badge=document.getElementById('mvBadge');
-  badge.textContent=m.type||'';badge.className='mv-badge '+(m.type||'');
-  document.getElementById('mvCounter').textContent=(currentMediaPos+1)+' / '+vis.length;
+  badge.textContent=m.type;badge.className='mv-badge '+m.type;
+  document.getElementById('mvCounter').textContent=(i+1)+' / '+mediaItems.length;
   // Download button: only show if admin enabled downloads and file exists
   const dlBtn=document.getElementById('mvDownload');
   dlBtn.style.display=(allowDownloads&&m.fileUrl)?'':'none';
@@ -5436,15 +5435,11 @@ function closeMediaViewer(){
 function navMedia(d){
   stopMvAudio();
   const vid=document.querySelector('.mv-video');if(vid)vid.pause();
-  const vis=_visibleMediaIndices();
-  if(!vis.length) return;
-  if(currentMediaPos==null || currentMediaPos<0) currentMediaPos=0;
-  currentMediaPos=(currentMediaPos+d+vis.length)%vis.length;
-  const idx=vis[currentMediaPos];
-  const m=mediaItems[idx];
-  showViewer(idx,vis);
-  if(m && m.type==='locked' && !m.unlocked) renderLockedView(idx);
-  else if(m) renderMediaContent(m);
+  currentMediaIdx=(currentMediaIdx+d+mediaItems.length)%mediaItems.length;
+  const m=mediaItems[currentMediaIdx];
+  showViewer(currentMediaIdx);
+  if(m.type==='locked'&&!m.unlocked)renderLockedView(currentMediaIdx);
+  else renderMediaContent(m);
 }
 
 function renderMediaContent(m){
@@ -5512,6 +5507,80 @@ function convertDriveUrl(url){
 function isDriveUrl(url){return url&&/drive\.google\.com/i.test(url)}
 function isImageUrl(url){return/\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?|$)/i.test(url)||/drive\.google\.com\/(uc|thumbnail)/i.test(url)}
 function isPdfUrl(url){return/\.pdf(\?|$)/i.test(url)||url.includes('/preview')}
+
+function isMobileDevice(){
+  try{
+    const ua=navigator.userAgent||'';
+    const touch=(('ontouchstart' in window) || (navigator.maxTouchPoints||0)>0);
+    const small=(window.matchMedia && window.matchMedia('(max-width: 900px)').matches);
+    return (small && (touch || /Mobi|Android|iPhone|iPad|iPod/i.test(ua)));
+  }catch(e){
+    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent||'');
+  }
+}
+
+let _mvPdfScale=1.25;
+async function renderPdfJsViewer(body,pdfUrl,opts={}){
+  const downloadUrl=opts.downloadUrl||pdfUrl;
+  body.innerHTML=`
+    <div class="mv-pdfjs-wrap">
+      <div class="mv-pdfjs-toolbar">
+        <button class="mv-pdfjs-btn" id="mvPdfZoomOut">ZOOM -</button>
+        <button class="mv-pdfjs-btn" id="mvPdfZoomIn">ZOOM +</button>
+        <a class="mv-pdfjs-btn" href="${downloadUrl}" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">OPEN</a>
+        ${allowDownloads?`<a class="mv-pdfjs-btn" href="${downloadUrl}" download target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">DOWNLOAD</a>`:''}
+      </div>
+      <div id="mvPdfPages"></div>
+      <div class="mv-pdfjs-status" id="mvPdfStatus">Loading PDF…</div>
+    </div>`;
+  const pagesEl=document.getElementById('mvPdfPages');
+  const statusEl=document.getElementById('mvPdfStatus');
+
+  if(!window.pdfjsLib){
+    statusEl.textContent='PDF preview unavailable (PDF.js not loaded). Use OPEN to view.';
+    return;
+  }
+
+  const renderAll=async(scale)=>{
+    pagesEl.innerHTML='';
+    statusEl.textContent='Rendering…';
+    const loadingTask=pdfjsLib.getDocument({url: pdfUrl, withCredentials:false});
+    const pdf=await loadingTask.promise;
+    const num=pdf.numPages;
+
+    for(let i=1;i<=num;i++){
+      const page=await pdf.getPage(i);
+      const viewport=page.getViewport({scale});
+      const canvas=document.createElement('canvas');
+      const ctx=canvas.getContext('2d',{alpha:false});
+      canvas.width=Math.floor(viewport.width);
+      canvas.height=Math.floor(viewport.height);
+      const wrap=document.createElement('div');
+      wrap.className='mv-pdfjs-page';
+      wrap.appendChild(canvas);
+      pagesEl.appendChild(wrap);
+      await page.render({canvasContext:ctx,viewport}).promise;
+    }
+    statusEl.textContent=`${num} page${num===1?'':'s'} loaded.`;
+  };
+
+  let scale=_mvPdfScale;
+  const safeRender=async()=>{
+    try{ await renderAll(scale); }
+    catch(err){
+      console.warn('PDF.js render failed',err);
+      statusEl.textContent='Could not render PDF in-app (likely CORS or browser restrictions). Use OPEN to view.';
+    }
+  };
+
+  const zin=document.getElementById('mvPdfZoomIn');
+  const zout=document.getElementById('mvPdfZoomOut');
+  if(zin) zin.onclick=()=>{scale=Math.min(3,scale+0.25); safeRender();};
+  if(zout) zout.onclick=()=>{scale=Math.max(0.75,scale-0.25); safeRender();};
+
+  await safeRender();
+}
+
 
 // ── Audio Player ──
 function renderAudioPlayer(body,m,url){
@@ -5688,6 +5757,11 @@ function renderDocViewer(body,m,url,eu){
   }
   // R2 files: serve directly in iframe (PDFs render natively, images via img)
   if(isR2){
+    // On mobile, render PDFs in-app via PDF.js (iframes are unreliable on iOS Safari).
+    if(isMobileDevice() && isPdfUrl(url)){
+      renderPdfJsViewer(body,url,{downloadUrl:url});
+      return;
+    }
     const pdfBlock=(!allowDownloads&&url.match(/\.pdf/i))?'#toolbar=0&navpanes=0':'';
     body.innerHTML=`<iframe class="mv-pdf-frame" src="${url}${pdfBlock}" allowfullscreen></iframe>${allowDownloads?`<div style="text-align:center;margin-top:8px"><a href="${url}" download target="_blank" style="color:var(--cyan);font-family:\'Saira\',sans-serif;font-size:10px;letter-spacing:1.5px;text-decoration:none;opacity:.7">DOWNLOAD ORIGINAL</a></div>`:''}`;
     return;
@@ -5700,6 +5774,11 @@ function renderDocViewer(body,m,url,eu){
   }
   // PDFs (non-Drive, non-R2)
   if(isPdfUrl(url)){
+    // On mobile, render PDFs in-app via PDF.js (iframes are unreliable on iOS Safari).
+    if(isMobileDevice()){
+      renderPdfJsViewer(body,url,{downloadUrl:url});
+      return;
+    }
     const pdfBlock2=(!allowDownloads)?'#toolbar=0&navpanes=0':'';
     body.innerHTML=`<iframe class="mv-pdf-frame" src="${url}${pdfBlock2}" allowfullscreen></iframe>`;
     return;
@@ -9883,24 +9962,6 @@ function _gsKey(suffix){
   return 'cb_gs_'+tid+'_'+suffix;
 }
 
-
-// ── Vault-locked visibility isolation per team ──
-// When switching teams (without a full page refresh), we must reset in-memory
-// vault unlock state so one team's unlocked files do NOT leak to another team.
-function resetTeamLockedState(){
-  try{
-    if(Array.isArray(vaultCodes)){
-      vaultCodes.forEach(c=>{ if(c){ c.unlocked=false; c.unlockedAt=null; } });
-    }
-    if(Array.isArray(mediaItems)){
-      mediaItems.forEach(m=>{
-        if(!m) return;
-        if(m._initialVaultLocked===undefined) m._initialVaultLocked=!!m.vaultLocked;
-        m.vaultLocked=!!m._initialVaultLocked;
-      });
-    }
-  }catch(e){}
-}
 function saveGameState(){
   try{
     if(!currentVaultTeam)return;
@@ -10183,7 +10244,8 @@ if(fromLocalStorage&&data.type==='admin'){
       apiCall('getEventConfig').then(cfg=>{
         if(cfg.ok&&cfg.config)applyEventConfig(cfg.config);
         // Re-sync vault codes after fresh data arrives, then re-apply unlock state
-        syncVaultCodesFromMedia();resetTeamLockedState();restoreGameState();
+        syncVaultCodesFromMedia();
+        restoreGameState();
         // Re-render panel with fresh backend data once it arrives
         if(data.panel&&panelMap[data.panel]){
           const t=panelMap[data.panel];
