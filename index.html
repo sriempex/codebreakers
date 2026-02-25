@@ -758,10 +758,14 @@
   #expFeed #feedViewToggle{position:absolute;left:50%;transform:translateX(-50%);margin-right:0}
   #expFeed #feedCloseBtn{min-width:110px;text-align:center}
   /* Keep grid comfortably within viewport (show 2 rows / 6 posts without scroll on typical screens) */
-  #expFeed .exp-body{padding:14px}
-  #expFeed .feed-expanded{max-width:min(900px, calc((88vh - 140px) * 1.5));margin:0 auto}
+  #expFeed .exp-body{padding:10px;display:flex;flex-direction:column;overflow:hidden}
+  #expFeed .feed-expanded{flex:1;min-height:0;height:100%;width:100%;max-width:100%;margin:0 auto;align-content:stretch;grid-template-rows:repeat(2,1fr)}
 
   .feed-expanded{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;max-width:900px;margin:0 auto}
+  /* Feed grid fill vertical space in expFeed */
+  #expFeed .feed-card{display:flex;flex-direction:column}
+  #expFeed .feed-card-img{aspect-ratio:auto;flex:1;min-height:0}
+  #expFeed .feed-card-img img, #expFeed .feed-card-video{height:100%}
   .feed-card-img{aspect-ratio:1;overflow:hidden}
   .feed-card-img img{width:100%;height:100%;object-fit:cover}
   .feed-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:3px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;touch-action:pan-y}
