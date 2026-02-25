@@ -5315,6 +5315,9 @@ let mvAudioInterval=null;
 
 function openMediaViewer(i){
   const m=mediaItems[i];
+  // Block vault-locked items for non-admin users
+  const isAdmin=document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview');
+  if(!isAdmin&&m.vaultLocked&&!_isMediaVisibleToPlayer(i)) return;
   if(m._isNew){m._isNew=false;renderMedia()}
   if(m.type==='locked'&&!m.unlocked){renderLockedView(i);showViewer(i);return}
   currentMediaIdx=i;
@@ -5330,7 +5333,7 @@ function showViewer(i){
   document.getElementById('mvDesc').textContent=m.desc;
   const badge=document.getElementById('mvBadge');
   badge.textContent=m.type;badge.className='mv-badge '+m.type;
-  document.getElementById('mvCounter').textContent=(i+1)+' / '+mediaItems.length;
+  document.getElementById('mvCounter').textContent=((function(){const v=_getVisibleMediaIndices();const p=v.indexOf(i);return p===-1?(i+1)+' / '+mediaItems.length:(p+1)+' / '+v.length})());
   // Download button: only show if admin enabled downloads and file exists
   const dlBtn=document.getElementById('mvDownload');
   dlBtn.style.display=(allowDownloads&&m.fileUrl)?'':'none';
@@ -5432,10 +5435,27 @@ function closeMediaViewer(){
 })();
 
 
+function _isMediaVisibleToPlayer(idx){
+  const m=mediaItems[idx];
+  if(!m) return false;
+  if(!m.vaultLocked) return true;
+  // Vault-locked items are visible only if their vault code has been unlocked
+  return !!vaultCodes.find(c=>c.linkedMediaIdx===idx&&c.unlocked);
+}
+function _getVisibleMediaIndices(){
+  const isAdmin=document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview');
+  if(isAdmin) return mediaItems.map((_,i)=>i);
+  return mediaItems.map((_,i)=>i).filter(i=>_isMediaVisibleToPlayer(i));
+}
 function navMedia(d){
   stopMvAudio();
   const vid=document.querySelector('.mv-video');if(vid)vid.pause();
-  currentMediaIdx=(currentMediaIdx+d+mediaItems.length)%mediaItems.length;
+  const visible=_getVisibleMediaIndices();
+  if(!visible.length) return;
+  const curPos=visible.indexOf(currentMediaIdx);
+  // If current item isn't in visible list (edge case), jump to first visible
+  const nextPos=curPos===-1?0:(curPos+d+visible.length)%visible.length;
+  currentMediaIdx=visible[nextPos];
   const m=mediaItems[currentMediaIdx];
   showViewer(currentMediaIdx);
   if(m.type==='locked'&&!m.unlocked)renderLockedView(currentMediaIdx);
