@@ -3742,6 +3742,8 @@ function loginBack(){
   showScreen('landingScreen');
 }
 function submitLogin(){
+  // Clear any stale admin session to prevent expired tokens from contaminating login
+  adminSession=null;
   // PREVIEW MODE INTERCEPTION
   if(document.body.classList.contains('landing-preview-mode')){
     const btn=document.getElementById('loginSubmitBtn');
@@ -5418,7 +5420,7 @@ async function apiCall(action,data={}){
   try{
     // Build JSON POST body — clean format for Cloudflare Worker
     const body={action,...data};
-    if(adminSession)body.adminToken=adminSession.adminToken;
+    if(adminSession&&!['login','loginTeam','validateUsername'].includes(action))body.adminToken=adminSession.adminToken;
     const resp=await fetch(API_URL,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
