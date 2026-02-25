@@ -5841,7 +5841,7 @@ function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');
 
 // ══════ SCREEN NAVIGATION ══════
 let _currentScreen='landingScreen';
-function showScreen(id){console.log('[SCREEN] showScreen('+id+') from='+_currentScreen,new Error().stack.split('\n')[2]?.trim());document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;if(id!=='settingsScreen'){_currentAdminPage=null;updateGearIcon()}if(currentVaultTeam)saveSession()}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;if(id!=='settingsScreen'){_currentAdminPage=null;updateGearIcon()}if(currentVaultTeam)saveSession()}
 function goToRegistration(){
   const mode=regSettings.participantMode||'team';
   // Update registration screen text based on mode
@@ -9299,10 +9299,9 @@ function saveSession(){
   try{
     // Only save when user is authenticated on a game screen
     const _savableScreens=['consoleScreen','settingsScreen','feedScreen','mediaScreen','intelScreen','vaultScreen'];
-    if(!_savableScreens.includes(_currentScreen)){console.log('[SAVE] skipped — screen:',_currentScreen);return}
-    if(!currentVaultTeam){console.log('[SAVE] skipped — no team');return}
+    if(!_savableScreens.includes(_currentScreen))return;
+    if(!currentVaultTeam)return;
     const data={type:isAdmin?'admin':'team',team:currentVaultTeam,savedAt:Date.now(),screen:_currentScreen};
-    console.log('[SAVE] screen='+_currentScreen+' admin='+isAdmin+' adminPage='+_currentAdminPage);
     if(isAdmin){
       data.adminSession=adminSession;
       // Save which admin page is open
@@ -9502,7 +9501,6 @@ function restoreSession(){
     // Restore the exact screen the user was on
     // Migrate old sessions: if data.screen missing but data.panel exists, convert it
     let targetScreen=data.screen||'consoleScreen';
-    console.log('[RESTORE] data.screen='+data.screen+' targetScreen='+targetScreen+' data.adminPage='+data.adminPage+' data.adminTab='+data.adminTab);
     if(!data.screen&&data.panel){
       const _oldPanelToScreen={expFeed:'feedScreen',expMedia:'mediaScreen',expIntel:'intelScreen',expVault:'vaultScreen'};
       targetScreen=_oldPanelToScreen[data.panel]||'consoleScreen';
@@ -9559,15 +9557,13 @@ function restoreSession(){
         if(cf){operationFont=cf;applyOperationFont(cf)}
       }catch(e){}
 
-      if(data.adminPage){
+      if(data.adminPage||targetScreen==='settingsScreen'){
         // Admin was on settings page — go directly to settings via navigateToAdmin
-        // First show console as invisible base, then navigateToAdmin takes over
         document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
         document.getElementById('consoleScreen').classList.add('active');
         _currentScreen='consoleScreen';
         document.getElementById('notepadTrigger').classList.add('visible');
         renderGrid();
-        // Set return screen — if admin came from a panel screen, remember it
         _gearReturnScreen='consoleScreen';
         navigateToAdmin('settingsScreen',data.adminTab||null);
       }else{
