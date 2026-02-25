@@ -9565,10 +9565,10 @@ function restoreSession(){
       }catch(e){}
 
       if(data.adminPage||targetScreen==='settingsScreen'){
-        // Settings is a full screen — restore it directly like any other screen
+        // Settings is a full screen — restore it directly
         _currentAdminPage='settingsScreen';
         _gearReturnScreen='consoleScreen';
-        // Activate settings screen directly
+        // Activate settings screen
         document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
         document.getElementById('settingsScreen').classList.add('active');
         _currentScreen='settingsScreen';
@@ -9576,7 +9576,7 @@ function restoreSession(){
         // Mount admin panels and init
         mountAdminPanels();
         initSettingsPage();
-        // Switch to saved tab if any
+        // Switch to saved tab
         if(data.adminTab){
           _switchToTab('settingsScreen',data.adminTab);
         }else{
@@ -9585,8 +9585,8 @@ function restoreSession(){
         }
         updateGearIcon();
         updatePreviewIcon();
-        // Also render grid in background so console is ready when they close settings
         renderGrid();
+        saveSession();
       }else{
         // Admin was on console or a panel screen — restore directly
         applyScreenAndPanel();
