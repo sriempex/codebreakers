@@ -451,9 +451,10 @@
   .console-title{font-family:'Staatliches',cursive;font-size:17px;letter-spacing:2px;color:#b0e8cc;text-transform:uppercase}
   .timer-block{text-align:center;position:absolute;left:50%;transform:translateX(-50%)}
   .timer-digits{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:22px;color:#ff6655;letter-spacing:4px}
-  .timer-digits.is-infinity{font-size:30px;letter-spacing:2px}
+  .timer-digits.is-infinity{font-size:38px;letter-spacing:2px}
   .timer-digits.paused{color:var(--amber);animation:ledPulse 1s infinite}
   .timer-label{font-family:'Saira',sans-serif;font-size:9px;color:#888;letter-spacing:3px;font-weight:600;text-transform:uppercase;margin-top:3px}
+  body.config-hydrating .timer-digits,body.config-hydrating .timer-label{opacity:0}
   .topbar-identity{position:relative;cursor:pointer;display:flex;align-items:center}
   body.admin-mode .team-card-section{display:none}
   body.admin-mode .team-card-notifs{display:none}
@@ -469,7 +470,7 @@
   body.event-locked .v-key{pointer-events:none;opacity:.4}
   body.event-locked .intel-submit-btn{pointer-events:none;opacity:.4}
   body.player-preview .team-card-notifs{display:block!important}
-  .console-team{font-family:'Saira',sans-serif;font-size:13px;color:var(--cyan);letter-spacing:2.5px;font-weight:600;transition:color .2s;padding:6px 14px;border:1px solid rgba(0,212,255,.25);border-radius:3px;background:rgba(0,212,255,.04);display:inline-flex;align-items:center;line-height:1}
+  .console-team{font-family:'Saira',sans-serif;font-size:13px;color:var(--cyan);letter-spacing:2.5px;font-weight:600;transition:color .2s;padding:6px 14px;border:1px solid rgba(0,212,255,.25);border-radius:3px;background:rgba(0,212,255,.04);display:inline-flex;align-items:center;line-height:1;box-sizing:border-box;height:28px}
   .console-team:hover{color:#b0e8cc;border-color:rgba(0,212,255,.3)}
   .team-chevron{font-size:18px;color:#555;margin-left:6px;transition:color .2s;line-height:1}
   .topbar-identity:hover .team-chevron{color:#999}
@@ -1367,7 +1368,7 @@
   .logout-btn span{font-family:'Saira',sans-serif;font-size:12px;letter-spacing:3px;color:var(--red);font-weight:700;text-transform:uppercase}
 
   /* Notification bell */
-  .admin-topbar-label{display:none;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:2.5px;color:var(--amber);font-weight:600;text-transform:uppercase;padding:6px 14px;border:1px solid rgba(255,170,51,.25);border-radius:3px;background:rgba(255,170,51,.06)}
+  .admin-topbar-label{display:none;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:2.5px;color:var(--amber);font-weight:600;text-transform:uppercase;padding:6px 14px;border:1px solid rgba(255,170,51,.25);border-radius:3px;background:rgba(255,170,51,.06);align-items:center;line-height:1;box-sizing:border-box;height:28px}
   body.admin-mode .admin-topbar-label{display:inline-flex}
   .notif-empty{padding:12px 8px;text-align:center;font-family:'Chakra Petch',sans-serif;font-size:10px;color:#555}
 
@@ -2400,7 +2401,7 @@
 })();
 </script>
 </head>
-<body>
+<body class="config-hydrating">
 <canvas id="grainCanvas"></canvas>
 <div class="flash-green" id="flashG"></div>
 <div class="flash-red" id="flashR"></div>
@@ -5826,6 +5827,9 @@ function applyEventConfig(cfg){
   // Mark config hydration complete — prevents settings values flashing then reverting on refresh
   if(!window.__configHydrated){
     window.__configHydrated=true;
+    _eventCfgHydrated=true;
+    try{document.body.classList.remove('config-hydrating')}catch(e){}
+    try{renderTimer()}catch(e){}
     document.documentElement.classList.remove('is-hydrating-settings');
     try{document.dispatchEvent(new Event('cb:configHydrated'))}catch(e){}
   }
@@ -8461,7 +8465,8 @@ function startDrag(e,type,idx){
 
 // ══════ TIMER ══════
 let timerSec=5325,timerPaused=false,timerOriginal=5325;
-let timerMode='countdown'; // 'countdown' or 'event'
+let timerMode='none'; // 'countdown' or 'event'
+let _eventCfgHydrated=false;
 let eventSettings={
   startTime:null, // ISO string
   endTime:null,   // ISO string
@@ -8881,6 +8886,7 @@ function resetTimer(){timerSec=timerOriginal;timerPaused=false;document.getEleme
 function renderTimer(){
   const el=document.getElementById('cTimer');
   if(!el)return;
+  if(!_eventCfgHydrated)return;
   if(timerMode==='none'){
     el.textContent='∞';
     el.classList.add('is-infinity');
@@ -8896,6 +8902,7 @@ function renderTimerLabel(label){
 }
 
 function tickTimer(){
+  if(!_eventCfgHydrated)return;
   if(timerMode==='none')return; // Open-ended, no timer
   if(timerMode==='countdown'){
     if(timerPaused||timerSec<=0)return;
@@ -9031,10 +9038,25 @@ function nukeSelectedTeams(){
   var ids=[];checks.forEach(function(cb){ids.push(cb.dataset.team)});
   if(!confirm('☢ NUKE '+ids.length+' TEAM'+(ids.length>1?'S':'')+'?\n\nIDs: '+ids.join(', ')+'\n\nThis permanently deletes their data. Cannot be undone.'))return;
   var msg=document.getElementById('tmNukeBar');
-  apiCall('nukeTeams',{mode:'selected',teamIds:ids}).then(function(r){
+  (async function(){
+    // Remove team submissions (if any) and team records
+    var draftResp = await apiCall('getDrafts',{});
+    var draftsObj = (draftResp&&draftResp.ok&&draftResp.drafts)?draftResp.drafts:null;
+    for(var i=0;i<ids.length;i++){
+      var tid=ids[i];
+      try{await apiCall('desubmitTeam',{teamId:tid})}catch(e){}
+      try{await apiCall('removeTeam',{teamId:tid})}catch(e){}
+      if(draftsObj && draftsObj[tid]){delete draftsObj[tid]}
+    }
+    if(draftsObj){
+      try{await apiCall('saveDrafts',{drafts:draftsObj})}catch(e){}
+    }
+    return {ok:true,message:'Selected teams removed'};
+  })().then(function(r){
     if(r.ok){
       ids.forEach(function(id){
-        registeredTeams.splice(registeredTeams.findIndex(function(t){return t.id===id}),1);
+        var idx=registeredTeams.findIndex(function(t){return t.id===id});
+        if(idx>=0)registeredTeams.splice(idx,1);
         var mi=manualTeams.findIndex(function(t){return t.id===id});
         if(mi>=0)manualTeams.splice(mi,1);
       });
