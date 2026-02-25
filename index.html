@@ -4610,7 +4610,7 @@ function renderSinglePost(){
 
   if(resolved&&resolved.type==='direct'){
     img.style.background='#000';img.style.backgroundSize='';img.textContent='';
-    img.innerHTML=`<video class="feed-single-video" id="feedSingleVid" src="${resolved.url}" loop playsinline preload="auto" ${muted?'muted':''} controls></video><div class="feed-mute-btn" onclick="event.stopPropagation();toggleFeedMute()">${muted?'🔇':'🔊'}</div>${editBtn}`;
+    img.innerHTML=`<video class="feed-single-video" id="feedSingleVid" src="${resolved.url}" loop playsinline preload="auto" ${muted?'muted':''} controls></video>${editBtn}`;
     setTimeout(()=>{const v=document.getElementById('feedSingleVid');if(v){v.muted=muted;v.play().catch(()=>{})}},50);
   }else if(resolved&&resolved.type==='external'){
     img.style.background='#000';img.style.backgroundSize='';img.textContent='';
@@ -9663,7 +9663,7 @@ function restoreSession(){
     _restoreContentCache();
 
     // Detect mobile for conditional panel restore
-    const _isMobileRestore=window.innerWidth<=768;
+    const _isMobileRestore=window.innerWidth<=768; // (kept for other responsive logic)
 
     function applyScreenAndPanel(){
       // Set up screen first (hidden — opacity:0 via .screen default)
@@ -9676,7 +9676,7 @@ function restoreSession(){
       // Open panel SYNCHRONOUSLY before any paint if one was saved
       // On mobile: skip panel restore — land on console grid so user has context
       // On desktop: restore exactly where they were (prevents flash)
-      if(data.panel&&panelMap[data.panel]&&!_isMobileRestore){
+      if(data.panel&&panelMap[data.panel]){
         const panelEl=document.getElementById(data.panel);
         if(panelEl){
           document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));
@@ -9765,8 +9765,7 @@ function restoreSession(){
         syncVaultCodesFromMedia();
         restoreGameState();
         // Re-render panel with fresh backend data once it arrives
-        // On mobile: skip — user is on console grid
-        if(data.panel&&panelMap[data.panel]&&!_isMobileRestore){
+        if(data.panel&&panelMap[data.panel]){
           const t=panelMap[data.panel];
           if(t==='feed'){
             renderFeed();
