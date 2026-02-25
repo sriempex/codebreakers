@@ -1947,7 +1947,8 @@
     .feed-count-badge{font-size:10px;padding:3px 7px;letter-spacing:1px;margin-left:6px}
 
     /* Feed — keep 3 column grid on mobile, tight gaps like IG */
-    .feed-expanded{grid-template-columns:repeat(3,1fr);gap:2px;max-width:100%}
+    #expFeed .exp-body{overflow:auto;-webkit-overflow-scrolling:touch}
+    .feed-expanded{grid-template-columns:repeat(3,1fr);gap:2px;max-width:100%;height:auto;grid-template-rows:none;grid-auto-rows:auto;align-content:start}
     .feed-card-img{font-size:24px}
     .feed-card-cap p{font-size:9px}
     .feed-view-btn{padding:4px 7px;font-size:7px}
