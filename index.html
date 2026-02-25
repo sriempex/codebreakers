@@ -10592,15 +10592,19 @@ togglePlayerPreview=function(){
     if(!window._deferredAdminRestore) return;
     var page=window._deferredAdminRestore.page||'settingsScreen';
     var tab=window._deferredAdminRestore.tab||null;
-    delete window._deferredAdminRestore;
+
     _gearReturnScreen='consoleScreen';
-    // Ensure the target screen exists before navigating
+
+    // Ensure the target screen exists before navigating.
+    // IMPORTANT: do NOT delete the deferred object until we successfully navigate,
+    // otherwise the DOMContentLoaded retry will have nothing to restore.
     var el=document.getElementById(page);
     if(!el){
-      // If markup isn't mounted yet, retry after DOMContentLoaded
       document.addEventListener('DOMContentLoaded',function(){_runDeferredAdminRestore();},{once:true});
       return;
     }
+
+    delete window._deferredAdminRestore;
     navigateToAdmin(page,tab);
   }
   _runDeferredAdminRestore()
