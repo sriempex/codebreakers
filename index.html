@@ -9286,7 +9286,7 @@ function saveSession(){
     // Only save when user is authenticated on the console screen
     if(_currentScreen!=='consoleScreen'&&_currentScreen!=='settingsScreen')return;
     if(!currentVaultTeam)return;
-    const data={type:isAdmin?'admin':'team',team:currentVaultTeam,savedAt:Date.now(),screen:_currentScreen};
+    const data={type:isAdmin?'admin':'team',team:currentVaultTeam,savedAt:Date.now()};
     if(isAdmin){
       data.adminSession=adminSession;
       // Save which admin page is open
@@ -9486,7 +9486,9 @@ function restoreSession(){
       }
     }
 
-    const targetScreen=data.screen||'consoleScreen';
+    // Always restore to consoleScreen as the base — panels overlay on top of it,
+    // and admin settingsScreen is handled separately via navigateToAdmin()
+    const targetScreen='consoleScreen';
     const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
 
     // Restore cached content (posts/media/intel) from localStorage BEFORE rendering
