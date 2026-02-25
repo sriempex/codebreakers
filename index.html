@@ -1073,7 +1073,7 @@
   .admin-page{display:flex;flex-direction:column;height:100vh;overflow:hidden}
   .admin-page-header{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 24px 0;background:linear-gradient(180deg,#161a26,#10131c);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
   .admin-page-header-row{display:flex;align-items:center;justify-content:space-between;width:100%}
-  .admin-page-title{font-family:'Staatliches',cursive;font-size:15px;letter-spacing:5px;color:#ffd699;text-transform:uppercase;flex:1;text-align:center}
+  .admin-page-title{font-family:'Staatliches',cursive;font-size:20px;letter-spacing:6px;color:#ffd699;text-transform:uppercase;flex:1;text-align:center;text-shadow:0 2px 10px rgba(255,214,153,.18)}
   .admin-page-close{font-family:'Saira',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:#999;cursor:pointer;padding:8px 18px;border-radius:4px;transition:all .2s;flex-shrink:0;margin-left:16px;
     background:linear-gradient(180deg,rgba(40,42,48,.5),rgba(22,24,30,.6));border:1px solid rgba(255,255,255,.06);border-bottom:2px solid #08080c}
   .admin-page-close:hover{color:#fff;border-color:rgba(255,255,255,.12)}
@@ -1554,10 +1554,10 @@
   .lb-row.expanded .lb-detail{display:block}
   .lb-detail-section{margin-top:12px}
   .lb-detail-title{font-family:'Saira',sans-serif;font-size:9px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:8px;font-weight:700}
-  .lb-member-row{display:flex;align-items:center;gap:10px;padding:6px 10px;background:rgba(0,212,255,.02);border:1px solid rgba(0,212,255,.06);border-radius:3px;margin-bottom:3px}
+  .lb-member-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(0,212,255,.02);border:1px solid rgba(0,212,255,.08);border-radius:4px;margin-bottom:4px}
   .lb-member-num{font-family:'Oxanium',sans-serif;font-size:10px;color:var(--cyan);font-weight:700;flex-shrink:0}
-  .lb-member-name{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#bbb;font-weight:600;flex:1}
-  .lb-member-meta{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#555}
+  .lb-member-name{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#d2d2d2;font-weight:600;flex:1;line-height:1.2}
+  .lb-member-meta{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#6a6a6a}
   .lb-field-row{display:flex;align-items:center;gap:8px;padding:4px 10px;border-bottom:1px solid rgba(255,255,255,.02)}
   .lb-field-label{font-family:'Chakra Petch',sans-serif;font-size:9px;color:#888;flex:1}
   .lb-field-status{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;min-width:60px;text-align:right}
@@ -3087,7 +3087,7 @@
       </div>
       <div class="lb-pagination" id="tmPagination"></div>
       <div style="display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--border);margin-top:8px">
-        <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555">Per page:</span>
+        <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#666;font-size:10px">Per page:</span>
         <select id="tmPerPage" onchange="tmPerPage=parseInt(this.value);tmCurrentPage=0;renderTeamMonitor()" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:3px 6px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:9px;outline:none">
           <option value="15" selected>15</option><option value="20">20</option><option value="25">25</option><option value="50">50</option>
         </select>
@@ -3157,7 +3157,7 @@
       </div>
       <div class="lb-sort">
         <span style="font-family:Chakra Petch,sans-serif;font-size:8px;color:#666;letter-spacing:1px">Sort:</span>
-        <select id="lbSort" onchange="renderFullLeaderboard()" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:4px 8px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:9px;outline:none">
+        <select id="lbSort" onchange="renderFullLeaderboard()" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:6px 10px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:10px;outline:none">
           <option value="score">Score (High→Low)</option>
           <option value="fields">Fields Completed</option>
           <option value="recent">Most Recent</option>
@@ -3169,13 +3169,12 @@
     <div class="lb-body" id="lbBody"></div>
     <div class="lb-pagination" id="lbPagination"></div>
     <div class="lb-admin-actions" id="lbAdminActions" style="display:none">
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--border)">
-        <span style="font-family:Saira,sans-serif;font-size:9px;color:#888;letter-spacing:2px;font-weight:600">ADMIN:</span>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--border)">
         <button class="ap-btn ap-btn-amber" onclick="desubmitSelected()" style="font-size:9px;padding:5px 12px">↩ De-submit Selected</button>
         <button class="ap-btn ap-btn-red" onclick="desubmitAll()" style="font-size:9px;padding:5px 12px">↩ De-submit All</button>
         <div style="flex:1"></div>
-        <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555">Per page:</span>
-        <select id="lbPerPage" onchange="lbPerPage=parseInt(this.value);lbCurrentPage=0;renderFullLeaderboard()" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:3px 6px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:9px;outline:none">
+        <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#666;font-size:10px">Per page:</span>
+        <select id="lbPerPage" onchange="lbPerPage=parseInt(this.value);lbCurrentPage=0;renderFullLeaderboard()" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:5px 10px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:10px;outline:none">
           <option value="15" selected>15</option><option value="20">20</option><option value="25">25</option><option value="50">50</option>
         </select>
       </div>
@@ -10798,7 +10797,7 @@ togglePlayerPreview=function(){
   <div class="admin-page">
     <div class="admin-page-header">
       <div class="admin-page-header-row">
-        <span class="admin-page-title">◈ Admin Console</span>
+        <span class="admin-page-title">Admin Console</span>
         <button class="admin-page-close" onclick="returnFromAdminPage()" title="Return to console">✕ CLOSE</button>
       </div>
       <div class="admin-page-tabs">
