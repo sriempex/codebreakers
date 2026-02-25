@@ -1766,14 +1766,13 @@
 
   /* PDF / Doc viewer */
   .mv-pdf-frame{width:100%;height:100%;border:none;border-radius:4px;background:#111}
-  .mv-image-viewer{max-width:100%;max-height:100%;object-fit:contain;border-radius:4px;cursor:zoom-in;transition:transform .3s;-webkit-user-drag:none;-webkit-user-select:none;user-select:none}
-  .mv-image-viewer.zoomed{cursor:zoom-out;transform:scale(1.8)}
-
-  /* HARD CURSOR RESET (prevents zoom/grab cursor leaking after closing media viewer) */
-  html.cursor-resetting,body.cursor-resetting{cursor:auto!important}
-  html.cursor-resetting *,body.cursor-resetting *{cursor:auto!important}
-
+  .mv-image-viewer{max-width:100%;max-height:100%;object-fit:contain;border-radius:4px;cursor:pointer;transition:transform .3s;-webkit-user-drag:none;-webkit-user-select:none;user-select:none}
+  .mv-image-viewer.zoomed{cursor:pointer;transform:scale(1.8)}
   .mv-body video,.mv-body img{-webkit-user-select:none;user-select:none}
+
+  /* Cursor hard-reset (prevents stuck zoom/grab cursors after closing viewers on some mobile/desktop combos) */
+  html.cursor-kill,body.cursor-kill{cursor:auto !important;}
+  html.cursor-kill * , body.cursor-kill * {cursor:auto !important;}
 
   /* Audio player */
   .mv-audio-player{width:100%;max-width:600px;display:flex;flex-direction:column;align-items:center;gap:20px;padding:40px}
@@ -4538,7 +4537,9 @@ function _refreshPanelData(panel){
     });
   }
 }
-function closePanel(){_stopAllFeedVideos();overlay.style.cssText='';overlay.classList.remove('active');saveGameState();setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession();renderGrid()},120)}
+function closePanel(){_stopAllFeedVideos();overlay.style.cssText='';overlay.classList.remove('active');saveGameState();setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession();renderGrid()},120)
+  try{_forceCursorKill();}catch(e){}
+}
 
 // Feed view modes
 function feedClose(){
@@ -5245,22 +5246,21 @@ function _resetZoomCursor(){
   }catch(e){}
 }
 
-function _forceCursorReset(){
+function _forceCursorKill(){
   try{
-    // Force cursor to a safe default for a moment, then release back to CSS.
-    document.documentElement.classList.add('cursor-resetting');
-    document.body.classList.add('cursor-resetting');
-    try{document.documentElement.style.cursor='default'}catch(e){}
-    try{document.body.style.cursor='default'}catch(e){}
-    // Next tick: release inline cursor to stylesheet defaults
+    const de=document.documentElement, b=document.body;
+    if(de)de.classList.add('cursor-kill');
+    if(b)b.classList.add('cursor-kill');
+    // Clear any inline cursor too
+    if(de)de.style.cursor='auto';
+    if(b)b.style.cursor='auto';
+    // Remove shortly after next paint(s)
     requestAnimationFrame(()=>{
-      try{document.documentElement.style.cursor=''}catch(e){}
-      try{document.body.style.cursor=''}catch(e){}
+      requestAnimationFrame(()=>{
+        try{ if(de){de.classList.remove('cursor-kill');de.style.cursor='';} }catch(e){}
+        try{ if(b){b.classList.remove('cursor-kill');b.style.cursor='';} }catch(e){}
+      });
     });
-    setTimeout(()=>{
-      try{document.documentElement.classList.remove('cursor-resetting')}catch(e){}
-      try{document.body.classList.remove('cursor-resetting')}catch(e){}
-    },140);
   }catch(e){}
 }
 
@@ -5272,31 +5272,45 @@ function closeMediaViewer(){
   // Stop any video
   const vid=document.querySelector('.mv-video');
   if(vid)vid.pause();
-  _forceCursorReset();
+  _resetZoomCursor();
+  _forceCursorKill();
 }
 
-// Cursor leak watchdog — if a zoom/grab cursor ever appears outside the media viewer,
-// force a full cursor reset. This protects against browser/OS cursor caching edge cases.
-(function __cursorLeakWatchdog(){
+// Cursor watchdog — if any zoom/grab cursor leaks outside the viewer, force reset.
+// Uses COMPUTED cursor (not just inline styles) because the stuck cursor symptom is often coming
+// from computed :hover state caching in some browsers.
+(function(){
+  let lastKill=0;
+  function shouldKill(cur){
+    return !!cur && (cur.indexOf('zoom')>-1 || cur==='grab' || cur==='grabbing');
+  }
   document.addEventListener('mousemove',function(e){
     try{
       const mv=document.getElementById('mediaViewer');
       if(mv && mv.classList.contains('active')) return;
 
-      // Check computed cursor on <html>, <body>, and hovered element
-      const htmlCur = (window.getComputedStyle(document.documentElement).cursor||'');
-      const bodyCur = (window.getComputedStyle(document.body).cursor||'');
-      let elCur='';
-      try{
-        const el=document.elementFromPoint(e.clientX,e.clientY);
-        if(el) elCur = (window.getComputedStyle(el).cursor||'');
-      }catch(_e){}
+      const t=e && e.target ? e.target : document.elementFromPoint(e.clientX,e.clientY);
+      if(!t) return;
 
-      const cur=(htmlCur+' '+bodyCur+' '+elCur).toLowerCase();
-      if(cur.includes('zoom')||cur.includes('grab')){
-        _forceCursorReset();
+      const cur=getComputedStyle(t).cursor || '';
+      if(shouldKill(cur)){
+        const now=Date.now();
+        if(now-lastKill>120){ // throttle
+          lastKill=now;
+          _resetZoomCursor();
+          _forceCursorKill();
+        }
       }
     }catch(err){}
+  },{passive:true});
+
+  // Also run once on pointer up (touch end) to clear any cached cursor state after taps
+  document.addEventListener('pointerup',function(){
+    try{
+      const mv=document.getElementById('mediaViewer');
+      if(mv && mv.classList.contains('active')) return;
+      _forceCursorKill();
+    }catch(e){}
   },{passive:true});
 })();
 
@@ -6122,7 +6136,9 @@ function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');
 if(window.__configHydrated===undefined)window.__configHydrated=false;
 
 let _currentScreen='landingScreen';
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',id==='consoleScreen');if(id!=='settingsScreen'){_currentAdminPage=null;updateGearIcon()}if(currentVaultTeam)saveSession()}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',id==='consoleScreen');if(id!=='settingsScreen'){_currentAdminPage=null;updateGearIcon()}if(currentVaultTeam)saveSession()
+  try{_forceCursorKill();}catch(e){}
+}
 function goToRegistration(){
   const mode=regSettings.participantMode||'team';
   // Update registration screen text based on mode
