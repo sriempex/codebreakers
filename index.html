@@ -2224,6 +2224,140 @@
   .briefing-footer{padding:16px 24px 20px;text-align:center}
   .briefing-continue{padding:10px 32px;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.25);border-radius:4px;color:var(--green);font-family:'Saira',sans-serif;font-size:11px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:all .15s}
   .briefing-continue:hover{background:rgba(0,255,136,.2);border-color:rgba(0,255,136,.4)}
+
+/* ── Admin console polish + hydration (prevents settings flicker on refresh) ── */
+:root{
+  --admin-surface: rgba(10,14,22,.82);
+  --admin-surface-2: rgba(6,9,15,.72);
+  --admin-stroke: rgba(110,170,200,.18);
+  --admin-stroke-2: rgba(255,255,255,.08);
+  --admin-shadow: 0 18px 70px rgba(0,0,0,.55);
+  --admin-radius: 18px;
+}
+
+/* Hide settings body while config is hydrating to avoid “flash then revert” values */
+.is-hydrating-settings #settingsScreen .admin-page-body{
+  visibility:hidden;
+}
+.is-hydrating-settings #settingsScreen .admin-page-header{
+  /* header can remain visible */
+}
+.is-hydrating-settings #settingsScreen .admin-page{
+  box-shadow: none;
+}
+
+/* Admin page shell */
+#settingsScreen .admin-page{
+  width:min(1220px, calc(100vw - 60px));
+  margin: 0 auto;
+  border-radius: var(--admin-radius);
+  border: 1px solid var(--admin-stroke);
+  background: linear-gradient(180deg, var(--admin-surface), rgba(8,12,18,.88));
+  box-shadow: var(--admin-shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow:hidden;
+}
+#settingsScreen .admin-page-header{
+  border-bottom: 1px solid var(--admin-stroke);
+  background: linear-gradient(180deg, rgba(18,24,35,.85), rgba(10,14,22,.65));
+}
+#settingsScreen .admin-page-header-row{
+  padding: 18px 18px 10px 18px;
+}
+#settingsScreen .admin-page-title{
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-size: 12px;
+  opacity:.95;
+}
+#settingsScreen .admin-page-close{
+  min-width: 110px;
+  border-radius: 12px;
+  border: 1px solid var(--admin-stroke);
+  background: rgba(8,10,16,.55);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+#settingsScreen .admin-page-close:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+#settingsScreen .admin-page-tabs{
+  padding: 10px 12px 14px 12px;
+  gap: 10px;
+  overflow-x:auto;
+}
+#settingsScreen .admin-page-tab{
+  border-radius: 999px;
+  border: 1px solid var(--admin-stroke);
+  background: rgba(8,10,16,.35);
+  padding: 10px 14px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  transition: transform .12s ease, filter .12s ease, background .12s ease;
+}
+#settingsScreen .admin-page-tab:hover{transform: translateY(-1px);filter:brightness(1.08)}
+#settingsScreen .admin-page-tab.active{
+  background: linear-gradient(180deg, rgba(0,255,136,.14), rgba(0,255,136,.06));
+  border-color: rgba(0,255,136,.22);
+  box-shadow: 0 0 0 3px rgba(0,255,136,.08) inset;
+}
+
+#settingsScreen .admin-page-body{
+  padding: 18px;
+  background: radial-gradient(1200px 600px at 20% 0%, rgba(0,255,136,.06), transparent 60%),
+              radial-gradient(900px 500px at 85% 15%, rgba(64,160,255,.07), transparent 60%),
+              rgba(6,9,15,.35);
+}
+#settingsScreen .admin-page-section.active{
+  display:block;
+}
+#settingsScreen .admin-page-section{
+  display:none;
+}
+
+/* Panels that are moved into the settings page */
+#settingsScreen .ap-container,
+#settingsScreen .keys-container,
+#settingsScreen .scoring-container,
+#settingsScreen .portal-container,
+#settingsScreen #dashboardPanel,
+#settingsScreen #leaderboardModule,
+#settingsScreen #sessionMgmtPanel,
+#settingsScreen #broadcastPanel{
+  border-radius: 16px;
+  border: 1px solid var(--admin-stroke);
+  background: linear-gradient(180deg, var(--admin-surface-2), rgba(6,9,15,.55));
+  box-shadow: 0 14px 50px rgba(0,0,0,.45);
+}
+
+/* Standardize form controls inside admin panels (override inline where needed) */
+#settingsScreen select,
+#settingsScreen input[type="text"],
+#settingsScreen input[type="number"],
+#settingsScreen input[type="datetime-local"],
+#settingsScreen textarea{
+  border-radius: 12px !important;
+  border: 1px solid var(--admin-stroke) !important;
+  background: rgba(7,9,14,.70) !important;
+  color: rgba(240,250,255,.92) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.04) inset;
+}
+#settingsScreen select:focus,
+#settingsScreen input:focus,
+#settingsScreen textarea:focus{
+  box-shadow: 0 0 0 3px rgba(64,160,255,.16), 0 0 0 1px rgba(255,255,255,.06) inset !important;
+  border-color: rgba(64,160,255,.28) !important;
+}
+
+/* Tidy “close” buttons embedded in panels now that the page has its own close */
+#settingsScreen .mv-close{
+  opacity:.6;
+}
+#settingsScreen .mv-close:hover{opacity:1}
+
 </style>
 <script>
 // Pre-render theme injection — runs before body paints
@@ -5678,6 +5812,14 @@ function applyEventConfig(cfg){
   startGlobalEventTimer();
   // Tutorial & briefing config
   applyTutorialBriefingConfig(cfg);
+
+  // Mark config hydration complete — prevents settings values flashing then reverting on refresh
+  if(!window.__configHydrated){
+    window.__configHydrated=true;
+    document.documentElement.classList.remove('is-hydrating-settings');
+    try{document.dispatchEvent(new Event('cb:configHydrated'))}catch(e){}
+  }
+
 }
 
 // Admin auth now handled via login screen (submitLogin)
@@ -5848,6 +5990,9 @@ document.addEventListener('contextmenu',e=>{
 function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');closeAdminDropdown();closeAdminPanel();closeBroadcast();closeLeaderboard();closeKeysCodes();renderGrid();renderIntelForm()}
 
 // ══════ SCREEN NAVIGATION ══════
+// Config hydration flag (prevents settings value flicker on refresh)
+if(window.__configHydrated===undefined)window.__configHydrated=false;
+
 let _currentScreen='landingScreen';
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',id==='consoleScreen');if(id!=='settingsScreen'){_currentAdminPage=null;updateGearIcon()}if(currentVaultTeam)saveSession()}
 function goToRegistration(){
@@ -10543,7 +10688,16 @@ function initSettingsPage(){
     var el=document.getElementById(id);
     if(el){el.style.cssText='';el.classList.add('active')}
   });
-  // Init the active tab's content
+  // Init the active tab's content (after config hydration to avoid value flicker)
+  if(!window.__configHydrated){
+    document.documentElement.classList.add('is-hydrating-settings');
+    // Run once config lands
+    document.addEventListener('cb:configHydrated', function _once(){
+      // Re-run init now that config is in place
+      try{initSettingsPage()}catch(e){}
+    }, {once:true});
+    return;
+  }
   var activeSection=document.querySelector('#settingsScreen .admin-page-section.active');
   if(activeSection){
     var sid=activeSection.id;
@@ -10566,7 +10720,22 @@ function switchPageTab(screenId,sectionId,btn){
   screen.querySelectorAll('.admin-page-section').forEach(function(s){s.classList.remove('active')});
   var section=document.getElementById(sectionId);
   if(section)section.classList.add('active');
-  // Init content for the activated section
+  // Init content for the activated section (after config hydration to avoid value flicker)
+  if(!window.__configHydrated){
+    document.documentElement.classList.add('is-hydrating-settings');
+    // Remember desired tab and hydrate later
+    window.__pendingSettingsTab=sectionId;
+    document.addEventListener('cb:configHydrated', function _once(){
+      try{
+        var target=window.__pendingSettingsTab||'set-event';
+        window.__pendingSettingsTab=null;
+        // Re-run tab activation now that config is ready
+        switchPageTab(screenId,target,screen.querySelector('.admin-page-tab.active'));
+      }catch(e){}
+    }, {once:true});
+    saveSession();
+    return;
+  }
   if(sectionId==='set-event'){syncAdminPanelSettings();syncRegistrationSettings();renderTutorialStepList();var tg=document.getElementById('tutGlobalToggle');if(tg)tg.classList.toggle('on',tutorialEnabled)}
   if(sectionId==='set-intel'){renderKeysCodes();renderScoringEditor()}
   if(sectionId==='set-appearance'){updateThemeLabel();initTypographyPanel()}
