@@ -982,9 +982,9 @@
   .intel-theme-dossier .intel-transmit-dock{background:linear-gradient(0deg,#0e0f11 60%,transparent)!important;border-top:1px solid rgba(255,255,255,.04)!important}
   .intel-theme-dossier .intel-crt-header{display:none!important}
   /* Transmit button — Neon Grid style */
-  .intel-notice{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#8a9aaa;line-height:1.7;text-align:center;padding:10px 18px;margin:0 0 6px;border:1px solid rgba(0,255,136,.06);border-radius:4px;background:rgba(0,255,136,.02);letter-spacing:.3px;font-weight:500}
+  .intel-notice{font-family:'Chakra Petch',sans-serif;font-size:13px;color:#b0bcc8;line-height:1.8;text-align:center;padding:16px 22px;margin:4px 0 10px;border:1px solid rgba(0,255,136,.1);border-radius:6px;background:rgba(0,255,136,.03);letter-spacing:.3px;font-weight:500}
   .intel-notice strong{color:var(--green);font-weight:700;letter-spacing:.5px}
-  .intel-notice-icon{font-size:12px;margin-right:4px}
+  .intel-notice-icon{font-size:14px;margin-right:6px}
   body.admin-mode:not(.player-preview) .intel-notice{display:none}
   .intel-saved-blip{width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(0,255,136,.15);flex-shrink:0;transition:all .4s;pointer-events:none}
   .intel-saved-blip.show{color:var(--green);text-shadow:0 0 8px rgba(0,255,136,.4);animation:intelSavedPop .5s ease}
@@ -1002,7 +1002,10 @@
   .intel-submit-btn::before{content:'';position:absolute;inset:1px;border-radius:3px;border:1px solid rgba(0,255,136,.12);pointer-events:none}
   .intel-submit-btn::after{content:'';position:absolute;top:1px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);border-radius:50%;pointer-events:none}
   .intel-submit-btn:hover{
-    background:linear-gradient(180deg,rgba(25,70,40,.5) 0%,rgba(15,50,28,.6) 50%,rgba(10,35,22,.7) 100%);
+    background:linear-gradient(180deg,rgba(30,90,50,.6) 0%,rgba(20,65,35,.7) 50%,rgba(12,45,25,.8) 100%);
+    box-shadow:0 3px 6px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06),0 0 25px rgba(0,255,136,.15),0 0 50px rgba(0,255,136,.08);
+    text-shadow:0 0 12px rgba(0,255,136,.5),0 0 25px rgba(0,255,136,.2);
+    border-bottom-color:rgba(0,255,136,.15);
   }
   .intel-submit-btn:active{transform:translateY(2px);border-bottom-width:1px;border-right-width:1px;box-shadow:0 0 2px rgba(0,0,0,.4)}
   .intel-submit-btn:disabled{opacity:.2;cursor:not-allowed;transform:none}
@@ -1014,7 +1017,9 @@
   }
   .intel-submit-admin-test::before{border-color:rgba(255,170,51,.12)!important}
   .intel-submit-admin-test:hover{
-    background:linear-gradient(180deg,rgba(70,48,18,.5) 0%,rgba(50,34,14,.6) 50%,rgba(35,24,10,.7) 100%)!important;
+    background:linear-gradient(180deg,rgba(80,55,20,.6) 0%,rgba(60,40,16,.7) 50%,rgba(40,28,12,.8) 100%)!important;
+    box-shadow:0 3px 6px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06),0 0 25px rgba(255,170,51,.15),0 0 50px rgba(255,170,51,.08)!important;
+    text-shadow:0 0 12px rgba(255,170,51,.5),0 0 25px rgba(255,170,51,.2)!important;
   }
 
   /* ══════ ADMIN NAV BAR ══════ */
@@ -1338,7 +1343,7 @@
   .admin-dropdown-toggle .adm-toggle.on-green{color:var(--green);background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15)}
   .admin-dropdown-toggle .adm-toggle.off{color:#666;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
 
-  .logout-btn{display:none!important}
+  .logout-btn{display:none;
     background:linear-gradient(180deg,rgba(255,50,50,.1),rgba(255,50,50,.05));border:1px solid rgba(255,50,50,.35);
     box-shadow:0 0 10px rgba(255,50,50,.06)}
   .logout-btn.visible{display:flex}
@@ -3119,7 +3124,7 @@
 <div id="panelOverlay">
   <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter"></span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
   <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
-  <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area"><div class="intel-crt-header" style="text-align:center;justify-content:center"><div class="intel-crt-dot"></div> INTEL SUBMISSIONS</div><div class="intel-notice" id="intelNotice"><span class="intel-notice-icon">💾</span> Your answers are saved automatically as you type. Only press <strong>Submit Intel</strong> when you're ready to lock in your final answers — submissions cannot be changed.</div><div id="intelForm"></div></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
+  <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area"><div class="intel-crt-header" style="text-align:center;justify-content:center"><div class="intel-crt-dot"></div> INTEL SUBMISSIONS</div><div class="intel-notice" id="intelNotice"><span class="intel-notice-icon">💾</span> Your answers save automatically as you type — feel free to edit, revise, and change them as many times as you need. Once you press <strong>Submit Intel</strong>, your answers are locked in and cannot be changed.</div><div id="intelForm"></div></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
   <div class="expanded-panel" id="expVault">
     <div class="exp-header"><span class="panel-icon">🔐</span><span class="exp-title">The Vault</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div>
     <div class="exp-body">
@@ -9451,17 +9456,11 @@ function clearGameState(){
 }
 
 // Auto-save game state periodically and on visibility change
-setInterval(()=>{if(currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen'))saveGameState()},5000);
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='hidden'&&currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){
-    saveGameState();saveSession();
-  }
-});
-window.addEventListener('beforeunload',()=>{
-  if(currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){
-    saveGameState();saveSession();
-  }
-});
+setInterval(()=>{if(currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){saveGameState();saveSession()}},5000);
+function _saveAll(){if(currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){saveGameState();saveSession()}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')_saveAll()});
+window.addEventListener('beforeunload',_saveAll);
+window.addEventListener('pagehide',_saveAll);
 
 function clearSession(){
   try{
@@ -9579,7 +9578,7 @@ function restoreSession(){
       loadEventData().then(function(){
         if(_currentAdminPage==='settingsScreen'){
           var as=document.querySelector('#settingsScreen .admin-page-section.active');
-          if(as)switchPageTab('settingsScreen',as.id,null);
+          if(as)_switchToTab('settingsScreen',as.id);
         }
       });
       return true;
@@ -10430,23 +10429,28 @@ function navigateToAdmin(screenId,tabId){
   initSettingsPage();
   // If a specific tab was requested, switch to it
   if(tabId){
-    var tabBtn=null;
-    var screen=document.getElementById('settingsScreen');
-    if(screen){
-      screen.querySelectorAll('.admin-page-tab').forEach(function(t){
-        var onc=t.getAttribute('onclick')||'';
-        if(onc.indexOf("'"+tabId+"'")>-1){tabBtn=t}
-      });
-    }
-    switchPageTab('settingsScreen',tabId,tabBtn);
+    _switchToTab('settingsScreen',tabId);
   }
-  // Refresh data to ensure dashboard tabs have current info
+  // Refresh data then re-render the active tab with fresh data
   loadEventData().then(function(){
     var as=document.querySelector('#settingsScreen .admin-page-section.active');
-    if(as)switchPageTab('settingsScreen',as.id,null);
+    if(as)_switchToTab('settingsScreen',as.id);
   });
   updateGearIcon();
   updatePreviewIcon();
+}
+
+// Helper: switch to a tab and auto-find its button
+function _switchToTab(screenId,tabId){
+  var tabBtn=null;
+  var screen=document.getElementById(screenId);
+  if(screen){
+    screen.querySelectorAll('.admin-page-tab').forEach(function(t){
+      var onc=t.getAttribute('onclick')||'';
+      if(onc.indexOf("'"+tabId+"'")>-1){tabBtn=t}
+    });
+  }
+  switchPageTab(screenId,tabId,tabBtn);
 }
 
 function returnFromAdminPage(){
