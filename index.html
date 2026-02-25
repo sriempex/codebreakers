@@ -9473,6 +9473,7 @@ function clearSession(){
   }catch(e){}
 }
 
+let _panelsMounted=false;
 let _gearReturnScreen='consoleScreen';
 let _currentAdminPage=null;
 
@@ -9566,27 +9567,28 @@ function restoreSession(){
 
       if(data.adminPage||targetScreen==='settingsScreen'){
         // Settings is a full screen — restore it directly
-        _currentAdminPage='settingsScreen';
-        _gearReturnScreen='consoleScreen';
-        // Activate settings screen
-        document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-        document.getElementById('settingsScreen').classList.add('active');
-        _currentScreen='settingsScreen';
-        document.getElementById('notepadTrigger').classList.add('visible');
-        // Mount admin panels and init
-        mountAdminPanels();
-        initSettingsPage();
-        // Switch to saved tab
-        if(data.adminTab){
-          _switchToTab('settingsScreen',data.adminTab);
-        }else{
-          var as=document.querySelector('#settingsScreen .admin-page-section.active');
-          if(as)_switchToTab('settingsScreen',as.id);
-        }
-        updateGearIcon();
-        updatePreviewIcon();
-        renderGrid();
-        saveSession();
+        // Use setTimeout(0) to defer until after all let/const declarations are processed
+        var _restoreTab=data.adminTab||null;
+        setTimeout(function(){
+          _currentAdminPage='settingsScreen';
+          _gearReturnScreen='consoleScreen';
+          document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+          document.getElementById('settingsScreen').classList.add('active');
+          _currentScreen='settingsScreen';
+          document.getElementById('notepadTrigger').classList.add('visible');
+          mountAdminPanels();
+          initSettingsPage();
+          if(_restoreTab){
+            _switchToTab('settingsScreen',_restoreTab);
+          }else{
+            var as=document.querySelector('#settingsScreen .admin-page-section.active');
+            if(as)_switchToTab('settingsScreen',as.id);
+          }
+          updateGearIcon();
+          updatePreviewIcon();
+          renderGrid();
+          saveSession();
+        },0);
       }else{
         // Admin was on console or a panel screen — restore directly
         applyScreenAndPanel();
@@ -10499,7 +10501,6 @@ function updatePreviewIcon(){
   }
 }
 
-let _panelsMounted=false;
 function mountAdminPanels(){
   if(_panelsMounted)return;
   _panelsMounted=true;
