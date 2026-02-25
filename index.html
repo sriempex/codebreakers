@@ -2813,7 +2813,7 @@
         <div style="flex:1;min-width:200px">
           <label style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#666;text-transform:uppercase;display:block;margin-bottom:8px">Background Color</label>
           <div style="display:flex;align-items:center;gap:10px">
-            <input type="color" id="consoleBgColor" value="#080a10" onchange="updateConsoleBg()" style="width:48px;height:36px;border:1px solid var(--border);border-radius:4px;background:transparent;cursor:pointer;padding:2px">
+            <input type="color" id="consoleBgColor" value="#080a10" oninput="updateConsoleBg()" onchange="updateConsoleBg()" style="width:48px;height:36px;border:1px solid var(--border);border-radius:4px;background:transparent;cursor:pointer;padding:2px">
             <input id="consoleBgHex" value="#080a10" onchange="document.getElementById('consoleBgColor').value=this.value;updateConsoleBg()" style="width:90px;font-family:IBM Plex Mono,monospace;font-size:11px;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:6px 8px;color:#aaa;outline:none;letter-spacing:1px">
           </div>
           <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
@@ -2824,6 +2824,15 @@
             <button class="cbg-preset" onclick="setConsoleBgColor('#0d1a0d')" title="Dark Green" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#0d1a0d;cursor:pointer"></button>
             <button class="cbg-preset" onclick="setConsoleBgColor('#1a0a0a')" title="Dark Red" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1a0a0a;cursor:pointer"></button>
             <button class="cbg-preset" onclick="setConsoleBgColor('#12121a')" title="Dark Purple" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#12121a;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#2c2c34')" title="Warm Grey" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#2c2c34;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#3a3a42')" title="Mid Grey" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#3a3a42;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#1a2332')" title="Steel Blue" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1a2332;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#2a1a2e')" title="Plum" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#2a1a2e;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#1a2a2a')" title="Dark Teal" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1a2a2a;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#e8e4de')" title="Off White" style="width:28px;height:28px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#e8e4de;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#f0ece4')" title="Warm Ivory" style="width:28px;height:28px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#f0ece4;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#dde1e6')" title="Cool Grey" style="width:28px;height:28px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#dde1e6;cursor:pointer"></button>
+            <button class="cbg-preset" onclick="setConsoleBgColor('#ffffff')" title="White" style="width:28px;height:28px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#ffffff;cursor:pointer"></button>
           </div>
         </div>
         <div style="flex:1;min-width:200px">
