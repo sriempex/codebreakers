@@ -4513,7 +4513,10 @@ function _refreshPanelData(panel){
           // Preserve current input values before re-render
           const curVals={};
           document.querySelectorAll('.intel-exp-input').forEach(inp=>{if(inp.dataset.idx&&inp.value.trim())curVals[inp.dataset.idx]=inp.value});
-          intelFields=r.fields;renderIntelForm();
+          intelFields=r.fields||[];
+          // Normalize shapes (type vs fieldType) so money/phone/etc render correctly immediately
+          intelFields.forEach(f=>{try{if(f&&typeof f==='object'){if(!f.type&&f.fieldType)f.type=f.fieldType;if(!f.fieldType&&f.type)f.fieldType=f.type}}catch(e){}});
+          renderIntelForm();
           // Restore typed values
           document.querySelectorAll('.intel-exp-input').forEach(inp=>{if(curVals[inp.dataset.idx])inp.value=curVals[inp.dataset.idx]});
           renderGrid();_cacheContent("cb_intel",intelFields);
@@ -7815,7 +7818,7 @@ function renderIntelForm(){
     const clearBtn=`<div class="intel-saved-blip" data-save-idx="${i}">✓</div><div class="intel-exp-clear" onclick="clearIntelSlot(this)" title="Clear">✕</div>`;
     const keyHandler='onkeydown="if(event.key===\'Enter\'){this.blur()}"';
     const ph=f.placeholder||'···';
-    if(f.type==='money'){
+    if((f.type||f.fieldType)==='money'){
       const _moneyIStyle=_iFont?`border:none;background:transparent;box-shadow:none;${fontStyle(_iFont)}`:'border:none;background:transparent;box-shadow:none';
       html+=`<div class="intel-exp-row" data-idx="${i}">${adminTools}<span class="intel-exp-num">${num}</span><span class="intel-exp-label"${lStyle}>${f.label} ${f.emoji}</span><div class="intel-prefix-wrap"><span class="intel-prefix">$</span><input class="intel-exp-input" style="${_moneyIStyle}" placeholder="${ph}" data-idx="${i}" oninput="formatMoney(this)" ${keyHandler}></div>${clearBtn}</div>`;
     }else if(f.type==='phone'){
@@ -8471,12 +8474,17 @@ function onTimerModeChange(){
   document.getElementById('timerCountdownControls').style.display=timerMode==='countdown'?'':'none';
   document.getElementById('timerEventControls').style.display=timerMode==='event'?'':'none';
   if(timerMode==='event')updateEventStatus();
-  // No timer mode — hide the timer display from players, clear countdown
+  // No timer mode — show infinity symbol, stop any running timer updates
   if(timerMode==='none'){
     var timerBlock=document.querySelector('.timer-block');
-    if(timerBlock)timerBlock.style.display='none';
+    if(timerBlock)timerBlock.style.display='';
     if(_globalTimerInterval){clearInterval(_globalTimerInterval);_globalTimerInterval=null}
-    document.getElementById('apTimerDisplay').textContent='OFF';
+    timerPaused=true;
+    var el=document.getElementById('cTimer');
+    if(el)el.textContent='∞';
+    renderTimerLabel('No Timer');
+    var ap=document.getElementById('apTimerDisplay');
+    if(ap)ap.textContent='∞';
     saveEventConfigToBackend();
   }else{
     var timerBlock2=document.querySelector('.timer-block');
@@ -8497,10 +8505,13 @@ function onEventTimeChange(){
 let _globalTimerInterval=null;
 function startGlobalEventTimer(){
   if(_globalTimerInterval)clearInterval(_globalTimerInterval);
-  // No timer mode — hide timer block for players
+  // No timer mode — show infinity symbol and stop
   if(timerMode==='none'){
     var tb=document.querySelector('.timer-block');
-    if(tb)tb.style.display='none';
+    if(tb)tb.style.display='';
+    var el=document.getElementById('cTimer');
+    if(el)el.textContent='∞';
+    renderTimerLabel('No Timer');
     return;
   }
   // Show timer block if it was hidden
@@ -8868,6 +8879,11 @@ function setNewTime(){const v=document.getElementById('timerInput').value.trim()
 function resetTimer(){timerSec=timerOriginal;timerPaused=false;document.getElementById('pauseBtn').textContent='⏸ PAUSE';document.getElementById('cTimer').classList.remove('paused');renderTimer()}
 function renderTimer(){
   const el=document.getElementById('cTimer');
+  if(!el)return;
+  if(timerMode==='none'){
+    el.textContent='∞';
+    return;
+  }
   const h=Math.floor(timerSec/3600),m=Math.floor((timerSec%3600)/60),s=timerSec%60;
   el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 }
