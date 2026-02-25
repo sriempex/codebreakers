@@ -6993,7 +6993,7 @@ function renderTeamMonitor(){
     var removeBtn=ghost?'<span class="ap-monitor-remove" onclick="event.stopPropagation();removeGhostTeam(\''+t.id+'\')" title="Remove ghost">\u2715</span>':'';
     var msgBtn='<span class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage(\''+t.id+'\',\''+t.name.replace(/'/g,"\\'")+'\')" style="margin-left:auto">\uD83D\uDCAC</span>';
     return '<div class="ap-monitor-row '+rowClass+'"><input type="checkbox" class="tm-nuke-check" data-team="'+t.id+'" onchange="tmUpdateNukeBar()" onclick="event.stopPropagation()" style="margin-right:4px;accent-color:#ff4444"><div class="ap-monitor-dot '+dotClass+'"></div><span class="ap-monitor-id">'+t.id+'</span><span class="ap-monitor-name">'+t.name+'</span>'+statusTag+msgBtn+removeBtn+'</div>';
-  }).join(''):'<div style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:rgba(255,255,255,.18);padding:12px 0;text-align:center">No teams registered yet</div>';
+  }).join(''):'<div style="font-family:Chakra Petch,sans-serif;font-size:10px;color:rgba(255,255,255,.18);padding:12px 0;text-align:center">No teams registered yet</div>';
   renderPagination('tmPagination',sorted.length,tmPerPage,tmCurrentPage,function(p){tmCurrentPage=p;renderTeamMonitor()});
   tmUpdateNukeBar();
 }
