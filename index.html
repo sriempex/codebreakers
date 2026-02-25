@@ -780,7 +780,7 @@
   .feed-card-img,.feed-single-img,.mv-image-viewer{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;pointer-events:auto}
   .feed-card-img img{pointer-events:none;-webkit-user-drag:none;user-select:none}
   .feed-single-img .no-download-shield{pointer-events:none}
-  .no-download-shield{position:absolute;inset:0;z-index:2;-webkit-user-select:none;user-select:none}
+  .no-download-shield{position:absolute;inset:0;z-index:2;-webkit-user-select:none;user-select:none;pointer-events:none}
   /* Feed video in grid */
   .feed-card-video{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
   /* Feed video in single view */
@@ -849,6 +849,11 @@
   body:not(.admin-mode) .media-exp-item button,
   body:not(.admin-mode) .media-exp-item a{cursor:pointer}
   .media-exp-item:hover{border-color:var(--green-dim)}
+  /* Evidence Locker — stronger hover highlight + ensure empty list space doesn't show pointer/grab */
+  #expMedia .exp-body, #mediaList{cursor:default}
+  .media-exp-item:hover{border-color:rgba(0,212,255,.35);background:rgba(0,212,255,.05)}
+  .media-exp-item:active{transform:translateY(1px)}
+
   .media-exp-icon{font-size:22px;flex-shrink:0}
   .media-exp-info{display:flex;flex-direction:column;gap:3px}
   .media-exp-name{font-family:'Chakra Petch',sans-serif;font-size:13px;color:#ddd;font-weight:600;letter-spacing:1px}
@@ -3701,6 +3706,7 @@ function clearNotes(){
 document.addEventListener('DOMContentLoaded',()=>{
   if(localStorage.getItem('dd_notes'))document.getElementById('notepadDot').classList.add('has-notes');
   restoreConsoleBg();
+  try{_installInteractionDelegates();}catch(e){}
 });
 
 function showLogout(){
@@ -4491,6 +4497,66 @@ function renderMedia(){
     return `<div class="media-exp-item" data-idx="${realIdx}" style="${lockedStyle}${vlStyle}${selStyle}${newGlow}" ${clickHandler}>${isEdit&&!_mediaSelectMode?`<div class="drag-handle" onpointerdown="startDrag(event,'media',${realIdx})" onclick="event.stopPropagation()">⋮⋮</div><div class="admin-edit-btn" onclick="event.stopPropagation();editMediaItem(${realIdx})" style="position:absolute;top:8px;right:8px">✎</div>`:''}${checkHtml}${crosshatch}${newBadge}<span class="media-exp-icon">${m.icon}</span><div class="media-exp-info"><span class="media-exp-name" style="${fontStyle(_mNameFont)}">${m.name}</span><span class="media-exp-desc" style="${fontStyle(_mDescFont)}">${m.desc}</span></div><span class="media-exp-badge ${m.type}">${badge}</span></div>`;
   }).join('')+(isEdit&&!_mediaSelectMode?'<div class="admin-add-btn" onclick="addMediaItem()">+ Add Item</div>':'');
   const mbadge=document.getElementById('mediaBadge');if(mbadge)mbadge.textContent=tileBadgeText('media',isAdmin);
+}
+
+
+// ══════ INTERACTION RELIABILITY PATCHES ══════
+// Some mobile/trackpad combos occasionally swallow 'click' on complex tiles (esp. when overlay divs exist).
+// We add delegated pointer/click handling so grid + evidence items open reliably with a single tap/click.
+function _installInteractionDelegates(){
+  const fg=document.getElementById('feedGridView');
+  if(fg && !fg.__ddBound){
+    fg.__ddBound=true;
+    let down=null;
+    fg.addEventListener('pointerdown',e=>{
+      const card=e.target.closest('.feed-card');
+      if(!card) return;
+      if(e.button!==undefined && e.button!==0) return;
+      down={x:e.clientX,y:e.clientY,idx:card.dataset.idx,pt:e.pointerType||'mouse',t:Date.now()};
+    },{passive:true});
+    fg.addEventListener('pointerup',e=>{
+      if(!down) return;
+      const card=e.target.closest('.feed-card');
+      if(!card || card.dataset.idx!==down.idx){ down=null; return; }
+      const dx=Math.abs(e.clientX-down.x), dy=Math.abs(e.clientY-down.y);
+      if(dx<=10 && dy<=10 && down.pt==='touch'){
+        try{openPost(parseInt(down.idx,10));}catch(err){}
+      }
+      down=null;
+    },{passive:true});
+    fg.addEventListener('click',e=>{
+      const card=e.target.closest('.feed-card');
+      if(!card) return;
+      try{openPost(parseInt(card.dataset.idx,10));}catch(err){}
+    });
+  }
+
+  const ml=document.getElementById('mediaList');
+  if(ml && !ml.__ddBound){
+    ml.__ddBound=true;
+    let down=null;
+    ml.addEventListener('pointerdown',e=>{
+      const item=e.target.closest('.media-exp-item');
+      if(!item) return;
+      if(e.button!==undefined && e.button!==0) return;
+      down={x:e.clientX,y:e.clientY,idx:item.dataset.idx,pt:e.pointerType||'mouse'};
+    },{passive:true});
+    ml.addEventListener('pointerup',e=>{
+      if(!down) return;
+      const item=e.target.closest('.media-exp-item');
+      if(!item || item.dataset.idx!==down.idx){ down=null; return; }
+      const dx=Math.abs(e.clientX-down.x), dy=Math.abs(e.clientY-down.y);
+      if(dx<=10 && dy<=10 && down.pt==='touch'){
+        try{openMediaViewer(parseInt(down.idx,10));}catch(err){}
+      }
+      down=null;
+    },{passive:true});
+    ml.addEventListener('click',e=>{
+      const item=e.target.closest('.media-exp-item');
+      if(!item) return;
+      try{openMediaViewer(parseInt(item.dataset.idx,10));}catch(err){}
+    });
+  }
 }
 
 // ══════ PANELS ══════
