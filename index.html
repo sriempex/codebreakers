@@ -12,7 +12,7 @@
   body{background:var(--bg-deep);overflow:hidden;width:100vw;height:100vh;font-family:'Chakra Petch',sans-serif;font-weight:500;color:#ccc;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overscroll-behavior:none}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#2a2d35;border-radius:2px}
 
-  .screen{position:fixed;inset:0;opacity:0;pointer-events:none;z-index:1;will-change:opacity;transform:translateZ(0)}
+  .screen{position:fixed;inset:0;transition:opacity .3s;opacity:0;pointer-events:none;z-index:1;will-change:opacity;transform:translateZ(0)}
   .screen.active{opacity:1;pointer-events:all;z-index:10}
   #grainCanvas{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.03;image-rendering:pixelated;image-rendering:crisp-edges}
 
@@ -718,9 +718,8 @@
   .grid-theme-terminal .tile-status-label.active{color:rgba(0,255,136,.5)!important}
 
   /* ══════ EXPANDED OVERLAY ══════ */
-  /* Panel screens — full-viewport screens that replace the old overlay system */
-  .panel-screen{background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center}
-  .panel-screen .expanded-panel.visible{display:flex}
+  #panelOverlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
+  #panelOverlay.active{opacity:1;pointer-events:all}
   .expanded-panel{width:92vw;height:88vh;border-radius:6px;display:none;flex-direction:column;overflow:hidden;
     background:
       repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.003) 1px,rgba(255,255,255,.003) 2px,transparent 2px,transparent 4px),
@@ -745,22 +744,21 @@
   .exp-body{flex:1;overflow-y:auto;padding:20px}
 
   /* Feed — view modes */
-  .feed-view-toggle{display:flex;gap:4px;flex-shrink:0;margin-right:12px}
-  .feed-view-btn{border-radius:4px;padding:8px 14px;text-align:center;cursor:pointer;font-family:'Saira',sans-serif;font-size:11px;letter-spacing:2.5px;color:#666;font-weight:700;transition:color .15s,background .15s,border-color .15s,box-shadow .15s;text-transform:uppercase;white-space:nowrap;line-height:1;min-width:80px;
-    background:linear-gradient(180deg,rgba(30,32,38,.6),rgba(20,22,28,.7));
-    border:1px solid rgba(255,255,255,.06);border-bottom:2px solid #08080c}
-  .feed-view-btn:hover{color:#999;border-color:rgba(255,255,255,.1);border-bottom-color:rgba(255,255,255,.1)}
-  .feed-view-btn.active{color:#b0e8cc;border-color:rgba(0,255,136,.15);border-bottom:2px solid rgba(0,255,136,.15);background:linear-gradient(180deg,rgba(15,40,25,.5),rgba(10,30,18,.6));box-shadow:0 0 8px rgba(0,255,136,.06)}
+  .feed-view-toggle{display:flex;gap:4px;margin-bottom:14px;max-width:900px;margin-left:auto;margin-right:auto;flex-shrink:0}
+  .feed-view-btn{flex:1;border-radius:4px;padding:6px 8px;text-align:center;cursor:pointer;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;color:#666;font-weight:700;transition:all .15s;text-transform:uppercase;white-space:nowrap;line-height:1;
+    background:linear-gradient(180deg,rgba(30,32,38,.5),rgba(20,22,28,.6));
+    border:1px solid rgba(255,255,255,.04);border-bottom:2px solid #08080c}
+  .feed-view-btn.active{color:#b0e8cc;border-color:rgba(0,255,136,.1);background:linear-gradient(180deg,rgba(15,40,25,.4),rgba(10,30,18,.5))}
   .feed-view-btn:hover{border-color:rgba(255,255,255,.08);color:#aaa}
 
-  .feed-expanded{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:3px;max-width:900px;margin:0 auto;height:100%}
-  #feedGridView{height:100%}
-  .feed-card-img{aspect-ratio:auto;overflow:hidden;flex:1}
+  .feed-expanded{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;max-width:900px;margin:0 auto}
+  .feed-card-img{aspect-ratio:1;overflow:hidden}
   .feed-card-img img{width:100%;height:100%;object-fit:cover}
-  .feed-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:3px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;touch-action:pan-y;display:flex;flex-direction:column}
+  .feed-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:3px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;touch-action:pan-y}
   .feed-card:hover{border-color:var(--green-dim);box-shadow:0 6px 20px rgba(0,0,0,.3)}
   .feed-card-img{width:100%;display:flex;align-items:center;justify-content:center;font-size:40px;background-size:cover;background-position:center;position:relative;min-height:120px}
   .feed-card-img img{width:100%;display:block;pointer-events:none;-webkit-user-drag:none;user-select:none}
+  .feed-card-img{aspect-ratio:1;overflow:hidden}
   .feed-card-img img{width:100%;height:100%;object-fit:cover}
   /* Anti-download: prevent right-click save, drag, long-press */
   .feed-card-img,.feed-single-img,.mv-image-viewer{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;pointer-events:auto}
@@ -1058,7 +1056,6 @@
 
 
   /* ══════ ADMIN PAGE SCREENS ══════ */
-  /* ══════ ADMIN CONSOLE — Settings Interface ══════ */
   #settingsScreen{background:#0e1019;min-height:100vh;padding:0}
   #settingsScreen.active{z-index:850}
   .admin-page{display:flex;flex-direction:column;height:100vh;overflow:hidden}
@@ -1079,14 +1076,14 @@
   .admin-page-section{display:none;width:100%;max-width:740px}
   .admin-page-section.active{display:block}
 
-  /* Section cards */
+  /* Better section styling inside pages */
   .admin-page-section .ap-section,
   .admin-page-section .kc-section{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:8px;margin-bottom:16px;padding:24px 28px}
   .admin-page-section .ap-section:last-child{border-bottom:1px solid rgba(255,255,255,.06)}
   .admin-page-section .bc-body{padding:20px 0}
   .admin-page-section .kc-body{padding:0}
 
-  /* Typography overrides in settings */
+  /* ══════ READABILITY — larger text in admin pages ══════ */
   .admin-page-section .ap-section h4{font-size:14px;letter-spacing:2.5px;margin-bottom:16px}
   .admin-page-section .ap-section p{font-size:12px;color:#b0b8c8;line-height:1.7;margin-bottom:14px}
   .admin-page-section .ap-field label{font-size:11px;letter-spacing:1.5px;color:#c0c8d8;margin-bottom:6px}
@@ -1155,8 +1152,8 @@
   .admin-icon:hover{border-color:rgba(150,160,180,.4);box-shadow:0 2px 16px rgba(0,0,0,.5)}
   .admin-icon-preview svg{stroke:rgba(100,180,220,.6)}
   .admin-icon-preview:hover svg{stroke:rgba(100,200,240,.8)}
-  .admin-icon-preview.active{border-color:rgba(0,180,255,.4);box-shadow:0 0 16px rgba(0,180,255,.2);background:linear-gradient(180deg,rgba(0,140,255,.25),rgba(0,100,200,.2))}
-  .admin-icon-preview.active svg{stroke:#fff;filter:drop-shadow(0 0 4px rgba(0,200,255,.5))}
+  .admin-icon-preview.active{border-color:rgba(0,180,255,.3);box-shadow:0 0 16px rgba(0,180,255,.15)}
+  .admin-icon-preview.active svg{stroke:rgba(0,200,255,1);filter:drop-shadow(0 0 4px rgba(0,200,255,.5))}
   .admin-icon-gear svg{stroke:rgba(140,150,170,.7)}
   .admin-icon-gear:hover svg{stroke:rgba(180,190,210,.9)}
   .admin-icon-gear.active{border-color:rgba(255,170,51,.3);box-shadow:0 0 16px rgba(255,170,51,.15)}
@@ -1169,7 +1166,7 @@
     transform:translateY(6px) scale(.97);transition:all .2s ease}
   .gear-dropdown.open{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}
   .gear-dropdown-item{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left}
-  .gear-dropdown-item:hover{background:rgba(255,255,255,.03)}
+  .gear-dropdown-item:hover{background:rgba(255,255,255,.04)}
   .gear-dropdown-item:first-child{border-radius:6px 6px 0 0}
   .gear-dropdown-item:last-child{border-radius:0 0 6px 6px}
   .gear-dropdown-item .gd-icon{font-size:14px;width:22px;text-align:center;flex-shrink:0}
@@ -1229,6 +1226,7 @@
   body.event-locked .intel-exp-input{pointer-events:none;opacity:.4}
   body.event-locked .v-key{pointer-events:none;opacity:.4}
   body.event-locked .intel-submit-btn{pointer-events:none;opacity:.4}
+  body.player-preview #logoutBtn{display:none!important}
 
   body.event-locked .console-tile{pointer-events:none;opacity:.5}
   body.event-locked .intel-exp-input{pointer-events:none;opacity:.4}
@@ -1345,6 +1343,15 @@
   .admin-dropdown-toggle .adm-toggle.on-green{color:var(--green);background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15)}
   .admin-dropdown-toggle .adm-toggle.off{color:#666;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
 
+  .logout-btn{position:fixed;bottom:12px;left:12px;z-index:600;display:none;align-items:center;gap:8px;padding:10px 18px;border-radius:5px;cursor:pointer;transition:all .3s;
+    background:linear-gradient(180deg,rgba(255,50,50,.1),rgba(255,50,50,.05));border:1px solid rgba(255,50,50,.35);
+    box-shadow:0 0 10px rgba(255,50,50,.06)}
+  .logout-btn.visible{display:flex}
+  .logout-btn:hover{background:linear-gradient(180deg,rgba(255,50,50,.18),rgba(255,50,50,.1));border-color:rgba(255,50,50,.5);box-shadow:0 0 18px rgba(255,50,50,.12)}
+  .logout-btn:active{transform:translateY(0)}
+  .logout-btn svg{width:16px;height:16px;fill:none;stroke:var(--red);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+  .logout-btn span{font-family:'Saira',sans-serif;font-size:12px;letter-spacing:3px;color:var(--red);font-weight:700;text-transform:uppercase}
+
   /* Notification bell */
   .admin-topbar-label{display:none;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:2.5px;color:var(--amber);font-weight:600;text-transform:uppercase;padding:6px 14px;border:1px solid rgba(255,170,51,.25);border-radius:3px;background:rgba(255,170,51,.06)}
   body.admin-mode .admin-topbar-label{display:inline-flex}
@@ -1401,7 +1408,7 @@
   .ap-field input{background:#080a10;border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:9px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;box-sizing:border-box;max-width:100%}
   .ap-field input:focus{border-color:rgba(0,212,255,.2)}
   .ap-two-col-even .ap-field input,.ap-two-col-even .ap-field select{width:100%}
-  .ap-row{display:flex;gap:12px;align-items:flex-end}
+  .ap-row{display:flex;gap:10px;align-items:flex-end}
   .ap-row .ap-field{flex:1}
   .ap-two-col{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
   .ap-two-col .ap-field{min-width:140px}
@@ -1421,13 +1428,13 @@
   .ap-msg{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;margin-top:6px;height:14px;font-weight:600}
 
   /* Console Background controls */
-  .cbg-preset:hover{transform:scale(1.12);box-shadow:0 0 8px rgba(255,255,255,.08)}
-  .cbg-preset{transition:all .15s;border-radius:6px !important}
-  .cbg-tex{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;border:1px solid rgba(255,255,255,.04);border-radius:8px;background:transparent;cursor:pointer;transition:all .15s}
-  .cbg-tex:hover{border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.01)}
-  .cbg-tex.active{border-color:rgba(255,255,255,.16);background:rgba(255,255,255,.02)}
-  .cbg-tex-preview{width:100%;height:32px;border-radius:6px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.03)}
-  .cbg-tex-label{font-family:'Saira',sans-serif;font-size:7px;letter-spacing:1.5px;color:rgba(255,255,255,.25);text-transform:uppercase;font-weight:700}
+  .cbg-preset:hover{transform:scale(1.15);box-shadow:0 0 8px rgba(255,255,255,.15)}
+  .cbg-preset{transition:all .15s}
+  .cbg-tex{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px;border:1px solid var(--border);border-radius:5px;background:transparent;cursor:pointer;transition:all .15s}
+  .cbg-tex:hover{border-color:rgba(0,212,255,.25)}
+  .cbg-tex.active{border-color:var(--cyan);background:rgba(0,212,255,.06);box-shadow:0 0 8px rgba(0,212,255,.1)}
+  .cbg-tex-preview{width:100%;height:32px;border-radius:3px;background:#080a10;border:1px solid rgba(255,255,255,.04)}
+  .cbg-tex-label{font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1.5px;color:#888;text-transform:uppercase}
   .cbg-noise-preview{background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E") !important}
   .cbg-hex-preview{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15z' fill='none' stroke='rgba(0,212,255,0.06)' stroke-width='0.5'/%3E%3Cpath d='M13.99 33.75l13 7.5v15l-13 7.5L1 56.25v-15z' fill='none' stroke='rgba(0,212,255,0.06)' stroke-width='0.5'/%3E%3Cpath d='M27.99 -8.25l13 7.5v15l-13 7.5L15 6.75v-15z' fill='none' stroke='rgba(0,212,255,0.06)' stroke-width='0.5'/%3E%3C/svg%3E") !important}
 
@@ -1448,8 +1455,8 @@
   .ap-status-pill.inactive{border:1px solid rgba(255,170,51,.12);background:rgba(255,170,51,.03);color:var(--amber)}
   .ap-status-pill.total{border:1px solid var(--border);background:rgba(255,255,255,.02);color:#888}
   .ap-status-dot{width:6px;height:6px;border-radius:50%}
-  .ap-status-dot.on{background:var(--green);box-shadow:0 0 6px rgba(0,255,136,.3)}
-  .ap-status-dot.off{background:var(--amber);opacity:.5}
+  .ap-status-dot.on{background:var(--green);box-shadow:0 0 6px rgba(0,255,136,.4)}
+  .ap-status-dot.off{background:var(--amber);opacity:.6}
   .ap-monitor-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--border);border-radius:3px;margin-bottom:4px;transition:border-color .3s}
   .ap-monitor-row.active{border-color:rgba(0,255,136,.1)}
   .ap-monitor-row.idle{border-color:rgba(240,200,120,.12);opacity:.75}
@@ -1527,7 +1534,7 @@
   .lb-team-status.on{background:var(--green);box-shadow:0 0 6px rgba(0,255,136,.4)}.lb-team-status.off{background:var(--amber);opacity:.5}
   .lb-score-block{text-align:right;min-width:70px}
   .lb-score-pct{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;letter-spacing:2px}
-  .lb-score-pct.r1{color:#ffd700}.lb-score-pct.r2{color:#c0c0c0}.lb-score-pct.r3{color:#cd7f32}.lb-score-pct.rn{color:rgba(255,255,255,.2)}
+  .lb-score-pct.r1{color:#ffd700}.lb-score-pct.r2{color:#c0c0c0}.lb-score-pct.r3{color:#cd7f32}.lb-score-pct.rn{color:#555}
   .lb-score-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-top:2px}
   .lb-progress{height:3px;border-radius:2px;margin:6px 16px 0;background:rgba(255,255,255,.03)}
   .lb-progress-fill{height:100%;border-radius:2px;transition:width .5s}
@@ -1609,9 +1616,9 @@
   /* Admin mode — no content offset (dropdown-based) */
 
   /* Admin timer controls — now in admin panel */
-  .admin-timer-btn{font-family:'Saira',sans-serif;font-size:9px;letter-spacing:1.5px;padding:8px 16px;cursor:pointer;border-radius:6px;transition:all .12s;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.45);font-weight:700;text-transform:uppercase}
-  .admin-timer-btn:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.65)}
-  .admin-timer-input{width:100px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.06);border-radius:6px;padding:8px 12px;color:rgba(255,255,255,.7);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;outline:none;text-align:center;transition:border-color .15s}
+  .admin-timer-btn{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;padding:3px 10px;cursor:pointer;border-radius:2px;transition:all .2s;background:none;border:1px solid rgba(0,212,255,.2);color:var(--cyan)}
+  .admin-timer-btn:hover{background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.4)}
+  .admin-timer-input{width:70px;background:#080a10;border:1px solid var(--border);border-radius:2px;padding:3px 6px;color:var(--cyan);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;outline:none;text-align:center}
 
   .admin-edit-btn{display:none;position:absolute;top:6px;right:6px;width:24px;height:24px;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);border-radius:3px;color:var(--cyan);font-size:11px;cursor:pointer;align-items:center;justify-content:center;z-index:10;transition:all .15s}
   .admin-edit-btn:hover{background:rgba(0,212,255,.25)}
@@ -1904,11 +1911,11 @@
     .exp-close{padding:10px 18px;font-size:10px;min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center}
 
     /* Feed — keep 3 column grid on mobile, tight gaps like IG */
-    .feed-expanded{grid-template-columns:repeat(3,1fr);gap:2px;max-width:100%;height:100%}
+    .feed-expanded{grid-template-columns:repeat(3,1fr);gap:2px;max-width:100%}
     .feed-card-img{font-size:24px}
     .feed-card-cap p{font-size:9px}
-    .feed-view-toggle{margin-right:8px}
-    .feed-view-btn{padding:6px 10px;font-size:9px;letter-spacing:2px}
+    .feed-view-toggle{margin-bottom:10px}
+    .feed-view-btn{padding:4px 7px;font-size:7px}
     .feed-single{max-width:100%;gap:12px}
     .feed-single-img{border-radius:0}
     .feed-single-caption{font-size:12px;max-width:100%;padding:0 8px}
@@ -1965,6 +1972,11 @@
     .notepad-clear{padding:6px 14px;font-size:9px}
     .notepad-trigger{bottom:calc(10px + env(safe-area-inset-bottom,0));left:10px;padding:8px 16px 8px 12px}
     .notepad-trigger span{font-size:8px;letter-spacing:2px}
+
+    /* Logout — safe area bottom */
+    .logout-btn{bottom:calc(10px + env(safe-area-inset-bottom,0));left:10px;padding:8px 14px}
+    .logout-btn span{font-size:10px;letter-spacing:2px}
+    .logout-btn svg{width:14px;height:14px}
 
     /* Admin */
     .admin-login-box{width:90vw;max-width:340px;padding:22px 18px}
@@ -2124,6 +2136,7 @@
   body.landing-preview-mode .landing-banner-upload,
   body.landing-preview-mode .admin-edit-inline,
   body.landing-preview-mode .admin-trigger,
+  body.landing-preview-mode #logoutBtn,
   body.landing-preview-mode #scoringPanel,
   body.landing-preview-mode #registrationPanel,
   body.landing-preview-mode #appearancePanel,
@@ -2296,7 +2309,7 @@
 
 <div id="adminEditModal"><div class="edit-box" id="editBox"></div></div>
 
-<div id="confirmModal"><div class="confirm-box"><div class="confirm-header"><h3>⚠ Confirm Submission</h3><p>Review your intel before final submission. This action cannot be undone.</p></div><div class="confirm-body" id="confirmBody"></div><div class="confirm-footer"><button class="btn-standard btn-ghost" onclick="hideConfirm()">Go Back</button><button class="btn-standard btn-green" onclick="finalSubmit()">Confirm and Submit</button></div></div></div>
+<div id="confirmModal"><div class="confirm-box"><div class="confirm-header"><h3>⚠ Confirm Transmission</h3><p>Review your intel before final submission. This action cannot be undone.</p></div><div class="confirm-body" id="confirmBody"></div><div class="confirm-footer"><button class="btn-standard btn-ghost" onclick="hideConfirm()">◂ Go Back</button><button class="btn-standard btn-green" onclick="finalSubmit()">Confirm & Transmit ◈</button></div></div></div>
 
 <!-- ADMIN CHOICE MODAL (after auth from landing) -->
 <div id="adminChoiceModal"><div class="admin-choice-box"><h3>◈ Navigation</h3><p>Where would you like to go?</p><div class="admin-choice-btns"><button class="btn-standard btn-cyan" onclick="adminGoVault()">Go to Vault</button><button class="btn-standard btn-green" onclick="adminGoConsole()">Go to Console</button></div></div></div>
@@ -2567,7 +2580,7 @@
       <h4>📍 Navigation Tutorial</h4>
       <p>Step-by-step spotlight tour shown to players on first login. Drag to reorder, toggle to enable/disable each step, edit text to customize.</p>
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-        <span style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.25);font-weight:700">TUTORIAL</span>
+        <span style="font-family:Saira,sans-serif;font-size:10px;letter-spacing:1.5px;color:#888">TUTORIAL</span>
         <div class="tut-step-toggle" id="tutGlobalToggle" onclick="toggleTutorialGlobal()"><span></span></div>
         <button class="ap-btn ap-btn-ghost" onclick="resetTutorialForAll()" style="font-size:8px;padding:5px 12px;margin-left:auto">↺ Reset for All Teams</button>
         <button class="ap-btn ap-btn-ghost" onclick="previewTutorial()" style="font-size:8px;padding:5px 12px">▶ Preview</button>
@@ -2578,7 +2591,7 @@
       <h4>🎬 Mission Briefing</h4>
       <p>Video shown to players after first login (after the tutorial if both are enabled). Plays once per team.</p>
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-        <span style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.25);font-weight:700">BRIEFING</span>
+        <span style="font-family:Saira,sans-serif;font-size:10px;letter-spacing:1.5px;color:#888">BRIEFING</span>
         <div class="tut-step-toggle" id="briefingGlobalToggle" onclick="toggleBriefingGlobal()"><span></span></div>
         <button class="ap-btn ap-btn-ghost" onclick="resetBriefingForAll()" style="font-size:8px;padding:5px 12px;margin-left:auto">↺ Reset for All Teams</button>
         <button class="ap-btn ap-btn-ghost" onclick="previewBriefing()" style="font-size:8px;padding:5px 12px">▶ Preview</button>
@@ -2654,7 +2667,7 @@
     <div class="ap-section"><h4>🎮 Event Settings <span class="save-blip" id="blipEventSettings">✓ Saved</span></h4>
       <p>Configure participant mode, countdown timer, and leaderboard display.</p>
       <div style="margin-bottom:16px">
-        <label class="ap-field-label-inline">⏱ Event Timer</label>
+        <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">⏱ Event Timer</label>
         <div style="display:flex;gap:16px;align-items:center;margin-bottom:10px">
           <select id="timerMode" onchange="onTimerModeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:11px;outline:none;width:200px">
             <option value="countdown">Manual Countdown</option>
@@ -2677,8 +2690,8 @@
             <div class="ap-field" style="flex:1;min-width:180px"><label>Event End</label><input type="datetime-local" id="eventEndInput" onchange="onEventTimeChange()" style="background:#080a10;border:1px solid var(--border);border-radius:4px;padding:8px 12px;color:var(--red);font-family:'IBM Plex Mono',monospace;font-size:11px;width:100%;outline:none;color-scheme:dark"></div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px">
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="eventAutoLock" checked onchange="eventSettings.autoLock=this.checked"><span style="font-family:'Chakra Petch',sans-serif;font-size:11px;color:rgba(255,255,255,.35)">Auto-lock when timer expires</span></label>
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="eventShowLeaderboard" checked onchange="eventSettings.showLeaderboardOnExpiry=this.checked"><span style="font-family:'Chakra Petch',sans-serif;font-size:11px;color:rgba(255,255,255,.35)">Reveal leaderboard on expiry</span></label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="eventAutoLock" checked onchange="eventSettings.autoLock=this.checked"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa">Auto-lock when timer expires</span></label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="eventShowLeaderboard" checked onchange="eventSettings.showLeaderboardOnExpiry=this.checked"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa">Reveal leaderboard on expiry</span></label>
           </div>
           <div id="eventStatusMsg" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#666;letter-spacing:1px;margin-top:8px"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05)">
@@ -2694,16 +2707,16 @@
         <div class="ap-field"><label>Leaderboard Style</label><select id="apLeaderboardStyle" onchange="updateRegSettings()" style="width:auto"><option value="mixed">Single Mixed</option><option value="split">Split by Type</option><option value="labeled">Single with Labels</option></select></div>
       </div>
       <div style="margin-bottom:12px">
-        <label class="ap-field-label-inline">⬇ Content Downloads</label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apAllowDownloads" onchange="toggleAllowDownloads(this.checked)"><span style="font-family:'Chakra Petch',sans-serif;font-size:11px;color:rgba(255,255,255,.35)">Allow players to download files from Intelligence Feed and Evidence Locker</span></label>
+        <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">⬇ Content Downloads</label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apAllowDownloads" onchange="toggleAllowDownloads(this.checked)"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa">Allow players to download files from Intelligence Feed and Evidence Locker</span></label>
       </div>
       <div style="margin-bottom:12px">
-        <label class="ap-field-label-inline">🔒 Session Persistence</label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apSessionPersist" onchange="regSettings.sessionPersist=this.checked;saveEventConfigToBackend()" checked><span style="font-family:'Chakra Petch',sans-serif;font-size:11px;color:rgba(255,255,255,.35)">Keep players logged in after browser close (uncheck to require re-login on each browser session)</span></label>
+        <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">🔒 Session Persistence</label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apSessionPersist" onchange="regSettings.sessionPersist=this.checked;saveEventConfigToBackend()" checked><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa">Keep players logged in after browser close (uncheck to require re-login on each browser session)</span></label>
       </div>
       <div style="margin-top:12px">
-        <label class="ap-field-label-inline">🟢 Activity Thresholds <span class="save-blip" id="blipThresholds">✓ Saved</span></label>
-        <p style="font-family:'Chakra Petch',sans-serif;font-size:11px;color:rgba(255,255,255,.22);margin:0 0 8px;letter-spacing:.3px">Controls when console tile status changes from Active → Idle → Silent.</p>
+        <label style="font-family:Saira,sans-serif;font-size:10px;color:#d0e8f0;letter-spacing:2px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:8px">🟢 Activity Thresholds <span class="save-blip" id="blipThresholds">✓ Saved</span></label>
+        <p style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#666;margin:0 0 8px;letter-spacing:.3px">Controls when console tile status changes from Active → Idle → Silent.</p>
         <div class="ap-two-col">
           <div class="ap-field"><label>Active → Idle (seconds)</label><input type="number" id="apThresholdIdle" value="60" min="10" max="600" onchange="updateThresholds()" style="width:90px"></div>
           <div class="ap-field"><label>Idle → Silent (seconds)</label><input type="number" id="apThresholdSilent" value="300" min="30" max="3600" onchange="updateThresholds()" style="width:90px"></div>
@@ -2723,7 +2736,7 @@
         <div class="ap-field"><label>Default Points Per Field</label><input type="number" id="seDefaultPoints" value="10" min="1" max="1000" onchange="seApplyDefaultPoints()" style="width:80px"></div>
         <div class="ap-field"><label>Default Match Mode</label><select id="seDefaultMode" onchange="seApplyDefaultMode()" style="width:auto"><option value="exact">Exact</option><option value="contains">Contains</option><option value="fuzzy">Fuzzy</option></select></div>
         <div class="ap-field"><label>Time Bonus</label>
-          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:4px"><input type="checkbox" id="seTimeBonus" onchange="updateScoringConfig()"><span style="font-family:'Chakra Petch',sans-serif;font-size:11px;color:rgba(255,255,255,.32)">Award bonus points for early submission</span></label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:4px"><input type="checkbox" id="seTimeBonus" onchange="updateScoringConfig()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999">Award bonus points for early submission</span></label>
         </div>
       </div>
       <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap" id="seTimeBonusConfig" style="display:none">
@@ -2756,9 +2769,9 @@
         <div class="ap-field"><label>Max Teams</label><input type="number" id="apMaxTeams" value="20" min="2" max="100" onchange="updateRegSettings()" style="width:80px"></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:12px">
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqEmail" checked onchange="updateRegSettings()"><span style="font-family:'Chakra Petch',sans-serif;font-size:11px;color:rgba(255,255,255,.32);letter-spacing:.5px">Require Email Address</span></label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqPhone" onchange="updateRegSettings()"><span style="font-family:'Chakra Petch',sans-serif;font-size:11px;color:rgba(255,255,255,.32);letter-spacing:.5px">Require Phone Number</span></label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqDept" onchange="updateRegSettings()"><span style="font-family:'Chakra Petch',sans-serif;font-size:11px;color:rgba(255,255,255,.32);letter-spacing:.5px">Require Department</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqEmail" checked onchange="updateRegSettings()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999;letter-spacing:.5px">Require Email Address</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqPhone" onchange="updateRegSettings()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999;letter-spacing:.5px">Require Phone Number</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="apReqDept" onchange="updateRegSettings()"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#999;letter-spacing:.5px">Require Department</span></label>
       </div>
       <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(0,255,136,.1);border-radius:4px;background:rgba(0,255,136,.02)">
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;flex:1"><input type="checkbox" id="apRegOpen" checked onchange="updateRegSettings()"><span style="font-family:Saira,sans-serif;font-size:10px;color:var(--green);letter-spacing:1px;font-weight:600">Registration Open</span></label>
@@ -2789,7 +2802,7 @@
           <div class="ap-field" style="margin-bottom:8px"><label>Fallback Icon</label>
             <div style="display:flex;align-items:center;gap:10px">
               <input id="apBannerFallback" value="🔐" onchange="updateBannerFallback()" style="width:54px;text-align:center;font-size:18px;background:#080a10;border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:6px;color:#ddd;outline:none" maxlength="4">
-              <span style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:rgba(255,255,255,.18)">Shown when no image is uploaded</span>
+              <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555">Shown when no image is uploaded</span>
             </div>
           </div>
           <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#555;letter-spacing:.5px" id="apBannerStatus">No image set</div>
@@ -2812,9 +2825,9 @@
       <p>Set the background color and overlay texture for the console screen. Affects all users in real-time.</p>
       <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:12px">
         <div style="flex:1;min-width:200px">
-          <label style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.25);text-transform:uppercase;display:block;margin-bottom:8px;font-weight:700">Background Color</label>
+          <label style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#666;text-transform:uppercase;display:block;margin-bottom:8px">Background Color</label>
           <div style="display:flex;align-items:center;gap:10px">
-            <input type="color" id="consoleBgColor" value="#080a10" oninput="updateConsoleBg()" onchange="updateConsoleBg()" style="width:48px;height:36px;border:1px solid var(--border);border-radius:4px;background:transparent;cursor:pointer;padding:2px">
+            <input type="color" id="consoleBgColor" value="#080a10" onchange="updateConsoleBg()" style="width:48px;height:36px;border:1px solid var(--border);border-radius:4px;background:transparent;cursor:pointer;padding:2px">
             <input id="consoleBgHex" value="#080a10" onchange="document.getElementById('consoleBgColor').value=this.value;updateConsoleBg()" style="width:90px;font-family:IBM Plex Mono,monospace;font-size:11px;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:6px 8px;color:#aaa;outline:none;letter-spacing:1px">
           </div>
           <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
@@ -2825,19 +2838,10 @@
             <button class="cbg-preset" onclick="setConsoleBgColor('#0d1a0d')" title="Dark Green" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#0d1a0d;cursor:pointer"></button>
             <button class="cbg-preset" onclick="setConsoleBgColor('#1a0a0a')" title="Dark Red" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1a0a0a;cursor:pointer"></button>
             <button class="cbg-preset" onclick="setConsoleBgColor('#12121a')" title="Dark Purple" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#12121a;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#2c2c34')" title="Warm Grey" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#2c2c34;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#3a3a42')" title="Mid Grey" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#3a3a42;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#1a2332')" title="Steel Blue" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1a2332;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#2a1a2e')" title="Plum" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#2a1a2e;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#1a2a2a')" title="Dark Teal" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1a2a2a;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#e8e4de')" title="Off White" style="width:28px;height:28px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#e8e4de;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#f0ece4')" title="Warm Ivory" style="width:28px;height:28px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#f0ece4;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#dde1e6')" title="Cool Grey" style="width:28px;height:28px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#dde1e6;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#ffffff')" title="White" style="width:28px;height:28px;border-radius:4px;border:1px solid rgba(0,0,0,.15);background:#ffffff;cursor:pointer"></button>
           </div>
         </div>
         <div style="flex:1;min-width:200px">
-          <label style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.25);text-transform:uppercase;display:block;margin-bottom:8px;font-weight:700">Texture Overlay</label>
+          <label style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#666;text-transform:uppercase;display:block;margin-bottom:8px">Texture Overlay</label>
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="consoleBgTextureGrid">
             <button class="cbg-tex active" data-tex="none" onclick="setConsoleTexture('none')"><span class="cbg-tex-preview" style="background:#080a10"></span><span class="cbg-tex-label">None</span></button>
             <button class="cbg-tex" data-tex="scanlines" onclick="setConsoleTexture('scanlines')"><span class="cbg-tex-preview" style="background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.03) 2px,rgba(255,255,255,.03) 4px)"></span><span class="cbg-tex-label">Scanlines</span></button>
@@ -2847,7 +2851,7 @@
             <button class="cbg-tex" data-tex="hex" onclick="setConsoleTexture('hex')"><span class="cbg-tex-preview cbg-hex-preview"></span><span class="cbg-tex-label">Hex</span></button>
           </div>
           <div style="margin-top:10px">
-            <label style="font-family:Saira,sans-serif;font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.2);text-transform:uppercase;display:block;margin-bottom:6px;font-weight:700">Texture Opacity: <span id="texOpacityVal">40%</span></label>
+            <label style="font-family:Saira,sans-serif;font-size:8px;letter-spacing:2px;color:#555;text-transform:uppercase;display:block;margin-bottom:4px">Texture Opacity: <span id="texOpacityVal">40%</span></label>
             <input type="range" id="consoleBgTexOpacity" min="10" max="100" value="40" oninput="updateTexOpacity()" style="width:100%;accent-color:var(--cyan)">
           </div>
         </div>
@@ -2872,7 +2876,7 @@
           <div class="ap-field">
             <label>Feed Captions</label>
             <div id="fc_feedCap_wrap"></div>
-            <div style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:rgba(255,255,255,.18);margin-top:4px;letter-spacing:.3px">Caption text beneath each image or clip in the Intelligence Feed grid and focus view.</div>
+            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">Caption text beneath each image or clip in the Intelligence Feed grid and focus view.</div>
           </div>
         </div>
 
@@ -2881,12 +2885,12 @@
           <div class="ap-field">
             <label>Item Titles</label>
             <div id="fc_mediaName_wrap"></div>
-            <div style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:rgba(255,255,255,.18);margin-top:4px;letter-spacing:.3px">The bold title on each evidence card in the Evidence Locker panel.</div>
+            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The bold title on each evidence card in the Evidence Locker panel.</div>
           </div>
           <div class="ap-field">
             <label>Item Descriptions</label>
             <div id="fc_mediaDesc_wrap"></div>
-            <div style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:rgba(255,255,255,.18);margin-top:4px;letter-spacing:.3px">The secondary description line beneath each evidence item title.</div>
+            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The secondary description line beneath each evidence item title.</div>
           </div>
         </div>
 
@@ -2895,7 +2899,7 @@
           <div class="ap-field">
             <label>Keypad Display</label>
             <div id="fc_vaultDisplay_wrap"></div>
-            <div style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:rgba(255,255,255,.18);margin-top:4px;letter-spacing:.3px">The large character display on The Vault keypad as teams type their code.</div>
+            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The large character display on The Vault keypad as teams type their code.</div>
           </div>
         </div>
 
@@ -2904,12 +2908,12 @@
           <div class="ap-field">
             <label>Field Labels</label>
             <div id="fc_intelLabel_wrap"></div>
-            <div style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:rgba(255,255,255,.18);margin-top:4px;letter-spacing:.3px">The question label to the left of each intel answer field.</div>
+            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The question label to the left of each intel answer field.</div>
           </div>
           <div class="ap-field">
             <label>Answer Inputs</label>
             <div id="fc_intelInput_wrap"></div>
-            <div style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:rgba(255,255,255,.18);margin-top:4px;letter-spacing:.3px">The typed text inside answer input boxes across all intel field types.</div>
+            <div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;margin-top:4px;letter-spacing:.3px">The typed text inside answer input boxes across all intel field types.</div>
           </div>
         </div>
 
@@ -2939,7 +2943,7 @@
       </div>
       <div class="lb-pagination" id="tmPagination"></div>
       <div style="display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--border);margin-top:8px">
-        <span style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:rgba(255,255,255,.18)">Per page:</span>
+        <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555">Per page:</span>
         <select id="tmPerPage" onchange="tmPerPage=parseInt(this.value);tmCurrentPage=0;renderTeamMonitor()" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:3px 6px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:9px;outline:none">
           <option value="15" selected>15</option><option value="20">20</option><option value="25">25</option><option value="50">50</option>
         </select>
@@ -3026,7 +3030,7 @@
         <button class="ap-btn ap-btn-amber" onclick="desubmitSelected()" style="font-size:9px;padding:5px 12px">↩ De-submit Selected</button>
         <button class="ap-btn ap-btn-red" onclick="desubmitAll()" style="font-size:9px;padding:5px 12px">↩ De-submit All</button>
         <div style="flex:1"></div>
-        <span style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:rgba(255,255,255,.18)">Per page:</span>
+        <span style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555">Per page:</span>
         <select id="lbPerPage" onchange="lbPerPage=parseInt(this.value);lbCurrentPage=0;renderFullLeaderboard()" style="background:#080a10;border:1px solid var(--border);border-radius:3px;padding:3px 6px;color:#aaa;font-family:IBM Plex Mono,monospace;font-size:9px;outline:none">
           <option value="15" selected>15</option><option value="20">20</option><option value="25">25</option><option value="50">50</option>
         </select>
@@ -3077,11 +3081,11 @@
           </div>
           <div style="padding:4px 16px 0;border-top:1px solid rgba(255,255,255,.04)">
             <div onclick="event.stopPropagation();toggleTeamCard();setTimeout(replayTutorial,200)" style="display:flex;align-items:center;gap:8px;padding:8px 0;cursor:pointer;opacity:.6;transition:opacity .15s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.6'">
-              <span style="font-size:12px">📖</span><span style="font-family:'Chakra Petch',sans-serif;font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.5px">Replay Tutorial</span>
+              <span style="font-size:12px">📖</span><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa;letter-spacing:.5px">Replay Tutorial</span>
             </div>
           </div>
           <div onclick="event.stopPropagation();toggleTeamCard();openChangePassword()" style="display:none;align-items:center;gap:8px;padding:8px 16px;cursor:pointer;opacity:.6;transition:opacity .15s;border-top:1px solid rgba(255,255,255,.04)" class="admin-only-card-item" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.6'">
-            <span style="font-size:12px">🔑</span><span style="font-family:'Chakra Petch',sans-serif;font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.5px">Change Password</span>
+            <span style="font-size:12px">🔑</span><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa;letter-spacing:.5px">Change Password</span>
           </div>
           <div class="team-card-logout" onclick="event.stopPropagation();showLogout()">
             <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -3096,7 +3100,7 @@
 </div>
 
 <!-- Logout button — body level for z-index independence -->
-
+<div class="logout-btn" id="logoutBtn" onclick="showLogout()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span>Logout</span></div>
 
 <div id="notepadPanel">
   <div class="notepad-header">
@@ -3117,18 +3121,12 @@
 </div>
 
 <!-- EXPANDED -->
-<div class="screen panel-screen" id="feedScreen">
-  <div class="expanded-panel visible" id="expFeed"><div class="exp-header" style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center"><div style="display:flex;align-items:center;gap:10px"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#666;letter-spacing:1.5px;font-weight:600"></span></div><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div style="display:flex;justify-content:flex-end"><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div></div><div class="exp-body" id="feedExpBody"><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter"></span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
-</div>
-<div class="screen panel-screen" id="mediaScreen">
-  <div class="expanded-panel visible" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanelScreen()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
-</div>
-<div class="screen panel-screen" id="intelScreen">
-  <div class="expanded-panel visible" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanelScreen()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area"><div class="intel-crt-header" style="text-align:center;justify-content:center"><div class="intel-crt-dot"></div> INTEL SUBMISSIONS</div><div class="intel-notice" id="intelNotice"><span class="intel-notice-icon">💾</span> Your answers save automatically as you type — feel free to edit, revise, and change them as many times as you need. Once you press <strong>Submit Intel</strong>, your answers are locked in and cannot be changed.</div><div id="intelForm"></div></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
-</div>
-<div class="screen panel-screen" id="vaultScreen">
-  <div class="expanded-panel visible" id="expVault">
-    <div class="exp-header"><span class="panel-icon">🔐</span><span class="exp-title">The Vault</span><button class="exp-close" onclick="closePanelScreen()">✕ CLOSE</button></div>
+<div id="panelOverlay">
+  <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter"></span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
+  <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
+  <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area"><div class="intel-crt-header" style="text-align:center;justify-content:center"><div class="intel-crt-dot"></div> INTEL SUBMISSIONS</div><div class="intel-notice" id="intelNotice"><span class="intel-notice-icon">💾</span> Your answers save automatically as you type — feel free to edit, revise, and change them as many times as you need. Once you press <strong>Submit Intel</strong>, your answers are locked in and cannot be changed.</div><div id="intelForm"></div></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
+  <div class="expanded-panel" id="expVault">
+    <div class="exp-header"><span class="panel-icon">🔐</span><span class="exp-title">The Vault</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div>
     <div class="exp-body">
       <div class="vault-puzzle-layout">
         <div class="vault-keypad-section">
@@ -4053,7 +4051,7 @@ function renderVaultPanel(){
     if(c.unlocked){
       let viewLink='';
       if(c.linkedMediaIdx!==null&&c.linkedMediaIdx!==undefined){
-        viewLink=`<div class="vui-media-link" onclick="event.stopPropagation();openPanel('media');setTimeout(()=>openMediaViewer(${c.linkedMediaIdx}),300)">▸ View in Evidence Locker</div>`;
+        viewLink=`<div class="vui-media-link" onclick="event.stopPropagation();closePanel();setTimeout(()=>{openPanel('media');setTimeout(()=>openMediaViewer(${c.linkedMediaIdx}),300)},350)">▸ View in Evidence Locker</div>`;
       }
       return `<div class="vault-unlock-item">
         <span class="vui-icon">🔓</span>
@@ -4267,8 +4265,8 @@ function renderFeed(){
     grid.innerHTML=isA
       ?'<div style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px;opacity:.3">📡</div><div style="font-family:Chakra Petch,sans-serif;font-size:11px;color:#444;letter-spacing:1px;margin-bottom:16px">No intelligence feed items yet</div><div class="admin-add-btn" onclick="addFeedPost()">+ Add Post</div></div>'
       :'<div style="grid-column:1/-1;text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px;opacity:.3">📡</div><div style="font-family:Chakra Petch,sans-serif;font-size:11px;color:#333;letter-spacing:1px">No intelligence available yet</div></div>';
-    const _fb=document.getElementById('feedBadge');if(_fb)_fb.textContent=tileBadgeText('feed',isA);
-    const fci=document.getElementById('feedCountIndicator');if(fci)fci.textContent='(0 posts)';
+    document.getElementById('feedBadge').textContent=tileBadgeText('feed',isA);
+    const fci=document.getElementById('feedCountIndicator');if(fci)fci.textContent='0 posts';
     return;
   }
   grid.innerHTML=posts.map((p,i)=>{
@@ -4292,8 +4290,8 @@ function renderFeed(){
     const _capFont=resolveFont('feedCap',p.capFont||'');
     return `<div class="feed-card" data-idx="${i}" onclick="openPost(${i})">${isA?`<div class="drag-handle" onpointerdown="startDrag(event,'feed',${i})" onclick="event.stopPropagation()">⋮⋮</div><div class="admin-edit-btn" onclick="event.stopPropagation();editFeedPost(${i})">✎</div>`:''}<div class="feed-card-img" style="${bgStyle}" oncontextmenu="return false">${media}</div><div class="feed-card-cap"><p style="${fontStyle(_capFont)}">${p.cap}</p></div></div>`;
   }).join('')+(isA?'<div class="admin-add-btn" onclick="addFeedPost()">+ Add Post</div>':'');
-  const _fb=document.getElementById('feedBadge');if(_fb)_fb.textContent=tileBadgeText('feed',isA);
-  const fci=document.getElementById('feedCountIndicator');if(fci)fci.textContent='('+posts.length+' posts)';
+  document.getElementById('feedBadge').textContent=tileBadgeText('feed',isA);
+  const fci=document.getElementById('feedCountIndicator');if(fci)fci.textContent=posts.length+' posts';
   // Seek video thumbnails to 1s to show a real frame instead of black
   setTimeout(()=>{grid.querySelectorAll('video.feed-card-thumb').forEach(v=>{v.currentTime=1})},100);
 }
@@ -4339,9 +4337,9 @@ function renderMedia(){
 }
 
 // ══════ PANELS ══════
-const _panelScreenMap={feed:'feedScreen',media:'mediaScreen',intel:'intelScreen',vault:'vaultScreen'};
+const overlay=document.getElementById('panelOverlay');
 let currentFeedView='grid';
-function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});const screenId=_panelScreenMap[t];if(!screenId)return;showScreen(screenId);if(window._histPush)window._histPush('panel');saveSession();if(!isAdmin&&currentVaultTeam)apiCall('heartbeat',{teamId:currentVaultTeam.id});
+function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_instantShow(overlay);if(window._histPush)window._histPush('panel');saveSession();if(!isAdmin&&currentVaultTeam)apiCall('heartbeat',{teamId:currentVaultTeam.id});
   if(t==='feed'){renderFeed();setFeedView('grid');_refreshPanelData('feed')}if(t==='media'){renderMedia();_refreshPanelData('media')}if(t==='intel'){renderIntelForm();restoreIntelDraft();_refreshPanelData('intel')}if(t==='vault'){renderVaultPanel();_refreshPanelData('vault')}}
 
 // Fresh data fetch on panel open — ensures frontend matches backend
@@ -4390,8 +4388,7 @@ function _refreshPanelData(panel){
     });
   }
 }
-function closePanelScreen(){_stopAllFeedVideos();saveGameState();showScreen('consoleScreen');saveSession();renderGrid()}
-function closePanel(){closePanelScreen()}
+function closePanel(){_stopAllFeedVideos();overlay.style.cssText='';overlay.classList.remove('active');saveGameState();setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession();renderGrid()},120)}
 
 // Feed view modes
 function feedClose(){
@@ -4399,7 +4396,7 @@ function feedClose(){
   if(currentFeedView==='single'){
     setFeedView('grid');
   }else{
-    closePanelScreen();
+    closePanel();
   }
 }
 function toggleFeedCaption(){
@@ -4474,7 +4471,7 @@ function renderSinglePost(){
 
   if(resolved&&resolved.type==='direct'){
     img.style.background='#000';img.style.backgroundSize='';img.textContent='';
-    img.innerHTML=`<video class="feed-single-video" id="feedSingleVid" src="${resolved.url}" loop playsinline preload="auto" ${muted?'muted':''} controls></video>${editBtn}`;
+    img.innerHTML=`<video class="feed-single-video" id="feedSingleVid" src="${resolved.url}" loop playsinline preload="auto" ${muted?'muted':''} controls></video><div class="feed-mute-btn" onclick="event.stopPropagation();toggleFeedMute()">${muted?'🔇':'🔊'}</div>${editBtn}`;
     setTimeout(()=>{const v=document.getElementById('feedSingleVid');if(v){v.muted=muted;v.play().catch(()=>{})}},50);
   }else if(resolved&&resolved.type==='external'){
     img.style.background='#000';img.style.backgroundSize='';img.textContent='';
@@ -4995,7 +4992,7 @@ function finalSubmit(){
     document.getElementById('confirmModal').classList.remove('active');
     document.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=true});
     const btn=document.getElementById('intelSubmitBtn');if(btn){btn.textContent='SUBMITTED';btn.disabled=true}
-    const _ib=document.getElementById('intelBadge');if(_ib)_ib.textContent='SUBMITTED';
+    document.getElementById('intelBadge').textContent='SUBMITTED';
     playSuccess();
     document.getElementById('flashG').classList.add('on');
     setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
@@ -5019,7 +5016,7 @@ function finalSubmit(){
   // Show neutral checkmarks — NO indication of right/wrong
     document.getElementById('intelSubmitBtn').disabled=true;
   const _sl=document.getElementById('intelSubmitBtn');if(_sl){_sl.textContent='SUBMITTED';_sl.disabled=true;}
-  const _ib=document.getElementById('intelBadge');if(_ib)_ib.textContent=tileBadgeText('intel',false);
+  document.getElementById('intelBadge').textContent=tileBadgeText('intel',false);
   document.getElementById('intelBadge').classList.remove('amber');
   playSuccess();
   document.getElementById('flashG').classList.add('on');
@@ -5753,7 +5750,7 @@ document.addEventListener('keydown',e=>{
     return;
   }
   // Feed focus mode — arrow keys navigate posts
-  const feedOpen=_currentScreen==='feedScreen';
+  const feedOpen=document.getElementById('expFeed')?.classList.contains('visible');
   if(feedOpen&&currentFeedView==='single'){
     if(e.key==='ArrowLeft'){e.preventDefault();navPost(-1)}
     if(e.key==='ArrowRight'){e.preventDefault();navPost(1)}
@@ -5761,7 +5758,7 @@ document.addEventListener('keydown',e=>{
     return;
   }
   // Vault keypad — type with physical keyboard
-  const vaultOpen=_currentScreen==='vaultScreen';
+  const vaultOpen=document.getElementById('expVault')?.classList.contains('visible');
   if(vaultOpen&&!e.target.closest('input,textarea,select')){
     const key=e.key;
     if(key==='Enter'){e.preventDefault();vkSubmit();return}
@@ -5771,9 +5768,9 @@ document.addEventListener('keydown',e=>{
     if(/^[a-zA-Z0-9]$/.test(key)){e.preventDefault();vkType(key.toUpperCase());return}
     if(vkSymMode&&/^[!@#$%^&*()\-_=+\[\]{};:'",.<>/?\\|`~]$/.test(key)){e.preventDefault();vkType(key);return}
   }
-  // Escape closes panel screen
-  if(['feedScreen','mediaScreen','intelScreen','vaultScreen'].includes(_currentScreen)&&e.key==='Escape'){
-    e.preventDefault();closePanelScreen();return;
+  // Escape closes expanded panel
+  if(overlay.classList.contains('active')&&e.key==='Escape'){
+    e.preventDefault();closePanel();return;
   }
   // Escape closes landing preview
   if(document.getElementById('landingPreviewOverlay').classList.contains('active')&&e.key==='Escape'){
@@ -5841,7 +5838,7 @@ function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');
 
 // ══════ SCREEN NAVIGATION ══════
 let _currentScreen='landingScreen';
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;if(id!=='settingsScreen'){_currentAdminPage=null;updateGearIcon()}if(currentVaultTeam)saveSession()}
+function showScreen(id){console.log('[SHOW-SCREEN] '+id+' from='+_currentScreen);document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',id==='consoleScreen');if(id!=='settingsScreen'){_currentAdminPage=null;updateGearIcon()}if(currentVaultTeam)saveSession()}
 function goToRegistration(){
   const mode=regSettings.participantMode||'team';
   // Update registration screen text based on mode
@@ -6293,6 +6290,11 @@ function closeAllAdminPanels(){
     const el=document.getElementById(id);
     if(el){el.classList.remove('active');el.style.cssText=''}
   });
+  // Also instant-close content panels
+  const ov=document.getElementById('panelOverlay');
+  ov.classList.remove('active');
+  ov.style.cssText='';
+  document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));
   if(bcMediaRecorder&&bcMediaRecorder.state==='recording')bcMediaRecorder.stop();
   lbExpandedTeam=null;
   hideAdminTabs();
@@ -6705,7 +6707,7 @@ function renderTeamMonitor(){
     var removeBtn=ghost?'<span class="ap-monitor-remove" onclick="event.stopPropagation();removeGhostTeam(\''+t.id+'\')" title="Remove ghost">\u2715</span>':'';
     var msgBtn='<span class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage(\''+t.id+'\',\''+t.name.replace(/'/g,"\\'")+'\')" style="margin-left:auto">\uD83D\uDCAC</span>';
     return '<div class="ap-monitor-row '+rowClass+'"><input type="checkbox" class="tm-nuke-check" data-team="'+t.id+'" onchange="tmUpdateNukeBar()" onclick="event.stopPropagation()" style="margin-right:4px;accent-color:#ff4444"><div class="ap-monitor-dot '+dotClass+'"></div><span class="ap-monitor-id">'+t.id+'</span><span class="ap-monitor-name">'+t.name+'</span>'+statusTag+msgBtn+removeBtn+'</div>';
-  }).join(''):'<div style="font-family:Chakra Petch,sans-serif;font-size:10px;color:rgba(255,255,255,.18);padding:12px 0;text-align:center">No teams registered yet</div>';
+  }).join(''):'<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:12px 0;text-align:center">No teams registered yet</div>';
   renderPagination('tmPagination',sorted.length,tmPerPage,tmCurrentPage,function(p){tmCurrentPage=p;renderTeamMonitor()});
   tmUpdateNukeBar();
 }
@@ -7076,13 +7078,13 @@ function renderKeysCodes(){
       </div>`;
     });
   }else{
-    html+=`<div style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:rgba(255,255,255,.18);padding:4px 0">No vault-locked items. Edit an Evidence Locker item and enable the Vault-Locked toggle to add one.</div>`;
+    html+=`<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:4px 0">No vault-locked items. Edit an Evidence Locker item and enable the Vault-Locked toggle to add one.</div>`;
   }
   // Vault attempt settings
   html+=`<div style="margin-top:12px;padding:10px 14px;border:1px solid var(--border);border-radius:4px;background:rgba(255,255,255,.01)">
     <div style="font-family:Saira,sans-serif;font-size:9px;color:#888;letter-spacing:2px;font-weight:600;text-transform:uppercase;margin-bottom:8px">Vault Security Settings</div>
     <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="kcVaultUnlimited" ${regSettings.vaultUnlimitedAttempts?'checked':''} onchange="regSettings.vaultUnlimitedAttempts=this.checked"><span style="font-family:'Chakra Petch',sans-serif;font-size:11px;color:rgba(255,255,255,.35)">Unlimited attempts</span></label>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="kcVaultUnlimited" ${regSettings.vaultUnlimitedAttempts?'checked':''} onchange="regSettings.vaultUnlimitedAttempts=this.checked"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#aaa">Unlimited attempts</span></label>
       <div style="display:flex;align-items:center;gap:6px"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#888">Max tries:</span><input type="number" id="kcVaultMaxAttempts" value="${regSettings.vaultMaxAttempts}" min="1" max="50" style="width:50px;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:4px 8px;color:var(--green);font-family:IBM Plex Mono,monospace;font-size:11px;text-align:center;outline:none" onchange="regSettings.vaultMaxAttempts=parseInt(this.value)||5"></div>
       <div style="display:flex;align-items:center;gap:6px"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#888">Cooldown:</span><input type="number" id="kcVaultCooldown" value="${regSettings.vaultCooldownSec}" min="5" max="600" style="width:60px;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:4px 8px;color:var(--green);font-family:IBM Plex Mono,monospace;font-size:11px;text-align:center;outline:none" onchange="regSettings.vaultCooldownSec=parseInt(this.value)||30"><span style="font-family:Chakra Petch,sans-serif;font-size:10px;color:#555">sec</span></div>
     </div>
@@ -7104,7 +7106,7 @@ function renderKeysCodes(){
       </div>`;
     });
   }else{
-    html+=`<div style="font-family:'Chakra Petch',sans-serif;font-size:10px;color:rgba(255,255,255,.18);padding:8px 0">No locked files configured</div>`;
+    html+=`<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:8px 0">No locked files configured</div>`;
   }
   html+=`</div>`;
 
@@ -8177,7 +8179,7 @@ function previewLandingPage(){
   // Add preview mode class to hide admin controls
   document.body.classList.add('landing-preview-mode');
   // Hide logout btn during preview
-  
+  const lb=document.getElementById('logoutBtn');if(lb)lb.classList.remove('visible');
 }
 function closeLandingPreview(){
   document.getElementById('landingPreviewOverlay').classList.remove('active');
@@ -9297,11 +9299,10 @@ updateLandingForMode();
 function _sessionStore(){return regSettings.sessionPersist?localStorage:sessionStorage}
 function saveSession(){
   try{
-    // Only save when user is authenticated on a game screen
-    const _savableScreens=['consoleScreen','settingsScreen','feedScreen','mediaScreen','intelScreen','vaultScreen'];
-    if(!_savableScreens.includes(_currentScreen))return;
+    // Only save when user is authenticated on the console screen
+    if(_currentScreen!=='consoleScreen'&&_currentScreen!=='settingsScreen')return;
     if(!currentVaultTeam)return;
-    const data={type:isAdmin?'admin':'team',team:currentVaultTeam,savedAt:Date.now(),screen:_currentScreen};
+    const data={type:isAdmin?'admin':'team',team:currentVaultTeam,savedAt:Date.now()};
     if(isAdmin){
       data.adminSession=adminSession;
       // Save which admin page is open
@@ -9310,12 +9311,16 @@ function saveSession(){
       var activeTab=document.querySelector('#settingsScreen .admin-page-section.active');
       if(activeTab)data.adminTab=activeTab.id;
     }
+    // Save which player panel is open so refresh restores exactly where the user was
+    const openPanelEl=document.querySelector('.expanded-panel.visible');
+    if(openPanelEl)data.panel=openPanelEl.id;
     // Save feed view state so focus mode + post index survive refresh
     data.feedView=currentFeedView;
     data.feedPost=currentPost;
-    // Write to both storages
+    // Write to both storages — localStorage for persist mode, sessionStorage for session mode
+    // This ensures switching modes doesn't leave orphan sessions
     const json=JSON.stringify(data);
-    console.log('[SAVE] screen='+data.screen+' adminPage='+data.adminPage+' adminTab='+data.adminTab);
+    console.log('[SAVE] screen='+_currentScreen+' adminPage='+data.adminPage+' adminTab='+data.adminTab);
     localStorage.setItem('cb_session',json);
     sessionStorage.setItem('cb_session',json);
   }catch(e){}
@@ -9454,8 +9459,8 @@ function clearGameState(){
 }
 
 // Auto-save game state periodically and on visibility change
-setInterval(()=>{if(currentVaultTeam&&['consoleScreen','settingsScreen','feedScreen','mediaScreen','intelScreen','vaultScreen'].includes(_currentScreen)){saveGameState();saveSession()}},5000);
-function _saveAll(){if(currentVaultTeam&&['consoleScreen','settingsScreen','feedScreen','mediaScreen','intelScreen','vaultScreen'].includes(_currentScreen)){saveGameState();saveSession()}}
+setInterval(()=>{if(currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){saveGameState();saveSession()}},5000);
+function _saveAll(){if(currentVaultTeam&&(_currentScreen==='consoleScreen'||_currentScreen==='settingsScreen')){saveGameState();saveSession()}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')_saveAll()});
 window.addEventListener('beforeunload',_saveAll);
 window.addEventListener('pagehide',_saveAll);
@@ -9472,10 +9477,6 @@ function clearSession(){
     _sessionStartTime=null;
   }catch(e){}
 }
-
-let _panelsMounted=false;
-let _gearReturnScreen='consoleScreen';
-let _currentAdminPage=null;
 
 function restoreSession(){
   try{
@@ -9502,48 +9503,52 @@ function restoreSession(){
       }
     }
 
-    // Restore the exact screen the user was on
-    // Migrate old sessions: if data.screen missing but data.panel exists, convert it
-    let targetScreen=data.screen||'consoleScreen';
-    console.log('[RESTORE] raw screen='+data.screen+' adminPage='+data.adminPage+' adminTab='+data.adminTab);
-    // Also log what's actually in storage right now
-    console.log('[RESTORE] localStorage=', localStorage.getItem('cb_session')?.substring(0,200));
-    console.log('[RESTORE] sessionStorage=', sessionStorage.getItem('cb_session')?.substring(0,200));
-    if(!data.screen&&data.panel){
-      const _oldPanelToScreen={expFeed:'feedScreen',expMedia:'mediaScreen',expIntel:'intelScreen',expVault:'vaultScreen'};
-      targetScreen=_oldPanelToScreen[data.panel]||'consoleScreen';
-    }
-    // Validate the screen ID exists
-    if(!document.getElementById(targetScreen))targetScreen='consoleScreen';
-    // Map screen IDs to panel tile names for content rendering
-    const _screenToPanelType={feedScreen:'feed',mediaScreen:'media',intelScreen:'intel',vaultScreen:'vault'};
+    const targetScreen='consoleScreen';
+    const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
 
     // Restore cached content (posts/media/intel) from localStorage BEFORE rendering
     // This makes images appear instantly instead of waiting 3-5s for backend API
     _restoreContentCache();
 
+    // Detect mobile for conditional panel restore
+    const _isMobileRestore=window.innerWidth<=768;
+
     function applyScreenAndPanel(){
-      // Activate the saved screen directly
+      // Set up screen first (hidden — opacity:0 via .screen default)
       document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
       document.getElementById(targetScreen).classList.add('active');
       _currentScreen=targetScreen;
+      const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',true);
       document.getElementById('notepadTrigger').classList.add('visible');
 
-      // If restoring to a panel screen, render its content immediately
-      const panelType=_screenToPanelType[targetScreen];
-      if(panelType){
-        if(panelType==='feed'){
-          renderFeed();
-          if(data.feedView==='single'&&typeof data.feedPost==='number'){
-            currentPost=data.feedPost;
-            setFeedView('single');
-          }else{
-            setFeedView('grid');
+      // Open panel SYNCHRONOUSLY before any paint if one was saved
+      // On mobile: skip panel restore — land on console grid so user has context
+      // On desktop: restore exactly where they were (prevents flash)
+      if(data.panel&&panelMap[data.panel]&&!_isMobileRestore){
+        const panelEl=document.getElementById(data.panel);
+        if(panelEl){
+          document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));
+          panelEl.classList.add('visible');
+          // Show overlay immediately, no transition
+          overlay.style.cssText='opacity:1;pointer-events:all;transition:none';
+          overlay.classList.add('active');
+          // Render panel content immediately with whatever is in memory
+          // Backend refresh will update it in the background
+          const t=panelMap[data.panel];
+          if(t==='feed'){
+            renderFeed();
+            // Restore exact feed view state — grid or focus mode + post index
+            if(data.feedView==='single'&&typeof data.feedPost==='number'){
+              currentPost=data.feedPost;
+              setFeedView('single');
+            }else{
+              setFeedView('grid');
+            }
           }
+          if(t==='media')renderMedia();
+          if(t==='intel'){renderIntelForm();restoreIntelDraft()}
+          if(t==='vault')renderVaultPanel();
         }
-        if(panelType==='media')renderMedia();
-        if(panelType==='intel'){renderIntelForm();restoreIntelDraft()}
-        if(panelType==='vault')renderVaultPanel();
       }
     }
 
@@ -9555,6 +9560,7 @@ function restoreSession(){
       updateConsoleForTeam(currentVaultTeam);
       syncAdminDropdownToggles();
       restoreGameState();
+      applyScreenAndPanel();
       // Apply cached theme + operation name BEFORE first renderGrid
       try{
         const ct=localStorage.getItem('cb_gridTheme');
@@ -9564,35 +9570,14 @@ function restoreSession(){
         const cf=localStorage.getItem('cb_opFont');
         if(cf){operationFont=cf;applyOperationFont(cf)}
       }catch(e){}
-
-      if(data.adminPage||targetScreen==='settingsScreen'){
-        // Settings is a full screen — restore it directly
-        // Use setTimeout(0) to defer until after all let/const declarations are processed
-        var _restoreTab=data.adminTab||null;
-        setTimeout(function(){
-          _currentAdminPage='settingsScreen';
-          _gearReturnScreen='consoleScreen';
-          document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-          document.getElementById('settingsScreen').classList.add('active');
-          _currentScreen='settingsScreen';
-          document.getElementById('notepadTrigger').classList.add('visible');
-          mountAdminPanels();
-          initSettingsPage();
-          if(_restoreTab){
-            _switchToTab('settingsScreen',_restoreTab);
-          }else{
-            var as=document.querySelector('#settingsScreen .admin-page-section.active');
-            if(as)_switchToTab('settingsScreen',as.id);
-          }
-          updateGearIcon();
-          updatePreviewIcon();
-          renderGrid();
-          saveSession();
-        },0);
+      renderGrid(); // Render grid with cached data + theme immediately
+      // Restore admin panel IMMEDIATELY — before data loads — to prevent console flash
+      if(data.adminPage){
+        _gearReturnScreen='consoleScreen';
+        console.log('[RESTORE-SETTINGS] calling navigateToAdmin, adminPage='+data.adminPage+' adminTab='+data.adminTab);
+        navigateToAdmin('settingsScreen',data.adminTab||null);
       }else{
-        // Admin was on console or a panel screen — restore directly
-        applyScreenAndPanel();
-        renderGrid();
+        console.log('[RESTORE] no adminPage, staying on console');
       }
       startElapsedTimer();
       startTeamMonitor();
@@ -9626,10 +9611,11 @@ function restoreSession(){
         // Re-sync vault codes after fresh data arrives, then re-apply unlock state
         syncVaultCodesFromMedia();
         restoreGameState();
-        // Re-render active panel screen with fresh backend data
-        const _panelType2=_screenToPanelType[targetScreen];
-        if(_panelType2){
-          if(_panelType2==='feed'){
+        // Re-render panel with fresh backend data once it arrives
+        // On mobile: skip — user is on console grid
+        if(data.panel&&panelMap[data.panel]&&!_isMobileRestore){
+          const t=panelMap[data.panel];
+          if(t==='feed'){
             renderFeed();
             if(data.feedView==='single'&&typeof data.feedPost==='number'){
               currentPost=data.feedPost;
@@ -9638,9 +9624,9 @@ function restoreSession(){
               setFeedView(currentFeedView);
             }
           }
-          if(_panelType2==='media')renderMedia();
-          if(_panelType2==='intel'){renderIntelForm();restoreIntelDraft()}
-          if(_panelType2==='vault')renderVaultPanel();
+          if(t==='media')renderMedia();
+          if(t==='intel'){renderIntelForm();restoreIntelDraft()}
+          if(t==='vault')renderVaultPanel();
         }
         // Also update grid badges after vault state is restored
         renderGrid();
@@ -9696,11 +9682,10 @@ if(!restoreSession()){
       setFeedView('grid');return;
     }
 
-    // 3. On a panel screen? Go back to console.
-    const _panelScreenIds=['feedScreen','mediaScreen','intelScreen','vaultScreen'];
-    const curScreen=document.querySelector('.screen.active')?.id||'';
-    if(_panelScreenIds.includes(curScreen)){
-      closePanelScreen();return;
+    // 3. Any expanded panel open?
+    const openExpPanel=document.querySelector('.expanded-panel.visible');
+    if(openExpPanel){
+      closePanel();return;
     }
 
     // 4. Any admin panel open?
@@ -9724,6 +9709,7 @@ if(!restoreSession()){
     }
 
     // 5. On console screen — go back to landing
+    const curScreen=document.querySelector('.screen.active')?.id||'';
     if(curScreen==='consoleScreen'&&!isAdmin){
       // Don't actually log out — just show landing. User can log back in easily.
       showScreen('landingScreen');return;
@@ -10400,6 +10386,9 @@ function confirmVaultLock(){
 
 
 // ══════ PAGE-BASED ADMIN NAVIGATION ══════
+let _gearReturnScreen='consoleScreen';
+let _gearReturnPanel=null;
+let _currentAdminPage=null; // 'settingsScreen' when on admin page, null otherwise
 
 function handleGearClick(){
   const dd=document.getElementById('gearDropdown');
@@ -10435,6 +10424,9 @@ function navigateToAdmin(screenId,tabId){
   // Remember where we came from (only if coming from non-admin screen)
   if(!_currentAdminPage){
     _gearReturnScreen=_currentScreen;
+    // Remember open panel
+    const openPanelEl=document.querySelector('.expanded-panel.visible');
+    _gearReturnPanel=openPanelEl?openPanelEl.id:null;
   }
   _currentAdminPage='settingsScreen';
   // Move panels into page sections if not already done
@@ -10468,17 +10460,15 @@ function _switchToTab(screenId,tabId){
 }
 
 function returnFromAdminPage(){
+  // Unmount panels back to body so overlays still work for backward compat
   _currentAdminPage=null;
   showScreen(_gearReturnScreen);
-  // If returning to a panel screen, re-render its content
-  const _rPanelType={feedScreen:'feed',mediaScreen:'media',intelScreen:'intel',vaultScreen:'vault'}[_gearReturnScreen];
-  if(_rPanelType){
-    if(_rPanelType==='feed'){renderFeed();setFeedView(currentFeedView)}
-    if(_rPanelType==='media')renderMedia();
-    if(_rPanelType==='intel'){renderIntelForm();restoreIntelDraft()}
-    if(_rPanelType==='vault')renderVaultPanel();
-  }else{
-    renderGrid();
+  // Restore open panel if any
+  if(_gearReturnPanel){
+    const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
+    const tileId=panelMap[_gearReturnPanel];
+    if(tileId)setTimeout(function(){openPanel(tileId)},100);
+    _gearReturnPanel=null;
   }
   updateGearIcon();
   updatePreviewIcon();
@@ -10501,6 +10491,7 @@ function updatePreviewIcon(){
   }
 }
 
+let _panelsMounted=false;
 function mountAdminPanels(){
   if(_panelsMounted)return;
   _panelsMounted=true;
