@@ -9835,13 +9835,14 @@ function saveSession(){
     if(openPanelEl)data.panel=openPanelEl.id;
     // Save feed view state so focus mode + post index survive refresh
     data.feedView=currentFeedView;
-    data.feedPost=currentPost;
-    // Write to both storages — localStorage for persist mode, sessionStorage for session mode
-    // This ensures switching modes doesn't leave orphan sessions
-    const json=JSON.stringify(data);
-    localStorage.setItem('cb_session',json);
-    sessionStorage.setItem('cb_session',json);
-  }catch(e){}
+    data.feedPost=currentPost;// Persist session in the active storage mode only.
+// This prevents "stale admin token" loops caused by old sessions lingering in localStorage.
+const json=JSON.stringify(data);
+const store=_sessionStore(); // localStorage if persist mode, else sessionStorage
+store.setItem('cb_session',json);
+// Clear the other store to avoid resurrecting an expired session later
+(store===localStorage?sessionStorage:localStorage).removeItem('cb_session');
+}catch(e){}
 }
 
 // ── Game State Persistence ──
@@ -10020,6 +10021,14 @@ function restoreSession(){
         return false;
       }
     }
+
+// For admin sessions restored from localStorage:
+// Do NOT restore — admin tokens are typically short-lived. Restoring from a previous browser session
+// can cause an immediate "Admin session expired" loop.
+if(fromLocalStorage&&data.type==='admin'){
+  localStorage.removeItem('cb_session');
+  return false;
+}
 
     const targetScreen='consoleScreen';
     const panelMap={expFeed:'feed',expMedia:'media',expIntel:'intel',expVault:'vault'};
