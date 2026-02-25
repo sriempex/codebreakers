@@ -451,6 +451,7 @@
   .console-title{font-family:'Staatliches',cursive;font-size:17px;letter-spacing:2px;color:#b0e8cc;text-transform:uppercase}
   .timer-block{text-align:center;position:absolute;left:50%;transform:translateX(-50%)}
   .timer-digits{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:22px;color:#ff6655;letter-spacing:4px}
+  .timer-digits.is-infinity{font-size:30px;letter-spacing:2px}
   .timer-digits.paused{color:var(--amber);animation:ledPulse 1s infinite}
   .timer-label{font-family:'Saira',sans-serif;font-size:9px;color:#888;letter-spacing:3px;font-weight:600;text-transform:uppercase;margin-top:3px}
   .topbar-identity{position:relative;cursor:pointer;display:flex;align-items:center}
@@ -468,7 +469,7 @@
   body.event-locked .v-key{pointer-events:none;opacity:.4}
   body.event-locked .intel-submit-btn{pointer-events:none;opacity:.4}
   body.player-preview .team-card-notifs{display:block!important}
-  .console-team{font-family:'Saira',sans-serif;font-size:13px;color:var(--cyan);letter-spacing:2.5px;font-weight:600;transition:color .2s;padding:6px 14px;border:1px solid rgba(0,212,255,.25);border-radius:3px;background:rgba(0,212,255,.04)}
+  .console-team{font-family:'Saira',sans-serif;font-size:13px;color:var(--cyan);letter-spacing:2.5px;font-weight:600;transition:color .2s;padding:6px 14px;border:1px solid rgba(0,212,255,.25);border-radius:3px;background:rgba(0,212,255,.04);display:inline-flex;align-items:center;line-height:1}
   .console-team:hover{color:#b0e8cc;border-color:rgba(0,212,255,.3)}
   .team-chevron{font-size:18px;color:#555;margin-left:6px;transition:color .2s;line-height:1}
   .topbar-identity:hover .team-chevron{color:#999}
@@ -3192,7 +3193,7 @@
       <span id="buildStamp" style="display:none;font-family:'IBM Plex Mono',monospace;font-size:8px;color:#333;letter-spacing:1px"></span>
     </div>
     <div style="display:flex;align-items:center">
-      <div class="timer-block"><div class="timer-digits" id="cTimer">01:28:45</div><div class="timer-label">Time Remaining</div></div>
+      <div class="timer-block"><div class="timer-digits" id="cTimer">∞</div><div class="timer-label">Time Remaining</div></div>
     </div>
     <div class="topbar-identity" onclick="toggleTeamCard(event)">
       <span class="console-team">—</span>
@@ -8481,7 +8482,7 @@ function onTimerModeChange(){
     if(_globalTimerInterval){clearInterval(_globalTimerInterval);_globalTimerInterval=null}
     timerPaused=true;
     var el=document.getElementById('cTimer');
-    if(el)el.textContent='∞';
+    if(el){el.textContent='∞';el.classList.add('is-infinity');}
     renderTimerLabel('No Timer');
     var ap=document.getElementById('apTimerDisplay');
     if(ap)ap.textContent='∞';
@@ -8510,7 +8511,7 @@ function startGlobalEventTimer(){
     var tb=document.querySelector('.timer-block');
     if(tb)tb.style.display='';
     var el=document.getElementById('cTimer');
-    if(el)el.textContent='∞';
+    if(el){el.textContent='∞';el.classList.add('is-infinity');}
     renderTimerLabel('No Timer');
     return;
   }
@@ -8882,8 +8883,10 @@ function renderTimer(){
   if(!el)return;
   if(timerMode==='none'){
     el.textContent='∞';
+    el.classList.add('is-infinity');
     return;
   }
+  el.classList.remove('is-infinity');
   const h=Math.floor(timerSec/3600),m=Math.floor((timerSec%3600)/60),s=timerSec%60;
   el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 }
@@ -9006,7 +9009,12 @@ function nukeAllTeams(){
   if(answer!=='YES'){alert('Cancelled.');return}
   var msg=document.getElementById('nukeMgmtMsg');
   msg.className='ap-msg';msg.textContent='Nuking all teams...';
-  apiCall('nukeTeams',{mode:'all'}).then(function(r){
+  Promise.all([
+    apiCall('clearAllData',{scope:'teams'}),
+    apiCall('clearAllData',{scope:'submissions'})
+  ]).then(function(results){
+    var r=results[0]||{ok:false};
+
     if(r.ok){
       msg.className='ap-msg ok';msg.textContent='☢ '+r.message;
       registeredTeams.length=0;manualTeams.length=0;
