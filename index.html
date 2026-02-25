@@ -5841,7 +5841,7 @@ function exitAdmin(){isAdmin=false;document.body.classList.remove('admin-mode');
 
 // ══════ SCREEN NAVIGATION ══════
 let _currentScreen='landingScreen';
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;if(id!=='settingsScreen'){_currentAdminPage=null;updateGearIcon()}if(currentVaultTeam)saveSession()}
+function showScreen(id){console.log('[SCREEN] showScreen('+id+') from='+_currentScreen,new Error().stack.split('\n')[2]?.trim());document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;if(id!=='settingsScreen'){_currentAdminPage=null;updateGearIcon()}if(currentVaultTeam)saveSession()}
 function goToRegistration(){
   const mode=regSettings.participantMode||'team';
   // Update registration screen text based on mode
