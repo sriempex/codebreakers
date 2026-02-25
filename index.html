@@ -4451,7 +4451,7 @@ function renderFeed(){
     }
     const bgStyle=!p.mediaUrl?`background:${p.bg};`:'';
     const _capFont=resolveFont('feedCap',p.capFont||'');
-    return `<div class="feed-card" data-idx="${i}" onclick="openPost(${i})">${isA?`<div class="drag-handle" onpointerdown="startDrag(event,'feed',${i})" onclick="event.stopPropagation()">⋮⋮</div><div class="admin-edit-btn" onclick="event.stopPropagation();editFeedPost(${i})">✎</div>`:''}<div class="feed-card-img" style="${bgStyle}" oncontextmenu="return false">${media}</div><div class="feed-card-cap"><p style="${fontStyle(_capFont)}">${p.cap}</p></div></div>`;
+    return `<div class="feed-card" data-idx="${i}">${isA?`<div class="drag-handle" onpointerdown="startDrag(event,'feed',${i})" onclick="event.stopPropagation()">⋮⋮</div><div class="admin-edit-btn" onclick="event.stopPropagation();editFeedPost(${i})">✎</div>`:''}<div class="feed-card-img" style="${bgStyle}" oncontextmenu="return false">${media}</div><div class="feed-card-cap"><p style="${fontStyle(_capFont)}">${p.cap}</p></div></div>`;
   }).join('')+(isA?'<div class="admin-add-btn" onclick="addFeedPost()">+ Add Post</div>':'');
   document.getElementById('feedBadge').textContent=tileBadgeText('feed',isA);
   const fci=document.getElementById('feedCountIndicator');if(fci)fci.textContent=posts.length+(posts.length===1?' POST':' POSTS');
@@ -4508,9 +4508,17 @@ function _installInteractionDelegates(){
   if(fg && !fg.__ddBound){
     fg.__ddBound=true;
     let down=null;
+    let _lastOpen=0;
+    function _openPostOnce(idx){
+      const now=Date.now();
+      if(now-_lastOpen<300) return; // debounce double-fires
+      _lastOpen=now;
+      try{openPost(parseInt(idx,10));}catch(err){}
+    }
     fg.addEventListener('pointerdown',e=>{
       const card=e.target.closest('.feed-card');
       if(!card) return;
+      if(e.target.closest('.drag-handle')||e.target.closest('.admin-edit-btn')) return;
       if(e.button!==undefined && e.button!==0) return;
       down={x:e.clientX,y:e.clientY,idx:card.dataset.idx,pt:e.pointerType||'mouse',t:Date.now()};
     },{passive:true});
@@ -4519,15 +4527,16 @@ function _installInteractionDelegates(){
       const card=e.target.closest('.feed-card');
       if(!card || card.dataset.idx!==down.idx){ down=null; return; }
       const dx=Math.abs(e.clientX-down.x), dy=Math.abs(e.clientY-down.y);
-      if(dx<=10 && dy<=10 && down.pt==='touch'){
-        try{openPost(parseInt(down.idx,10));}catch(err){}
+      if(dx<=10 && dy<=10){
+        _openPostOnce(down.idx);
       }
       down=null;
     },{passive:true});
     fg.addEventListener('click',e=>{
+      if(e.target.closest('.drag-handle')||e.target.closest('.admin-edit-btn')) return;
       const card=e.target.closest('.feed-card');
       if(!card) return;
-      try{openPost(parseInt(card.dataset.idx,10));}catch(err){}
+      _openPostOnce(card.dataset.idx);
     });
   }
 
@@ -4535,6 +4544,13 @@ function _installInteractionDelegates(){
   if(ml && !ml.__ddBound){
     ml.__ddBound=true;
     let down=null;
+    let _lastOpen=0;
+    function _openMediaOnce(idx){
+      const now=Date.now();
+      if(now-_lastOpen<300) return;
+      _lastOpen=now;
+      try{openMediaViewer(parseInt(idx,10));}catch(err){}
+    }
     ml.addEventListener('pointerdown',e=>{
       const item=e.target.closest('.media-exp-item');
       if(!item) return;
@@ -4546,15 +4562,15 @@ function _installInteractionDelegates(){
       const item=e.target.closest('.media-exp-item');
       if(!item || item.dataset.idx!==down.idx){ down=null; return; }
       const dx=Math.abs(e.clientX-down.x), dy=Math.abs(e.clientY-down.y);
-      if(dx<=10 && dy<=10 && down.pt==='touch'){
-        try{openMediaViewer(parseInt(down.idx,10));}catch(err){}
+      if(dx<=10 && dy<=10){
+        _openMediaOnce(down.idx);
       }
       down=null;
     },{passive:true});
     ml.addEventListener('click',e=>{
       const item=e.target.closest('.media-exp-item');
       if(!item) return;
-      try{openMediaViewer(parseInt(item.dataset.idx,10));}catch(err){}
+      _openMediaOnce(item.dataset.idx);
     });
   }
 }
@@ -5316,7 +5332,7 @@ function _resetZoomCursor(){
     document.querySelectorAll('.feed-single-img.zoomed').forEach(el=>{el.classList.remove('zoomed'); el.classList.remove('dragging');});
     // Remove any inline cursor styles that may have been applied
     document.querySelectorAll('[style*="cursor"]').forEach(el=>{
-      if(el && el.style && el.style.cursor && (el.style.cursor.includes('zoom')||el.style.cursor==='grab'||el.style.cursor==='grabbing')) el.style.cursor='';
+      if(el && el.style && el.style.cursor && (el.style.cursor.includes('zoom')||el.style.cursor==='grab'||el.style.cursor==='grabbing'||el.style.cursor==='pointer')) el.style.cursor='';
     });
     // Next tick: fully release cursor to stylesheet defaults
     setTimeout(()=>{try{document.body.style.cursor='';}catch(e){}},0);
@@ -5331,13 +5347,11 @@ function _forceCursorKill(){
     // Clear any inline cursor too
     if(de)de.style.cursor='auto';
     if(b)b.style.cursor='auto';
-    // Remove shortly after next paint(s)
-    requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>{
-        try{ if(de){de.classList.remove('cursor-kill');de.style.cursor='';} }catch(e){}
-        try{ if(b){b.classList.remove('cursor-kill');b.style.cursor='';} }catch(e){}
-      });
-    });
+    // Remove after a generous delay to ensure browser flushes cursor cache
+    setTimeout(()=>{
+      try{ if(de){de.classList.remove('cursor-kill');de.style.cursor='';} }catch(e){}
+      try{ if(b){b.classList.remove('cursor-kill');b.style.cursor='';} }catch(e){}
+    },80);
   }catch(e){}
 }
 
@@ -5349,6 +5363,9 @@ function closeMediaViewer(){
   // Stop any video
   const vid=document.querySelector('.mv-video');
   if(vid)vid.pause();
+  // Clear body content so cursor:pointer elements don't leak into DOM after close
+  const mvBody=document.getElementById('mvBody');
+  if(mvBody)mvBody.innerHTML='';
   _resetZoomCursor();
   _forceCursorKill();
 }
