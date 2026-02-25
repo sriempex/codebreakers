@@ -9532,9 +9532,6 @@ function restoreSession(){
       updateConsoleForTeam(currentVaultTeam);
       syncAdminDropdownToggles();
       restoreGameState();
-      // If admin was on settings, show console as base — navigateToAdmin will handle settings
-      if(data.adminPage&&targetScreen==='settingsScreen')targetScreen='consoleScreen';
-      applyScreenAndPanel();
       // Apply cached theme + operation name BEFORE first renderGrid
       try{
         const ct=localStorage.getItem('cb_gridTheme');
@@ -9544,14 +9541,22 @@ function restoreSession(){
         const cf=localStorage.getItem('cb_opFont');
         if(cf){operationFont=cf;applyOperationFont(cf)}
       }catch(e){}
-      renderGrid(); // Render grid with cached data + theme immediately
-      // Restore admin panel IMMEDIATELY — before data loads — to prevent console flash
+
       if(data.adminPage){
-        // Admin was on settings page — remember where to return to
-        // If admin had a panel open before going to settings, data.screen would be that panel
-        // Otherwise default to consoleScreen
-        _gearReturnScreen=(targetScreen==='settingsScreen')?'consoleScreen':targetScreen;
+        // Admin was on settings page — go directly to settings via navigateToAdmin
+        // First show console as invisible base, then navigateToAdmin takes over
+        document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+        document.getElementById('consoleScreen').classList.add('active');
+        _currentScreen='consoleScreen';
+        document.getElementById('notepadTrigger').classList.add('visible');
+        renderGrid();
+        // Set return screen — if admin came from a panel screen, remember it
+        _gearReturnScreen='consoleScreen';
         navigateToAdmin('settingsScreen',data.adminTab||null);
+      }else{
+        // Admin was on console or a panel screen — restore directly
+        applyScreenAndPanel();
+        renderGrid();
       }
       startElapsedTimer();
       startTeamMonitor();
