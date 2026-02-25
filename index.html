@@ -590,7 +590,7 @@
   /* Admin edit btn repositioned for monitor */
   .crt-monitor .admin-edit-btn{top:4px;right:4px;z-index:10}
   /* Force edit buttons visible above ALL theme effects in admin mode */
-  body.admin-mode:not(.player-preview) .crt-monitor{clip-path:none!important;overflow:visible!important}
+  body.admin-mode:not(.player-preview) .crt-monitor{clip-path:none!important;overflow:hidden!important}
   body.admin-mode:not(.player-preview) .crt-monitor .admin-edit-btn{z-index:20}
 
   /* ══════ CONSOLE GRID THEMES ══════ */
@@ -9308,7 +9308,7 @@ function saveSession(){
     if(isAdmin){
       data.adminSession=adminSession;
       // Save which admin page is open
-      if(_currentAdminPage)data.adminPage='settingsScreen';
+      if(_currentAdminPage||_currentScreen==='settingsScreen')data.adminPage='settingsScreen';
       // Save active tab within settings page
       var activeTab=document.querySelector('#settingsScreen .admin-page-section.active');
       if(activeTab)data.adminTab=activeTab.id;
