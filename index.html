@@ -1768,6 +1768,11 @@
   .mv-pdf-frame{width:100%;height:100%;border:none;border-radius:4px;background:#111}
   .mv-image-viewer{max-width:100%;max-height:100%;object-fit:contain;border-radius:4px;cursor:zoom-in;transition:transform .3s;-webkit-user-drag:none;-webkit-user-select:none;user-select:none}
   .mv-image-viewer.zoomed{cursor:zoom-out;transform:scale(1.8)}
+
+  /* HARD CURSOR RESET (prevents zoom/grab cursor leaking after closing media viewer) */
+  html.cursor-resetting,body.cursor-resetting{cursor:auto!important}
+  html.cursor-resetting *,body.cursor-resetting *{cursor:auto!important}
+
   .mv-body video,.mv-body img{-webkit-user-select:none;user-select:none}
 
   /* Audio player */
@@ -5240,6 +5245,26 @@ function _resetZoomCursor(){
   }catch(e){}
 }
 
+function _forceCursorReset(){
+  try{
+    // Force cursor to a safe default for a moment, then release back to CSS.
+    document.documentElement.classList.add('cursor-resetting');
+    document.body.classList.add('cursor-resetting');
+    try{document.documentElement.style.cursor='default'}catch(e){}
+    try{document.body.style.cursor='default'}catch(e){}
+    // Next tick: release inline cursor to stylesheet defaults
+    requestAnimationFrame(()=>{
+      try{document.documentElement.style.cursor=''}catch(e){}
+      try{document.body.style.cursor=''}catch(e){}
+    });
+    setTimeout(()=>{
+      try{document.documentElement.classList.remove('cursor-resetting')}catch(e){}
+      try{document.body.classList.remove('cursor-resetting')}catch(e){}
+    },140);
+  }catch(e){}
+}
+
+
 
 function closeMediaViewer(){
   document.getElementById('mediaViewer').classList.remove('active');
@@ -5247,8 +5272,34 @@ function closeMediaViewer(){
   // Stop any video
   const vid=document.querySelector('.mv-video');
   if(vid)vid.pause();
-  _resetZoomCursor();
+  _forceCursorReset();
 }
+
+// Cursor leak watchdog — if a zoom/grab cursor ever appears outside the media viewer,
+// force a full cursor reset. This protects against browser/OS cursor caching edge cases.
+(function __cursorLeakWatchdog(){
+  document.addEventListener('mousemove',function(e){
+    try{
+      const mv=document.getElementById('mediaViewer');
+      if(mv && mv.classList.contains('active')) return;
+
+      // Check computed cursor on <html>, <body>, and hovered element
+      const htmlCur = (window.getComputedStyle(document.documentElement).cursor||'');
+      const bodyCur = (window.getComputedStyle(document.body).cursor||'');
+      let elCur='';
+      try{
+        const el=document.elementFromPoint(e.clientX,e.clientY);
+        if(el) elCur = (window.getComputedStyle(el).cursor||'');
+      }catch(_e){}
+
+      const cur=(htmlCur+' '+bodyCur+' '+elCur).toLowerCase();
+      if(cur.includes('zoom')||cur.includes('grab')){
+        _forceCursorReset();
+      }
+    }catch(err){}
+  },{passive:true});
+})();
+
 
 function navMedia(d){
   stopMvAudio();
@@ -9849,13 +9900,9 @@ function restoreSession(){
     const data=JSON.parse(raw);
     if(!data||!data.team)return false;
 
-    // For sessions restored from localStorage (browser was closed):
-    // enforce a 2-minute grace window — if closed longer, require re-login.
-    //
-    // NOTE: We apply this to BOTH team + admin sessions. Admin tokens can expire
-    // server-side; auto-restoring an old admin session on mobile can look like a
-    // "login loop" ("Admin session expired") even though the user is trying to log in.
-    if(fromLocalStorage&&data.savedAt){
+    // For team sessions restored from localStorage (browser was closed):
+    // enforce 2-minute grace window — if closed longer, require re-login
+    if(fromLocalStorage&&data.type==='team'&&data.savedAt){
       const elapsed=Date.now()-data.savedAt;
       const graceMs=2*60*1000; // 2 minutes
       if(elapsed>graceMs){
