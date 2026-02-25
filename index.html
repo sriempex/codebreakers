@@ -455,22 +455,6 @@
   .timer-digits.paused{color:var(--amber);animation:ledPulse 1s infinite}
   .timer-label{font-family:'Saira',sans-serif;font-size:9px;color:#888;letter-spacing:3px;font-weight:600;text-transform:uppercase;margin-top:3px;position:relative;top:-3px}
   body.config-hydrating .timer-digits,body.config-hydrating .timer-label{opacity:0}
-  /* Saved blip / toast */
-  #saveToast{
-    position:fixed; right:16px; bottom:16px; z-index:9999;
-    padding:10px 12px; border-radius:12px;
-    border:1px solid rgba(255,255,255,.14);
-    background:rgba(5,10,16,.72);
-    box-shadow:0 12px 30px rgba(0,0,0,.45);
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px; letter-spacing:1px; text-transform:uppercase;
-    color:var(--green);
-    opacity:0; transform:translateY(8px);
-    pointer-events:none;
-    transition:opacity .18s ease, transform .18s ease;
-  }
-  #saveToast.show{opacity:1; transform:translateY(0)}
-
   .topbar-identity{position:relative;cursor:pointer;display:flex;align-items:center}
   body.admin-mode .team-card-section{display:none}
   body.admin-mode .team-card-notifs{display:none}
@@ -3553,8 +3537,6 @@ function updateRegSettings(){
   }
   // Rebuild registration form with new member count
   buildRegForm();
-  if(!_fromHydration)try{updateAdminTimerDisplay()}catch(e){}
-  try{ensureConsoleTimerReflectsMode()}catch(e){}
   saveEventConfigToBackend();
 }
 
@@ -4181,8 +4163,11 @@ function triggerVaultLockout(seconds,title,subtitle){
       _vaultLockoutEnd=null;
       saveGameState();
     }
-  },1000);
+  };
+  if(runOnce)_tick();
+  _globalTimerInterval=setInterval(_tick,1000);
 }
+
 function formatLockoutTime(s){
   if(s>=60){const m=Math.floor(s/60);const sec=s%60;return m+':'+String(sec).padStart(2,'0')}
   return String(s);
@@ -5595,8 +5580,7 @@ async function apiCall(action,data={}){
         if(isAdmin){
           alert('Admin session expired. Please log in again.');
           clearSession();location.reload();
-          try{if(result&&result.ok)maybeShowSaved(action)}catch(e){}
-      return result;
+          return result;
         }
       }
       return result}
@@ -5810,7 +5794,24 @@ function applyEventConfig(cfg){
   if(cfg.eventAutoLock!==undefined){eventSettings.autoLock=cfg.eventAutoLock==='true'||cfg.eventAutoLock===true;const cb=document.getElementById('eventAutoLock');if(cb)cb.checked=eventSettings.autoLock}
   if(cfg.eventShowLeaderboardOnExpiry!==undefined){eventSettings.showLeaderboardOnExpiry=cfg.eventShowLeaderboardOnExpiry==='true'||cfg.eventShowLeaderboardOnExpiry===true;const cb=document.getElementById('eventShowLeaderboard');if(cb)cb.checked=eventSettings.showLeaderboardOnExpiry}
   if(cfg.allowDownloads!==undefined){allowDownloads=cfg.allowDownloads==='true'||cfg.allowDownloads===true}
-  if(cfg.timerMode){timerMode=cfg.timerMode;const sel=document.getElementById('timerMode');if(sel){sel.value=timerMode;onTimerModeChange(true)}}
+  if(cfg.timerMode){
+    timerMode=cfg.timerMode;
+    if(cfg.timerSec!==undefined){timerSec=parseInt(cfg.timerSec)||0;}
+    if(cfg.timerOriginal!==undefined){timerOriginal=parseInt(cfg.timerOriginal)||timerSec;}
+    if(cfg.timerPaused!==undefined){timerPaused=(cfg.timerPaused==='true'||cfg.timerPaused===true);}
+    if(cfg.timerStarted!==undefined){timerStarted=(cfg.timerStarted==='true'||cfg.timerStarted===true);}
+    if(cfg.eventStartTime!==undefined){eventSettings.startTime=cfg.eventStartTime||null;}
+    if(cfg.eventEndTime!==undefined){eventSettings.endTime=cfg.eventEndTime||null;}
+    if(cfg.eventExpired!==undefined){eventSettings.expired=(cfg.eventExpired==='true'||cfg.eventExpired===true);}
+    const sel=document.getElementById('timerMode');
+    if(sel){sel.value=timerMode;}
+    // Apply mode UI without overwriting restored values
+    window.__applyingCfg=true;
+    onTimerModeChange();
+    window.__applyingCfg=false;
+    updateAdminTimerDisplay();
+    renderTimer();
+  }
   // Scoring config
   if(cfg.scoringConfig){try{Object.assign(scoringConfig,JSON.parse(cfg.scoringConfig))}catch(e){}}
   // Typography fontConfig
@@ -5849,8 +5850,6 @@ function applyEventConfig(cfg){
     _eventCfgHydrated=true;
     try{document.body.classList.remove('config-hydrating')}catch(e){}
     try{renderTimer()}catch(e){}
-    try{ensureConsoleTimerReflectsMode()}catch(e){}
-    try{updateAdminTimerDisplay()}catch(e){}
     document.documentElement.classList.remove('is-hydrating-settings');
     try{document.dispatchEvent(new Event('cb:configHydrated'))}catch(e){}
   }
@@ -6274,7 +6273,14 @@ function saveEventConfigToBackend(){
       eventShowLeaderboardOnExpiry:eventSettings.showLeaderboardOnExpiry,
       allowDownloads:allowDownloads,
       sessionPersist:regSettings.sessionPersist,
-      timerMode:timerMode
+      timerMode:timerMode,
+      timerSec:timerSec,
+      timerOriginal:timerOriginal,
+      timerPaused:timerPaused,
+      timerStarted:timerStarted,
+      eventStartTime:eventSettings.startTime,
+      eventEndTime:eventSettings.endTime,
+      eventExpired:eventSettings.expired
     }}).then(r=>{});
   },1000); // 1 second debounce
 }
@@ -6596,7 +6602,7 @@ function syncAdminPanelSettings(){
   const status=document.getElementById('apRegStatus');
   if(status){status.textContent=regSettings.registrationOpen?'● OPEN':'● CLOSED';status.style.color=regSettings.registrationOpen?'var(--green)':'var(--red)'}
   const apTimer=document.getElementById('apTimerDisplay');
-  try{updateAdminTimerDisplay()}catch(e){}
+  if(apTimer)apTimer.textContent=document.getElementById('cTimer').textContent;
   // Sync activity thresholds
   const thIdle=document.getElementById('apThresholdIdle');if(thIdle)thIdle.value=activityThresholds.activeToIdle;
   const thSilent=document.getElementById('apThresholdSilent');if(thSilent)thSilent.value=activityThresholds.idleToSilent;
@@ -6676,7 +6682,7 @@ function openEventControl(){
   syncAdminPanelSettings();
   initTypographyPanel();
   if(apTimerInterval)clearInterval(apTimerInterval);
-  apTimerInterval=setInterval(()=>{try{updateAdminTimerDisplay()}catch(e){}},250);
+  apTimerInterval=setInterval(()=>{const el=document.getElementById('apTimerDisplay');if(el)el.textContent=document.getElementById('cTimer').textContent},250);
 }
 function openAdminPanel(){openEventControl()} // backward compat alias
 function closeEventControl(){
@@ -8485,7 +8491,7 @@ function startDrag(e,type,idx){
 }
 
 // ══════ TIMER ══════
-let timerSec=5325,timerPaused=false,timerOriginal=5325;
+let timerSec=0,timerPaused=true,timerOriginal=0,timerStarted=false;
 let timerMode='none'; // 'countdown' or 'event'
 let _eventCfgHydrated=false;
 let eventSettings={
@@ -8496,13 +8502,40 @@ let eventSettings={
   expired:false
 };
 
-function onTimerModeChange(_fromHydration){
+function onTimerModeChange(){
   timerMode=document.getElementById('timerMode').value;
-  // Ensure admin-side value display updates by mode
-  try{updateAdminTimerDisplay()}catch(e){}
+  // Stop schedule interval when leaving Event Schedule
+  if(timerMode!=='event' && _globalTimerInterval){clearInterval(_globalTimerInterval);_globalTimerInterval=null;}
   document.getElementById('timerCountdownControls').style.display=timerMode==='countdown'?'':'none';
   document.getElementById('timerEventControls').style.display=timerMode==='event'?'':'none';
   if(timerMode==='event')updateEventStatus();
+  if(timerMode==='countdown'){
+    if(!window.__applyingCfg){ timerPaused=true; timerStarted=false; }
+    const pb=document.getElementById('pauseBtn');
+    if(pb){
+      pb.textContent = (!timerStarted) ? '▶ START' : (timerPaused ? '▶ RESUME' : '⏸ PAUSE');
+    }
+    const ct=document.getElementById('cTimer');
+    if(ct)ct.classList.toggle('paused', !timerStarted || timerPaused);
+    renderTimerLabel('Manual Countdown');
+    renderTimer();
+    updateAdminTimerDisplay();
+    if(!window.__applyingCfg) saveEventConfigToBackend();
+  }
+  if(timerMode==='event'){
+    if(!window.__applyingCfg) eventSettings.expired=false;
+    // Reflect current config in inputs
+    try{
+      const si=document.getElementById('eventStartInput');
+      const ei=document.getElementById('eventEndInput');
+      const toLocal=(iso)=>{ if(!iso) return ''; const d=new Date(iso); const pad=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes()); };
+      if(si) si.value = toLocal(eventSettings.startTime);
+      if(ei) ei.value = toLocal(eventSettings.endTime);
+    }catch(e){}
+    startGlobalEventTimer(true);
+    updateAdminTimerDisplay();
+    if(!window.__applyingCfg) saveEventConfigToBackend();
+  }
   // No timer mode — show infinity symbol, stop any running timer updates
   if(timerMode==='none'){
     var timerBlock=document.querySelector('.timer-block');
@@ -8519,10 +8552,25 @@ function onTimerModeChange(_fromHydration){
     var timerBlock2=document.querySelector('.timer-block');
     if(timerBlock2)timerBlock2.style.display='';
   }
-  // Always force the console timer to reflect the selected mode
-  try{ensureConsoleTimerReflectsMode()}catch(e){}
-  // Persist mode changes (except during initial hydration)
-  if(!_fromHydration && timerMode!=='none'){saveEventConfigToBackend();}
+}
+
+function updateAdminTimerDisplay(){
+  const ap=document.getElementById('apTimerDisplay');
+  if(!ap)return;
+  if(timerMode==='none'){
+    ap.textContent='∞';
+    return;
+  }
+  if(timerMode==='event'){
+    const s=eventSettings.startTime?new Date(eventSettings.startTime):null;
+    const e=eventSettings.endTime?new Date(eventSettings.endTime):null;
+    const fmt=(d)=> d ? d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '—';
+    ap.textContent = (s||e) ? (fmt(s)+(e?('–'+fmt(e)):'') ) : '—';
+    return;
+  }
+  // manual countdown
+  const h=Math.floor(timerSec/3600),m=Math.floor((timerSec%3600)/60),s=timerSec%60;
+  ap.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 }
 function onEventTimeChange(){
   const startVal=document.getElementById('eventStartInput').value;
@@ -8531,13 +8579,17 @@ function onEventTimeChange(){
   eventSettings.endTime=endVal?new Date(endVal).toISOString():null;
   eventSettings.expired=false;
   updateEventStatus();
-  startGlobalEventTimer();
+  startGlobalEventTimer(true);
+  updateAdminTimerDisplay();
   saveEventConfigToBackend();
 }
 
 let _globalTimerInterval=null;
-function startGlobalEventTimer(){
+function startGlobalEventTimer(runOnce=false){
   if(_globalTimerInterval)clearInterval(_globalTimerInterval);
+  if(timerMode!=='event' && timerMode!=='none'){
+    return;
+  }
   // No timer mode — show infinity symbol and stop
   if(timerMode==='none'){
     var tb=document.querySelector('.timer-block');
@@ -8552,7 +8604,7 @@ function startGlobalEventTimer(){
   if(tb2)tb2.style.display='';
   if(!eventSettings.startTime||!eventSettings.endTime)return;
   
-  _globalTimerInterval=setInterval(()=>{
+  const _tick=()=>{
     const timerEl=document.getElementById('cTimer');
     
     // Paused — show frozen time
@@ -8765,7 +8817,7 @@ tbody tr:hover{background:#f5f5f5}
 .toolbar{position:fixed;top:10px;right:10px;display:flex;gap:8px;z-index:100}
 .toolbar button{padding:8px 16px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;font-size:11px}
 .toolbar button:hover{background:#f5f5f5}
-</style></head><body>
+</style></head><body class=\"config-hydrating\">
 <div class="toolbar">
   <button onclick="window.print()">🖨 Print / Save as PDF</button>
 </div>
@@ -8795,7 +8847,6 @@ tbody tr:hover{background:#f5f5f5}
   <p>${esc(eventName)} — Code Breakers Platform</p>
   <p style="margin-top:4px">Confidential — For internal use only</p>
 </div>
-<div id="saveToast">SAVED</div>
 </body></html>`;
 
   const blob=new Blob([report],{type:'text/html;charset=utf-8'});
@@ -8908,79 +8959,52 @@ function updateEventStatus(){
 }
 
 // Countdown mode functions
-function togglePause(){timerPaused=!timerPaused;document.getElementById('pauseBtn').textContent=timerPaused?'▶ RESUME':'⏸ PAUSE';document.getElementById('cTimer').classList.toggle('paused',timerPaused)}
-function setNewTime(){const v=document.getElementById('timerInput').value.trim();const parts=v.split(':');if(parts.length===3){timerSec=parseInt(parts[0])*3600+parseInt(parts[1])*60+parseInt(parts[2]);timerOriginal=timerSec;renderTimer()}else if(parts.length===2){timerSec=parseInt(parts[0])*60+parseInt(parts[1]);timerOriginal=timerSec;renderTimer()}}
-function resetTimer(){timerSec=timerOriginal;timerPaused=false;document.getElementById('pauseBtn').textContent='⏸ PAUSE';document.getElementById('cTimer').classList.remove('paused');renderTimer()}
-
-let _saveToastTimer=null;
-function showSaveToast(msg){
-  const t=document.getElementById('saveToast');
-  if(!t)return;
-  t.textContent=msg||'SAVED';
-  t.classList.add('show');
-  if(_saveToastTimer)clearTimeout(_saveToastTimer);
-  _saveToastTimer=setTimeout(()=>{t.classList.remove('show')},850);
-  try{updateAdminTimerDisplay()}catch(e){}
-  try{ensureConsoleTimerReflectsMode()}catch(e){}
-
-}
-function maybeShowSaved(action){
-  const savey=new Set(['setConfig','saveEventConfig','saveIntelFields','saveDrafts','savePosts','saveMedia','updateGridTile','updateScoring','updateFonts','destroySessions','clearAllData','removeTeam','desubmitTeam','resetTeam','bulkUpdateTeams']);
-  const destructive=new Set(['destroySessions','clearAllData','removeTeam','desubmitTeam','resetTeam','bulkUpdateTeams']);
-  if(savey.has(action)){
-    showSaveToast(destructive.has(action)?'DONE':'SAVED');
+function togglePause(){
+  // Manual countdown start/pause/resume
+  const pb=document.getElementById('pauseBtn');
+  const timerEl=document.getElementById('cTimer');
+  if(timerMode!=='countdown')return;
+  if(!timerStarted){
+    if(timerSec<=0)return;
+    timerStarted=true;
+    timerPaused=false;
+    if(pb)pb.textContent='⏸ PAUSE';
+    timerEl?.classList.remove('paused');
+  }else{
+    timerPaused=!timerPaused;
+    if(pb)pb.textContent=timerPaused?'▶ RESUME':'⏸ PAUSE';
+    timerEl?.classList.toggle('paused',timerPaused);
   }
+  updateAdminTimerDisplay();
+  saveEventConfigToBackend();
 }
-function _fmtHMS(sec){
-  sec=Math.max(0,Math.floor(sec||0));
-  const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;
-  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+function setNewTime(){const v=document.getElementById('timerInput').value.trim();const parts=v.split(':');if(parts.length===3){timerSec=parseInt(parts[0])*3600+parseInt(parts[1])*60+parseInt(parts[2]);timerOriginal=timerSec;renderTimer()
+  timerPaused=true; timerStarted=false;
+  const pb=document.getElementById('pauseBtn'); if(pb)pb.textContent='▶ START';
+  document.getElementById('cTimer')?.classList.add('paused');
+  updateAdminTimerDisplay();
+  saveEventConfigToBackend();
+}else if(parts.length===2){timerSec=parseInt(parts[0])*60+parseInt(parts[1]);timerOriginal=timerSec;renderTimer()}}
+function resetTimer(){
+  timerSec=timerOriginal;
+  timerPaused=true;
+  timerStarted=false;
+  const pb=document.getElementById('pauseBtn');
+  if(pb)pb.textContent='▶ START';
+  const ct=document.getElementById('cTimer');
+  ct?.classList.add('paused');
+  renderTimer();
+  updateAdminTimerDisplay();
+  saveEventConfigToBackend();
 }
-function _fmtSchedule(){
-  if(!eventSettings.startTime && !eventSettings.endTime) return '—';
-  try{
-    const s=eventSettings.startTime?new Date(eventSettings.startTime):null;
-    const e=eventSettings.endTime?new Date(eventSettings.endTime):null;
-    const opts={hour:'2-digit',minute:'2-digit'};
-    const ds=s? s.toLocaleString([],opts):'—';
-    const de=e? e.toLocaleString([],opts):'—';
-    return (s&&e)?(ds+'–'+de):(s?ds:de);
-  }catch(e){ return '—';}
-}
-function updateAdminTimerDisplay(){
-  const ap=document.getElementById('apTimerDisplay');
-  if(!ap)return;
-  if(timerMode==='none'){ap.textContent='∞';return;}
-  if(timerMode==='event'){ap.textContent=_fmtSchedule();return;}
-  // countdown
-  ap.textContent=_fmtHMS(timerSec);
-}
-function ensureConsoleTimerReflectsMode(){
-  const el=document.getElementById('cTimer');
-  if(!el)return;
-  if(timerMode==='none'){
-    el.textContent='∞';
-    el.classList.add('is-infinity');
-    renderTimerLabel('No Timer');
-    return;
-  }
-  el.classList.remove('is-infinity');
-  if(timerMode==='countdown'){
-    renderTimerLabel('Time Remaining');
-    renderTimer();
-    return;
-  }
-  if(timerMode==='event'){
-    // Force one immediate paint using current schedule
-    tickTimer();
-    return;
-  }
-}
-
 function renderTimer(){
   const el=document.getElementById('cTimer');
   if(!el)return;
   if(!_eventCfgHydrated)return;
+  if(timerMode==='event'){
+    // schedule mode renders via startGlobalEventTimer
+    return;
+  }
   if(timerMode==='none'){
     el.textContent='∞';
     el.classList.add('is-infinity');
@@ -9002,33 +9026,6 @@ function tickTimer(){
     if(timerPaused||timerSec<=0)return;
     timerSec--;renderTimer();
     if(timerSec<=0)onTimerExpired();
-  }else if(timerMode==='event'){
-    if(!eventSettings.startTime||!eventSettings.endTime)return;
-    const now=Date.now();
-    const start=new Date(eventSettings.startTime).getTime();
-    const end=new Date(eventSettings.endTime).getTime();
-    const el=document.getElementById('cTimer');
-    if(now<start){
-      // Pre-event: count down to start
-      const diff=Math.max(0,Math.floor((start-now)/1000));
-      const h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60),s=diff%60;
-      el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-      el.classList.add('paused');
-      renderTimerLabel('Starts In');
-    }else if(now>=start&&now<end){
-      // Live: count down to end
-      const diff=Math.max(0,Math.floor((end-now)/1000));
-      const h=Math.floor(diff/3600),m=Math.floor((diff%3600)/60),s=diff%60;
-      el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-      el.classList.remove('paused');
-      renderTimerLabel('Time Remaining');
-    }else{
-      // Expired
-      el.textContent='00:00:00';
-      el.classList.remove('paused');
-      renderTimerLabel('Event Ended');
-      if(!eventSettings.expired)onTimerExpired();
-    }
   }
 }
 function onTimerExpired(){
@@ -11045,6 +11042,5 @@ togglePlayerPreview=function(){
   </div>
 </div>
 
-<div id="saveToast">SAVED</div>
 </body>
 </html>
