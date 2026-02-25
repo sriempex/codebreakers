@@ -9473,6 +9473,9 @@ function clearSession(){
   }catch(e){}
 }
 
+let _gearReturnScreen='consoleScreen';
+let _currentAdminPage=null;
+
 function restoreSession(){
   try{
     // Try sessionStorage first (always valid if tab is still open),
@@ -10381,8 +10384,6 @@ function confirmVaultLock(){
 
 
 // ══════ PAGE-BASED ADMIN NAVIGATION ══════
-let _gearReturnScreen='consoleScreen';
-let _currentAdminPage=null; // 'settingsScreen' when on admin page, null otherwise
 
 function handleGearClick(){
   const dd=document.getElementById('gearDropdown');
