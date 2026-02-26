@@ -8237,7 +8237,7 @@ function renderIntelForm(){
     const _iFont=resolveFont('intelInput',f.inputFont||'');
     const lStyle=_lFont?` style="${fontStyle(_lFont)}"`:'';
     const iStyle=_iFont?` style="${fontStyle(_iFont)}"`:'';
-    const clearBtn=`<div class="intel-saved-blip" data-save-idx="${i}">saved</div><div class="intel-exp-clear" onclick="clearIntelSlot(this)" title="Clear field">🧹</div>`;
+    const clearBtn=`<div class="intel-saved-blip" data-save-idx="${i}">saved</div><div class="intel-exp-clear" onclick="clearIntelSlot(this)" title="Clear field">🗑️</div>`;
     const keyHandler='onkeydown="if(event.key===\'Enter\'){this.blur()}"';
     const ph=f.placeholder||'···';
     if((f.type||f.fieldType)==='money'){
