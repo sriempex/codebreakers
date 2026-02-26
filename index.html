@@ -5979,6 +5979,25 @@ function _restoreContentCache(){
     const cachedOpFont=localStorage.getItem('cb_opFont');
     if(cachedOpFont){operationFont=cachedOpFont;applyOperationFont(operationFont)}
   }catch(e){}
+  // Restore grid tile customisations (icons, labels, fonts) so tiles don't flash defaults
+  try{
+    const cachedTiles=localStorage.getItem('cb_gridTiles');
+    if(cachedTiles){
+      const arr=JSON.parse(cachedTiles);
+      if(Array.isArray(arr)){
+        arr.forEach(saved=>{
+          const tile=gridTiles.find(t=>t.id===saved.id);
+          if(tile){
+            if(saved.icon)tile.icon=saved.icon;
+            if(saved.label)tile.label=saved.label;
+            if(saved.sub!==undefined)tile.sub=saved.sub;
+            if(saved.labelFont!==undefined)tile.labelFont=saved.labelFont;
+            if(saved.subFont!==undefined)tile.subFont=saved.subFont;
+          }
+        });
+      }
+    }
+  }catch(e){}
   return restored;
 }
 
@@ -6169,7 +6188,10 @@ function applyEventConfig(cfg){
       }
     });
   }
-  if(_gridTilesChanged)renderGrid();
+  if(_gridTilesChanged){
+    renderGrid();
+    try{localStorage.setItem('cb_gridTiles',JSON.stringify(gridTiles.map(t=>({id:t.id,icon:t.icon,label:t.label,sub:t.sub,labelFont:t.labelFont,subFont:t.subFont}))))}catch(e){}
+  }
   // Sync threshold UI
   const idleInp=document.getElementById('apThresholdIdle');if(idleInp)idleInp.value=activityThresholds.activeToIdle;
   const silentInp=document.getElementById('apThresholdSilent');if(silentInp)silentInp.value=activityThresholds.idleToSilent;
@@ -8209,6 +8231,7 @@ function saveGridTile(i){
   gridTiles[i].subFont=sf;
   if(document.getElementById('eg_label_all').checked)gridTiles.forEach(t=>t.labelFont=lf);
   if(document.getElementById('eg_sub_all').checked)gridTiles.forEach(t=>t.subFont=sf);
+  try{localStorage.setItem('cb_gridTiles',JSON.stringify(gridTiles.map(t=>({id:t.id,icon:t.icon,label:t.label,sub:t.sub,labelFont:t.labelFont,subFont:t.subFont}))))}catch(e){}
   hideEditModal();renderGrid();saveEventConfigToBackend();
 }
 
