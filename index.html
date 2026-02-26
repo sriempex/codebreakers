@@ -450,55 +450,6 @@
       linear-gradient(180deg,#0c0e12,#060810);
     border-bottom:1px solid rgba(255,255,255,.04);
     box-shadow:0 2px 10px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.015)}
-
-  /* Admin timer dock (stays visible even when settings overlay is open) */
-  .admin-timer-dock{
-    position:fixed;
-    top:56px; /* just below topbar */
-    left:50%;
-    transform:translateX(-50%);
-    z-index:980;
-    pointer-events:none;
-  }
-  .admin-timer-dock-inner{
-    pointer-events:auto;
-    display:flex;
-    gap:10px;
-    align-items:baseline;
-    background:rgba(8,10,18,.88);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:10px;
-    padding:8px 10px;
-    backdrop-filter:blur(8px);
-    box-shadow:0 6px 24px rgba(0,0,0,.45);
-  }
-  .admin-timer-dock-title{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:9px;
-    letter-spacing:2px;
-    color:#9fb3c0;
-    opacity:.9;
-    margin-right:4px;
-  }
-  .admin-timer-dock-digits{
-    font-family:'Orbitron',sans-serif;
-    font-size:16px;
-    letter-spacing:2px;
-    color:var(--red);
-    text-shadow:0 0 10px rgba(255,80,80,.25);
-    min-width:92px;
-    text-align:center;
-  }
-  .admin-timer-dock-status{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:9px;
-    letter-spacing:1px;
-    color:#b7c6d0;
-    opacity:.85;
-    min-width:86px;
-    text-align:left;
-  }
-
   .console-title{font-family:'Staatliches',cursive;font-size:17px;letter-spacing:2px;color:#b0e8cc;text-transform:uppercase}
   .timer-block{text-align:center;position:absolute;left:50%;transform:translateX(-50%);padding-bottom:4px}
   .timer-digits{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:22px;color:#ff6655;letter-spacing:4px}
@@ -1563,11 +1514,7 @@
   .ap-lb-info{flex:1;min-width:0}
   .ap-lb-name{font-family:'Saira',sans-serif;font-size:11px;color:#ccc;font-weight:600;letter-spacing:1px}
   .ap-lb-meta{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#666;letter-spacing:1px;margin-top:2px}
-  .ap-lb-details{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#d0e8f0;border-radius:6px;padding:6px 8px;font-size:12px;cursor:pointer;line-height:1;box-shadow:0 0 0 rgba(0,0,0,0);transition:transform .08s,background .08s,border-color .08s}
-.ap-lb-details:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);transform:translateY(-1px)}
-.ap-lb-details:active{transform:translateY(0)}
-
-.ap-lb-score{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;min-width:60px;text-align:right}
+  .ap-lb-score{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;min-width:60px;text-align:right}
   .ap-lb-score.gold{color:#ffd700}.ap-lb-score.silver{color:#c0c0c0}.ap-lb-score.bronze{color:#cd7f32}.ap-lb-score.std{color:#666}
   .ap-lb-bar{height:3px;border-radius:2px;margin-top:4px;transition:width .5s}
   .ap-lb-empty{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#555;padding:20px 0;text-align:center}
@@ -2720,15 +2667,6 @@
 <div id="vaultOpenOverlay"><div class="vo-text" id="voText">ACCESS GRANTED</div><div class="vo-sub" id="voSub">Initializing operations console...</div><div class="vo-bar" id="voBar"><div class="vo-fill" id="voFill"></div></div><div class="vo-pct" id="voPct">0%</div></div>
 
 <!-- ADMIN BAR (fixed, body-level) -->
-<!-- ADMIN TIMER DOCK (always visible above overlays) -->
-<div id="adminTimerDock" class="admin-timer-dock" style="display:none" aria-live="polite">
-  <div class="admin-timer-dock-inner">
-    <div class="admin-timer-dock-title">SESSION TIMER</div>
-    <div class="admin-timer-dock-digits" id="adminDockTimer">—</div>
-    <div class="admin-timer-dock-status" id="adminDockTimerStatus">—</div>
-  </div>
-</div>
-
 <!-- CONSOLE -->
 <div class="screen" id="consoleScreen">
 <div id="consoleBgOverlay"></div>
@@ -4019,7 +3957,7 @@ function submitLogin(){
     apiCall('login',{username:idVal,password:pw}).then(result=>{
       if(result.ok){
         adminSession={username:result.username,role:result.role,adminToken:result.adminToken};
-        isAdmin=true;document.body.classList.add('admin-mode');applySessionTimerStateToUI();
+        isAdmin=true;document.body.classList.add('admin-mode');
         currentVaultTeam={id:'ADMIN',name:'ADMIN',displayName:'ADMINISTRATOR',type:'admin',members:['Admin'],memberDetails:[]};
         updateConsoleForTeam(currentVaultTeam);syncAdminDropdownToggles();saveSession();
         loginSuccess();loadEventData();startTeamMonitor();document.dispatchEvent(new Event('adminReady'));
@@ -7319,10 +7257,7 @@ function renderTeamMonitor(){
     var statusTag=ghost?'<span class="ap-monitor-ghost-tag">GHOST</span>':idleState?'<span class="ap-monitor-idle-tag">IDLE</span>':'';
     var removeBtn=ghost?'<span class="ap-monitor-remove" onclick="event.stopPropagation();removeGhostTeam(\''+t.id+'\')" title="Remove ghost">\u2715</span>':'';
     var msgBtn='<span class="lb-msg-btn" onclick="event.stopPropagation();sendTeamMessage(\''+t.id+'\',\''+t.name.replace(/'/g,"\\'")+'\')" style="margin-left:auto">\uD83D\uDCAC</span>';
-    return '<div class="ap-monitor-row '+rowClass+'"><input type="checkbox" class="tm-nuke-check" data-team="'+t.id+'" onchange="tmUpdateNukeBar()" onclick="event.stopPropagation()" style="margin-right:4px;accent-color:#ff4444"><div class="ap-monitor-dot '+dotClass+'"></div><span class="ap-monitor-id">'+t.id+'</span><span class="ap-monitor-name">'+t.name+'</span>'+
-      '<span class="ap-monitor-progress" style="width:110px;text-align:right;font-family:IBM Plex Mono,monospace;font-size:10px;opacity:.9">'+(function(){var entered=(typeof t.fieldsCompleted==='number'?t.fieldsCompleted:0);var total=(intelFields&&intelFields.length)?intelFields.length:0;return total?(entered+' / '+total):String(entered);})()+'</span>'+
-      '<span class="ap-monitor-correct" style="width:110px;text-align:right;font-family:IBM Plex Mono,monospace;font-size:10px;opacity:.9">'+(function(){if(t.submissionResults&&typeof t.submissionResults.correctCount==='number'){var tf=(typeof t.submissionResults.totalFields==='number'?t.submissionResults.totalFields:((intelFields&&intelFields.length)?intelFields.length:0));return t.submissionResults.correctCount+' / '+(tf||0);}return '—';})()+'</span>'+
-      statusTag+msgBtn+removeBtn+'</div>';
+    return '<div class="ap-monitor-row '+rowClass+'"><input type="checkbox" class="tm-nuke-check" data-team="'+t.id+'" onchange="tmUpdateNukeBar()" onclick="event.stopPropagation()" style="margin-right:4px;accent-color:#ff4444"><div class="ap-monitor-dot '+dotClass+'"></div><span class="ap-monitor-id">'+t.id+'</span><span class="ap-monitor-name">'+t.name+'</span>'+statusTag+msgBtn+removeBtn+'</div>';
   }).join(''):'<div style="font-family:Chakra Petch,sans-serif;font-size:9px;color:#555;padding:12px 0;text-align:center">No teams registered yet</div>';
   renderPagination('tmPagination',sorted.length,tmPerPage,tmCurrentPage,function(p){tmCurrentPage=p;renderTeamMonitor()});
   tmUpdateNukeBar();
@@ -7368,66 +7303,10 @@ function renderLeaderboard(){
         <div class="ap-lb-meta">${t.id} · ${t.submitTime?correct+'/'+maxFields+' correct · '+score+' pts':'Not submitted'}</div>
         <div class="ap-lb-bar" style="width:${pct}%;background:${barColor}"></div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px">
-      <button class="ap-lb-details" title="View right/wrong breakdown" onclick="openTeamBreakdown('${t.id}');event.stopPropagation()">🔎</button>
       <div class="ap-lb-score ${rc}">${t.submitTime?pct+'%':'—'}</div>
-    </div>
     </div>`;
   }).join('');
 }
-
-
-function openTeamBreakdown(teamId){
-  const modal=document.getElementById('teamBreakdownModal');
-  const body=document.getElementById('teamBreakdownBody');
-  const title=document.getElementById('teamBreakdownTitle');
-  const sub=document.getElementById('teamBreakdownSub');
-  if(!modal||!body)return;
-
-  const team=registeredTeams.find(t=>t.id===teamId);
-  title.textContent=team?(`Team Breakdown — ${team.name}`):'Team Breakdown';
-  sub.textContent=team?(`${teamId} · right/wrong by question`):`${teamId}`;
-
-  // Expectation: backend should return per-field results in team.submissionResults.results (or .fieldResults)
-  const results=(team && team.submissionResults && (team.submissionResults.results||team.submissionResults.fieldResults))||null;
-
-  if(!team){
-    body.innerHTML='<div style="font-family:IBM Plex Mono,monospace;font-size:11px;color:#7f95a6">Team not found.</div>';
-  }else if(!team.submitTime || !team.submissionResults){
-    body.innerHTML='<div style="font-family:IBM Plex Mono,monospace;font-size:11px;color:#7f95a6">This team has not submitted yet.</div>';
-  }else if(!results){
-    body.innerHTML='<div style="font-family:IBM Plex Mono,monospace;font-size:11px;color:#7f95a6">Per-question breakdown is not available yet (currently only totals are returned). To enable this, include per-field grading results in the submission payload.</div>';
-  }else{
-    const rows=results.map((r,idx)=>{
-      const isCorrect=!!r.correct;
-      const isPartial=!!r.partialCorrect;
-      const status=isCorrect?'✅':(isPartial?'🟨':'❌');
-      const pts=(typeof r.score==='number'?r.score:(r.pointsAwarded||0));
-      const label=(r.field||r.label||('Q'+(idx+1)));
-      const submitted=(r.submitted!=null? (Array.isArray(r.submitted)?r.submitted.join(' / '):String(r.submitted)) : (r.enteredValue||''));
-      return `
-        <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)">
-          <div style="width:26px;text-align:center;font-size:16px;line-height:1.2">${status}</div>
-          <div style="flex:1;min-width:0">
-            <div style="font-family:Chakra Petch,sans-serif;font-size:12px;color:#d0e8f0">${label}</div>
-            <div style="font-family:IBM Plex Mono,monospace;font-size:10px;color:#7f95a6;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Submitted: ${escapeHtml(String(submitted||'—'))}</div>
-          </div>
-          <div style="width:70px;text-align:right;font-family:IBM Plex Mono,monospace;font-size:11px;color:#d0e8f0">${pts} pts</div>
-        </div>`;
-    }).join('');
-    body.innerHTML=`<div style="padding-bottom:6px;font-family:IBM Plex Mono,monospace;font-size:11px;color:#7f95a6">Showing ${results.length} items</div>`+rows;
-  }
-
-  modal.style.display='flex';
-}
-function closeTeamBreakdown(){
-  const modal=document.getElementById('teamBreakdownModal');
-  if(modal)modal.style.display='none';
-}
-function escapeHtml(str){
-  return (str||'').replace(/[&<>"']/g,function(m){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])});
-}
-
 
 // Team monitor — hash-checked refresh + live backend data fetch
 let _tmLastHash='',_lbLastHash='';
@@ -8968,84 +8847,6 @@ function startDrag(e,type,idx){
 // ══════ TIMER ══════
 let timerSec=0,timerPaused=true,timerOriginal=0,timerStarted=false;
 let timerMode='none'; // 'countdown' or 'event'
-
-// Shared, persistent session timer state (authoritative in localStorage + BroadcastChannel)
-// NOTE: In production, this should be stored server-side so it syncs across devices.
-const TIMER_STORAGE_KEY='cb_sessionTimerState_v1';
-let _timerBC=null;
-try{ _timerBC=new BroadcastChannel('cb_sessionTimer'); }catch(e){ _timerBC=null; }
-
-let _sessionTimerState=null; // {mode,status,endAtMs,pausedRemainingMs,durationMs,updatedAtMs}
-let _timerNowOffsetMs=0; // placeholder for server offset; can be wired to backend time
-
-function nowCorrected(){ return Date.now()+(_timerNowOffsetMs||0); }
-
-function loadSessionTimerState(){
-  try{
-    const raw=localStorage.getItem(TIMER_STORAGE_KEY);
-    _sessionTimerState=raw?JSON.parse(raw):null;
-  }catch(e){ _sessionTimerState=null; }
-}
-function saveSessionTimerState(state, opts={broadcast:true}){
-  _sessionTimerState=state;
-  try{ localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify(state||null)); }catch(e){}
-  if(opts.broadcast && _timerBC){ try{ _timerBC.postMessage({type:'timer',state}); }catch(e){} }
-  applySessionTimerStateToUI();
-}
-if(_timerBC){
-  try{
-    _timerBC.onmessage=(ev)=>{
-      if(!ev||!ev.data||ev.data.type!=='timer')return;
-      _sessionTimerState=ev.data.state||null;
-      try{ localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify(_sessionTimerState||null)); }catch(e){}
-      applySessionTimerStateToUI();
-    };
-  }catch(e){}
-}
-
-function getSessionTimerRemainingMs(){
-  if(!_sessionTimerState)return null;
-  if(_sessionTimerState.mode==='none')return null;
-  if(_sessionTimerState.status==='paused'){
-    return Math.max(0, _sessionTimerState.pausedRemainingMs||0);
-  }
-  if(_sessionTimerState.status==='running'){
-    return Math.max(0, (_sessionTimerState.endAtMs||0) - nowCorrected());
-  }
-  return 0;
-}
-
-function applySessionTimerStateToUI(){
-  // Show/hide admin dock above overlays
-  const dock=document.getElementById('adminTimerDock');
-  if(dock){ dock.style.display=(isAdmin?'block':'none'); }
-  const statusEl=document.getElementById('adminDockTimerStatus');
-  if(statusEl){
-    const st=_sessionTimerState?_sessionTimerState.status:'—';
-    const md=_sessionTimerState?_sessionTimerState.mode:'—';
-    statusEl.textContent=(md==='none'?'NO TIMER':(st||'—').toUpperCase());
-  }
-  // Keep legacy variables aligned for existing render paths
-  if(!_sessionTimerState)return;
-  if(_sessionTimerState.mode==='countdown'){
-    timerMode='countdown';
-    const rem=getSessionTimerRemainingMs();
-    if(rem!=null)timerSec=Math.ceil(rem/1000);
-    timerPaused = (_sessionTimerState.status!=='running');
-    timerStarted = (_sessionTimerState.status!=='stopped');
-  }else if(_sessionTimerState.mode==='event'){
-    timerMode='event';
-  }else if(_sessionTimerState.mode==='none'){
-    timerMode='none';
-  }
-  renderTimer();
-  updateAdminTimerDisplay();
-}
-
-// Bootstrap shared timer state on load
-loadSessionTimerState();
-if(_sessionTimerState){ applySessionTimerStateToUI(); }
-
 let _eventCfgHydrated=false;
 let eventSettings={
   startTime:null, // ISO string
@@ -9057,15 +8858,6 @@ let eventSettings={
 
 function onTimerModeChange(){
   timerMode=document.getElementById('timerMode').value;
-  // Persist mode change so all clients see the same timer mode
-  if(timerMode==='none'){
-    saveSessionTimerState({mode:'none',status:'stopped',updatedAtMs:nowCorrected()});
-  }else if(timerMode==='countdown'){
-    const durMs=Math.max(0,(timerSec||0)*1000);
-    saveSessionTimerState({mode:'countdown',status:'paused',durationMs:durMs,pausedRemainingMs:durMs,endAtMs:null,updatedAtMs:nowCorrected()});
-  }else if(timerMode==='event'){
-    saveSessionTimerState({mode:'event',status:(eventPaused?'paused':'running'),updatedAtMs:nowCorrected()});
-  }
   // Stop schedule interval when leaving Event Schedule
   if(timerMode!=='event' && _globalTimerInterval){clearInterval(_globalTimerInterval);_globalTimerInterval=null;}
   document.getElementById('timerCountdownControls').style.display=timerMode==='countdown'?'':'none';
@@ -9416,21 +9208,6 @@ tbody tr:hover{background:#f5f5f5}
   <p>${esc(eventName)} — Code Breakers Platform</p>
   <p style="margin-top:4px">Confidential — For internal use only</p>
 </div>
-
-<!-- TEAM BREAKDOWN MODAL -->
-<div id="teamBreakdownModal" style="display:none;position:fixed;inset:0;z-index:985;background:rgba(0,0,0,.82);backdrop-filter:blur(6px);align-items:center;justify-content:center" onclick="if(event.target===this)closeTeamBreakdown()">
-  <div style="width:min(760px,92vw);max-height:82vh;overflow:hidden;background:#070a12;border:1px solid rgba(255,255,255,.10);border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.6)">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06)">
-      <div style="display:flex;flex-direction:column;gap:2px">
-        <div id="teamBreakdownTitle" style="font-family:Chakra Petch,sans-serif;font-size:13px;letter-spacing:2px;color:#d0e8f0;text-transform:uppercase">Team Breakdown</div>
-        <div id="teamBreakdownSub" style="font-family:IBM Plex Mono,monospace;font-size:10px;color:#7f95a6">Right/Wrong by question</div>
-      </div>
-      <button class="mv-close" onclick="closeTeamBreakdown()">✕ CLOSE</button>
-    </div>
-    <div id="teamBreakdownBody" style="padding:12px 14px;overflow:auto;max-height:calc(82vh - 54px)"></div>
-  </div>
-</div>
-
 </body></html>`;
 
   const blob=new Blob([report],{type:'text/html;charset=utf-8'});
@@ -9544,76 +9321,43 @@ function updateEventStatus(){
 
 // Countdown mode functions
 function togglePause(){
-  // Manual countdown start/pause/resume — persisted + broadcast (universal within shared session store)
+  // Manual countdown start/pause/resume
   const pb=document.getElementById('pauseBtn');
   const timerEl=document.getElementById('cTimer');
   if(timerMode!=='countdown')return;
-
-  // Initialize shared state if missing
-  if(!_sessionTimerState || _sessionTimerState.mode!=='countdown'){
+  if(!timerStarted){
     if(timerSec<=0)return;
-    saveSessionTimerState({mode:'countdown',status:'paused',durationMs:timerSec*1000,pausedRemainingMs:timerSec*1000,endAtMs:null,updatedAtMs:nowCorrected()});
-  }
-
-  const st=_sessionTimerState;
-  const remaining=(getSessionTimerRemainingMs() ?? (timerSec*1000));
-
-  if(!st || st.mode!=='countdown')return;
-
-  if(st.status!=='running'){
-    if(remaining<=0)return;
-    saveSessionTimerState({...st,status:'running',endAtMs:nowCorrected()+remaining,pausedRemainingMs:null,updatedAtMs:nowCorrected()});
+    timerStarted=true;
+    timerPaused=false;
     if(pb)pb.textContent='⏸ PAUSE';
     timerEl?.classList.remove('paused');
   }else{
-    const newRem=Math.max(0,(st.endAtMs||0)-nowCorrected());
-    saveSessionTimerState({...st,status:'paused',pausedRemainingMs:newRem,endAtMs:null,updatedAtMs:nowCorrected()});
-    if(pb)pb.textContent='▶ RESUME';
-    timerEl?.classList.add('paused');
+    timerPaused=!timerPaused;
+    if(pb)pb.textContent=timerPaused?'▶ RESUME':'⏸ PAUSE';
+    timerEl?.classList.toggle('paused',timerPaused);
   }
-
   updateAdminTimerDisplay();
   saveEventConfigToBackend();
 }
-function setNewTime(){
-  const v=document.getElementById('timerInput').value.trim();
-  const parts=v.split(':');
-  if(parts.length===3){
-    timerSec=parseInt(parts[0]||'0')*3600 + parseInt(parts[1]||'0')*60 + parseInt(parts[2]||'0');
-    timerOriginal=timerSec;
-    timerStarted=false;
-    timerPaused=true;
-
-    // Persist shared state as PAUSED with remaining = duration
-    timerMode='countdown';
-    saveSessionTimerState({mode:'countdown',status:'paused',durationMs:timerSec*1000,pausedRemainingMs:timerSec*1000,endAtMs:null,updatedAtMs:nowCorrected()});
-
-    renderTimer();
-    updateAdminTimerDisplay();
-    saveEventConfigToBackend();
-  }
-}
+function setNewTime(){const v=document.getElementById('timerInput').value.trim();const parts=v.split(':');if(parts.length===3){timerSec=parseInt(parts[0])*3600+parseInt(parts[1])*60+parseInt(parts[2]);timerOriginal=timerSec;renderTimer()
+  timerPaused=true; timerStarted=false;
+  const pb=document.getElementById('pauseBtn'); if(pb)pb.textContent='▶ START';
+  document.getElementById('cTimer')?.classList.add('paused');
+  updateAdminTimerDisplay();
+  saveEventConfigToBackend();
+}else if(parts.length===2){timerSec=parseInt(parts[0])*60+parseInt(parts[1]);timerOriginal=timerSec;renderTimer()}}
 function resetTimer(){
-  // Reset manual countdown back to original (persisted)
-  if(timerMode!=='countdown')return;
-  timerSec=timerOriginal||0;
-  timerStarted=false;
+  timerSec=timerOriginal;
   timerPaused=true;
+  timerStarted=false;
   const pb=document.getElementById('pauseBtn');
-  if(pb)pb.textContent='⏸ PAUSE';
-  document.getElementById('cTimer')?.classList.remove('paused');
-
-  if(timerSec>0){
-    saveSessionTimerState({mode:'countdown',status:'paused',durationMs:timerSec*1000,pausedRemainingMs:timerSec*1000,endAtMs:null,updatedAtMs:nowCorrected()});
-  }else{
-    saveSessionTimerState({mode:'none',status:'stopped',updatedAtMs:nowCorrected()});
-  }
-
+  if(pb)pb.textContent='▶ START';
+  const ct=document.getElementById('cTimer');
+  ct?.classList.add('paused');
   renderTimer();
   updateAdminTimerDisplay();
   saveEventConfigToBackend();
 }
-
 function renderTimer(){
   const el=document.getElementById('cTimer');
   if(!el)return;
@@ -9622,23 +9366,14 @@ function renderTimer(){
     // schedule mode renders via startGlobalEventTimer
     return;
   }
-  const dockEl=document.getElementById('adminDockTimer');
-  const apEl=document.getElementById('apTimerDisplay');
-
   if(timerMode==='none'){
     el.textContent='∞';
     el.classList.add('is-infinity');
-    if(dockEl)dockEl.textContent='∞';
-    if(apEl)apEl.textContent='∞';
     return;
   }
-
   el.classList.remove('is-infinity');
   const h=Math.floor(timerSec/3600),m=Math.floor((timerSec%3600)/60),s=timerSec%60;
-  const txt=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-  el.textContent=txt;
-  if(dockEl)dockEl.textContent=txt;
-  if(apEl && timerMode==='countdown')apEl.textContent=txt;
+  el.textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 }
 function renderTimerLabel(label){
   const labelEl=document.querySelector('.timer-label');
@@ -9649,20 +9384,9 @@ function tickTimer(){
   if(!_eventCfgHydrated)return;
   if(timerMode==='none')return; // Open-ended, no timer
   if(timerMode==='countdown'){
-    // Authoritative countdown based on shared timer state
-    const remMs=getSessionTimerRemainingMs();
-    if(remMs==null){
-      // fallback to legacy behavior
-      if(timerPaused||timerSec<=0)return;
-      timerSec--;renderTimer();
-      if(timerSec<=0)onTimerExpired();
-      return;
-    }
-    timerSec=Math.ceil(remMs/1000);
-    renderTimer();
-    if(remMs<=0){
-      onTimerExpired();
-    }
+    if(timerPaused||timerSec<=0)return;
+    timerSec--;renderTimer();
+    if(timerSec<=0)onTimerExpired();
   }
 }
 function onTimerExpired(){
