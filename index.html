@@ -4525,7 +4525,7 @@ function selectAllMedia(){const isEdit=document.body.classList.contains('admin-m
 function deleteSelectedMedia(){if(!_mediaSelected.size)return;if(!confirm('Delete '+_mediaSelected.size+' selected item(s)?'))return;const idxs=Array.from(_mediaSelected).sort((a,b)=>b-a);idxs.forEach(i=>{const m=mediaItems[i];if(m&&m.fileUrl)deleteFromR2(m.fileUrl);mediaItems.splice(i,1)});exitMediaSelectMode();renderMedia();renderGrid();saveMediaItemsToBackend()}
 function renderMedia(){
   const list=document.getElementById('mediaList');
-  const isEdit=document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview');
+  const isEdit=document.body.classList.contains('admin-mode');
   const isAdmin=document.body.classList.contains('admin-mode');
   const isPreview=document.body.classList.contains('player-preview');
   const showAll=isAdmin&&!isPreview;
@@ -7085,11 +7085,31 @@ function renderPortalUsersList(){
 }
 function removeManualTeam(i){removeTeam(i)}
 
+
+function refreshAllAdminTabs(){
+  try{syncAdminPanelSettings()}catch(e){}
+  try{renderPortalUsersList()}catch(e){}
+  try{renderScoringEditor()}catch(e){}
+  try{syncRegistrationSettings()}catch(e){}
+  try{updateThemeLabel();initTypographyPanel()}catch(e){}
+  try{renderTutorialStepList();const tg=document.getElementById('tutGlobalToggle');if(tg)tg.classList.toggle('on',tutorialEnabled)}catch(e){}
+  try{renderKeysCodes()}catch(e){}
+  try{renderFullLeaderboard()}catch(e){}
+  try{renderTeamMonitor()}catch(e){}
+  try{renderMedia()}catch(e){}
+  try{renderIntelFeed()}catch(e){}
+}
+
 // ══════ EVENT CONTROL PANEL ══════
-function openEventControl(){
+async function openEventControl(){
+  // Always pull latest config when opening Admin Settings, then refresh all admin tabs.
   switchAdminTab('adminPanel');
-  syncAdminPanelSettings();
-  initTypographyPanel();
+  try{
+    const cfg=await apiCall('getEventConfig');
+    if(cfg&&cfg.ok&&cfg.config)applyEventConfig(cfg.config);
+  }catch(e){console.warn('getEventConfig failed on admin open',e)}
+  // Refresh all tab UIs to reflect current state (even if user hasn't clicked them yet)
+  refreshAllAdminTabs();
   if(apTimerInterval)clearInterval(apTimerInterval);
   apTimerInterval=setInterval(()=>{const el=document.getElementById('apTimerDisplay');if(el)el.textContent=document.getElementById('cTimer').textContent},250);
 }
