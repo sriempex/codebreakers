@@ -594,8 +594,8 @@
   /* Admin edit btn repositioned for monitor */
   .crt-monitor .admin-edit-btn{top:4px;right:4px;z-index:10}
   /* Force edit buttons visible above ALL theme effects in admin mode */
-  body.admin-mode:not(body.player-preview .crt-monitor{clip-path:none!important;overflow:hidden!important}
-  body.admin-mode:not(body.player-preview .crt-monitor .admin-edit-btn{z-index:20}
+  body.admin-mode:not(.player-preview) .crt-monitor{clip-path:none!important;overflow:hidden!important}
+  body.admin-mode:not(.player-preview) .crt-monitor .admin-edit-btn{z-index:20}
 
   /* ══════ CONSOLE GRID THEMES ══════ */
   /* Theme 1 (crt) = default styles above — no override needed */
@@ -1018,7 +1018,7 @@
   .intel-notice{font-family:'Chakra Petch',sans-serif;font-size:13px;color:#b0bcc8;line-height:1.8;text-align:center;padding:16px 22px;margin:4px 0 10px;border:1px solid rgba(0,255,136,.1);border-radius:6px;background:rgba(0,255,136,.03);letter-spacing:.3px;font-weight:500}
   .intel-notice strong{color:var(--green);font-weight:700;letter-spacing:.5px}
   .intel-notice-icon{font-size:14px;margin-right:6px}
-  body.admin-mode:not(body.player-preview .intel-notice{display:none}
+  body.admin-mode:not(.player-preview) .intel-notice{display:none}
   .intel-saved-blip{min-width:44px;height:18px;display:flex;align-items:center;justify-content:center;font-size:8px;text-transform:uppercase;letter-spacing:1px;color:rgba(0,255,136,0);flex-shrink:0;transition:all .25s;pointer-events:none;opacity:0}
   .intel-saved-blip.show{color:var(--green);opacity:1;text-shadow:0 0 8px rgba(0,255,136,.35);animation:intelSavedPop .5s ease}
   @keyframes intelSavedPop{0%{transform:scale(1.4);opacity:.5}100%{transform:scale(1);opacity:1}}
@@ -1661,7 +1661,7 @@
   body.admin-mode:not(.player-preview) .feed-card:hover .admin-edit-btn,
   body.admin-mode:not(.player-preview) .media-exp-item:hover .admin-edit-btn,
   body.admin-mode:not(.player-preview) .intel-exp-row:hover .admin-edit-btn,
-  body.admin-mode:not(body.player-preview .crt-monitor:hover .admin-edit-btn{opacity:1;pointer-events:all}
+  body.admin-mode:not(.player-preview) .crt-monitor:hover .admin-edit-btn{opacity:1;pointer-events:all}
   .admin-edit-inline{display:none;width:18px;height:18px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);border-radius:3px;color:var(--cyan);font-size:9px;cursor:pointer;align-items:center;justify-content:center;margin-left:8px;vertical-align:middle;transition:all .15s;flex-shrink:0}
   .admin-edit-inline:hover{background:rgba(0,212,255,.25)}
   body.admin-mode:not(.player-preview) .admin-edit-inline{display:inline-flex;opacity:0;pointer-events:none}
@@ -2415,13 +2415,6 @@
   border-color:#ff4d4d !important;
   box-shadow:0 0 8px rgba(255,77,77,0.7);
 }
-
-
-/* --- FIX: prevent layout 'warp' when toggling player-preview/admin ---
-   Root cause: body width:100vw includes scrollbar; when scrollbars appear/disappear,
-   the whole frame shifts. Keep widths at 100% and stabilize scrollbar gutter. */
-html{scrollbar-gutter:stable both-edges; overflow-y:scroll;}
-body{width:100% !important; overflow-x:hidden;}
 
 </style>
 <script>
@@ -4532,7 +4525,7 @@ function selectAllMedia(){const isEdit=document.body.classList.contains('admin-m
 function deleteSelectedMedia(){if(!_mediaSelected.size)return;if(!confirm('Delete '+_mediaSelected.size+' selected item(s)?'))return;const idxs=Array.from(_mediaSelected).sort((a,b)=>b-a);idxs.forEach(i=>{const m=mediaItems[i];if(m&&m.fileUrl)deleteFromR2(m.fileUrl);mediaItems.splice(i,1)});exitMediaSelectMode();renderMedia();renderGrid();saveMediaItemsToBackend()}
 function renderMedia(){
   const list=document.getElementById('mediaList');
-  const isEdit=document.body.classList.contains('admin-mode');
+  const isEdit=document.body.classList.contains('admin-mode')&&!document.body.classList.contains('player-preview');
   const isAdmin=document.body.classList.contains('admin-mode');
   const isPreview=document.body.classList.contains('player-preview');
   const showAll=isAdmin&&!isPreview;
@@ -7092,31 +7085,11 @@ function renderPortalUsersList(){
 }
 function removeManualTeam(i){removeTeam(i)}
 
-
-function refreshAllAdminTabs(){
-  try{syncAdminPanelSettings()}catch(e){}
-  try{renderPortalUsersList()}catch(e){}
-  try{renderScoringEditor()}catch(e){}
-  try{syncRegistrationSettings()}catch(e){}
-  try{updateThemeLabel();initTypographyPanel()}catch(e){}
-  try{renderTutorialStepList();const tg=document.getElementById('tutGlobalToggle');if(tg)tg.classList.toggle('on',tutorialEnabled)}catch(e){}
-  try{renderKeysCodes()}catch(e){}
-  try{renderFullLeaderboard()}catch(e){}
-  try{renderTeamMonitor()}catch(e){}
-  try{renderMedia()}catch(e){}
-  try{renderIntelFeed()}catch(e){}
-}
-
 // ══════ EVENT CONTROL PANEL ══════
-async function openEventControl(){
-  // Always pull latest config when opening Admin Settings, then refresh all admin tabs.
+function openEventControl(){
   switchAdminTab('adminPanel');
-  try{
-    const cfg=await apiCall('getEventConfig');
-    if(cfg&&cfg.ok&&cfg.config)applyEventConfig(cfg.config);
-  }catch(e){console.warn('getEventConfig failed on admin open',e)}
-  // Refresh all tab UIs to reflect current state (even if user hasn't clicked them yet)
-  refreshAllAdminTabs();
+  syncAdminPanelSettings();
+  initTypographyPanel();
   if(apTimerInterval)clearInterval(apTimerInterval);
   apTimerInterval=setInterval(()=>{const el=document.getElementById('apTimerDisplay');if(el)el.textContent=document.getElementById('cTimer').textContent},250);
 }
