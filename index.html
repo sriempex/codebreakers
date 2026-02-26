@@ -860,9 +860,12 @@
   .media-exp-desc{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#aaa;font-weight:500;letter-spacing:1px}
   .media-exp-badge{font-family:'Saira',sans-serif;margin-left:auto;font-size:9px;letter-spacing:2px;font-weight:600;padding:3px 10px;border-radius:2px;text-transform:uppercase}
   .media-exp-badge.audio{color:var(--cyan);border:1px solid rgba(0,212,255,.3)}
-  .media-exp-badge.doc{color:#b088ff;border:1px solid rgba(176,136,255,.35)}
-  .media-exp-badge.map{color:#44aaff;border:1px solid rgba(68,170,255,.35)}
+  .media-exp-badge.doc{color:#c084fc;border:1px solid rgba(192,132,252,.3)}
+  .media-exp-badge.document{color:#c084fc;border:1px solid rgba(192,132,252,.3)}
+  .media-exp-badge.map{color:#60a5fa;border:1px solid rgba(96,165,250,.3)}
   .media-exp-badge.video{color:#ff66aa;border:1px solid rgba(255,102,170,.3)}
+  .media-exp-badge.image{color:#f0c878;border:1px solid rgba(240,200,120,.3)}
+  .media-exp-badge.dossier{color:#a78bfa;border:1px solid rgba(167,139,250,.3)}
   .media-exp-badge.locked{color:#777;border:1px solid #444}
   .media-vault-hatch{position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:1;
     background:repeating-linear-gradient(135deg,transparent,transparent 4px,rgba(255,170,51,.04) 4px,rgba(255,170,51,.04) 5px);
@@ -1016,8 +1019,8 @@
   .intel-notice strong{color:var(--green);font-weight:700;letter-spacing:.5px}
   .intel-notice-icon{font-size:14px;margin-right:6px}
   body.admin-mode:not(.player-preview) .intel-notice{display:none}
-  .intel-saved-blip{display:flex;align-items:center;justify-content:center;font-size:8px;letter-spacing:2px;font-family:'IBM Plex Mono',monospace;color:var(--green);background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.18);border-radius:3px;padding:3px 6px;opacity:0;transition:opacity .15s;pointer-events:none;text-transform:uppercase}
-  .intel-saved-blip.show{opacity:1;animation:intelSavedPop .35s ease}
+  .intel-saved-blip{display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;color:rgba(0,255,136,.0);flex-shrink:0;transition:all .3s;pointer-events:none;white-space:nowrap;min-width:0;overflow:hidden;max-width:0;padding:0}
+  .intel-saved-blip.show{color:var(--green);text-shadow:0 0 8px rgba(0,255,136,.4);max-width:50px;padding:0 4px;animation:intelSavedPop .4s ease}
   @keyframes intelSavedPop{0%{transform:scale(1.4);opacity:.5}100%{transform:scale(1);opacity:1}}
   .intel-submit-wrap{margin-top:20px;display:flex;justify-content:center}
   .intel-submit-btn{padding:14px 48px;cursor:pointer;transition:all .15s;border-radius:4px;
@@ -2125,6 +2128,8 @@
   /* Touch devices — always show drag handles in admin mode */
   @media(hover:none){
     body.admin-mode:not(.player-preview) .intel-exp-row .drag-handle{opacity:.5!important}
+    body.admin-mode:not(.player-preview) .media-exp-item .drag-handle{display:flex!important;opacity:.5!important}
+    body.admin-mode:not(.player-preview) .feed-card .drag-handle{display:flex!important;opacity:.5!important}
   }
 
   /* Reduced motion — helps low-end devices and accessibility */
@@ -2146,18 +2151,13 @@
   .drag-handle{display:none;cursor:grab;padding:2px 4px;color:#444;font-size:14px;letter-spacing:-2px;user-select:none;-webkit-user-select:none;touch-action:none;flex-shrink:0;align-self:center}
   .drag-handle:hover{color:#888}
   .drag-handle:active{cursor:grabbing}
-  /* Show drag handles for feed/media in admin mode (was hidden due to display:none) */
-  body.admin-mode:not(.player-preview) .feed-card .drag-handle,
-  body.admin-mode:not(.player-preview) .media-exp-item .drag-handle{display:flex;opacity:0;pointer-events:none}
-  body.admin-mode:not(.player-preview) .feed-card:hover .drag-handle,
-  body.admin-mode:not(.player-preview) .media-exp-item:hover .drag-handle{opacity:1;pointer-events:all}
-  @media(hover:none){body.admin-mode.reorder-mode:not(.player-preview) .feed-card .drag-handle,
-    body.admin-mode.reorder-mode:not(.player-preview) .media-exp-item .drag-handle{opacity:1!important;pointer-events:all!important}}
-  body.admin-mode:not(.player-preview) .intel-exp-row>.drag-handle{display:none}
+  body.admin-mode:not(.player-preview) .media-exp-item .drag-handle{display:flex;opacity:.4}
+  body.admin-mode:not(.player-preview) .feed-card .drag-handle{display:flex;opacity:0}
+  body.admin-mode:not(.player-preview) .intel-exp-row .drag-handle{display:flex;opacity:0}
   body.admin-mode:not(.player-preview) .feed-card:hover .drag-handle,
   body.admin-mode:not(.player-preview) .media-exp-item:hover .drag-handle,
   body.admin-mode:not(.player-preview) .intel-exp-row:hover .drag-handle{opacity:1}
-  @media(hover:none){body.admin-mode.reorder-mode:not(.player-preview) .drag-handle{opacity:1!important}}
+  @media(hover:none){body.admin-mode.reorder-mode:not(.player-preview) .drag-handle{opacity:1!important;display:flex!important}}
   .feed-card.drag-over{border-color:var(--cyan)!important;box-shadow:0 0 12px rgba(0,212,255,.2)!important}
   .feed-card.dragging{opacity:.35;pointer-events:none}
   .media-exp-item.drag-over{border-color:var(--cyan)!important;box-shadow:0 0 12px rgba(0,212,255,.2)!important}
@@ -2502,7 +2502,7 @@
 
 <div id="adminEditModal"><div class="edit-box" id="editBox"></div></div>
 
-<div id="confirmModal"><div class="confirm-box"><div class="confirm-header"><h3>⚠ Confirm Transmission</h3><p>Review your intel before final submission. This action cannot be undone.</p></div><div class="confirm-body" id="confirmBody"></div><div class="confirm-footer"><button class="btn-standard btn-ghost" onclick="hideConfirm()">◂ Go Back</button><button class="intel-submit-btn intel-confirm-btn" id="intelConfirmSubmitBtn" onclick="finalSubmit()">CONFIRM AND SUBMIT</button></div></div></div>
+<div id="confirmModal"><div class="confirm-box"><div class="confirm-header"><h3>⚠ Confirm Transmission</h3><p>Review your intel before final submission. This action cannot be undone.</p></div><div class="confirm-body" id="confirmBody"></div><div class="confirm-footer"><button class="btn-standard btn-ghost" onclick="hideConfirm()">◂ Go Back</button><button class="btn-standard btn-green" onclick="finalSubmit()" style="transition:all .15s;position:relative" onmouseenter="this.style.boxShadow='0 0 25px rgba(0,255,136,.2),0 0 50px rgba(0,255,136,.1)';this.style.textShadow='0 0 10px rgba(0,255,136,.4)'" onmouseleave="this.style.boxShadow='';this.style.textShadow=''">Confirm and Submit</button></div></div></div>
 
 <!-- ADMIN CHOICE MODAL (after auth from landing) -->
 <div id="adminChoiceModal"><div class="admin-choice-box"><h3>◈ Navigation</h3><p>Where would you like to go?</p><div class="admin-choice-btns"><button class="btn-standard btn-cyan" onclick="adminGoVault()">Go to Vault</button><button class="btn-standard btn-green" onclick="adminGoConsole()">Go to Console</button></div></div></div>
@@ -3314,7 +3314,7 @@
 <!-- EXPANDED -->
 <div id="panelOverlay">
   <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" class="feed-count-badge"></span><div style="margin-left:auto"></div><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter"></span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
-  <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span class="feed-count-badge" id="mediaHeaderCount" style="margin-left:10px">0 ITEMS</span><span id="mediaCountIndicator" style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
+  <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" class="feed-count-badge"></span><span style="flex:1"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
   <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area"><div class="intel-crt-header" style="text-align:center;justify-content:center"><div class="intel-crt-dot"></div> INTEL SUBMISSIONS</div><div class="intel-notice" id="intelNotice"><span class="intel-notice-icon">💾</span> Your answers save automatically as you type — feel free to edit, revise, and change them as many times as you need. Once you press <strong>Submit Intel</strong>, your answers are locked in and cannot be changed.</div><div id="intelForm"></div></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
   <div class="expanded-panel" id="expVault">
     <div class="exp-header"><span class="panel-icon">🔐</span><span class="exp-title">The Vault</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div>
@@ -3336,7 +3336,7 @@
         <div class="vault-unlock-section">
           <div class="vault-unlock-header">
             <span class="vault-unlock-title">🔓 Vault Log</span>
-            <span class="vault-unlock-count" id="vaultUnlockCount">EMPTY</span>
+            <span class="vault-unlock-count" id="vaultUnlockCount">0 OF 0 ITEMS UNLOCKED</span>
           </div>
           <div class="vault-unlock-list" id="vaultUnlockList">
             <div class="vault-unlock-empty">No codes entered yet. Solve puzzles across the Intelligence Feed and Evidence Locker to discover vault codes.</div>
@@ -4226,12 +4226,7 @@ function renderVaultPanel(){
   const count=document.getElementById('vaultUnlockCount');
   if(!list)return;
   const unlocked=vaultCodes.filter(c=>c.unlocked).length;
-  const total=vaultCodes.length;
-  if(count){
-    if(total===0) count.textContent='EMPTY';
-    else if(unlocked===0) count.textContent=total+' Locked Item'+(total===1?'':'s');
-    else count.textContent=unlocked+' of '+total+' Items Unlocked';
-  }
+  if(count)count.textContent=vaultBadgeText();
   const dot=document.getElementById('vkDot');
   const lbl=document.getElementById('vkLbl');
   if(dot&&lbl){
@@ -4511,9 +4506,7 @@ function renderMedia(){
   const searchVal=(document.getElementById('mediaSearchFilter')?.value||'').toLowerCase().trim();
   const filtered=searchVal?visibleItems.filter(m=>(m.name||'').toLowerCase().includes(searchVal)||(m.desc||'').toLowerCase().includes(searchVal)||(m.type||'').toLowerCase().includes(searchVal)):visibleItems;
   // Count indicator
-  const mci=document.getElementById('mediaCountIndicator');if(mci)mci.textContent=filtered.length+(searchVal?' of '+visibleItems.length:'')+' items';
-  const mhc=document.getElementById('mediaHeaderCount');
-  if(mhc)mhc.textContent=filtered.length+' ITEM'+(filtered.length===1?'':'S');
+  const mci=document.getElementById('mediaCountIndicator');if(mci){const countText=filtered.length+(filtered.length===1?' ITEM':' ITEMS')+(searchVal?' of '+visibleItems.length:'');mci.textContent=countText;}
   const selectBtnHtml=isEdit&&!_mediaSelectMode&&filtered.length>0?`<div style="text-align:right;margin-bottom:8px"><button onclick="enterMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 12px;color:#666;cursor:pointer">☑ SELECT</button></div>`:'';
   list.innerHTML=selectBtnHtml+filtered.map((m,i)=>{
     const realIdx=mediaItems.indexOf(m);
@@ -6504,34 +6497,46 @@ function updateBannerFallback(){
 function handleBannerUpload(input){
   if(!input.files||!input.files[0])return;
   const file=input.files[0];
-  const status=document.getElementById('apBannerStatus');
-  if(status){status.textContent='Uploading...';status.style.color='var(--amber)';}
-  uploadFileToDrive(file,'branding').then(result=>{
+  // Show local preview immediately
+  const reader=new FileReader();
+  reader.onload=function(e){
+    applyBannerImage(e.target.result);
+  };
+  reader.readAsDataURL(file);
+  // Upload to R2
+  uploadFileToDrive(file,'banners').then(result=>{
     regSettings.landingBannerUrl=result.directUrl;
     applyBannerImage(result.directUrl);
     syncBannerPreview();
     saveEventConfigToBackend();
   }).catch(err=>{
-    console.error('Banner upload failed:',err);
-    if(status){status.textContent='✗ Upload failed — try again';status.style.color='var(--red)';}
-  }).finally(()=>{try{input.value='';}catch(e){}});
+    console.error('Banner upload error:',err);
+    // Fallback to data URL
+    const r2=new FileReader();
+    r2.onload=function(e2){regSettings.landingBannerUrl=e2.target.result;syncBannerPreview();saveEventConfigToBackend()};
+    r2.readAsDataURL(file);
+  });
 }
 function handleAdminBannerUpload(input){
   if(!input.files||!input.files[0])return;
   const file=input.files[0];
-  _pendingBannerFile=file;
+  // Upload to R2 first, then show preview
   const reader=new FileReader();
   reader.onload=function(e){
-    const url=e.target.result;
-    // Show preview modal (local preview). Upload happens on accept.
-    showBannerPreviewModal(url,input);
+    const localUrl=e.target.result;
+    // Upload to R2 in background
+    uploadFileToDrive(file,'banners').then(result=>{
+      showBannerPreviewModal(result.directUrl,input);
+    }).catch(err=>{
+      console.error('Banner R2 upload error:',err);
+      showBannerPreviewModal(localUrl,input);
+    });
   };
   reader.readAsDataURL(file);
   input.value=''; // reset so same file can be re-selected
 }
 
 let _pendingBannerUrl='';
-let _pendingBannerFile=null;
 function showBannerPreviewModal(url,inputEl){
   _pendingBannerUrl=url;
   showEditModal(`<h3>📷 Banner Preview</h3>
@@ -6547,25 +6552,12 @@ function showBannerPreviewModal(url,inputEl){
     </div>`);
 }
 function acceptBannerPreview(){
-  const finalize=(url)=>{
-    regSettings.landingBannerUrl=url||'';
-    applyBannerImage(regSettings.landingBannerUrl);
-    syncBannerPreview();
-    saveEventConfigToBackend();
-    hideEditModal();
-    _pendingBannerUrl='';
-    _pendingBannerFile=null;
-  };
-  if(_pendingBannerFile){
-    showEditModal(`<h3>Uploading Banner...</h3><div style="text-align:center;padding:14px"><div class="upload-spinner"></div><div style="font-size:9px;color:var(--amber);margin-top:8px;letter-spacing:1px">UPLOADING...</div></div>`);
-    uploadFileToDrive(_pendingBannerFile,'branding').then(r=>finalize(r.directUrl)).catch(err=>{
-      console.error('Banner upload failed:',err);
-      alert('Banner upload failed — please try again.');
-      finalize('');
-    });
-    return;
-  }
-  finalize(_pendingBannerUrl);
+  regSettings.landingBannerUrl=_pendingBannerUrl;
+  applyBannerImage(_pendingBannerUrl);
+  syncBannerPreview();
+  saveEventConfigToBackend();
+  hideEditModal();
+  _pendingBannerUrl='';
 }
 function cancelBannerPreview(){
   _pendingBannerUrl='';
@@ -6903,6 +6895,8 @@ function switchAdminTab(panelId){
 
   // Common init function for after the panel is visible
   const _initPanel=function(){
+    // Always refresh data from backend when switching admin tabs
+    if(adminSession){loadEventData()}
     if(panelId==='adminPanel'){syncAdminPanelSettings()}
     if(panelId==='leaderboardModule'){renderFullLeaderboard()}
     if(panelId==='dashboardPanel'){renderTeamMonitor();startTeamMonitor()}
@@ -8091,7 +8085,9 @@ function saveOperationName(){
 function vaultBadgeText(){
   const u=vaultCodes.filter(c=>c.unlocked).length,t=vaultCodes.length;
   if(t===0)return 'EMPTY';
-  return u+' OF '+t+' UNLOCKED';
+  if(u===0)return t===1?'1 Locked Item':t+' Locked Items';
+  if(u===t)return t===1?'1 Item Unlocked':t+' Items Unlocked';
+  return u+' of '+t+' Items Unlocked';
 }
 function updateVaultBadgeColor(){
   const badge=document.getElementById('vaultBadge');
@@ -8107,10 +8103,10 @@ function updateVaultBadgeColor(){
   else{badge.style.color='';badge.style.textShadow=''}
 }
 function tileBadgeText(id,isAdmin){
-  if(id==='feed')return posts.length?posts.length+' POSTS':'NO INTEL';
+  if(id==='feed')return posts.length?posts.length+(posts.length===1?' POST':' POSTS'):'NO INTEL';
   if(id==='media'){
     const count=isAdmin?mediaItems.length:mediaItems.filter(m=>!m.vaultLocked||vaultCodes.find(c=>c.linkedMediaIdx===mediaItems.indexOf(m)&&c.unlocked)).length;
-    return count?count+' ITEMS':'0 ITEMS';
+    return count?count+(count===1?' ITEM':' ITEMS'):'0 ITEMS';
   }
   if(id==='vault')return vaultBadgeText();
   // intel — count filled fields from best available source
@@ -8169,8 +8165,9 @@ function editGridTile(i){
       ${isImgIcon?`<div style="margin-top:6px;display:flex;align-items:center;gap:8px"><img src="${t.icon}" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid var(--border)"><span style="font-size:8px;color:#666">Current icon</span><button onclick="document.getElementById('eg_icon').style.display='';document.getElementById('eg_icon').value='📡';this.parentElement.remove()" style="font-size:8px;color:var(--red);background:none;border:1px solid rgba(255,50,50,.2);border-radius:3px;padding:2px 8px;cursor:pointer">Remove</button></div>`:''}
       <div id="eg_icon_preview"></div>
     </div>
-    <div class="edit-field-row">
+    <div class="edit-font-row">
       <div class="edit-field"><label>Label</label><input id="eg_label" value="${t.label}"></div>
+      <div class="edit-field"><label>Label Font</label>${fontSelect('eg_label_font',t.labelFont)}</div>
     </div>
     <label style="display:flex;align-items:center;gap:6px;margin:-8px 0 10px;cursor:pointer"><input type="checkbox" id="eg_label_all"><span style="font-size:9px;color:#888;letter-spacing:1px">Apply label font to all grid tiles</span></label>
     <div class="edit-font-row"><div class="edit-field"><label>Description</label><input id="eg_sub" value="${t.sub}"></div><div class="edit-field"><label>Desc Font</label>${fontSelect('eg_sub_font',t.subFont)}</div></div>
@@ -8183,15 +8180,24 @@ function editGridTile(i){
 function handleGridIconUpload(input){
   if(!input.files||!input.files[0])return;
   const file=input.files[0];
-  const prev=document.getElementById('eg_icon_preview');
-  if(prev){prev.innerHTML=`<div style="margin-top:6px;display:flex;align-items:center;gap:8px"><div class="upload-spinner" style="width:16px;height:16px;border-width:2px"></div><span style="font-size:8px;color:var(--amber)">Uploading...</span></div>`;}
-  uploadFileToDrive(file,'icons').then(result=>{
+  const preview=document.getElementById('eg_icon_preview');
+  // Show uploading state
+  preview.innerHTML=`<div style="margin-top:6px;display:flex;align-items:center;gap:8px"><span style="font-size:8px;color:var(--amber);letter-spacing:1px">⏳ Uploading to R2...</span></div>`;
+  // Upload to R2
+  uploadFileToDrive(file,'grid-icons').then(result=>{
     document.getElementById('eg_icon').value=result.directUrl;
-    if(prev){prev.innerHTML=`<div style="margin-top:6px;display:flex;align-items:center;gap:8px"><img src="${result.directUrl}" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid var(--border)"><span style="font-size:8px;color:var(--green)">SAVED</span></div>`;}
+    document.getElementById('eg_icon').style.display='none';
+    preview.innerHTML=`<div style="margin-top:6px;display:flex;align-items:center;gap:8px"><img src="${result.directUrl}" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid var(--border)"><span style="font-size:8px;color:var(--green)">✓ Image uploaded</span></div>`;
   }).catch(err=>{
-    console.error('Grid icon upload failed:',err);
-    if(prev){prev.innerHTML=`<div style="margin-top:6px;font-size:8px;color:var(--red)">✗ Upload failed — try again</div>`;}
-  }).finally(()=>{try{input.value='';}catch(e){}});
+    console.error('Grid icon upload error:',err);
+    // Fallback to data URL if R2 fails
+    const reader=new FileReader();
+    reader.onload=function(e){
+      document.getElementById('eg_icon').value=e.target.result;
+      preview.innerHTML=`<div style="margin-top:6px;display:flex;align-items:center;gap:8px"><img src="${e.target.result}" style="width:36px;height:36px;object-fit:contain;border-radius:4px;border:1px solid var(--border)"><span style="font-size:8px;color:var(--amber)">✓ Image loaded (local)</span></div>`;
+    };
+    reader.readAsDataURL(file);
+  });
 }
 function saveGridTile(i){
   gridTiles[i].icon=document.getElementById('eg_icon').value.trim()||'📡';
@@ -8321,22 +8327,39 @@ function loadDraftsFromBackend(){
 (function(){
   const form=document.getElementById('intelForm');
   if(form){
+    // Auto-save drafts as user types (silent, no blip)
     form.addEventListener('input',function(e){
       if(e.target.classList.contains('intel-exp-input')){
-        const idx=e.target.dataset.idx;
         clearTimeout(_draftSaveTimer);
-                // Immediate UI feedback (text-only) to avoid implying correctness
-        const blip=document.querySelector('.intel-saved-blip[data-save-idx="'+idx+'"]');
-        if(blip){
-          blip.classList.add('show');
-          clearTimeout(blip._hideTimer);
-          blip._hideTimer=setTimeout(()=>blip.classList.remove('show'),1200);
-        }
         _draftSaveTimer=setTimeout(()=>{
           saveGameState();
           saveDraftsToBackend();
-        },700);
+        },1500);
       }
+    });
+    // Show SAVED blip on blur (tab/click away) or Enter — only if field has content
+    function _showSavedBlip(target){
+      if(!target.classList.contains('intel-exp-input'))return;
+      const idx=target.dataset.idx;
+      if(!target.value.trim())return; // Don't show SAVED on empty/cleared fields
+      const blip=document.querySelector('.intel-saved-blip[data-save-idx="'+idx+'"]');
+      if(blip){
+        blip.classList.add('show');
+        clearTimeout(blip._hideTimer);
+        blip._hideTimer=setTimeout(()=>blip.classList.remove('show'),2500);
+      }
+      // Also trigger an immediate save
+      clearTimeout(_draftSaveTimer);
+      saveGameState();
+      saveDraftsToBackend();
+    }
+    form.addEventListener('focusout',function(e){_showSavedBlip(e.target)});
+    form.addEventListener('keydown',function(e){
+      if(e.key==='Enter'&&e.target.classList.contains('intel-exp-input')){_showSavedBlip(e.target)}
+    });
+    // Also handle select dropdowns (change event)
+    form.addEventListener('change',function(e){
+      if(e.target.classList.contains('intel-exp-input')){_showSavedBlip(e.target)}
     });
   }
 })();
