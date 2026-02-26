@@ -8391,14 +8391,16 @@ function clearIntelSlot(btn){
   const row=btn.closest('.intel-exp-row');
   if(!row)return;
   row.querySelectorAll('.intel-exp-input').forEach(inp=>{
+    // Suppress the "SAVED" blip for clears
     inp.dataset.suppressSaved='1';
     inp.value='';
     inp.focus();
     // Allow suppression to expire shortly after clear
     clearTimeout(inp._suppressTimer);
-    inp._suppressTimer=setTimeout(()=>{if(inp.dataset.suppressSaved)delete inp.dataset.suppressSaved},500);
+    inp._suppressTimer=setTimeout(()=>{
+      if(inp.dataset.suppressSaved) delete inp.dataset.suppressSaved;
+    },500);
   });
-});
 }
 function editIntelField(i){
   const f=intelFields[i];
