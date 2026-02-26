@@ -6358,6 +6358,23 @@ if(window.__configHydrated===undefined)window.__configHydrated=false;
 
 let _currentScreen='landingScreen';
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');_currentScreen=id;const lb=document.getElementById('logoutBtn');if(lb)lb.classList.toggle('visible',id==='consoleScreen');if(id!=='settingsScreen'){_currentAdminPage=null;updateGearIcon()}if(currentVaultTeam)saveSession()
+  // Preload hidden panels so Intelligence Feed / Evidence Locker are populated immediately after login.
+  // (Previously they only rendered on first open via openPanel(), which made them appear empty until clicked.)
+  if(id==='consoleScreen'){
+    setTimeout(()=>{
+      try{renderGrid();}catch(e){}
+      try{renderFeed();}catch(e){}
+      try{renderMedia();}catch(e){}
+      try{renderIntelForm();}catch(e){}
+      try{restoreIntelDraft&&restoreIntelDraft();}catch(e){}
+      try{updateIntelBadge&&updateIntelBadge();}catch(e){}
+      try{syncVaultCodesFromMedia&&syncVaultCodesFromMedia();}catch(e){}
+      // Pull fresh backend state in the background (no panel open required)
+      try{_refreshPanelData&&_refreshPanelData('feed');}catch(e){}
+      try{_refreshPanelData&&_refreshPanelData('media');}catch(e){}
+      try{_refreshPanelData&&_refreshPanelData('intel');}catch(e){}
+    },0);
+  }
   try{_forceCursorKill();}catch(e){}
 }
 function goToRegistration(){
