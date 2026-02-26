@@ -558,7 +558,7 @@
     /* Subtle CRT curvature via perspective */
     transform:perspective(800px) rotateX(.5deg);
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    padding:clamp(20px,3.5vh,40px) clamp(14px,2vw,24px) clamp(16px,2.8vh,32px)}
+    padding:clamp(14px,2.5vh,20px) clamp(14px,2vw,24px) clamp(12px,2vh,18px)}
   /* Screen curvature highlight — glass bulge */
   .crt-screen::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:3;
     background:
@@ -575,7 +575,7 @@
   /* ── Tile content inside screen ── */
   .tile-glow{position:absolute;top:25%;left:50%;transform:translate(-50%,-50%);width:100px;height:100px;background:radial-gradient(circle,rgba(0,255,136,.02) 0%,transparent 70%);pointer-events:none;transition:all .4s}
   .crt-monitor:hover .tile-glow{width:160px;height:160px;background:radial-gradient(circle,rgba(0,255,136,.05) 0%,transparent 70%)}
-  .tile-icon{font-size:clamp(42px,5.5vh,48px);margin-bottom:clamp(14px,2vh,20px);position:relative;z-index:2;filter:grayscale(.3) brightness(.85);transition:filter .3s,transform .3s}
+  .tile-icon{font-size:clamp(52px,7vh,58px);margin-bottom:clamp(14px,2vh,20px);position:relative;z-index:2;filter:grayscale(.3) brightness(.85);transition:filter .3s,transform .3s}
   .crt-monitor:hover .tile-icon{filter:grayscale(0) brightness(1);transform:scale(1.06)}
   .tile-label{font-family:'Saira',sans-serif;font-weight:700;font-size:clamp(16px,2vh,18px);letter-spacing:clamp(3px,.4vw,4px);color:#c8c8c8;text-transform:uppercase;text-align:center;margin-bottom:clamp(7px,1vh,10px);z-index:2;text-shadow:0 2px 3px rgba(0,0,0,.7)}
   .tile-sub{font-family:'Chakra Petch',sans-serif;font-size:clamp(11px,1.3vh,12px);color:#777;letter-spacing:1px;font-weight:500;text-align:center;margin-bottom:clamp(16px,2vh,22px);z-index:2}
@@ -8166,7 +8166,7 @@ function renderGrid(){
       <div class="crt-led"></div>
       <div class="crt-screen">
         <div class="tile-glow"></div>
-        <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:48px;height:48px;object-fit:contain">`:t.icon}</div>
+        <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:58px;height:58px;object-fit:contain">`:t.icon}</div>
         <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
         <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
         <div class="tile-badge${badgeCls}" id="${t.badgeId}">${tileBadgeText(t.id,isA)}</div>
@@ -10818,7 +10818,7 @@ function renderThemePreviewGrid(){
       <div class="crt-led"></div>
       <div class="crt-screen">
         <div class="tile-glow"></div>
-        <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:48px;height:48px;object-fit:contain">`:t.icon}</div>
+        <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:58px;height:58px;object-fit:contain">`:t.icon}</div>
         <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
         <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
         <div class="tile-badge${badgeCls}">SAMPLE DATA</div>
