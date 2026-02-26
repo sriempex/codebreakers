@@ -898,7 +898,7 @@
   /* Admin tools — positioned in the left padding area of the row */
   .intel-admin-tools{position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;gap:1px;align-items:center;padding-left:2px;opacity:0;transition:opacity .15s;z-index:2}
   .intel-exp-row:hover .intel-admin-tools{opacity:1}
-  .intel-admin-tools .drag-handle{display:flex;cursor:grab;padding:1px 2px;color:#555;font-size:10px;letter-spacing:-2px;user-select:none;-webkit-user-select:none;touch-action:none}
+  .intel-admin-tools .drag-handle{display:flex;align-items:center;justify-content:center;cursor:grab;padding:4px 8px;color:rgba(255,255,255,.7);font-size:14px;letter-spacing:0;user-select:none;-webkit-user-select:none;touch-action:none;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:rgba(255,255,255,.03);box-shadow:0 0 10px rgba(0,212,255,.06)}
   .intel-admin-tools .drag-handle:hover{color:#888}
   .intel-admin-tools .admin-row-edit{display:flex;width:14px;height:14px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);border-radius:2px;color:var(--cyan);font-size:7px;cursor:pointer;align-items:center;justify-content:center}
   .intel-admin-tools .admin-row-edit:hover{background:rgba(0,212,255,.25)}
@@ -917,7 +917,7 @@
   input,textarea,select,.intel-exp-input{user-select:text;-webkit-user-select:text}
   .intel-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%230f8'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px;cursor:pointer}
   .intel-select option{background:#0a0e18;color:#0f8}
-  .intel-exp-clear{width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.35);font-size:12px;border-radius:6px;transition:all .15s;flex-shrink:0;font-family:'IBM Plex Mono',monospace;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03)}
+  .intel-exp-clear{width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.35);font-size:12px;border-radius:6px;transition:all .15s;flex-shrink:0;font-family:'IBM Plex Mono',monospace;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);margin-left:10px;margin-right:8px}
   .intel-exp-clear:hover{color:#fff;background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.25)}
   .intel-exp-check{width:20px;height:20px;border-radius:50%;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;font-size:10px;color:#2a2a2a;flex-shrink:0}
   .intel-exp-check.submitted{color:var(--green);border-color:var(--green);background:rgba(0,255,136,.06)}
@@ -3310,7 +3310,7 @@
 <!-- EXPANDED -->
 <div id="panelOverlay">
   <div class="expanded-panel" id="expFeed"><div class="exp-header"><span class="panel-icon">📡</span><span class="exp-title">Intelligence Feed</span><span id="feedCountIndicator" class="feed-count-badge"></span><div style="margin-left:auto"></div><div id="feedViewToggle" class="feed-view-toggle"><div class="feed-view-btn active" onclick="setFeedView('grid')" id="fvGrid">◫ Grid</div><div class="feed-view-btn" onclick="setFeedView('single')" id="fvSingle">◻ Focus</div></div><button class="exp-close" id="feedCloseBtn" onclick="feedClose()">✕ CLOSE</button></div><div class="exp-body" id="feedExpBody"><div id="feedGridView" class="feed-expanded"></div><div id="feedSingleView" class="feed-single"><div class="feed-single-img" id="singleImg"></div><div class="feed-single-controls"><div class="feed-single-nav-row"><button class="feed-nav-btn" onclick="navPost(-1)">◂ PREV</button><span class="feed-single-counter" id="singleCounter"></span><button class="feed-nav-btn" onclick="navPost(1)">NEXT ▸</button></div></div><div class="feed-single-cap-zone"><div class="feed-single-caption" id="singleCap"></div><div class="feed-single-caption-more" id="feedCapMore" onclick="toggleFeedCaption()">▾ more</div><div class="feed-single-cap-overlay" id="feedCapOverlay"><div class="feed-single-cap-overlay-text" id="feedCapOverlayText"></div><div class="feed-single-cap-overlay-close" onclick="closeFeedCapOverlay()">▴ less</div></div></div><div class="swipe-hint">← Swipe or use arrow keys →</div></div></div></div>
-  <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" class="feed-count-badge" style="margin-left:auto;margin-right:12px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
+  <div class="expanded-panel" id="expMedia"><div class="exp-header"><span class="panel-icon">🗂️</span><span class="exp-title">Evidence Locker</span><span id="mediaCountIndicator" class="feed-count-badge" style="margin-left:10px"></span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body"><div style="margin-bottom:8px"><input id="mediaSearchFilter" placeholder="Search files..." oninput="renderMedia()" style="width:100%;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:8px 12px;color:#ddd;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;outline:none"></div><div id="mediaSelectBar" style="display:none;padding:8px 12px;background:rgba(255,51,51,.06);border:1px solid rgba(255,51,51,.15);border-radius:5px;margin-bottom:10px;align-items:center;gap:10px"><span id="mediaSelectCount" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#aaa;flex:1">0 selected</span><button onclick="selectAllMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #444;border-radius:3px;padding:4px 10px;color:#aaa;cursor:pointer">SELECT ALL</button><button onclick="deleteSelectedMedia()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:rgba(255,51,51,.15);border:1px solid rgba(255,51,51,.3);border-radius:3px;padding:4px 12px;color:var(--red);cursor:pointer">🗑 DELETE SELECTED</button><button onclick="exitMediaSelectMode()" style="font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1px;background:none;border:1px solid #333;border-radius:3px;padding:4px 10px;color:#666;cursor:pointer">CANCEL</button></div><div id="mediaList" class="media-expanded"></div></div></div>
   <div class="expanded-panel" id="expIntel"><div class="exp-header"><span class="panel-icon">🎯</span><span class="exp-title">Intel Submissions</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div><div class="exp-body intel-exp-body"><div class="intel-scroll-area"><div class="intel-crt-header" style="text-align:center;justify-content:center"><div class="intel-crt-dot"></div> INTEL SUBMISSIONS</div><div class="intel-notice" id="intelNotice"><span class="intel-notice-icon">💾</span> Your answers save automatically as you type — feel free to edit, revise, and change them as many times as you need. Once you press <strong>Submit Intel</strong>, your answers are locked in and cannot be changed.</div><div id="intelForm"></div></div><div class="intel-transmit-dock" id="intelTransmitDock"></div></div></div>
   <div class="expanded-panel" id="expVault">
     <div class="exp-header"><span class="panel-icon">🔐</span><span class="exp-title">The Vault</span><button class="exp-close" onclick="closePanel()">✕ CLOSE</button></div>
@@ -8336,21 +8336,44 @@ function loadDraftsFromBackend(){
 (function(){
   const form=document.getElementById('intelForm');
   if(form){
+    form.addEventListener('focusin',function(e){
+      if(e.target.classList.contains('intel-exp-input')){
+        e.target._lastVal=e.target.value;
+      }
+    });
     form.addEventListener('input',function(e){
       if(e.target.classList.contains('intel-exp-input')){
-        const idx=e.target.dataset.idx;
         clearTimeout(_draftSaveTimer);
         _draftSaveTimer=setTimeout(()=>{
           saveGameState();
           saveDraftsToBackend();
-          // Show saved blip on this field
+        },1500);
+      }
+    });
+    form.addEventListener('focusout',function(e){
+      if(e.target.classList.contains('intel-exp-input')){
+        const inp=e.target;
+        const idx=inp.dataset.idx;
+        const prev=(inp._lastVal??'');
+        const now=inp.value||'';
+        // Show "saved" instantly after the user finishes entering data (but not when clearing)
+        if(now.trim() && now!==prev && !inp.dataset.suppressSaved){
           const blip=document.querySelector('.intel-saved-blip[data-save-idx="'+idx+'"]');
           if(blip){
             blip.classList.add('show');
             clearTimeout(blip._hideTimer);
-            blip._hideTimer=setTimeout(()=>blip.classList.remove('show'),2000);
+            blip._hideTimer=setTimeout(()=>blip.classList.remove('show'),1200);
           }
-        },1500);
+        }
+        // Save immediately on blur (and keep input debounce for continuous typing)
+        clearTimeout(_draftSaveTimer);
+        _draftSaveTimer=setTimeout(()=>{
+          saveGameState();
+          saveDraftsToBackend();
+        },0);
+        // Cleanup
+        inp._lastVal=now;
+        if(inp.dataset.suppressSaved)delete inp.dataset.suppressSaved;
       }
     });
   }
@@ -8367,7 +8390,15 @@ function syncIntelLabels(){
 function clearIntelSlot(btn){
   const row=btn.closest('.intel-exp-row');
   if(!row)return;
-  row.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.value='';inp.focus()});
+  row.querySelectorAll('.intel-exp-input').forEach(inp=>{
+    inp.dataset.suppressSaved='1';
+    inp.value='';
+    inp.focus();
+    // Allow suppression to expire shortly after clear
+    clearTimeout(inp._suppressTimer);
+    inp._suppressTimer=setTimeout(()=>{if(inp.dataset.suppressSaved)delete inp.dataset.suppressSaved},500);
+  });
+});
 }
 function editIntelField(i){
   const f=intelFields[i];
