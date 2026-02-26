@@ -2925,7 +2925,7 @@
 <div id="scoringPanel">
   <div class="ap-container">
     <div class="ap-header"><h3>Scoring</h3><button class="mv-close" onclick="closeScoringPanel()">✕ CLOSE</button></div>
-    <div class="ap-section"><h4>🎯 Scoring Editor <span class="save-blip" id="blipScoring">✓ Saved</span></h4>
+    <div class="ap-section"><h4>Scoring Editor <span class="save-blip" id="blipScoring">✓ Saved</span></h4>
       <p>Configure point values and matching rules for each intel field. Changes auto-save and affect grading immediately.</p>
       <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
         <div class="ap-field"><label>Default Points Per Field</label><input type="number" id="seDefaultPoints" value="10" min="1" max="1000" onchange="seApplyDefaultPoints()" style="width:80px"></div>
@@ -2956,7 +2956,7 @@
 <div id="registrationPanel">
   <div class="ap-container">
     <div class="ap-header"><h3>Registration</h3><button class="mv-close" onclick="closeRegistrationPanel()">✕ CLOSE</button></div>
-    <div class="ap-section"><h4>📝 Registration Settings</h4>
+    <div class="ap-section"><h4>Registration Settings</h4>
       <p>Configure team registration parameters. Changes apply immediately.</p>
       <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap">
         <div class="ap-field"><label>Min Team Size</label><select id="apMinSize" onchange="updateRegSettings()" style="width:100px"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
@@ -6800,15 +6800,15 @@ const dashGroupIds=['dashboardPanel','leaderboardModule','sessionMgmtPanel'];
 
 // ══════ SETUP GROUP — sub-nav between related panels ══════
 const setupGroupTabs=[
-  {id:'adminPanel',label:'Event',icon:'⚙️',subs:[
+  {id:'adminPanel',label:'Event',icon:'',subs:[
     {id:'registrationPanel',label:'Registration'},
     {id:'tutorialConfigPanel',label:'Tutorial & Briefing'}
   ]},
-  {id:'keysCodesPanel',label:'Intel & Scoring',icon:'🎯',subs:[
+  {id:'keysCodesPanel',label:'Intel & Scoring',icon:'',subs:[
     {id:'scoringPanel',label:'Scoring'}
   ]},
-  {id:'appearancePanel',label:'Appearance',icon:'🎨'},
-  {id:'portalUsersPanel',label:'Users & Sessions',icon:'👥'}
+  {id:'appearancePanel',label:'Appearance',icon:''},
+  {id:'portalUsersPanel',label:'Users & Sessions',icon:''}
 ];
 const setupGroupIds=[];
 const setupAllIds={};
@@ -6845,10 +6845,10 @@ function injectDashNav(activePanelId){
   const header=panel.querySelector('.ap-header,.kc-header,.bc-header,.lb-header');
   if(!header)return;
   const tabs=[
-    {id:'dashboardPanel',label:'Teams',icon:'📡'},
-    {id:'leaderboardModule',label:'Leaderboard',icon:'🏆'},
-    {id:'sessionMgmtPanel',label:'Sessions',icon:'🛡️'},
-    {id:'broadcastPanel',label:'Broadcast',icon:'📢'}
+    {id:'dashboardPanel',label:'Teams',icon:''},
+    {id:'leaderboardModule',label:'Leaderboard',icon:''},
+    {id:'sessionMgmtPanel',label:'Sessions',icon:''},
+    {id:'broadcastPanel',label:'Broadcast',icon:''}
   ];
   let html='';
   tabs.forEach(t=>{
@@ -11387,15 +11387,15 @@ togglePlayerPreview=function(){
         <button class="admin-page-close" onclick="returnFromAdminPage()" title="Return to console">✕ CLOSE</button>
       </div>
       <div class="admin-page-tabs">
-        <button class="admin-page-tab active" onclick="switchPageTab('settingsScreen','set-event',this)">⚙️ Event</button>
-        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','set-intel',this)">🎯 Intel & Scoring</button>
-        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','set-appearance',this)">🎨 Appearance</button>
-        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','set-users',this)">👥 Users</button>
+        <button class="admin-page-tab active" onclick="switchPageTab('settingsScreen','set-event',this)">Event</button>
+        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','set-intel',this)">Intel & Scoring</button>
+        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','set-appearance',this)">Appearance</button>
+        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','set-users',this)">Users</button>
         <span class="admin-page-tab-sep"></span>
-        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-teams',this)">📡 Teams</button>
-        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-leaderboard',this)">🏆 Leaderboard</button>
-        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-sessions',this)">🛡️ Sessions</button>
-        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-broadcast',this)">📢 Broadcast</button>
+        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-teams',this)">Teams</button>
+        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-leaderboard',this)">Leaderboard</button>
+        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-sessions',this)">Sessions</button>
+        <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-broadcast',this)">Broadcast</button>
       </div>
     </div>
     <div class="admin-page-body">
