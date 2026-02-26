@@ -457,6 +457,8 @@
   .timer-digits.paused{color:var(--amber);animation:ledPulse 1s infinite}
   .timer-label{font-family:'Saira',sans-serif;font-size:9px;color:#888;letter-spacing:3px;font-weight:600;text-transform:uppercase;margin-top:3px;position:relative;top:-3px}
   body.config-hydrating .timer-digits,body.config-hydrating .timer-label{opacity:0}
+  body.config-hydrating .tile-dot,body.config-hydrating .tile-status-label,body.config-hydrating .tile-badge{transition:none;opacity:0}
+  body.config-hydrating .tile-icon img{transition:none}
   .topbar-identity{position:relative;cursor:pointer;display:flex;align-items:center}
   body.admin-mode .team-card-section{display:none}
   body.admin-mode .team-card-notifs{display:none}
@@ -6022,7 +6024,7 @@ async function loadEventData(){
       posts.length=0;
       feedResult.posts.forEach(p=>posts.push(p));
       _cacheContent('cb_posts',posts);
-      renderFeed();renderGrid();
+      renderFeed();
       if(currentFeedView==='single')renderSinglePost();
     }
   }
@@ -6044,7 +6046,7 @@ async function loadEventData(){
     }));
     syncVaultCodesFromMedia();
     _cacheContent('cb_media',mediaItems);
-    renderMedia();renderGrid();
+    renderMedia();
     }
   }
 
@@ -6055,7 +6057,7 @@ async function loadEventData(){
       font:f.font||'',inputFont:f.inputFont||'',answer:f.answer||{expected:[''],alts:[],caseSensitive:false,matchMode:'exact',fuzzyThreshold:85,points:10}
     }));
     _cacheContent('cb_intel',intelFields);
-    renderIntelForm();renderGrid();
+    renderIntelForm();
   }
 
   if(teamsResult.ok&&teamsResult.teams){
@@ -6069,6 +6071,8 @@ async function loadEventData(){
   }
 
   renderVaultPanel();renderKeysCodes();
+  // Single grid render after all data is processed — avoids multiple rebuilds that cause status flicker
+  renderGrid();
 
   if(subResult.ok&&subResult.submissions){
     subResult.submissions.forEach(s=>{
