@@ -6921,8 +6921,11 @@ function switchAdminTab(panelId){
 
   // Common init function for after the panel is visible
   const _initPanel=function(){
-    // Always refresh data from backend when switching admin tabs
-    if(adminSession){loadEventData()}
+    // Debounce backend refresh — avoid redundant fetches on rapid tab switching
+    if(adminSession){
+      clearTimeout(window._adminTabLoadTimer);
+      window._adminTabLoadTimer=setTimeout(function(){loadEventData()},300);
+    }
     if(panelId==='adminPanel'){syncAdminPanelSettings()}
     if(panelId==='leaderboardModule'){renderFullLeaderboard()}
     if(panelId==='dashboardPanel'){renderTeamMonitor();startTeamMonitor()}
@@ -11179,11 +11182,8 @@ function navigateToAdmin(screenId,tabId){
   if(tabId){
     _switchToTab('settingsScreen',tabId);
   }
-  // Refresh data then re-render the active tab with fresh data
-  loadEventData().then(function(){
-    var as=document.querySelector('#settingsScreen .admin-page-section.active');
-    if(as)_switchToTab('settingsScreen',as.id);
-  });
+  // Refresh data in background — no re-switch needed, renders update in-place
+  loadEventData();
   updateGearIcon();
   updatePreviewIcon();
 }
