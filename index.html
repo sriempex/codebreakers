@@ -8085,9 +8085,9 @@ function saveOperationName(){
 function vaultBadgeText(){
   const u=vaultCodes.filter(c=>c.unlocked).length,t=vaultCodes.length;
   if(t===0)return 'EMPTY';
-  if(u===0)return t===1?'1 Locked Item':t+' Locked Items';
-  if(u===t)return t===1?'1 Item Unlocked':t+' Items Unlocked';
-  return u+' of '+t+' Items Unlocked';
+  if(u===0)return t===1?'1 LOCKED ITEM':t+' LOCKED ITEMS';
+  if(u===t)return t===1?'1 ITEM UNLOCKED':t+' ITEMS UNLOCKED';
+  return u+' OF '+t+' ITEMS UNLOCKED';
 }
 function updateVaultBadgeColor(){
   const badge=document.getElementById('vaultBadge');
