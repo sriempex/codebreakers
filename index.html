@@ -2393,13 +2393,19 @@
 
 
 /* --- FIX: Intel Submissions clear 'X' alignment (final override) --- */
-.intel-exp-row{position:relative !important;padding-right:56px !important;}
+.intel-exp-row{position:relative !important;padding-right:72px !important;}
 .intel-exp-clear{
   position:absolute !important;
   right:10px !important; /* brings X in from the wrapper boundary */
   top:50% !important;
   transform:translateY(-50%) !important;
   margin:0 !important;
+}
+
+
+/* Fine-tune SAVED indicator spacing */
+.intel-exp-status{
+  right:64px !important;
 }
 
 </style>
