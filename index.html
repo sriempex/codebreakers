@@ -6824,7 +6824,7 @@ function injectSetupNav(activePanelId){
   setupGroupTabs.forEach(t=>{
     const isParentActive=(t.id===activePanelId)||(t.subs&&t.subs.some(s=>s.id===activePanelId));
     // Main tab
-    html+='<button class="setup-nav-btn'+(t.id===activePanelId?' active':'')+'" onclick="switchSetupTab(\''+t.id+'\')">'+t.icon+' '+t.label+'</button>';
+    html+='<button class="setup-nav-btn'+(t.id===activePanelId?' active':'')+'" onclick="switchSetupTab(\''+t.id+'\')">'+t.label+'</button>';
     // Sub-tabs (show only if this parent group is active)
     if(t.subs&&isParentActive){
       t.subs.forEach(s=>{
@@ -6852,7 +6852,7 @@ function injectDashNav(activePanelId){
   ];
   let html='';
   tabs.forEach(t=>{
-    html+='<button class="setup-nav-btn'+(t.id===activePanelId?' active':'')+'" onclick="switchDashNavTab(\''+t.id+'\')">'+t.icon+' '+t.label+'</button>';
+    html+='<button class="setup-nav-btn'+(t.id===activePanelId?' active':'')+'" onclick="switchDashNavTab(\''+t.id+'\')">'+t.label+'</button>';
   });
   const nav=document.createElement('div');
   nav.className='dash-nav setup-nav';
