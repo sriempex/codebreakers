@@ -2391,6 +2391,17 @@
 
 /* Removed Intel Submissions clear icon per request */
 
+
+/* --- FIX: Intel Submissions clear 'X' alignment (final override) --- */
+.intel-exp-row{position:relative !important;padding-right:56px !important;}
+.intel-exp-clear{
+  position:absolute !important;
+  right:28px !important; /* brings X in from the wrapper boundary */
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  margin:0 !important;
+}
+
 </style>
 <script>
 // Pre-render theme injection — runs before body paints
