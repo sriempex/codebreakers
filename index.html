@@ -1091,42 +1091,32 @@
 
 
   /* ══════ ADMIN PAGE SCREENS ══════ */
-  #settingsScreen{background:rgba(0,0,0,.92);padding:0;display:flex;align-items:center;justify-content:center}
+  #settingsScreen{display:flex;flex-direction:column;height:100vh;
+    background:linear-gradient(180deg, #182634 0%, #1c2b3a 15%, #16222f 50%, #121c27 85%, #0f1822 100%)}
   #settingsScreen.active{z-index:850}
-  .settings-topbar{position:absolute;top:0;left:0;right:0;height:56px;display:flex;align-items:center;padding:0 24px;z-index:10;
+  #settingsScreen::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
     background:
-      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.004) 1px,rgba(255,255,255,.004) 2px,transparent 2px,transparent 3px),
-      linear-gradient(180deg,#0c0e12,#060810);
-    border-bottom:1px solid rgba(255,255,255,.04);
-    box-shadow:0 2px 10px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.015)}
-  .settings-topbar-title{font-family:'Staatliches',cursive;font-size:17px;letter-spacing:2px;color:#b0e8cc;text-transform:uppercase}
-  .admin-page{width:92vw;height:88vh;display:flex;flex-direction:column;overflow:hidden;
-    background:
-      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.003) 1px,rgba(255,255,255,.003) 2px,transparent 2px,transparent 4px),
-      linear-gradient(180deg,#0e1018,#0a0c12,#080a0e);
-    border:1px solid rgba(255,255,255,.05);
-    border-radius:6px;
-    box-shadow:0 25px 100px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.02)}
-  .admin-page-header{height:56px;display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0;
-    background:
-      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.004) 1px,rgba(255,255,255,.004) 2px,transparent 2px,transparent 3px),
-      linear-gradient(180deg,#141620,#0c0e14);
-    border-bottom:1px solid rgba(255,255,255,.04);
-    box-shadow:0 2px 10px rgba(0,0,0,.4)}
-  .admin-page-header-row{display:none}
-  .admin-page-title{display:none}
+      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.005) 1px,rgba(255,255,255,.005) 2px,transparent 2px,transparent 4px),
+      repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(255,255,255,.003) 60px,rgba(255,255,255,.003) 61px),
+      linear-gradient(135deg,rgba(255,255,255,.004) 0%,transparent 30%,rgba(255,255,255,.003) 50%,transparent 70%,rgba(255,255,255,.002) 100%)}
+  #settingsScreen::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(ellipse at 50% 50%,transparent 30%,rgba(0,0,0,.38) 100%)}
+  .admin-page{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+  .admin-page-header{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 24px 0;background:linear-gradient(180deg,#161a26,#10131c);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+  .admin-page-header-row{display:flex;align-items:center;justify-content:space-between;width:100%}
+  .admin-page-title{font-family:'Staatliches',cursive;font-size:20px;letter-spacing:6px;color:#ffd699;text-transform:uppercase;flex:1;text-align:center;text-shadow:0 2px 10px rgba(255,214,153,.18)}
   .admin-page-close{margin-left:auto;border-radius:4px;cursor:pointer;transition:all .2s;
     background:rgba(255,50,50,.06);
     border:1px solid rgba(255,50,50,.2);border-bottom:2px solid rgba(255,50,50,.1);
     color:var(--red);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;padding:7px 18px;font-weight:600;
     text-shadow:0 0 6px rgba(255,50,50,.2)}
   .admin-page-close:hover{border-color:rgba(255,50,50,.45);background:rgba(255,50,50,.12);text-shadow:0 0 12px rgba(255,50,50,.4);box-shadow:0 0 14px rgba(255,50,50,.1)}
-  .admin-page-tabs{display:flex;gap:0;flex-wrap:nowrap;align-items:center;overflow-x:auto;flex:1}
+  .admin-page-tabs{display:flex;gap:0;flex-wrap:wrap;justify-content:center}
   .admin-page-tab{padding:11px 20px;font-family:'Saira',sans-serif;font-size:12px;letter-spacing:1.5px;color:#8aa;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;font-weight:700;white-space:nowrap}
   .admin-page-tab:hover{color:#aab;background:rgba(255,255,255,.02)}
   .admin-page-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);background:rgba(0,212,255,.03)}
   .admin-page-tab-sep{width:1px;height:20px;background:rgba(255,255,255,.06);margin:6px 8px;align-self:center;flex-shrink:0}
-  .admin-page-body{flex:1;overflow-y:auto;display:flex;justify-content:center;padding:20px}
+  .admin-page-body{flex:1;overflow-y:auto;display:flex;justify-content:center;padding:28px 24px 60px}
   .admin-page-section{display:none;width:100%;max-width:740px}
   .admin-page-section.active{display:block}
 
@@ -1158,11 +1148,11 @@
   .admin-page-section .tut-step-list .tut-step{padding:10px 12px}
 
   @media(max-width:600px){
-    .admin-page-header{height:52px;padding:0 14px;gap:8px}
+    .admin-page-header{padding:12px 16px 0;gap:4px}
     .admin-page-tabs{gap:0}
     .admin-page-tab{padding:9px 14px;font-size:10px;letter-spacing:1px}
     .admin-page-tab-sep{margin:4px 4px}
-    .admin-page-body{padding:12px}
+    .admin-page-body{padding:16px 12px 60px}
     .admin-page-close{padding:6px 14px;font-size:9px}
   }
 
@@ -1884,7 +1874,7 @@
     .crt-monitor{padding:10px} .crt-screen{padding:30px 18px 24px}
     .tile-icon{font-size:40px;margin-bottom:14px}
     .tile-label{font-size:12px;letter-spacing:3px}
-    .expanded-panel,.admin-page{width:96vw;height:92vh}
+    .expanded-panel{width:96vw;height:92vh}
     .feed-expanded{max-width:100%}
     .intel-expanded{max-width:100%}
     .media-expanded{max-width:100%}
@@ -1926,7 +1916,7 @@
     .landing-container{max-width:440px}
 
     /* Panels */
-    .expanded-panel,.admin-page{width:96vw;height:92vh}
+    .expanded-panel{width:96vw;height:92vh}
     .confirm-box{width:90vw;max-width:500px}
     .edit-box{width:90vw;max-width:460px}
   }
@@ -1965,8 +1955,7 @@
     .tile-status span{font-size:7px}
 
     /* Expanded panels */
-    .expanded-panel,.admin-page{width:100vw;height:100vh;border-radius:0;border:none}
-    .settings-topbar{display:none}
+    .expanded-panel{width:100vw;height:100vh;border-radius:0;border:none}
     .exp-header{height:52px;padding:0 14px}
     .exp-title{font-size:11px;letter-spacing:2px}
     .exp-body{padding:12px}
@@ -2290,9 +2279,67 @@
   box-shadow: none;
 }
 
-/* Admin page — settings-specific overrides */
+/* ── Settings screen — console-style full-viewport environment ── */
+
+/* Topbar — identical to .console-topbar */
+#settingsScreen .settings-topbar{
+  height:56px;
+  display:flex;
+  align-items:center;
+  padding:0 24px;
+  flex-shrink:0;
+  position:relative;
+  z-index:50;
+  background:
+    repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.004) 1px,rgba(255,255,255,.004) 2px,transparent 2px,transparent 3px),
+    linear-gradient(180deg,#0c0e12,#060810);
+  border-bottom:1px solid rgba(255,255,255,.04);
+  box-shadow:0 2px 10px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.015);
+}
+#settingsScreen .settings-topbar-title{
+  font-family:'Staatliches',cursive;
+  font-size:17px;
+  letter-spacing:2px;
+  color:#b0e8cc;
+  text-transform:uppercase;
+}
+
+/* Admin page shell — fills remaining space below topbar */
+#settingsScreen .admin-page{
+  flex:1;
+  height:auto;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  position:relative;
+  z-index:1;
+  background:transparent;
+  border:none;
+  border-radius:0;
+  box-shadow:none;
+}
+
+/* Header bar with tabs — matches exp-header treatment */
+#settingsScreen .admin-page-header{
+  height:48px;
+  display:flex;
+  align-items:center;
+  padding:0 24px;
+  gap:14px;
+  flex-shrink:0;
+  background:rgba(0,0,0,.15);
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+#settingsScreen .admin-page-header-row{
+  display:none;
+}
 #settingsScreen .admin-page-tabs{
+  display:flex;
+  gap:0;
+  flex-wrap:nowrap;
+  align-items:center;
   overflow-x:auto;
+  flex:1;
 }
 #settingsScreen .admin-page-tab{
   transition: background .12s ease, color .12s ease;
@@ -2303,8 +2350,17 @@
   border-bottom-color:var(--cyan);
   background:rgba(0,212,255,.03);
 }
+#settingsScreen .admin-page-close{
+  flex-shrink:0;
+}
+#settingsScreen .admin-page-close:hover{ /* no positional shift */ }
+
 #settingsScreen .admin-page-body{
-  padding: 20px;
+  flex:1;
+  overflow-y:auto;
+  display:flex;
+  justify-content:center;
+  padding:28px 24px 60px;
 }
 #settingsScreen .admin-page-section.active{
   display:block;
@@ -2324,8 +2380,8 @@
 #settingsScreen #broadcastPanel{
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,.06);
-  background: rgba(255,255,255,.025);
-  box-shadow: 0 14px 50px rgba(0,0,0,.45);
+  background: rgba(255,255,255,.02);
+  box-shadow: 0 14px 50px rgba(0,0,0,.35);
 }
 
 /* Standardize form controls inside admin panels */
@@ -2352,6 +2408,18 @@
   opacity:.6;
 }
 #settingsScreen .mv-close:hover{opacity:1}
+
+/* Settings responsive */
+@media(max-width:768px){
+  #settingsScreen .settings-topbar{height:50px;padding:0 14px;padding-top:env(safe-area-inset-top,0)}
+  #settingsScreen .settings-topbar-title{font-size:12px;letter-spacing:2px}
+  #settingsScreen .admin-page-header{height:44px;padding:0 14px}
+  #settingsScreen .admin-page-body{padding:16px 12px 60px}
+}
+@media(max-width:600px){
+  #settingsScreen .admin-page-tab{padding:9px 14px;font-size:10px;letter-spacing:1px}
+  #settingsScreen .admin-page-close{padding:6px 14px;font-size:9px}
+}
 
 
   /* PDF.js mobile-friendly viewer */
@@ -11358,7 +11426,7 @@ togglePlayerPreview=function(){
 <!-- DASHBOARD SCREEN (full page) -->
 <!-- SETTINGS SCREEN (full page — unified admin) -->
 <div class="screen" id="settingsScreen">
-  <div class="settings-topbar"><span class="settings-topbar-title">Admin Console</span></div>
+  <div class="settings-topbar"><span class="settings-topbar-title">◈ Admin Console</span></div>
   <div class="admin-page">
     <div class="admin-page-header">
       <div class="admin-page-tabs">
