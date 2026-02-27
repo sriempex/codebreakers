@@ -2281,11 +2281,12 @@
 
 /* ── Settings screen — console-style full-viewport environment ── */
 
-/* Topbar — identical to .console-topbar */
+/* Topbar — identical to .console-topbar, close button anchored right */
 #settingsScreen .settings-topbar{
   height:56px;
   display:flex;
   align-items:center;
+  justify-content:space-between;
   padding:0 24px;
   flex-shrink:0;
   position:relative;
@@ -2303,6 +2304,27 @@
   color:#b0e8cc;
   text-transform:uppercase;
 }
+#settingsScreen .settings-topbar-close{
+  border-radius:4px;
+  cursor:pointer;
+  transition:all .2s;
+  background:rgba(255,50,50,.06);
+  border:1px solid rgba(255,50,50,.2);
+  border-bottom:2px solid rgba(255,50,50,.1);
+  color:var(--red);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  letter-spacing:2px;
+  padding:7px 18px;
+  font-weight:600;
+  text-shadow:0 0 6px rgba(255,50,50,.2);
+}
+#settingsScreen .settings-topbar-close:hover{
+  border-color:rgba(255,50,50,.45);
+  background:rgba(255,50,50,.12);
+  text-shadow:0 0 12px rgba(255,50,50,.4);
+  box-shadow:0 0 14px rgba(255,50,50,.1);
+}
 
 /* Admin page shell — fills remaining space below topbar */
 #settingsScreen .admin-page{
@@ -2319,7 +2341,7 @@
   box-shadow:none;
 }
 
-/* Header bar with tabs — matches exp-header treatment */
+/* Tab bar */
 #settingsScreen .admin-page-header{
   height:48px;
   display:flex;
@@ -2350,10 +2372,6 @@
   border-bottom-color:var(--cyan);
   background:rgba(0,212,255,.03);
 }
-#settingsScreen .admin-page-close{
-  flex-shrink:0;
-}
-#settingsScreen .admin-page-close:hover{ /* no positional shift */ }
 
 #settingsScreen .admin-page-body{
   flex:1;
@@ -2413,12 +2431,12 @@
 @media(max-width:768px){
   #settingsScreen .settings-topbar{height:50px;padding:0 14px;padding-top:env(safe-area-inset-top,0)}
   #settingsScreen .settings-topbar-title{font-size:12px;letter-spacing:2px}
+  #settingsScreen .settings-topbar-close{padding:6px 14px;font-size:9px}
   #settingsScreen .admin-page-header{height:44px;padding:0 14px}
   #settingsScreen .admin-page-body{padding:16px 12px 60px}
 }
 @media(max-width:600px){
   #settingsScreen .admin-page-tab{padding:9px 14px;font-size:10px;letter-spacing:1px}
-  #settingsScreen .admin-page-close{padding:6px 14px;font-size:9px}
 }
 
 
@@ -11426,7 +11444,10 @@ togglePlayerPreview=function(){
 <!-- DASHBOARD SCREEN (full page) -->
 <!-- SETTINGS SCREEN (full page — unified admin) -->
 <div class="screen" id="settingsScreen">
-  <div class="settings-topbar"><span class="settings-topbar-title">◈ Admin Console</span></div>
+  <div class="settings-topbar">
+    <span class="settings-topbar-title">◈ Admin Console</span>
+    <button class="settings-topbar-close" onclick="returnFromAdminPage()" title="Return to console">✕ CLOSE</button>
+  </div>
   <div class="admin-page">
     <div class="admin-page-header">
       <div class="admin-page-tabs">
@@ -11439,8 +11460,6 @@ togglePlayerPreview=function(){
         <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-leaderboard',this)">Leaderboard</button>
         <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-sessions',this)">Sessions</button>
         <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-broadcast',this)">Broadcast</button>
-        <span style="flex:1"></span>
-        <button class="admin-page-close" onclick="returnFromAdminPage()" title="Return to console">✕ CLOSE</button>
       </div>
     </div>
     <div class="admin-page-body">
