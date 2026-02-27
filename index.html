@@ -1091,8 +1091,15 @@
 
 
   /* ══════ ADMIN PAGE SCREENS ══════ */
-  #settingsScreen{background:rgba(0,0,0,.92);min-height:100vh;padding:0;display:flex;align-items:center;justify-content:center}
+  #settingsScreen{background:rgba(0,0,0,.92);min-height:100vh;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
   #settingsScreen.active{z-index:850}
+  .settings-topbar{position:absolute;top:0;left:0;right:0;height:56px;display:flex;align-items:center;padding:0 24px;z-index:10;
+    background:
+      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.004) 1px,rgba(255,255,255,.004) 2px,transparent 2px,transparent 3px),
+      linear-gradient(180deg,#0c0e12,#060810);
+    border-bottom:1px solid rgba(255,255,255,.04);
+    box-shadow:0 2px 10px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.015)}
+  .settings-topbar-title{font-family:'Staatliches',cursive;font-size:17px;letter-spacing:2px;color:#b0e8cc;text-transform:uppercase}
   .admin-page{width:92vw;height:88vh;display:flex;flex-direction:column;overflow:hidden;
     background:
       repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.003) 1px,rgba(255,255,255,.003) 2px,transparent 2px,transparent 4px),
@@ -1100,21 +1107,21 @@
     border:1px solid rgba(255,255,255,.05);
     border-radius:6px;
     box-shadow:0 25px 100px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.02)}
-  .admin-page-header{display:flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0;
+  .admin-page-header{height:56px;display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0;
     background:
       repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.004) 1px,rgba(255,255,255,.004) 2px,transparent 2px,transparent 3px),
       linear-gradient(180deg,#141620,#0c0e14);
     border-bottom:1px solid rgba(255,255,255,.04);
     box-shadow:0 2px 10px rgba(0,0,0,.4)}
-  .admin-page-header-row{height:56px;display:flex;align-items:center;justify-content:space-between;width:100%;padding:0 24px}
-  .admin-page-title{font-family:'Staatliches',cursive;font-size:17px;letter-spacing:3px;color:#d0f0e0;text-transform:uppercase;flex:1;text-align:center}
+  .admin-page-header-row{display:none}
+  .admin-page-title{display:none}
   .admin-page-close{margin-left:auto;border-radius:4px;cursor:pointer;transition:all .2s;
     background:rgba(255,50,50,.06);
     border:1px solid rgba(255,50,50,.2);border-bottom:2px solid rgba(255,50,50,.1);
     color:var(--red);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;padding:7px 18px;font-weight:600;
     text-shadow:0 0 6px rgba(255,50,50,.2)}
   .admin-page-close:hover{border-color:rgba(255,50,50,.45);background:rgba(255,50,50,.12);text-shadow:0 0 12px rgba(255,50,50,.4);box-shadow:0 0 14px rgba(255,50,50,.1)}
-  .admin-page-tabs{display:flex;gap:0;flex-wrap:wrap;justify-content:center;padding:0 24px;border-top:1px solid rgba(255,255,255,.03)}
+  .admin-page-tabs{display:flex;gap:0;flex-wrap:nowrap;align-items:center;overflow-x:auto}
   .admin-page-tab{padding:11px 20px;font-family:'Saira',sans-serif;font-size:12px;letter-spacing:1.5px;color:#8aa;cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;font-weight:700;white-space:nowrap}
   .admin-page-tab:hover{color:#aab;background:rgba(255,255,255,.02)}
   .admin-page-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);background:rgba(0,212,255,.03)}
@@ -1151,8 +1158,8 @@
   .admin-page-section .tut-step-list .tut-step{padding:10px 12px}
 
   @media(max-width:600px){
-    .admin-page-header{gap:0}
-    .admin-page-tabs{gap:0;padding:0 14px}
+    .admin-page-header{height:52px;padding:0 14px;gap:8px}
+    .admin-page-tabs{gap:0}
     .admin-page-tab{padding:9px 14px;font-size:10px;letter-spacing:1px}
     .admin-page-tab-sep{margin:4px 4px}
     .admin-page-body{padding:12px}
@@ -1959,6 +1966,7 @@
 
     /* Expanded panels */
     .expanded-panel,.admin-page{width:100vw;height:100vh;border-radius:0;border:none}
+    .settings-topbar{display:none}
     .exp-header{height:52px;padding:0 14px}
     .exp-title{font-size:11px;letter-spacing:2px}
     .exp-body{padding:12px}
@@ -2282,23 +2290,8 @@
   box-shadow: none;
 }
 
-/* Admin page shell — inherits base .admin-page styles (matching expanded-panel framework) */
-#settingsScreen .admin-page-header-row{
-  height: 56px;
-  padding: 0 24px;
-}
-#settingsScreen .admin-page-title{
-  font-family:'Staatliches',cursive;
-  font-size:17px;
-  letter-spacing:3px;
-  text-transform:uppercase;
-}
-#settingsScreen .admin-page-close{
-  /* Match console panel close button */
-}
-#settingsScreen .admin-page-close:hover{ /* no positional shift */ }
+/* Admin page — settings-specific overrides */
 #settingsScreen .admin-page-tabs{
-  padding: 0 24px;
   overflow-x:auto;
 }
 #settingsScreen .admin-page-tab{
@@ -2310,7 +2303,6 @@
   border-bottom-color:var(--cyan);
   background:rgba(0,212,255,.03);
 }
-
 #settingsScreen .admin-page-body{
   padding: 20px;
 }
@@ -2355,7 +2347,7 @@
   box-shadow: 0 0 8px rgba(0,255,136,.06) !important;
 }
 
-/* Tidy "close" buttons embedded in panels now that the page has its own close */
+/* Tidy close buttons embedded in panels */
 #settingsScreen .mv-close{
   opacity:.6;
 }
@@ -11366,12 +11358,9 @@ togglePlayerPreview=function(){
 <!-- DASHBOARD SCREEN (full page) -->
 <!-- SETTINGS SCREEN (full page — unified admin) -->
 <div class="screen" id="settingsScreen">
+  <div class="settings-topbar"><span class="settings-topbar-title">Admin Console</span></div>
   <div class="admin-page">
     <div class="admin-page-header">
-      <div class="admin-page-header-row">
-        <span class="admin-page-title">Admin Console</span>
-        <button class="admin-page-close" onclick="returnFromAdminPage()" title="Return to console">✕ CLOSE</button>
-      </div>
       <div class="admin-page-tabs">
         <button class="admin-page-tab active" onclick="switchPageTab('settingsScreen','set-event',this)">Event</button>
         <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','set-intel',this)">Intel & Scoring</button>
@@ -11382,6 +11371,8 @@ togglePlayerPreview=function(){
         <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-leaderboard',this)">Leaderboard</button>
         <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-sessions',this)">Sessions</button>
         <button class="admin-page-tab" onclick="switchPageTab('settingsScreen','dash-broadcast',this)">Broadcast</button>
+        <span style="flex:1"></span>
+        <button class="admin-page-close" onclick="returnFromAdminPage()" title="Return to console">✕ CLOSE</button>
       </div>
     </div>
     <div class="admin-page-body">
