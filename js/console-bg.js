@@ -75,24 +75,25 @@ function unlockAdminConsole(){
 
 
 // ═══════════════════════════════════════════════════════════════
-// CONSOLE GRID THEMES
+// CONSOLE GRID THEMES (removed — CRT is the permanent style)
+// Stub functions retained to prevent runtime errors from old references
 // ═══════════════════════════════════════════════════════════════
 
-const _gridThemes=[
-  {id:'crt',       name:'CRT Monitor'},
-  {id:'glass',     name:'Glass Morphism'},
-  {id:'cyberpunk', name:'Neon Cyberpunk'},
-  {id:'military',  name:'Military Ops'},
-  {id:'holo',      name:'Holographic'},
-  {id:'brutalist', name:'Brutalist Tech'},
-  {id:'minimal',   name:'Sleek Minimal'},
-  {id:'hud',       name:'HUD Overlay'},
-  {id:'cards',     name:'Card Stack'},
-  {id:'terminal',  name:'Terminal'}
-];
+const _gridThemes=[{id:'crt',name:'CRT Monitor'}];
 let _currentGridTheme='crt';
 let _previewThemeIdx=0;
 let _previewOriginalTheme='crt';
+
+function updateThemeLabel(){}
+function openThemePreview(){}
+function closeThemePreview(){}
+function cycleThemePreview(){}
+function applyThemeFromPreview(){}
+function updateThemePreviewUI(){}
+function renderThemePreviewGrid(){}
+function applyThemeToPreviewGrid(){}
+function selectGridTheme(){}
+function applyGridTheme(){}
 
 // ── Console Background Color & Texture ──
 let _consoleBg='#080a10';
@@ -226,105 +227,5 @@ function syncConsoleBgFromConfig(cfg){
   applyConsoleBg();
 }
 
-function updateThemeLabel(){
-  const el=document.getElementById('currentThemeLabel');
-  const t=_gridThemes.find(t=>t.id===_currentGridTheme);
-  if(el&&t)el.textContent='Current: '+t.name;
-}
 
-function openThemePreview(){
-  _previewOriginalTheme=_currentGridTheme;
-  _previewThemeIdx=_gridThemes.findIndex(t=>t.id===_currentGridTheme);
-  if(_previewThemeIdx<0)_previewThemeIdx=0;
-  closeAppearancePanel();
-  const overlay=document.getElementById('themePreviewOverlay');
-  overlay.style.display='flex';
-  renderThemePreviewGrid();
-  applyThemeToPreviewGrid(_gridThemes[_previewThemeIdx].id);
-  updateThemePreviewUI();
-}
-
-function closeThemePreview(){
-  document.getElementById('themePreviewOverlay').style.display='none';
-  // Restore original theme (user cancelled)
-  applyGridTheme(_previewOriginalTheme);
-  _currentGridTheme=_previewOriginalTheme;
-  // Return to appearance panel
-  setTimeout(()=>openAppearancePanel(),120);
-}
-
-function cycleThemePreview(dir){
-  _previewThemeIdx=(_previewThemeIdx+dir+_gridThemes.length)%_gridThemes.length;
-  applyThemeToPreviewGrid(_gridThemes[_previewThemeIdx].id);
-  // Also apply to real grid behind the overlay so it updates live
-  applyGridTheme(_gridThemes[_previewThemeIdx].id);
-  updateThemePreviewUI();
-}
-
-function applyThemeFromPreview(){
-  _currentGridTheme=_gridThemes[_previewThemeIdx].id;
-  applyGridTheme(_currentGridTheme);
-  try{localStorage.setItem('cb_gridTheme',_currentGridTheme)}catch(e){}
-  document.getElementById('themePreviewOverlay').style.display='none';
-  updateThemeLabel();
-  const blip=document.getElementById('blipGridTheme');
-  if(blip){blip.style.opacity='1';setTimeout(()=>blip.style.opacity='',1500)}
-  saveEventConfigToBackend();
-  // Return to appearance panel
-  setTimeout(()=>openAppearancePanel(),120);
-}
-
-function updateThemePreviewUI(){
-  const t=_gridThemes[_previewThemeIdx];
-  document.getElementById('themePreviewName').textContent=t.name;
-  document.getElementById('themePreviewCounter').textContent=(_previewThemeIdx+1)+' / '+_gridThemes.length;
-}
-
-function renderThemePreviewGrid(){
-  // Render a copy of the current grid tiles into the preview
-  const pg=document.getElementById('themePreviewGrid');
-  pg.innerHTML=gridTiles.map(t=>{
-    const isIntel=t.id==='intel';
-    const isVault=t.id==='vault';
-    const badgeCls=isVault?' crimson':isIntel?' violet':'';
-    return `<div class="crt-monitor">
-      <div class="crt-screw s1"></div><div class="crt-screw s2"></div><div class="crt-screw s3"></div><div class="crt-screw s4"></div>
-      <div class="crt-led"></div>
-      <div class="crt-screen">
-        <div class="tile-glow"></div>
-        <div class="tile-icon">${t.icon.startsWith('http')||t.icon.startsWith('data:')?`<img src="${t.icon}" style="width:58px;height:58px;object-fit:contain">`:t.icon}</div>
-        <div class="tile-label" style="${fontStyle(t.labelFont)}">${t.label}</div>
-        <div class="tile-sub" style="${fontStyle(t.subFont)}">${t.sub}</div>
-        <div class="tile-badge${badgeCls}">SAMPLE DATA</div>
-        <div class="tile-status"><div class="tile-dot active"></div><span class="tile-status-label active">ACTIVE</span></div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function applyThemeToPreviewGrid(id){
-  const pg=document.getElementById('themePreviewGrid');
-  _gridThemes.forEach(t=>pg.classList.remove('grid-theme-'+t.id));
-  if(id&&id!=='crt')pg.classList.add('grid-theme-'+id);
-}
-
-function selectGridTheme(id){
-  _currentGridTheme=id;
-  applyGridTheme(id);
-  updateThemeLabel();
-  const blip=document.getElementById('blipGridTheme');
-  if(blip){blip.style.opacity='1';setTimeout(()=>blip.style.opacity='',1500)}
-  saveEventConfigToBackend();
-}
-
-function applyGridTheme(id){
-  const grid=document.getElementById('consoleGrid');
-  if(!grid)return;
-  // Remove all existing theme classes
-  _gridThemes.forEach(t=>grid.classList.remove('grid-theme-'+t.id));
-  // Apply new one (crt = default, no class needed)
-  if(id&&id!=='crt'){
-    grid.classList.add('grid-theme-'+id);
-  }
-}
 

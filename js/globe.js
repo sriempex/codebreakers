@@ -1,261 +1,386 @@
-// ══════ THREE.JS — Circuit Board Backdrop ══════
-// Faint circuit traces with traveling pulses behind the console grid
+// ══════ THREE.JS — Circuit Board Backdrop v2 ══════
+// Routes traces between and around the actual console grid tiles
+// Pulses travel between tiles like data flowing through a circuit
 
 (function(){
   if(!window.THREE) return;
 
   let scene, camera, renderer, container;
-  let traces = [], chips = [], pulses = [];
+  let pulses = [], chips = [];
   let animId = null;
+  let tileRects = []; // actual tile positions in world coords
 
-  // ── Configuration ──
   const CONFIG = {
     traceColor: 0x00ff88,
-    traceOpacity: 0.06,
-    traceGlowOpacity: 0.03,
-    chipColor: 0x00ff88,
-    chipOpacity: 0.04,
-    chipGlowOpacity: 0.08,
+    traceOpacity: 0.07,
     pulseColor: 0x00ff88,
-    pulseSpeed: 0.3,
-    pulseSize: 0.015,
-    pulseOpacity: 0.5,
+    pulseSpeed: 0.4,
+    pulseSize: 0.018,
+    pulseOpacity: 0.55,
+    chipColor: 0x00ff88,
+    chipOpacity: 0.035,
+    chipGlowMax: 0.09,
+    viaOpacity: 0.04,
   };
 
-  // ── Generate circuit layout ──
-  function generateCircuit(){
-    const layout = { traces: [], chips: [], nodes: [] };
-    const w = 12, h = 8;
-    const gridStep = 0.6;
-
-    // Place chips (IC packages) at semi-random grid positions
-    const chipPositions = [];
-    for(let i = 0; i < 14; i++){
-      let x, y, attempts = 0;
-      do {
-        x = (Math.floor(Math.random() * (w / gridStep)) * gridStep) - w/2;
-        y = (Math.floor(Math.random() * (h / gridStep)) * gridStep) - h/2;
-        attempts++;
-      } while(attempts < 50 && chipPositions.some(c => Math.abs(c.x - x) < 1.2 && Math.abs(c.y - y) < 1.0));
-      
-      const chip = {
-        x, y,
-        w: 0.3 + Math.random() * 0.5,
-        h: 0.15 + Math.random() * 0.3,
-        pins: Math.floor(Math.random() * 3) + 2,
-        phase: Math.random() * Math.PI * 2
-      };
-      chipPositions.push(chip);
-      layout.chips.push(chip);
-    }
-
-    // Generate traces connecting chips via orthogonal paths
-    for(let i = 0; i < chipPositions.length; i++){
-      const connections = Math.floor(Math.random() * 3) + 1;
-      const sorted = chipPositions
-        .map((c, idx) => ({ idx, dist: Math.abs(c.x - chipPositions[i].x) + Math.abs(c.y - chipPositions[i].y) }))
-        .filter(c => c.idx !== i)
-        .sort((a, b) => a.dist - b.dist);
-
-      for(let j = 0; j < Math.min(connections, sorted.length); j++){
-        const target = chipPositions[sorted[j].idx];
-        const from = chipPositions[i];
-        
-        const points = [];
-        const pinOffsetFrom = (Math.random() - 0.5) * from.h * 0.6;
-        const pinOffsetTo = (Math.random() - 0.5) * target.h * 0.6;
-        
-        const sx = from.x + (target.x > from.x ? from.w/2 : -from.w/2);
-        const sy = from.y + pinOffsetFrom;
-        const ex = target.x + (from.x > target.x ? target.w/2 : -target.w/2);
-        const ey = target.y + pinOffsetTo;
-
-        if(Math.random() > 0.5){
-          const midX = sx + (ex - sx) * (0.3 + Math.random() * 0.4);
-          points.push(
-            new THREE.Vector3(sx, sy, 0),
-            new THREE.Vector3(midX, sy, 0),
-            new THREE.Vector3(midX, ey, 0),
-            new THREE.Vector3(ex, ey, 0)
-          );
-        } else {
-          const midY = sy + (ey - sy) * (0.3 + Math.random() * 0.4);
-          points.push(
-            new THREE.Vector3(sx, sy, 0),
-            new THREE.Vector3(sx, midY, 0),
-            new THREE.Vector3(ex, midY, 0),
-            new THREE.Vector3(ex, ey, 0)
-          );
-        }
-
-        layout.traces.push({ points: points });
-      }
-    }
-
-    // Bus traces (long runs)
-    for(let i = 0; i < 6; i++){
-      const isHoriz = Math.random() > 0.5;
-      const pos = (Math.random() - 0.5) * (isHoriz ? h : w) * 0.8;
-      const start = -(isHoriz ? w : h) / 2 * 0.9;
-      const end = (isHoriz ? w : h) / 2 * (0.3 + Math.random() * 0.6);
-      
-      const points = isHoriz
-        ? [new THREE.Vector3(start, pos, 0), new THREE.Vector3(end, pos, 0)]
-        : [new THREE.Vector3(pos, start, 0), new THREE.Vector3(pos, end, 0)];
-      
-      layout.traces.push({ points: points, isBus: true });
-    }
-
-    return layout;
+  // ── Convert pixel coords to Three.js world coords ──
+  function pxToWorld(px, py, containerW, containerH, camW, camH){
+    return {
+      x: (px / containerW) * camW - camW / 2,
+      y: -(py / containerH) * camH + camH / 2
+    };
   }
 
-  // ── Build Three.js objects ──
-  function buildScene(layout){
+  // ── Read tile positions from DOM ──
+  function readTilePositions(){
+    const tiles = document.querySelectorAll('#consoleGrid .crt-monitor');
+    if(!tiles.length || !container) return [];
+    const cRect = container.getBoundingClientRect();
+    const camH = 12;
+    const camW = camH * (cRect.width / cRect.height);
+    const rects = [];
+    tiles.forEach(tile => {
+      const r = tile.getBoundingClientRect();
+      const tl = pxToWorld(r.left - cRect.left, r.top - cRect.top, cRect.width, cRect.height, camW, camH);
+      const br = pxToWorld(r.right - cRect.left, r.bottom - cRect.top, cRect.width, cRect.height, camW, camH);
+      const cx = (tl.x + br.x) / 2;
+      const cy = (tl.y + br.y) / 2;
+      rects.push({ left: tl.x, top: tl.y, right: br.x, bottom: br.y, cx, cy, w: br.x - tl.x, h: tl.y - br.y });
+    });
+    return rects;
+  }
 
-    // Traces
-    layout.traces.forEach(trace => {
-      const geo = new THREE.BufferGeometry().setFromPoints(trace.points);
-      const mat = new THREE.LineBasicMaterial({
-        color: CONFIG.traceColor,
-        transparent: true,
-        opacity: trace.isBus ? CONFIG.traceOpacity * 1.3 : CONFIG.traceOpacity
-      });
-      const line = new THREE.Line(geo, mat);
-      scene.add(line);
-      traces.push(line);
+  // ── Build a trace path between two tile edges ──
+  function buildTraceBetweenTiles(fromTile, toTile, variant){
+    const points = [];
+    const margin = 0.15; // gap from tile edge
 
-      // Pulse(s) along trace
-      const pulseCount = trace.isBus ? 2 : (Math.random() > 0.4 ? 1 : 0);
-      for(let p = 0; p < pulseCount; p++){
-        const pulseGeo = new THREE.CircleGeometry(CONFIG.pulseSize, 8);
-        const pulseMat = new THREE.MeshBasicMaterial({
-          color: CONFIG.pulseColor,
-          transparent: true,
-          opacity: 0
-        });
-        const pulseMesh = new THREE.Mesh(pulseGeo, pulseMat);
+    // Determine exit/entry sides
+    const dx = toTile.cx - fromTile.cx;
+    const dy = toTile.cy - fromTile.cy;
 
-        // Glow ring
-        const glowGeo = new THREE.RingGeometry(CONFIG.pulseSize, CONFIG.pulseSize * 3, 12);
-        const glowMat = new THREE.MeshBasicMaterial({
-          color: CONFIG.pulseColor,
-          transparent: true,
-          opacity: 0,
-          side: THREE.DoubleSide
-        });
-        pulseMesh.add(new THREE.Mesh(glowGeo, glowMat));
+    if(variant === 0){
+      // Right side of from → left side of to (horizontal connection)
+      const sx = fromTile.right + margin;
+      const sy = fromTile.cy + (Math.random() - 0.5) * fromTile.h * 0.4;
+      const ex = toTile.left - margin;
+      const ey = toTile.cy + (Math.random() - 0.5) * toTile.h * 0.4;
+      const midX = (sx + ex) / 2;
+      points.push(
+        new THREE.Vector3(sx, sy, 0),
+        new THREE.Vector3(midX, sy, 0),
+        new THREE.Vector3(midX, ey, 0),
+        new THREE.Vector3(ex, ey, 0)
+      );
+    } else if(variant === 1){
+      // Bottom of from → top of to (vertical connection)
+      const sx = fromTile.cx + (Math.random() - 0.5) * fromTile.w * 0.4;
+      const sy = fromTile.bottom - margin;
+      const ex = toTile.cx + (Math.random() - 0.5) * toTile.w * 0.4;
+      const ey = toTile.top + margin;
+      const midY = (sy + ey) / 2;
+      points.push(
+        new THREE.Vector3(sx, sy, 0),
+        new THREE.Vector3(sx, midY, 0),
+        new THREE.Vector3(ex, midY, 0),
+        new THREE.Vector3(ex, ey, 0)
+      );
+    } else if(variant === 2){
+      // Around the outside — exit bottom, go wide, come in from top
+      const sx = fromTile.cx + (Math.random() - 0.5) * fromTile.w * 0.3;
+      const sy = fromTile.bottom - margin;
+      const ex = toTile.cx + (Math.random() - 0.5) * toTile.w * 0.3;
+      const ey = toTile.top + margin;
+      const wideX = Math.max(fromTile.right, toTile.right) + 0.5 + Math.random() * 0.5;
+      points.push(
+        new THREE.Vector3(sx, sy, 0),
+        new THREE.Vector3(sx, sy - 0.3, 0),
+        new THREE.Vector3(wideX, sy - 0.3, 0),
+        new THREE.Vector3(wideX, ey + 0.3, 0),
+        new THREE.Vector3(ex, ey + 0.3, 0),
+        new THREE.Vector3(ex, ey, 0)
+      );
+    } else {
+      // Around the left side
+      const sx = fromTile.left - margin;
+      const sy = fromTile.cy;
+      const ex = toTile.left - margin;
+      const ey = toTile.cy;
+      const wideX = Math.min(fromTile.left, toTile.left) - 0.5 - Math.random() * 0.5;
+      points.push(
+        new THREE.Vector3(sx, sy, 0),
+        new THREE.Vector3(wideX, sy, 0),
+        new THREE.Vector3(wideX, ey, 0),
+        new THREE.Vector3(ex, ey, 0)
+      );
+    }
+    return points;
+  }
 
-        // Pre-calculate segments
-        let total = 0;
-        const segments = [];
-        for(let i = 1; i < trace.points.length; i++){
-          const segLen = trace.points[i].distanceTo(trace.points[i-1]);
-          segments.push({ start: total, length: segLen });
-          total += segLen;
+  // ── Build trace that loops around a single tile ──
+  function buildTraceAroundTile(tile){
+    const m = 0.2 + Math.random() * 0.2;
+    const side = Math.floor(Math.random() * 4);
+    const points = [];
+
+    if(side === 0){
+      // Loop around top-right corner
+      const sx = tile.right + m;
+      const sy = tile.cy;
+      points.push(
+        new THREE.Vector3(sx, sy, 0),
+        new THREE.Vector3(sx, tile.top + m, 0),
+        new THREE.Vector3(tile.cx, tile.top + m, 0),
+        new THREE.Vector3(tile.left - m, tile.top + m, 0),
+        new THREE.Vector3(tile.left - m, tile.cy, 0)
+      );
+    } else if(side === 1){
+      // Loop around bottom
+      const sy = tile.bottom - m;
+      points.push(
+        new THREE.Vector3(tile.left - m, tile.cy, 0),
+        new THREE.Vector3(tile.left - m, sy, 0),
+        new THREE.Vector3(tile.cx, sy, 0),
+        new THREE.Vector3(tile.right + m, sy, 0),
+        new THREE.Vector3(tile.right + m, tile.cy, 0)
+      );
+    } else if(side === 2){
+      // U-shape under tile
+      const drop = m + 0.3;
+      points.push(
+        new THREE.Vector3(tile.left + tile.w * 0.2, tile.bottom - m * 0.5, 0),
+        new THREE.Vector3(tile.left + tile.w * 0.2, tile.bottom - drop, 0),
+        new THREE.Vector3(tile.right - tile.w * 0.2, tile.bottom - drop, 0),
+        new THREE.Vector3(tile.right - tile.w * 0.2, tile.bottom - m * 0.5, 0)
+      );
+    } else {
+      // U-shape above tile
+      const rise = m + 0.3;
+      points.push(
+        new THREE.Vector3(tile.right - tile.w * 0.2, tile.top + m * 0.5, 0),
+        new THREE.Vector3(tile.right - tile.w * 0.2, tile.top + rise, 0),
+        new THREE.Vector3(tile.left + tile.w * 0.2, tile.top + rise, 0),
+        new THREE.Vector3(tile.left + tile.w * 0.2, tile.top + m * 0.5, 0)
+      );
+    }
+    return points;
+  }
+
+  // ── Create a pulse on a path ──
+  function createPulse(tracePoints){
+    const pulseGeo = new THREE.CircleGeometry(CONFIG.pulseSize, 8);
+    const pulseMat = new THREE.MeshBasicMaterial({
+      color: CONFIG.pulseColor, transparent: true, opacity: 0
+    });
+    const mesh = new THREE.Mesh(pulseGeo, pulseMat);
+
+    // Glow ring
+    const glowGeo = new THREE.RingGeometry(CONFIG.pulseSize, CONFIG.pulseSize * 3.5, 12);
+    const glowMat = new THREE.MeshBasicMaterial({
+      color: CONFIG.pulseColor, transparent: true, opacity: 0, side: THREE.DoubleSide
+    });
+    mesh.add(new THREE.Mesh(glowGeo, glowMat));
+
+    // Pre-calc segments
+    let total = 0;
+    const segments = [];
+    for(let i = 1; i < tracePoints.length; i++){
+      const len = tracePoints[i].distanceTo(tracePoints[i-1]);
+      segments.push({ start: total, length: len });
+      total += len;
+    }
+
+    mesh.userData = {
+      tracePoints, segments, totalLength: total,
+      progress: Math.random(),
+      speed: CONFIG.pulseSpeed * (0.5 + Math.random() * 1.0),
+      delay: Math.random() * 6,
+      active: true
+    };
+
+    scene.add(mesh);
+    pulses.push(mesh);
+    return mesh;
+  }
+
+  // ── Add a trace line + pulse(s) ──
+  function addTrace(points, pulseCount){
+    const geo = new THREE.BufferGeometry().setFromPoints(points);
+    const mat = new THREE.LineBasicMaterial({
+      color: CONFIG.traceColor, transparent: true, opacity: CONFIG.traceOpacity
+    });
+    scene.add(new THREE.Line(geo, mat));
+
+    for(let i = 0; i < pulseCount; i++){
+      createPulse(points);
+    }
+  }
+
+  // ── Chip graphics at tile corners ──
+  function addChipsAroundTiles(rects){
+    rects.forEach(tile => {
+      // Small IC packages at corners
+      const corners = [
+        { x: tile.left - 0.35, y: tile.top + 0.1 },
+        { x: tile.right + 0.1, y: tile.top + 0.1 },
+        { x: tile.left - 0.35, y: tile.bottom - 0.1 },
+        { x: tile.right + 0.1, y: tile.bottom - 0.1 }
+      ];
+
+      corners.forEach(c => {
+        if(Math.random() > 0.5) return; // Only some corners get chips
+        const cw = 0.2 + Math.random() * 0.15;
+        const ch = 0.1 + Math.random() * 0.08;
+        const group = new THREE.Group();
+        group.position.set(c.x, c.y, 0);
+
+        // Body
+        const body = new THREE.Mesh(
+          new THREE.PlaneGeometry(cw, ch),
+          new THREE.MeshBasicMaterial({ color: CONFIG.chipColor, transparent: true, opacity: CONFIG.chipOpacity })
+        );
+        group.add(body);
+
+        // Border
+        const bp = [
+          new THREE.Vector3(-cw/2, -ch/2, 0), new THREE.Vector3(cw/2, -ch/2, 0),
+          new THREE.Vector3(cw/2, ch/2, 0), new THREE.Vector3(-cw/2, ch/2, 0),
+          new THREE.Vector3(-cw/2, -ch/2, 0)
+        ];
+        group.add(new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints(bp),
+          new THREE.LineBasicMaterial({ color: CONFIG.chipColor, transparent: true, opacity: CONFIG.traceOpacity * 1.3 })
+        ));
+
+        // Pins
+        const pins = Math.floor(Math.random() * 2) + 2;
+        for(let p = 0; p < pins; p++){
+          const px = -cw/2 + (cw / (pins + 1)) * (p + 1);
+          const pinMat = new THREE.LineBasicMaterial({ color: CONFIG.chipColor, transparent: true, opacity: CONFIG.traceOpacity });
+          group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(px, ch/2, 0), new THREE.Vector3(px, ch/2 + 0.04, 0)
+          ]), pinMat));
+          group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(px, -ch/2, 0), new THREE.Vector3(px, -ch/2 - 0.04, 0)
+          ]), pinMat.clone()));
         }
 
-        pulseMesh.userData = {
-          tracePoints: trace.points,
-          segments: segments,
-          totalLength: total,
-          progress: Math.random(),
-          speed: CONFIG.pulseSpeed * (0.6 + Math.random() * 0.8),
-          delay: Math.random() * 8,
-          active: true
-        };
-
-        scene.add(pulseMesh);
-        pulses.push(pulseMesh);
-      }
+        group.userData = { phase: Math.random() * Math.PI * 2, body };
+        scene.add(group);
+        chips.push(group);
+      });
     });
+  }
 
-    // Chips
-    layout.chips.forEach(chip => {
-      const group = new THREE.Group();
-      group.position.set(chip.x, chip.y, 0);
+  // ── Vias scattered in the gaps between tiles ──
+  function addVias(rects){
+    const cRect = container.getBoundingClientRect();
+    const camH = 12;
+    const camW = camH * (cRect.width / cRect.height);
 
-      // Body
-      const bodyGeo = new THREE.PlaneGeometry(chip.w, chip.h);
-      const bodyMat = new THREE.MeshBasicMaterial({
-        color: CONFIG.chipColor,
-        transparent: true,
-        opacity: CONFIG.chipOpacity
-      });
-      const body = new THREE.Mesh(bodyGeo, bodyMat);
-      group.add(body);
+    for(let i = 0; i < 40; i++){
+      const x = (Math.random() - 0.5) * camW * 0.9;
+      const y = (Math.random() - 0.5) * camH * 0.9;
+      // Skip if inside a tile
+      const inside = rects.some(t => x > t.left && x < t.right && y < t.top && y > t.bottom);
+      if(inside) continue;
 
-      // Border
-      const bp = [
-        new THREE.Vector3(-chip.w/2, -chip.h/2, 0),
-        new THREE.Vector3( chip.w/2, -chip.h/2, 0),
-        new THREE.Vector3( chip.w/2,  chip.h/2, 0),
-        new THREE.Vector3(-chip.w/2,  chip.h/2, 0),
-        new THREE.Vector3(-chip.w/2, -chip.h/2, 0),
-      ];
-      const borderMat = new THREE.LineBasicMaterial({
-        color: CONFIG.chipColor, transparent: true, opacity: CONFIG.traceOpacity * 1.5
-      });
-      group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(bp), borderMat));
-
-      // Pins
-      for(let p = 0; p < chip.pins; p++){
-        const px = -chip.w/2 + (chip.w / (chip.pins + 1)) * (p + 1);
-        const pinLen = 0.06;
-        const pinMat = new THREE.LineBasicMaterial({
-          color: CONFIG.chipColor, transparent: true, opacity: CONFIG.traceOpacity * 1.2
-        });
-        // Top
-        group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-          new THREE.Vector3(px, chip.h/2, 0), new THREE.Vector3(px, chip.h/2 + pinLen, 0)
-        ]), pinMat));
-        // Bottom
-        group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-          new THREE.Vector3(px, -chip.h/2, 0), new THREE.Vector3(px, -chip.h/2 - pinLen, 0)
-        ]), pinMat.clone()));
-      }
-
-      // Pin 1 dot
-      const dotGeo = new THREE.CircleGeometry(0.02, 8);
-      const dotMat = new THREE.MeshBasicMaterial({
-        color: CONFIG.chipColor, transparent: true, opacity: CONFIG.chipOpacity * 2
-      });
-      const dot = new THREE.Mesh(dotGeo, dotMat);
-      dot.position.set(-chip.w/2 + 0.05, chip.h/2 - 0.05, 0.001);
-      group.add(dot);
-
-      group.userData = { phase: chip.phase, body: body };
-      scene.add(group);
-      chips.push(group);
-    });
-
-    // Vias (small circles)
-    for(let i = 0; i < 30; i++){
-      const x = (Math.random() - 0.5) * 10;
-      const y = (Math.random() - 0.5) * 7;
       const via = new THREE.Mesh(
-        new THREE.RingGeometry(0.02, 0.035, 12),
-        new THREE.MeshBasicMaterial({
-          color: CONFIG.traceColor, transparent: true,
-          opacity: CONFIG.traceOpacity * 0.8, side: THREE.DoubleSide
-        })
+        new THREE.RingGeometry(0.02, 0.038, 12),
+        new THREE.MeshBasicMaterial({ color: CONFIG.traceColor, transparent: true, opacity: CONFIG.viaOpacity, side: THREE.DoubleSide })
       );
       via.position.set(x, y, 0);
       scene.add(via);
     }
   }
 
-  // ── Position on multi-segment path ──
+  // ── Position on path ──
   function getPositionOnPath(tracePoints, segments, totalLength, t){
     const dist = t * totalLength;
-    let accumulated = 0;
+    let acc = 0;
     for(let i = 0; i < segments.length; i++){
-      if(accumulated + segments[i].length >= dist){
-        const localT = (dist - accumulated) / segments[i].length;
-        return new THREE.Vector3().lerpVectors(tracePoints[i], tracePoints[i + 1], localT);
+      if(acc + segments[i].length >= dist){
+        const lt = (dist - acc) / segments[i].length;
+        return new THREE.Vector3().lerpVectors(tracePoints[i], tracePoints[i + 1], lt);
       }
-      accumulated += segments[i].length;
+      acc += segments[i].length;
     }
     return tracePoints[tracePoints.length - 1].clone();
+  }
+
+  // ── Build the entire circuit ──
+  function buildCircuit(){
+    tileRects = readTilePositions();
+    if(tileRects.length < 2) return;
+
+    // ── Traces between adjacent tiles ──
+    // 2x2 grid: [0]=TL, [1]=TR, [2]=BL, [3]=BR
+    const pairs = [
+      [0, 1, 0],  // TL → TR (horizontal)
+      [2, 3, 0],  // BL → BR (horizontal)
+      [0, 2, 1],  // TL → BL (vertical)
+      [1, 3, 1],  // TR → BR (vertical)
+      [0, 3, 2],  // TL → BR (diagonal via outside)
+      [1, 2, 3],  // TR → BL (via left side)
+    ];
+
+    pairs.forEach(([from, to, variant]) => {
+      if(tileRects[from] && tileRects[to]){
+        const pts = buildTraceBetweenTiles(tileRects[from], tileRects[to], variant);
+        addTrace(pts, variant < 2 ? 2 : 1);
+      }
+    });
+
+    // Extra parallel traces between horizontal/vertical neighbors
+    for(let i = 0; i < 3; i++){
+      const from = Math.floor(Math.random() * tileRects.length);
+      let to = Math.floor(Math.random() * tileRects.length);
+      if(to === from) to = (from + 1) % tileRects.length;
+      const variant = Math.floor(Math.random() * 4);
+      const pts = buildTraceBetweenTiles(tileRects[from], tileRects[to], variant);
+      addTrace(pts, 1);
+    }
+
+    // ── Traces looping around individual tiles ──
+    tileRects.forEach(tile => {
+      const loops = 1 + Math.floor(Math.random() * 2);
+      for(let i = 0; i < loops; i++){
+        const pts = buildTraceAroundTile(tile);
+        addTrace(pts, 1);
+      }
+    });
+
+    // ── Bus traces running edge to edge through gaps ──
+    const cRect = container.getBoundingClientRect();
+    const camH = 12;
+    const camW = camH * (cRect.width / cRect.height);
+
+    // Horizontal bus through the gap between top and bottom rows
+    if(tileRects.length >= 4){
+      const gapY = (tileRects[0].bottom + tileRects[2].top) / 2;
+      addTrace([
+        new THREE.Vector3(-camW / 2 * 0.9, gapY, 0),
+        new THREE.Vector3(camW / 2 * 0.9, gapY, 0)
+      ], 2);
+      // Second bus slightly offset
+      addTrace([
+        new THREE.Vector3(-camW / 2 * 0.85, gapY - 0.15, 0),
+        new THREE.Vector3(camW / 2 * 0.7, gapY - 0.15, 0)
+      ], 1);
+    }
+
+    // Vertical bus through the gap between left and right columns
+    if(tileRects.length >= 2){
+      const gapX = (tileRects[0].right + tileRects[1].left) / 2;
+      addTrace([
+        new THREE.Vector3(gapX, camH / 2 * 0.9, 0),
+        new THREE.Vector3(gapX, -camH / 2 * 0.9, 0)
+      ], 2);
+    }
+
+    // ── Chips and vias ──
+    addChipsAroundTiles(tileRects);
+    addVias(tileRects);
   }
 
   // ── Initialize ──
@@ -271,36 +396,56 @@
     scene = new THREE.Scene();
 
     const aspect = container.clientWidth / container.clientHeight;
-    camera = new THREE.OrthographicCamera(-6 * aspect, 6 * aspect, 6, -6, 0.1, 10);
+    const camH = 12;
+    camera = new THREE.OrthographicCamera(
+      -camH / 2 * aspect, camH / 2 * aspect, camH / 2, -camH / 2, 0.1, 10
+    );
     camera.position.z = 5;
 
     renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-      powerPreference: 'low-power'
+      antialias: true, alpha: true, powerPreference: 'low-power'
     });
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
 
-    const layout = generateCircuit();
-    buildScene(layout);
-
     // Hide old SVG worldmap
     const oldMap = consoleScreen.querySelector('.console-worldmap');
     if(oldMap) oldMap.style.display = 'none';
 
-    window.addEventListener('resize', onResize);
-    animate();
+    // Wait for grid to render before reading positions
+    setTimeout(() => {
+      buildCircuit();
+      animate();
+    }, 600);
+
+    window.addEventListener('resize', () => {
+      onResize();
+      // Rebuild circuit on resize since tile positions change
+      clearTimeout(window._circuitRebuildTimer);
+      window._circuitRebuildTimer = setTimeout(rebuild, 400);
+    });
   }
 
-  // ── Animation loop ──
+  function rebuild(){
+    // Clear scene except camera
+    while(scene.children.length > 0){
+      const obj = scene.children[0];
+      if(obj.geometry) obj.geometry.dispose();
+      if(obj.material) obj.material.dispose();
+      scene.remove(obj);
+    }
+    pulses = [];
+    chips = [];
+    buildCircuit();
+  }
+
+  // ── Animation ──
   function animate(){
     animId = requestAnimationFrame(animate);
     const t = performance.now() * 0.001;
 
-    // Pulses traveling along traces
     pulses.forEach(pulse => {
       const d = pulse.userData;
       if(!d.active || d.totalLength === 0) return;
@@ -313,10 +458,10 @@
       }
 
       d.progress += d.speed * 0.016 / d.totalLength;
-      
+
       if(d.progress > 1){
         d.progress = 0;
-        d.delay = 1 + Math.random() * 5;
+        d.delay = 0.5 + Math.random() * 4;
         pulse.material.opacity = 0;
         if(pulse.children[0]) pulse.children[0].material.opacity = 0;
         return;
@@ -325,16 +470,15 @@
       const pos = getPositionOnPath(d.tracePoints, d.segments, d.totalLength, d.progress);
       pulse.position.copy(pos);
 
-      const edgeFade = Math.min(d.progress * 6, (1 - d.progress) * 6, 1);
+      const edgeFade = Math.min(d.progress * 5, (1 - d.progress) * 5, 1);
       pulse.material.opacity = CONFIG.pulseOpacity * edgeFade;
-      if(pulse.children[0]) pulse.children[0].material.opacity = CONFIG.pulseOpacity * 0.25 * edgeFade;
+      if(pulse.children[0]) pulse.children[0].material.opacity = CONFIG.pulseOpacity * 0.2 * edgeFade;
     });
 
-    // Chip glow pulsing
     chips.forEach(chip => {
-      const glow = Math.sin(t * 0.4 + chip.userData.phase) * 0.5 + 0.5;
+      const glow = Math.sin(t * 0.5 + chip.userData.phase) * 0.5 + 0.5;
       if(chip.userData.body){
-        chip.userData.body.material.opacity = CONFIG.chipOpacity + glow * CONFIG.chipGlowOpacity;
+        chip.userData.body.material.opacity = CONFIG.chipOpacity + glow * CONFIG.chipGlowMax;
       }
     });
 
@@ -347,25 +491,25 @@
     const w = container.clientWidth;
     const h = container.clientHeight;
     const aspect = w / h;
-    camera.left = -6 * aspect;
-    camera.right = 6 * aspect;
+    const camH = 12;
+    camera.left = -camH / 2 * aspect;
+    camera.right = camH / 2 * aspect;
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);
   }
 
-  // ── Cleanup ──
   function destroy(){
     if(animId) cancelAnimationFrame(animId);
     window.removeEventListener('resize', onResize);
     if(renderer){ renderer.dispose(); renderer.domElement.remove(); }
   }
 
-  window._circuit = { destroy };
+  window._circuit = { destroy, rebuild };
 
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', init);
   } else {
-    setTimeout(init, 300);
+    setTimeout(init, 400);
   }
 
 })();

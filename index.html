@@ -597,13 +597,6 @@
       </div>
       <div style="text-align:center;padding-top:4px"><button class="ap-btn ap-btn-cyan" onclick="previewLandingPage()" style="font-size:10px;padding:8px 20px">👁 Preview Landing Page</button></div>
     </div>
-    <div class="ap-section"><h4>Console Theme <span class="save-blip" id="blipGridTheme">✓ Saved</span></h4>
-      <p>Choose the visual style for the console grid tiles. Content, badges, and activity indicators remain unchanged — only the frame and aesthetic changes.</p>
-      <div style="display:flex;align-items:center;gap:14px;margin-top:8px">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--green);letter-spacing:1px" id="currentThemeLabel">Current: CRT Monitor</div>
-        <button class="ap-btn ap-btn-cyan" onclick="openThemePreview()" style="font-size:10px;padding:8px 20px">👁 Preview & Select Theme</button>
-      </div>
-    </div>
     <div class="ap-section"><h4>Console Background <span class="save-blip" id="blipConsoleBg">✓ Saved</span></h4>
       <p>Set the background color and overlay texture for the console screen. Affects all users in real-time.</p>
       <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:12px">
@@ -1047,33 +1040,6 @@
     <button class="lp-preview-nav" onclick="previewNav('regScreen',this)">Register</button>
     <button class="lp-preview-nav" onclick="previewNav('loginScreen',this)">Login</button>
     <button class="lp-preview-close" onclick="closeLandingPreview()">✕ Close</button>
-  </div>
-</div>
-
-<!-- THEME PREVIEW OVERLAY -->
-<div id="themePreviewOverlay" style="position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,.96);display:none;flex-direction:column">
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(0,0,0,.8);border-bottom:1px solid rgba(0,255,136,.1);flex-shrink:0">
-    <div style="display:flex;align-items:center;gap:12px">
-      <span style="font-family:'Saira',sans-serif;font-size:11px;letter-spacing:3px;color:var(--green);font-weight:700">CONSOLE THEME PREVIEW</span>
-      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#666" id="themePreviewName">CRT Monitor</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <button onclick="cycleThemePreview(-1)" style="padding:6px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:#ccc;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s" onmouseenter="this.style.borderColor='rgba(0,212,255,.3)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.1)'">◀ Prev</button>
-      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;min-width:40px;text-align:center" id="themePreviewCounter">1 / 10</span>
-      <button onclick="cycleThemePreview(1)" style="padding:6px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:#ccc;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s" onmouseenter="this.style.borderColor='rgba(0,212,255,.3)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.1)'">Next ▶</button>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px">
-      <button onclick="applyThemeFromPreview()" style="padding:7px 18px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.25);border-radius:4px;color:var(--green);font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:all .15s" onmouseenter="this.style.background='rgba(0,255,136,.15)'" onmouseleave="this.style.background='rgba(0,255,136,.08)'">✓ SELECT</button>
-      <button onclick="closeThemePreview()" style="padding:7px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:#999;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all .15s" onmouseenter="this.style.borderColor='rgba(255,50,50,.3)'" onmouseleave="this.style.borderColor='rgba(255,255,255,.1)'">✕ CANCEL</button>
-    </div>
-  </div>
-  <div style="flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:20px">
-    <div style="width:100%;max-width:800px">
-      <div class="console-grid" id="themePreviewGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2.5vh,28px);padding:clamp(14px,2.5vh,28px);align-content:center"></div>
-    </div>
-  </div>
-  <div style="padding:8px 20px;text-align:center;flex-shrink:0;border-top:1px solid rgba(255,255,255,.04)">
-    <span style="font-family:'Chakra Petch',sans-serif;font-size:9px;color:#444;letter-spacing:1px">Use ◀ ▶ to cycle through themes · Press SELECT to apply · ESC to cancel</span>
   </div>
 </div>
 

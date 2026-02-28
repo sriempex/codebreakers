@@ -109,7 +109,7 @@
     tl.to(tile, {
       scale: 1.04,
       y: -4,
-      duration: 0.35,
+      duration: 0.2,
       ease: 'power2.out',
       overwrite: 'auto'
     }, 0);
@@ -119,7 +119,7 @@
       tl.to(screen, {
         boxShadow: 'inset 0 2px 8px rgba(0,0,0,.6), inset 0 0 20px rgba(0,0,0,.3), 0 0 12px rgba(0,255,136,.12), 0 0 30px rgba(0,255,136,.05), 0 0 60px rgba(0,255,136,.02)',
         borderColor: 'rgba(0,255,136,0.2)',
-        duration: 0.35,
+        duration: 0.2,
         ease: 'power2.out',
         overwrite: 'auto'
       }, 0);
@@ -130,7 +130,7 @@
       tl.to(icon, {
         scale: 1.12,
         filter: 'grayscale(0) brightness(1.15) drop-shadow(0 0 8px rgba(0,255,136,.25))',
-        duration: 0.35,
+        duration: 0.2,
         ease: 'power2.out',
         overwrite: 'auto'
       }, 0);
@@ -142,7 +142,7 @@
         width: 180,
         height: 180,
         opacity: 1,
-        duration: 0.4,
+        duration: 0.25,
         ease: 'power2.out',
         overwrite: 'auto'
       }, 0);
@@ -151,7 +151,7 @@
     // Outer tile glow via boxShadow
     tl.to(tile, {
       boxShadow: '0 8px 30px rgba(0,0,0,.6), 0 14px 60px rgba(0,0,0,.3), 0 0 25px rgba(0,255,136,.04), 0 0 50px rgba(0,255,136,.02), inset 0 1px 0 rgba(255,255,255,.06)',
-      duration: 0.4,
+      duration: 0.25,
       ease: 'power2.out',
       overwrite: 'auto'
     }, 0);
@@ -165,7 +165,7 @@
       ease: 'sine.inOut',
       repeat: -1,
       yoyo: true
-    }, 0.35);
+    }, 0.2);
 
     _hoverTimelines.set(tile, tl);
 
@@ -192,8 +192,8 @@
       scale: 1,
       y: 0,
       boxShadow: '0 4px 20px rgba(0,0,0,.5), 0 10px 50px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.04), inset 0 -1px 0 rgba(0,0,0,.4)',
-      duration: 0.5,
-      ease: 'power2.inOut',
+      duration: 0.25,
+      ease: 'power3.out',
       overwrite: 'auto'
     }, 0);
 
@@ -201,8 +201,8 @@
       tl.to(screen, {
         boxShadow: 'inset 0 2px 8px rgba(0,0,0,.6), inset 0 0 20px rgba(0,0,0,.3), 0 0 1px rgba(0,255,136,.1)',
         borderColor: 'rgba(0,255,136,0.06)',
-        duration: 0.5,
-        ease: 'power2.inOut',
+        duration: 0.25,
+        ease: 'power3.out',
         overwrite: 'auto'
       }, 0);
     }
@@ -211,8 +211,8 @@
       tl.to(icon, {
         scale: 1,
         filter: 'grayscale(0.3) brightness(0.85)',
-        duration: 0.5,
-        ease: 'power2.inOut',
+        duration: 0.25,
+        ease: 'power3.out',
         overwrite: 'auto'
       }, 0);
     }
@@ -222,8 +222,8 @@
         width: 100,
         height: 100,
         opacity: 0.5,
-        duration: 0.5,
-        ease: 'power2.inOut',
+        duration: 0.25,
+        ease: 'power3.out',
         overwrite: 'auto'
       }, 0);
     }
