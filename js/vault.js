@@ -61,6 +61,8 @@ function vkSubmit(){
   }else{
     vkFailCount++;vkTotalFails++;
     playDenied();vkDisp.textContent='✗ INVALID CODE';vkDisp.style.color='#ff3333';
+    // GSAP shake on the display
+    if(window._gsapErrorShake){_gsapErrorShake(document.querySelector('#expVault .v-display'))}
     document.getElementById('flashR').classList.add('on');setTimeout(()=>document.getElementById('flashR').classList.remove('on'),300);
     const maxAttempts=regSettings.vaultMaxAttempts||5;
     const cooldown=regSettings.vaultCooldownSec||30;
