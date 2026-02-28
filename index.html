@@ -1485,6 +1485,7 @@
   /* Console texture overlay — applied to console screen */
   #consoleScreen{position:relative}
   #consoleBgOverlay{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0.4}
+  #settingsBgOverlay{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:0.4}
   .ap-msg.ok{color:#b8f0d0}.ap-msg.err{color:#ff9988}
   .ap-team-list{max-height:150px;overflow-y:auto;margin-top:10px}
   .ap-team-row{display:flex;align-items:center;gap:10px;padding:6px 10px;border:1px solid var(--border);border-radius:3px;margin-bottom:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#ccc}
@@ -10711,19 +10712,26 @@ const _textureCSS={
 function applyConsoleBg(){
   const screen=document.getElementById('consoleScreen');
   const overlay=document.getElementById('consoleBgOverlay');
+  const settingsScreen=document.getElementById('settingsScreen');
+  const settingsOverlay=document.getElementById('settingsBgOverlay');
   // Set CSS variable so body and all panels inherit the background
   document.documentElement.style.setProperty('--bg-deep',_consoleBg);
   document.documentElement.style.setProperty('--console-bg',_consoleBg);
   if(screen)screen.style.background=_consoleBg;
-  if(overlay){
+  if(settingsScreen)settingsScreen.style.background=_consoleBg;
+  // Apply texture to both overlays
+  const applyTex=(ov)=>{
+    if(!ov)return;
     if(_consoleTex==='none'){
-      overlay.style.background='';
-      overlay.style.opacity='0';
+      ov.style.background='';
+      ov.style.opacity='0';
     }else{
-      overlay.style.background=_textureCSS[_consoleTex]||'';
-      overlay.style.opacity=String(_consoleTexOpacity/100);
+      ov.style.background=_textureCSS[_consoleTex]||'';
+      ov.style.opacity=String(_consoleTexOpacity/100);
     }
-  }
+  };
+  applyTex(overlay);
+  applyTex(settingsOverlay);
 }
 
 function setConsoleBgColor(color){
@@ -11444,6 +11452,8 @@ togglePlayerPreview=function(){
 <!-- DASHBOARD SCREEN (full page) -->
 <!-- SETTINGS SCREEN (full page — unified admin) -->
 <div class="screen" id="settingsScreen">
+<div id="settingsBgOverlay"></div>
+<div class="console-worldmap"></div>
   <div class="settings-topbar">
     <span class="settings-topbar-title">◈ Admin Console</span>
     <button class="settings-topbar-close" onclick="returnFromAdminPage()" title="Return to console">✕ CLOSE</button>
