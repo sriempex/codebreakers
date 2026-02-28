@@ -84,6 +84,155 @@
   window._gsapErrorShake = errorShake;
 
   // ─────────────────────────────────────────────
+  // 1b. HOVER EFFECTS — Console Grid Tiles
+  // ─────────────────────────────────────────────
+
+  // Track active hover tweens so we can kill them cleanly
+  const _hoverTimelines = new WeakMap();
+
+  document.addEventListener('mouseenter', function(e){
+    const tile = e.target.closest('.crt-monitor');
+    if(!tile) return;
+
+    // Kill any existing hover-out tween
+    if(_hoverTimelines.has(tile)){
+      _hoverTimelines.get(tile).kill();
+    }
+
+    const screen = tile.querySelector('.crt-screen');
+    const icon = tile.querySelector('.tile-icon');
+    const glow = tile.querySelector('.tile-glow');
+
+    const tl = gsap.timeline();
+
+    // Tile: lift + slight scale
+    tl.to(tile, {
+      scale: 1.04,
+      y: -4,
+      duration: 0.35,
+      ease: 'power2.out',
+      overwrite: 'auto'
+    }, 0);
+
+    // Screen: cyber glow border via boxShadow
+    if(screen){
+      tl.to(screen, {
+        boxShadow: 'inset 0 2px 8px rgba(0,0,0,.6), inset 0 0 20px rgba(0,0,0,.3), 0 0 12px rgba(0,255,136,.12), 0 0 30px rgba(0,255,136,.05), 0 0 60px rgba(0,255,136,.02)',
+        borderColor: 'rgba(0,255,136,0.2)',
+        duration: 0.35,
+        ease: 'power2.out',
+        overwrite: 'auto'
+      }, 0);
+    }
+
+    // Icon: scale up with subtle pulse
+    if(icon){
+      tl.to(icon, {
+        scale: 1.12,
+        filter: 'grayscale(0) brightness(1.15) drop-shadow(0 0 8px rgba(0,255,136,.25))',
+        duration: 0.35,
+        ease: 'power2.out',
+        overwrite: 'auto'
+      }, 0);
+    }
+
+    // Glow: expand and brighten
+    if(glow){
+      tl.to(glow, {
+        width: 180,
+        height: 180,
+        opacity: 1,
+        duration: 0.4,
+        ease: 'power2.out',
+        overwrite: 'auto'
+      }, 0);
+    }
+
+    // Outer tile glow via boxShadow
+    tl.to(tile, {
+      boxShadow: '0 8px 30px rgba(0,0,0,.6), 0 14px 60px rgba(0,0,0,.3), 0 0 25px rgba(0,255,136,.04), 0 0 50px rgba(0,255,136,.02), inset 0 1px 0 rgba(255,255,255,.06)',
+      duration: 0.4,
+      ease: 'power2.out',
+      overwrite: 'auto'
+    }, 0);
+
+    // Subtle continuous pulse while hovering
+    tl.to(screen || tile, {
+      boxShadow: screen
+        ? 'inset 0 2px 8px rgba(0,0,0,.6), inset 0 0 20px rgba(0,0,0,.3), 0 0 16px rgba(0,255,136,.16), 0 0 40px rgba(0,255,136,.06), 0 0 70px rgba(0,255,136,.025)'
+        : undefined,
+      duration: 0.8,
+      ease: 'sine.inOut',
+      repeat: -1,
+      yoyo: true
+    }, 0.35);
+
+    _hoverTimelines.set(tile, tl);
+
+  }, true); // useCapture for delegation
+
+  document.addEventListener('mouseleave', function(e){
+    const tile = e.target.closest('.crt-monitor');
+    if(!tile) return;
+
+    // Kill hover timeline
+    if(_hoverTimelines.has(tile)){
+      _hoverTimelines.get(tile).kill();
+      _hoverTimelines.delete(tile);
+    }
+
+    const screen = tile.querySelector('.crt-screen');
+    const icon = tile.querySelector('.tile-icon');
+    const glow = tile.querySelector('.tile-glow');
+
+    const tl = gsap.timeline();
+
+    // Return everything to resting state
+    tl.to(tile, {
+      scale: 1,
+      y: 0,
+      boxShadow: '0 4px 20px rgba(0,0,0,.5), 0 10px 50px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.04), inset 0 -1px 0 rgba(0,0,0,.4)',
+      duration: 0.5,
+      ease: 'power2.inOut',
+      overwrite: 'auto'
+    }, 0);
+
+    if(screen){
+      tl.to(screen, {
+        boxShadow: 'inset 0 2px 8px rgba(0,0,0,.6), inset 0 0 20px rgba(0,0,0,.3), 0 0 1px rgba(0,255,136,.1)',
+        borderColor: 'rgba(0,255,136,0.06)',
+        duration: 0.5,
+        ease: 'power2.inOut',
+        overwrite: 'auto'
+      }, 0);
+    }
+
+    if(icon){
+      tl.to(icon, {
+        scale: 1,
+        filter: 'grayscale(0.3) brightness(0.85)',
+        duration: 0.5,
+        ease: 'power2.inOut',
+        overwrite: 'auto'
+      }, 0);
+    }
+
+    if(glow){
+      tl.to(glow, {
+        width: 100,
+        height: 100,
+        opacity: 0.5,
+        duration: 0.5,
+        ease: 'power2.inOut',
+        overwrite: 'auto'
+      }, 0);
+    }
+
+    _hoverTimelines.set(tile, tl);
+
+  }, true);
+
+  // ─────────────────────────────────────────────
   // 2. BREATHING GLOWS — CRT Tiles & Status Elements
   // ─────────────────────────────────────────────
 
