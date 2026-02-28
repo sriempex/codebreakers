@@ -169,6 +169,13 @@ function renderGrid(){
     </div>`;
   }).join('');
   updateVaultBadgeColor();
+  // GSAP: staggered tile entrance animation
+  if(window.gsap){
+    gsap.fromTo('#consoleGrid .crt-monitor',
+      {opacity:0,y:20,scale:0.95},
+      {opacity:1,y:0,scale:1,duration:0.35,ease:'power2.out',stagger:0.06,overwrite:true}
+    );
+  }
 }
 function editGridTile(i){
   const t=gridTiles[i];

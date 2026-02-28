@@ -85,7 +85,15 @@ function _syncPanelIcon(tileId){
   if(isImg){iconEl.innerHTML='<img src="'+tile.icon+'" style="width:18px;height:18px;object-fit:contain;vertical-align:middle">';}
   else{iconEl.textContent=tile.icon;}
 }
-function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]).classList.add('visible');_syncPanelIcon(t);_instantShow(overlay);if(window._histPush)window._histPush('panel');saveSession();if(!isAdmin&&currentVaultTeam)apiCall('heartbeat',{teamId:currentVaultTeam.id});
+function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));const panel=document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]);panel.classList.add('visible');_syncPanelIcon(t);_instantShow(overlay);
+  // GSAP: animate panel entrance
+  if(window.gsap){
+    gsap.fromTo(panel,
+      {scale:0.95,opacity:0,y:15},
+      {scale:1,opacity:1,y:0,duration:0.3,ease:'power2.out'}
+    );
+  }
+  if(window._histPush)window._histPush('panel');saveSession();if(!isAdmin&&currentVaultTeam)apiCall('heartbeat',{teamId:currentVaultTeam.id});
   if(t==='feed'){renderFeed();setFeedView('grid');_refreshPanelData('feed')}if(t==='media'){renderMedia();_refreshPanelData('media')}if(t==='intel'){renderIntelForm();restoreIntelDraft();_refreshPanelData('intel')}if(t==='vault'){renderVaultPanel();_refreshPanelData('vault')}}
 
 // Fresh data fetch on panel open — ensures frontend matches backend
@@ -137,7 +145,19 @@ function _refreshPanelData(panel){
     });
   }
 }
-function closePanel(){_stopAllFeedVideos();overlay.style.cssText='';overlay.classList.remove('active');saveGameState();setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession();renderGrid()},120)
+function closePanel(){_stopAllFeedVideos();
+  const visiblePanel=document.querySelector('.expanded-panel.visible');
+  if(visiblePanel&&window.gsap){
+    gsap.to(visiblePanel,{scale:0.96,opacity:0,y:10,duration:0.2,ease:'power2.in',
+      onComplete:()=>{
+        overlay.style.cssText='';overlay.classList.remove('active');
+        document.querySelectorAll('.expanded-panel').forEach(p=>{p.classList.remove('visible');gsap.set(p,{clearProps:'all'})});
+        saveGameState();saveSession();renderGrid();
+      }
+    });
+  }else{
+    overlay.style.cssText='';overlay.classList.remove('active');saveGameState();setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession();renderGrid()},120);
+  }
   try{_forceCursorKill();}catch(e){}
 }
 

@@ -148,15 +148,32 @@ function updateIntelBadge(){const filled=document.querySelectorAll('.intel-exp-i
 document.addEventListener('input',e=>{if(e.target.classList.contains('intel-exp-input'))updateIntelBadge()});
 function showConfirm(){
   if(isSubmitted)return;
-  // Player preview dry-run — show confirm then simulate
   playConfirmPrompt();const inputs=document.querySelectorAll('.intel-exp-input'),body=document.getElementById('confirmBody');body.innerHTML='';
   syncIntelLabels();let li=0;
   inputs.forEach((inp)=>{let v=inp.value.trim();const idx=inp.dataset.idx;
     const fi=parseInt(idx);if(!isNaN(fi)&&intelFields[fi]&&intelFields[fi].type==='money'&&v)v='$'+v;
     const label=intelLabels[li]||'Field '+(li+1);li++;
     body.innerHTML+=`<div class="confirm-row"><span class="confirm-label">${label}</span><span class="confirm-value ${v?'':'empty'}">${v||'— empty —'}</span></div>`});
-  document.getElementById('confirmModal').classList.add('active')}
-function hideConfirm(){document.getElementById('confirmModal').classList.remove('active')}
+  const modal=document.getElementById('confirmModal');
+  modal.classList.add('active');
+  // Animate the confirm box in
+  const box=modal.querySelector('.confirm-box');
+  if(box&&window.gsap){
+    gsap.fromTo(box,
+      {scale:0.92,opacity:0,y:20},
+      {scale:1,opacity:1,y:0,duration:0.25,ease:'power2.out'}
+    );
+  }
+}
+function hideConfirm(){
+  const modal=document.getElementById('confirmModal');
+  const box=modal.querySelector('.confirm-box');
+  if(box&&window.gsap){
+    gsap.to(box,{scale:0.95,opacity:0,y:10,duration:0.15,ease:'power2.in',
+      onComplete:()=>modal.classList.remove('active')
+    });
+  }else{modal.classList.remove('active')}
+}
 function finalSubmit(){
   // Player preview dry-run — full visual feedback, then reset
   if(document.body.classList.contains('player-preview')){
@@ -165,8 +182,12 @@ function finalSubmit(){
     const btn=document.getElementById('intelSubmitBtn');if(btn){btn.textContent='INTEL SUBMITTED';btn.disabled=true}
     document.getElementById('intelBadge').textContent='SUBMITTED';
     playSuccess();
-    document.getElementById('flashG').classList.add('on');
-    setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
+    if(window.gsap){
+      gsap.fromTo('#flashG',{opacity:1},{opacity:0,duration:0.4,onStart:()=>document.getElementById('flashG').classList.add('on'),onComplete:()=>document.getElementById('flashG').classList.remove('on')});
+    }else{
+      document.getElementById('flashG').classList.add('on');
+      setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
+    }
     // Reset after 3 seconds
     setTimeout(()=>{
       document.querySelectorAll('.intel-exp-input').forEach(inp=>{inp.disabled=false;inp.value=''});
@@ -190,8 +211,12 @@ function finalSubmit(){
   document.getElementById('intelBadge').textContent=tileBadgeText('intel',false);
   document.getElementById('intelBadge').classList.remove('amber');
   playSuccess();
-  document.getElementById('flashG').classList.add('on');
-  setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
+  if(window.gsap){
+    gsap.fromTo('#flashG',{opacity:1},{opacity:0,duration:0.4,onStart:()=>document.getElementById('flashG').classList.add('on'),onComplete:()=>document.getElementById('flashG').classList.remove('on')});
+  }else{
+    document.getElementById('flashG').classList.add('on');
+    setTimeout(()=>document.getElementById('flashG').classList.remove('on'),400);
+  }
 
   // Send to backend
   if(currentVaultTeam&&currentVaultTeam.id!=='ADMIN'){

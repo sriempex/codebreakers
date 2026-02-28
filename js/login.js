@@ -176,5 +176,57 @@ function updateConsoleForTeam(team){
     memberSection.insertAdjacentHTML('beforeend',membersHtml);
   }
 }
-function openVault(){const ov=document.getElementById('vaultOpenOverlay');ov.classList.add('active');setTimeout(()=>document.getElementById('voText').classList.add('show'),300);setTimeout(()=>document.getElementById('voSub').classList.add('show'),300);setTimeout(()=>{document.getElementById('voBar').classList.add('show');document.getElementById('voPct').classList.add('show')},300);setTimeout(()=>{document.getElementById('voFill').classList.add('go');let pct=0;const pctEl=document.getElementById('voPct');const pctInt=setInterval(()=>{pct=Math.min(100,pct+Math.ceil(Math.random()*4+1));pctEl.textContent=pct+'%';if(pct>=100)clearInterval(pctInt)},50)},1200);setTimeout(()=>{showScreen('consoleScreen');document.getElementById('notepadTrigger').classList.add('visible');startElapsedTimer();ov.classList.remove('active');document.getElementById('voText').classList.remove('show');document.getElementById('voSub').classList.remove('show');document.getElementById('voBar').classList.remove('show');document.getElementById('voFill').classList.remove('go');document.getElementById('voPct').classList.remove('show');document.getElementById('voPct').textContent='0%';setTimeout(()=>{if(shouldShowTutorial()){startTutorial()}else{checkShowBriefing()}},500)},3800)}
+function openVault(){
+  const ov=document.getElementById('vaultOpenOverlay');
+  const voText=document.getElementById('voText');
+  const voSub=document.getElementById('voSub');
+  const voBar=document.getElementById('voBar');
+  const voPct=document.getElementById('voPct');
+  const voFill=document.getElementById('voFill');
+
+  // Reset percentage
+  voPct.textContent='0%';
+
+  // Build GSAP timeline
+  const tl=gsap.timeline({
+    onComplete:()=>{
+      showScreen('consoleScreen');
+      document.getElementById('notepadTrigger').classList.add('visible');
+      startElapsedTimer();
+      // Clean up overlay classes
+      gsap.set([voText,voSub,voBar,voFill,voPct],{clearProps:'all'});
+      ov.classList.remove('active');
+      voText.classList.remove('show');
+      voSub.classList.remove('show');
+      voBar.classList.remove('show');
+      voFill.classList.remove('go');
+      voPct.classList.remove('show');
+      voPct.textContent='0%';
+      // Tutorial or briefing after a beat
+      gsap.delayedCall(0.5,()=>{
+        if(shouldShowTutorial()){startTutorial()}else{checkShowBriefing()}
+      });
+    }
+  });
+
+  // Phase 1: Overlay appears
+  tl.call(()=>ov.classList.add('active'))
+  // Phase 2: Text elements fade in with stagger
+    .call(()=>{voText.classList.add('show');voSub.classList.add('show')},null,'+=0.3')
+    .call(()=>{voBar.classList.add('show');voPct.classList.add('show')},null,'+=0.0')
+  // Phase 3: Progress bar fills with animated percentage counter
+    .call(()=>{
+      voFill.classList.add('go');
+      gsap.to({pct:0},{
+        pct:100,
+        duration:2.2,
+        ease:'power2.inOut',
+        onUpdate:function(){
+          voPct.textContent=Math.round(this.targets()[0].pct)+'%';
+        }
+      });
+    },null,'+=0.9')
+  // Phase 4: Hold for dramatic effect, then complete
+    .to({},{duration:2.5});
+}
 
