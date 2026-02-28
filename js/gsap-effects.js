@@ -90,10 +90,7 @@
   // Track active hover tweens so we can kill them cleanly
   const _hoverTimelines = new WeakMap();
 
-  document.addEventListener('mouseenter', function(e){
-    const tile = e.target.closest('.crt-monitor');
-    if(!tile) return;
-
+  function onTileEnter(tile){
     // Kill any existing hover-out tween
     if(_hoverTimelines.has(tile)){
       _hoverTimelines.get(tile).kill();
@@ -168,13 +165,9 @@
     }, 0.2);
 
     _hoverTimelines.set(tile, tl);
+  }
 
-  }, true); // useCapture for delegation
-
-  document.addEventListener('mouseleave', function(e){
-    const tile = e.target.closest('.crt-monitor');
-    if(!tile) return;
-
+  function onTileLeave(tile){
     // Kill hover timeline
     if(_hoverTimelines.has(tile)){
       _hoverTimelines.get(tile).kill();
@@ -210,7 +203,7 @@
     if(icon){
       tl.to(icon, {
         scale: 1,
-        filter: 'grayscale(0.3) brightness(0.85)',
+        filter: 'grayscale(0.2) brightness(0.9)',
         duration: 0.25,
         ease: 'power3.out',
         overwrite: 'auto'
@@ -229,8 +222,18 @@
     }
 
     _hoverTimelines.set(tile, tl);
+  }
 
-  }, true);
+  // Attach hover directly to each tile — mouseenter/mouseleave
+  // won't fire when moving between child elements
+  function initTileHover(){
+    document.querySelectorAll('.crt-monitor').forEach(tile => {
+      if(tile._hoverBound) return; // prevent double-bind
+      tile._hoverBound = true;
+      tile.addEventListener('mouseenter', () => onTileEnter(tile));
+      tile.addEventListener('mouseleave', () => onTileLeave(tile));
+    });
+  }
 
   // ─────────────────────────────────────────────
   // 2. BREATHING GLOWS — CRT Tiles & Status Elements
@@ -399,6 +402,7 @@
       _origRenderGrid.apply(this, arguments);
       // Re-apply breathing after DOM update
       requestAnimationFrame(()=>{
+        initTileHover();
         initTileBreathing();
         initLedBreathing();
         initDotBreathing();
@@ -539,6 +543,7 @@
 
   // Initial setup on DOM ready
   function initAllEffects(){
+    initTileHover();
     initTileBreathing();
     initLedBreathing();
     initWorldmapBreathing();
