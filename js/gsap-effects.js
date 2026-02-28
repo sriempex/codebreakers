@@ -191,7 +191,7 @@
     tl.to(tile, {
       scale: 1,
       y: 0,
-      boxShadow: '0 4px 24px rgba(0,0,0,.5), 0 12px 48px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.04)',
+      boxShadow: '0 4px 24px rgba(0,0,0,.3), 0 12px 48px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.06)',
       duration: 0.25,
       ease: 'power3.out',
       overwrite: 'auto'
@@ -199,7 +199,7 @@
 
     if(screen){
       tl.to(screen, {
-        boxShadow: 'inset 0 1px 6px rgba(0,0,0,.5), inset 0 0 20px rgba(0,0,0,.2), 0 0 1px rgba(0,255,136,.08)',
+        boxShadow: 'inset 0 1px 6px rgba(0,0,0,.35), inset 0 0 16px rgba(0,0,0,.15), 0 0 1px rgba(0,255,136,.06)',
         borderColor: 'rgba(0,255,136,0.06)',
         duration: 0.25,
         ease: 'power3.out',

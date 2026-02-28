@@ -12,15 +12,15 @@
 
   const CONFIG = {
     traceColor: 0x00ff88,
-    traceOpacity: 0.07,
+    traceOpacity: 0.09,
     pulseColor: 0x00ff88,
     pulseSpeed: 0.4,
     pulseSize: 0.018,
-    pulseOpacity: 0.55,
+    pulseOpacity: 0.6,
     chipColor: 0x00ff88,
-    chipOpacity: 0.035,
-    chipGlowMax: 0.09,
-    viaOpacity: 0.04,
+    chipOpacity: 0.04,
+    chipGlowMax: 0.1,
+    viaOpacity: 0.05,
   };
 
   // ── Convert pixel coords to Three.js world coords ──

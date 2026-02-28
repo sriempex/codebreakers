@@ -1,30 +1,24 @@
   /* ══════ CONSOLE ══════ */
   #consoleScreen{display:flex;flex-direction:column;position:relative;height:100vh;
-    /* Brighter slate-blue base for office lighting */
-    background:linear-gradient(180deg, #182634 0%, #1c2b3a 15%, #16222f 50%, #121c27 85%, #0f1822 100%);
+    /* Frosted Slate — mid-tone cool grey, readable in any lighting */
+    background:linear-gradient(180deg, #1e2432 0%, #222838 15%, #1e2430 50%, #1a2028 85%, #161c24 100%);
   }
-  /* Brushed zinc streaks */
+  /* Subtle brushed texture */
   #consoleScreen::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
     background:
       repeating-linear-gradient(0deg,
         transparent, transparent 1px,
-        rgba(255,255,255,.005) 1px, rgba(255,255,255,.005) 2px,
+        rgba(255,255,255,.006) 1px, rgba(255,255,255,.006) 2px,
         transparent 2px, transparent 4px
       ),
       repeating-linear-gradient(90deg,
         transparent, transparent 60px,
-        rgba(255,255,255,.003) 60px, rgba(255,255,255,.003) 61px
-      ),
-      linear-gradient(135deg,
-        rgba(255,255,255,.004) 0%, transparent 30%,
-        rgba(255,255,255,.003) 50%, transparent 70%,
-        rgba(255,255,255,.002) 100%
+        rgba(255,255,255,.004) 60px, rgba(255,255,255,.004) 61px
       );
   }
-  /* Vignette — tight, dark edges */
+  /* Softer vignette for frosted look */
   #consoleScreen::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
-    /* Softer vignette so panels stay readable in daylight */
-    background:radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,0,0,.38) 100%);
+    background:radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,.3) 100%);
   }
   /* Subtle world map background */
   .console-worldmap{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.12;
@@ -35,10 +29,10 @@
   /* Topbar — steel header strip */
   .console-topbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;position:relative;z-index:50;
     background:
-      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.004) 1px,rgba(255,255,255,.004) 2px,transparent 2px,transparent 3px),
-      linear-gradient(180deg,#0c0e12,#060810);
-    border-bottom:1px solid rgba(255,255,255,.04);
-    box-shadow:0 2px 10px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.015)}
+      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.005) 1px,rgba(255,255,255,.005) 2px,transparent 2px,transparent 3px),
+      linear-gradient(180deg,#161c26,#111820);
+    border-bottom:1px solid rgba(255,255,255,.06);
+    box-shadow:0 2px 10px rgba(0,0,0,.4),0 1px 0 rgba(255,255,255,.02)}
   .console-title{font-family:'Staatliches',cursive;font-size:17px;letter-spacing:2px;color:#b0e8cc;text-transform:uppercase}
   .timer-block{text-align:center;position:absolute;left:50%;transform:translateX(-50%);padding-bottom:4px}
   .timer-digits{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:22px;color:#ff6655;letter-spacing:4px}
@@ -86,10 +80,10 @@
   /* Team splash card — glass panel */
   .team-card{position:absolute;top:100%;right:0;margin-top:10px;width:280px;border-radius:6px;padding:0;z-index:100;opacity:0;pointer-events:none;transform:translateY(-6px);transition:all .25s ease;
     background:
-      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.003) 1px,rgba(255,255,255,.003) 2px,transparent 2px,transparent 4px),
-      linear-gradient(175deg,#141620,#0e1018 40%,#0a0c12);
-    border:1px solid rgba(255,255,255,.06);
-    box-shadow:0 12px 40px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.02)}
+      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.004) 1px,rgba(255,255,255,.004) 2px,transparent 2px,transparent 4px),
+      linear-gradient(175deg,#222838,#1a2030 40%,#161c28);
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 12px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.04)}
   .team-card.open{opacity:1;pointer-events:all;transform:translateY(0)}
   .team-card-header{padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,.04)}
   .team-card-name{font-family:'Staatliches',cursive;font-size:15px;color:#b0e8cc;letter-spacing:2px;text-transform:uppercase}
@@ -107,22 +101,22 @@
   .team-card-stat-lbl{font-family:'Saira',sans-serif;font-size:8px;color:#999;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-top:3px}
 
   /* Console grid */
-  .console-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2.5vh,28px);padding:clamp(18px,3vh,36px) clamp(28px,5vw,80px);min-height:0;align-content:center;position:relative;z-index:1;max-width:1100px;margin:0 auto;width:100%}
+  .console-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2.5vh,28px);padding:clamp(18px,3vh,36px) clamp(22px,4vw,60px);min-height:0;align-content:center;position:relative;z-index:1;max-width:1250px;margin:0 auto;width:100%}
 
-  /* ── LED Display Panel ── */
+  /* ── LED Display Panel — Frosted Slate ── */
   .crt-monitor{position:relative;border-radius:12px;cursor:pointer;overflow:hidden;
-    /* Ultra-thin bezel — dark with subtle edge lighting */
-    background: linear-gradient(170deg, #141620 0%, #0e1018 40%, #0a0c14 100%);
+    /* Frosted bezel — lifted slate with subtle edge */
+    background: linear-gradient(170deg, #252b3a 0%, #1e2432 40%, #1a2030 100%);
     padding:clamp(6px,1vh,10px);
-    border:1px solid rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.08);
     box-shadow:
-      0 4px 24px rgba(0,0,0,.5),
-      0 12px 48px rgba(0,0,0,.25),
-      inset 0 1px 0 rgba(255,255,255,.04);
+      0 4px 24px rgba(0,0,0,.3),
+      0 12px 48px rgba(0,0,0,.15),
+      inset 0 1px 0 rgba(255,255,255,.06);
     transition: box-shadow .25s ease;
   }
   /* Hover handled by GSAP in gsap-effects.js */
-  .crt-monitor:hover .crt-screen{border-color:rgba(0,255,136,.15)}
+  .crt-monitor:hover .crt-screen{border-color:rgba(0,255,136,.18)}
 
   /* Screws hidden — clean bezel */
   .crt-screw{display:none}
@@ -130,43 +124,43 @@
   /* Power LED */
   .crt-led{display:none}
 
-  /* ── Glass Display Surface ── */
+  /* ── Glass Display Surface — Frosted ── */
   .crt-screen{position:relative;border-radius:8px;overflow:hidden;
-    background:linear-gradient(170deg,rgba(8,10,16,.97) 0%,rgba(4,6,10,.99) 60%,rgba(2,3,6,1));
-    border:1px solid rgba(0,255,136,.06);
+    background:linear-gradient(170deg,rgba(18,22,32,.94) 0%,rgba(14,18,28,.97) 60%,rgba(10,14,22,.99));
+    border:1px solid rgba(255,255,255,.07);
     box-shadow:
-      inset 0 1px 6px rgba(0,0,0,.5),
-      inset 0 0 20px rgba(0,0,0,.2),
-      0 0 1px rgba(0,255,136,.08);
+      inset 0 1px 6px rgba(0,0,0,.35),
+      inset 0 0 16px rgba(0,0,0,.15),
+      0 0 1px rgba(0,255,136,.06);
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     padding:clamp(14px,2.5vh,20px) clamp(14px,2vw,24px) clamp(12px,2vh,18px)}
 
-  /* Glass reflection — diagonal highlight sweep */
+  /* Glass reflection — frosted diagonal highlight */
   .crt-screen::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:3;
     background:
       linear-gradient(135deg,
-        rgba(255,255,255,.035) 0%,
-        rgba(255,255,255,.01) 25%,
+        rgba(255,255,255,.05) 0%,
+        rgba(255,255,255,.015) 25%,
         transparent 50%,
-        rgba(255,255,255,.005) 75%,
+        rgba(255,255,255,.008) 75%,
         transparent 100%
       );
   }
-  /* Subtle scanlines for tech feel */
+  /* Subtle scanlines */
   .crt-screen::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:4;
-    background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px)}
+    background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.025) 3px,rgba(0,0,0,.025) 4px)}
 
   /* Green border glow on hover */
   .crt-monitor:hover .crt-screen{border-color:rgba(0,255,136,.15);
     box-shadow:inset 0 2px 8px rgba(0,0,0,.6),inset 0 0 20px rgba(0,0,0,.3),0 0 8px rgba(0,255,136,.06),0 0 20px rgba(0,255,136,.02)}
 
   /* ── Tile content inside screen ── */
-  .tile-glow{position:absolute;top:25%;left:50%;transform:translate(-50%,-50%);width:100px;height:100px;background:radial-gradient(circle,rgba(0,255,136,.02) 0%,transparent 70%);pointer-events:none}
+  .tile-glow{position:absolute;top:25%;left:50%;transform:translate(-50%,-50%);width:100px;height:100px;background:radial-gradient(circle,rgba(0,255,136,.025) 0%,transparent 70%);pointer-events:none}
   /* tile-glow and tile-icon hover handled by GSAP */
-  .tile-icon{font-size:clamp(52px,7vh,58px);margin-bottom:clamp(14px,2vh,20px);position:relative;z-index:2;filter:grayscale(.3) brightness(.85);transition:none}
-  .tile-label{font-family:'Saira',sans-serif;font-weight:700;font-size:clamp(16px,2vh,18px);letter-spacing:clamp(3px,.4vw,4px);color:#c8c8c8;text-transform:uppercase;text-align:center;margin-bottom:clamp(7px,1vh,10px);z-index:2;text-shadow:0 2px 3px rgba(0,0,0,.7)}
-  .tile-sub{font-family:'Chakra Petch',sans-serif;font-size:clamp(11px,1.3vh,12px);color:#777;letter-spacing:1px;font-weight:500;text-align:center;margin-bottom:clamp(16px,2vh,22px);z-index:2}
-  .tile-badge{font-family:'Saira',sans-serif;font-size:clamp(10px,1.2vh,11px);letter-spacing:3px;font-weight:700;color:#e0e0e0;border:1px solid rgba(255,255,255,.1);padding:clamp(5px,.7vh,6px) clamp(14px,1.4vw,18px);border-radius:3px;margin-bottom:clamp(12px,1.6vh,16px);z-index:2;background:rgba(255,255,255,.04)}
+  .tile-icon{font-size:clamp(52px,7vh,58px);margin-bottom:clamp(14px,2vh,20px);position:relative;z-index:2;filter:grayscale(.2) brightness(.9);transition:none}
+  .tile-label{font-family:'Saira',sans-serif;font-weight:700;font-size:clamp(16px,2vh,18px);letter-spacing:clamp(3px,.4vw,4px);color:#d4dce4;text-transform:uppercase;text-align:center;margin-bottom:clamp(7px,1vh,10px);z-index:2;text-shadow:0 2px 4px rgba(0,0,0,.5)}
+  .tile-sub{font-family:'Chakra Petch',sans-serif;font-size:clamp(11px,1.3vh,12px);color:#8899aa;letter-spacing:1px;font-weight:500;text-align:center;margin-bottom:clamp(16px,2vh,22px);z-index:2}
+  .tile-badge{font-family:'Saira',sans-serif;font-size:clamp(10px,1.2vh,11px);letter-spacing:3px;font-weight:700;color:#e8eef4;border:1px solid rgba(255,255,255,.12);padding:clamp(5px,.7vh,6px) clamp(14px,1.4vw,18px);border-radius:3px;margin-bottom:clamp(12px,1.6vh,16px);z-index:2;background:rgba(255,255,255,.05)}
   .tile-badge.amber{color:#f0c878;border-color:rgba(255,170,51,.2);background:rgba(255,170,51,.05)}
   .tile-badge.crimson{color:#e8667a;border-color:rgba(204,68,85,.25);background:rgba(204,68,85,.06)}
   .tile-badge.violet{color:#b088ee;border-color:rgba(153,119,221,.25);background:rgba(153,119,221,.06)}
