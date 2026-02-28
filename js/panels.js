@@ -146,6 +146,7 @@ function _refreshPanelData(panel){
   }
 }
 function closePanel(){_stopAllFeedVideos();
+  if(typeof playCloseButton==='function') playCloseButton();
   const visiblePanel=document.querySelector('.expanded-panel.visible');
   if(visiblePanel&&window.gsap){
     gsap.to(visiblePanel,{scale:0.96,opacity:0,y:10,duration:0.2,ease:'power2.in',

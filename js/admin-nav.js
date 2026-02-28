@@ -70,6 +70,7 @@ function _switchToTab(screenId,tabId){
 }
 
 function returnFromAdminPage(){
+  if(typeof playCloseButton==='function') playCloseButton();
   // Unmount panels back to body so overlays still work for backward compat
   _currentAdminPage=null;
   showScreen(_gearReturnScreen);

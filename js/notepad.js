@@ -84,8 +84,19 @@ function playClick(){
   g.gain.exponentialRampToValueAtTime(.001,t+.08);
   o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.08);
 }
-// #8 Snap Click — grid tile clicks
+// #8 → C04 Interface Select — grid tile clicks (Tone.js)
 function playTileClick(){
+  if(window.Tone){
+    try{
+      const s=new Tone.PolySynth(Tone.Synth,{oscillator:{type:'sine'},envelope:{attack:0.005,decay:0.08,sustain:0,release:0.06}}).toDestination();
+      s.volume.value=-10;
+      const now=Tone.now();
+      s.triggerAttackRelease('E5',0.06,now);
+      s.triggerAttackRelease('A5',0.06,now+0.05);
+      setTimeout(()=>s.dispose(),500);
+    }catch(e){}
+    return;
+  }
   const c=getAudio(),t=c.currentTime;
   const o=c.createOscillator(),g=c.createGain();o.type='sawtooth';o.frequency.value=3000;
   o.frequency.exponentialRampToValueAtTime(500,t+.02);
@@ -100,8 +111,17 @@ function playAlert(){
   g.gain.setValueAtTime(.05,t);g.gain.exponentialRampToValueAtTime(.001,t+.25);
   o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.25);
 }
-// #20 Hydraulic Slide — confirm prompts (submit intel, logout)
+// #20 → L06 Fade Out — confirm prompts: logout, intel submit (Tone.js)
 function playConfirmPrompt(){
+  if(window.Tone){
+    try{
+      const s=new Tone.PolySynth(Tone.Synth,{oscillator:{type:'sine'},envelope:{attack:0.05,decay:0.4,sustain:0,release:0.5}}).toDestination();
+      s.volume.value=-10;
+      s.triggerAttackRelease(['E4','G4','B4'],0.4);
+      setTimeout(()=>s.dispose(),1200);
+    }catch(e){}
+    return;
+  }
   const c=getAudio(),t=c.currentTime;
   const buf=c.createBuffer(1,c.sampleRate*.25,c.sampleRate),d=buf.getChannelData(0);
   for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1);
@@ -112,6 +132,18 @@ function playConfirmPrompt(){
   setTimeout(()=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=80;
   g.gain.setValueAtTime(.15,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.2);
   o.connect(g);g.connect(c.destination);o.start(c.currentTime);o.stop(c.currentTime+.2)},150);
+}
+
+// H02 Electric Tick — close button sound (Tone.js)
+function playCloseButton(){
+  if(window.Tone){
+    try{
+      const s=new Tone.NoiseSynth({noise:{type:'white'},envelope:{attack:0.001,decay:0.03,sustain:0,release:0.01}}).toDestination();
+      s.volume.value=-18;
+      s.triggerAttackRelease(0.02);
+      setTimeout(()=>s.dispose(),500);
+    }catch(e){}
+  }
 }
 function playSuccess(){
   const c=getAudio(),now=c.currentTime;
