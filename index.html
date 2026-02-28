@@ -597,45 +597,6 @@
       </div>
       <div style="text-align:center;padding-top:4px"><button class="ap-btn ap-btn-cyan" onclick="previewLandingPage()" style="font-size:10px;padding:8px 20px">👁 Preview Landing Page</button></div>
     </div>
-    <div class="ap-section"><h4>Console Background <span class="save-blip" id="blipConsoleBg">✓ Saved</span></h4>
-      <p>Set the background color and overlay texture for the console screen. Affects all users in real-time.</p>
-      <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:12px">
-        <div style="flex:1;min-width:200px">
-          <label style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#666;text-transform:uppercase;display:block;margin-bottom:8px">Background Color</label>
-          <div style="display:flex;align-items:center;gap:10px">
-            <input type="color" id="consoleBgColor" value="#080a10" onchange="updateConsoleBg()" style="width:48px;height:36px;border:1px solid var(--border);border-radius:4px;background:transparent;cursor:pointer;padding:2px">
-            <input id="consoleBgHex" value="#080a10" onchange="document.getElementById('consoleBgColor').value=this.value;updateConsoleBg()" style="width:90px;font-family:IBM Plex Mono,monospace;font-size:11px;background:#080a10;border:1px solid var(--border);border-radius:3px;padding:6px 8px;color:#aaa;outline:none;letter-spacing:1px">
-          </div>
-          <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
-            <button class="cbg-preset" onclick="setConsoleBgColor('#080a10')" title="Default Black" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#080a10;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#0a1628')" title="Dark Navy" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#0a1628;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#1a1f2e')" title="Dark Slate" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1a1f2e;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#1e1e24')" title="Deep Charcoal" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1e1e24;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#0d1a0d')" title="Dark Green" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#0d1a0d;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#1a0a0a')" title="Dark Red" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#1a0a0a;cursor:pointer"></button>
-            <button class="cbg-preset" onclick="setConsoleBgColor('#12121a')" title="Dark Purple" style="width:28px;height:28px;border-radius:4px;border:1px solid var(--border);background:#12121a;cursor:pointer"></button>
-          </div>
-        </div>
-        <div style="flex:1;min-width:200px">
-          <label style="font-family:Saira,sans-serif;font-size:9px;letter-spacing:2px;color:#666;text-transform:uppercase;display:block;margin-bottom:8px">Texture Overlay</label>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="consoleBgTextureGrid">
-            <button class="cbg-tex active" data-tex="none" onclick="setConsoleTexture('none')"><span class="cbg-tex-preview" style="background:#080a10"></span><span class="cbg-tex-label">None</span></button>
-            <button class="cbg-tex" data-tex="scanlines" onclick="setConsoleTexture('scanlines')"><span class="cbg-tex-preview" style="background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.03) 2px,rgba(255,255,255,.03) 4px)"></span><span class="cbg-tex-label">Scanlines</span></button>
-            <button class="cbg-tex" data-tex="grid" onclick="setConsoleTexture('grid')"><span class="cbg-tex-preview" style="background:repeating-linear-gradient(0deg,transparent,transparent 11px,rgba(0,255,136,.04) 11px,rgba(0,255,136,.04) 12px),repeating-linear-gradient(90deg,transparent,transparent 11px,rgba(0,255,136,.04) 11px,rgba(0,255,136,.04) 12px)"></span><span class="cbg-tex-label">Grid</span></button>
-            <button class="cbg-tex" data-tex="noise" onclick="setConsoleTexture('noise')"><span class="cbg-tex-preview cbg-noise-preview"></span><span class="cbg-tex-label">Noise</span></button>
-            <button class="cbg-tex" data-tex="circuit" onclick="setConsoleTexture('circuit')"><span class="cbg-tex-preview" style="background:repeating-linear-gradient(90deg,transparent,transparent 20px,rgba(0,212,255,.03) 20px,rgba(0,212,255,.03) 21px),repeating-linear-gradient(0deg,transparent,transparent 30px,rgba(0,212,255,.03) 30px,rgba(0,212,255,.03) 31px),repeating-linear-gradient(45deg,transparent 0px,transparent 28px,rgba(0,212,255,.02) 28px,rgba(0,212,255,.02) 29px)"></span><span class="cbg-tex-label">Circuit</span></button>
-            <button class="cbg-tex" data-tex="hex" onclick="setConsoleTexture('hex')"><span class="cbg-tex-preview cbg-hex-preview"></span><span class="cbg-tex-label">Hex</span></button>
-          </div>
-          <div style="margin-top:10px">
-            <label style="font-family:Saira,sans-serif;font-size:8px;letter-spacing:2px;color:#555;text-transform:uppercase;display:block;margin-bottom:4px">Texture Opacity: <span id="texOpacityVal">40%</span></label>
-            <input type="range" id="consoleBgTexOpacity" min="10" max="100" value="40" oninput="updateTexOpacity()" style="width:100%;accent-color:var(--cyan)">
-          </div>
-        </div>
-      </div>
-      <div style="margin-top:14px;text-align:center">
-        <button class="ap-btn ap-btn-ghost" onclick="resetConsoleBg()" style="font-size:9px;padding:7px 20px">↺ Reset to Default</button>
-      </div>
-    </div>
     <div class="ap-section"><h4>Intel Theme <span class="save-blip" id="blipIntelTheme">✓ Saved</span></h4>
       <p>Visual style for the Intel Submissions screen. Standard is clean and minimal. CRT adds scanlines, phosphor glow, and vignette for an immersive terminal feel.</p>
       <div style="display:flex;align-items:center;gap:14px;margin-top:8px">

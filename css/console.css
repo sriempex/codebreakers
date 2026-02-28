@@ -107,56 +107,54 @@
   .team-card-stat-lbl{font-family:'Saira',sans-serif;font-size:8px;color:#999;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-top:3px}
 
   /* Console grid */
-  .console-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2.5vh,28px);padding:clamp(14px,2.5vh,28px);min-height:0;align-content:center;position:relative;z-index:1}
+  .console-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2.5vh,28px);padding:clamp(18px,3vh,36px) clamp(28px,5vw,80px);min-height:0;align-content:center;position:relative;z-index:1;max-width:1100px;margin:0 auto;width:100%}
 
-  /* ── CRT Monitor Bezel ── */
-  .crt-monitor{position:relative;border-radius:18px;cursor:pointer;transition:all .35s cubic-bezier(.25,.46,.45,.94);
-    /* Thick metallic bezel */
-    background:
-      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.006) 1px,rgba(255,255,255,.006) 2px,transparent 2px,transparent 4px),
-      linear-gradient(170deg,#1e2028 0%,#16181e 30%,#111318 60%,#0c0e14 100%);
-    padding:clamp(8px,1.2vh,14px);
-    border:1px solid rgba(255,255,255,.04);
+  /* ── LED Display Panel ── */
+  .crt-monitor{position:relative;border-radius:12px;cursor:pointer;overflow:hidden;
+    /* Ultra-thin bezel — dark with subtle edge lighting */
+    background: linear-gradient(170deg, #141620 0%, #0e1018 40%, #0a0c14 100%);
+    padding:clamp(6px,1vh,10px);
+    border:1px solid rgba(255,255,255,.06);
     box-shadow:
-      0 4px 20px rgba(0,0,0,.5),
-      0 10px 50px rgba(0,0,0,.3),
-      inset 0 1px 0 rgba(255,255,255,.04),
-      inset 0 -1px 0 rgba(0,0,0,.4);
+      0 4px 24px rgba(0,0,0,.5),
+      0 12px 48px rgba(0,0,0,.25),
+      inset 0 1px 0 rgba(255,255,255,.04);
+    transition: box-shadow .25s ease;
   }
   /* Hover handled by GSAP in gsap-effects.js */
   .crt-monitor:hover .crt-screen{border-color:rgba(0,255,136,.15)}
 
-  /* Bezel screws */
-  .crt-screw{position:absolute;width:10px;height:10px;border-radius:50%;
-    background:radial-gradient(circle at 38% 32%,#4a4a4a 0%,#2a2a2a 60%,#1a1a1a 100%);
-    border:1px solid #111;
-    box-shadow:inset 0 1px 1px rgba(255,255,255,.06),0 1px 3px rgba(0,0,0,.5)}
-  .crt-screw::after{content:'+';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:6px;color:#1a1a1a;line-height:1}
-  .crt-screw.s1{top:5px;left:5px}.crt-screw.s2{top:5px;right:5px}.crt-screw.s3{bottom:5px;left:5px}.crt-screw.s4{bottom:5px;right:5px}
+  /* Screws hidden — clean bezel */
+  .crt-screw{display:none}
 
   /* Power LED */
   .crt-led{display:none}
 
-  /* ── CRT Screen (inner content area) ── */
+  /* ── Glass Display Surface ── */
   .crt-screen{position:relative;border-radius:8px;overflow:hidden;
-    background:linear-gradient(170deg,rgba(10,12,18,.95) 0%,rgba(6,8,12,.98) 60%,rgba(4,5,8,1));
+    background:linear-gradient(170deg,rgba(8,10,16,.97) 0%,rgba(4,6,10,.99) 60%,rgba(2,3,6,1));
     border:1px solid rgba(0,255,136,.06);
     box-shadow:
-      inset 0 2px 8px rgba(0,0,0,.6),
-      inset 0 0 20px rgba(0,0,0,.3),
-      0 0 1px rgba(0,255,136,.1);
-    /* Subtle CRT curvature via perspective */
-    transform:perspective(800px) rotateX(.5deg);
+      inset 0 1px 6px rgba(0,0,0,.5),
+      inset 0 0 20px rgba(0,0,0,.2),
+      0 0 1px rgba(0,255,136,.08);
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     padding:clamp(14px,2.5vh,20px) clamp(14px,2vw,24px) clamp(12px,2vh,18px)}
-  /* Screen curvature highlight — glass bulge */
+
+  /* Glass reflection — diagonal highlight sweep */
   .crt-screen::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:3;
     background:
-      radial-gradient(ellipse at 50% 30%,rgba(255,255,255,.02) 0%,transparent 50%),
-      radial-gradient(ellipse at 50% 50%,rgba(0,255,136,.01) 0%,transparent 60%)}
-  /* Scanlines */
+      linear-gradient(135deg,
+        rgba(255,255,255,.035) 0%,
+        rgba(255,255,255,.01) 25%,
+        transparent 50%,
+        rgba(255,255,255,.005) 75%,
+        transparent 100%
+      );
+  }
+  /* Subtle scanlines for tech feel */
   .crt-screen::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:4;
-    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px)}
+    background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px)}
 
   /* Green border glow on hover */
   .crt-monitor:hover .crt-screen{border-color:rgba(0,255,136,.15);

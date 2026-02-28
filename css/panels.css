@@ -162,11 +162,6 @@
     transition:border-color .2s,background .2s,box-shadow .2s;
     cursor:default;
   }
-  .intel-exp-row:hover{
-    border-color:rgba(0,255,136,.38);
-    background:linear-gradient(180deg,rgba(0,255,136,.04),rgba(0,255,136,.01));
-    box-shadow:0 0 0 1px rgba(0,255,136,.08) inset,0 2px 16px rgba(0,255,136,.04);
-  }
   .intel-exp-row:hover .intel-exp-num{color:rgba(0,255,136,.65);}
   .intel-exp-row:hover::before{background:linear-gradient(90deg,rgba(0,255,136,.07),transparent 40%);}
   .intel-exp-row::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,255,136,.03),transparent 30%);pointer-events:none}
@@ -188,7 +183,7 @@
     border:1px solid rgba(0,255,136,.2);
     text-shadow:0 0 6px rgba(0,255,136,.3);
   }
-  .intel-exp-input:focus{border-color:rgba(0,255,136,.5);box-shadow:0 0 10px rgba(0,255,136,.08),inset 0 0 15px rgba(0,255,136,.03)}
+  .intel-exp-input:focus{outline:none}
   .intel-exp-input::placeholder{color:rgba(0,255,136,.1);text-shadow:none}
   .intel-exp-input:disabled{opacity:.35;cursor:not-allowed}
   input,textarea,select,.intel-exp-input{user-select:text;-webkit-user-select:text}
@@ -201,7 +196,7 @@
   .intel-prefix-wrap{width:240px;flex:none;display:flex;align-items:center;border-radius:2px;overflow:hidden;transition:all .2s;
     background:#040810;
     border:1px solid rgba(0,255,136,.2)}
-  .intel-prefix-wrap:focus-within{border-color:rgba(0,255,136,.5);box-shadow:0 0 10px rgba(0,255,136,.08),inset 0 0 15px rgba(0,255,136,.03)}
+  .intel-prefix-wrap:focus-within{outline:none}
   .intel-prefix{color:#0f8;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;padding:9px 2px 9px 12px;letter-spacing:2px;flex-shrink:0;opacity:.5;text-shadow:0 0 6px rgba(0,255,136,.3)}
   .intel-prefix-wrap input{flex:1;min-width:0;background:transparent;border:none;padding:9px 14px 9px 4px;color:#0f8;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2px;outline:none;text-shadow:0 0 6px rgba(0,255,136,.3)}
   .intel-prefix-wrap input::placeholder{color:rgba(0,255,136,.1);text-shadow:none}

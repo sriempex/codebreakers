@@ -191,7 +191,7 @@
     tl.to(tile, {
       scale: 1,
       y: 0,
-      boxShadow: '0 4px 20px rgba(0,0,0,.5), 0 10px 50px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.04), inset 0 -1px 0 rgba(0,0,0,.4)',
+      boxShadow: '0 4px 24px rgba(0,0,0,.5), 0 12px 48px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.04)',
       duration: 0.25,
       ease: 'power3.out',
       overwrite: 'auto'
@@ -199,7 +199,7 @@
 
     if(screen){
       tl.to(screen, {
-        boxShadow: 'inset 0 2px 8px rgba(0,0,0,.6), inset 0 0 20px rgba(0,0,0,.3), 0 0 1px rgba(0,255,136,.1)',
+        boxShadow: 'inset 0 1px 6px rgba(0,0,0,.5), inset 0 0 20px rgba(0,0,0,.2), 0 0 1px rgba(0,255,136,.08)',
         borderColor: 'rgba(0,255,136,0.06)',
         duration: 0.25,
         ease: 'power3.out',
@@ -406,6 +406,137 @@
     };
   }
 
+  // ─────────────────────────────────────────────
+  // 4. INTEL FIELD ENHANCEMENTS — LED-style glow
+  // ─────────────────────────────────────────────
+
+  function initIntelFieldEffects(){
+    // Intel rows — subtle edge-light on hover
+    document.addEventListener('mouseenter', function(e){
+      const row = e.target.closest('.intel-exp-row');
+      if(!row) return;
+
+      gsap.to(row, {
+        borderColor: 'rgba(0,255,136,0.4)',
+        boxShadow: '0 0 12px rgba(0,255,136,.06), 0 0 30px rgba(0,255,136,.025), inset 0 0 20px rgba(0,255,136,.03)',
+        duration: 0.2,
+        ease: 'power2.out',
+        overwrite: 'auto'
+      });
+
+      // Number label glow
+      const num = row.querySelector('.intel-exp-num');
+      if(num){
+        gsap.to(num, {
+          color: 'rgba(0,255,136,0.7)',
+          textShadow: '0 0 8px rgba(0,255,136,.3)',
+          duration: 0.2,
+          ease: 'power2.out',
+          overwrite: 'auto'
+        });
+      }
+    }, true);
+
+    document.addEventListener('mouseleave', function(e){
+      const row = e.target.closest('.intel-exp-row');
+      if(!row) return;
+
+      gsap.to(row, {
+        borderColor: 'rgba(0,255,136,0.15)',
+        boxShadow: 'none',
+        duration: 0.25,
+        ease: 'power2.out',
+        overwrite: 'auto'
+      });
+
+      const num = row.querySelector('.intel-exp-num');
+      if(num){
+        gsap.to(num, {
+          color: 'rgba(0,255,136,0.35)',
+          textShadow: 'none',
+          duration: 0.25,
+          ease: 'power2.out',
+          overwrite: 'auto'
+        });
+      }
+    }, true);
+
+    // Intel inputs — LED activation glow on focus
+    document.addEventListener('focusin', function(e){
+      const input = e.target.closest('.intel-exp-input');
+      const prefixWrap = e.target.closest('.intel-prefix-wrap');
+      const target = input || prefixWrap;
+      if(!target) return;
+
+      gsap.to(target, {
+        borderColor: 'rgba(0,255,136,0.55)',
+        boxShadow: '0 0 14px rgba(0,255,136,.1), 0 0 30px rgba(0,255,136,.04), inset 0 0 12px rgba(0,255,136,.04)',
+        duration: 0.2,
+        ease: 'power2.out',
+        overwrite: 'auto'
+      });
+
+      // Parent row gets a subtle highlight
+      const row = target.closest('.intel-exp-row');
+      if(row){
+        gsap.to(row, {
+          borderColor: 'rgba(0,255,136,0.35)',
+          background: 'linear-gradient(180deg, rgba(0,255,136,.03), rgba(0,255,136,.008))',
+          boxShadow: '0 0 8px rgba(0,255,136,.04), inset 0 0 16px rgba(0,255,136,.02)',
+          duration: 0.25,
+          ease: 'power2.out',
+          overwrite: 'auto'
+        });
+      }
+    }, true);
+
+    document.addEventListener('focusout', function(e){
+      const input = e.target.closest('.intel-exp-input');
+      const prefixWrap = e.target.closest('.intel-prefix-wrap');
+      const target = input || prefixWrap;
+      if(!target) return;
+
+      gsap.to(target, {
+        borderColor: 'rgba(0,255,136,0.2)',
+        boxShadow: 'none',
+        duration: 0.3,
+        ease: 'power2.out',
+        overwrite: 'auto'
+      });
+
+      const row = target.closest('.intel-exp-row');
+      if(row){
+        gsap.to(row, {
+          borderColor: 'rgba(0,255,136,0.15)',
+          background: 'linear-gradient(180deg, rgba(0,255,136,.01), transparent)',
+          boxShadow: 'none',
+          duration: 0.3,
+          ease: 'power2.out',
+          overwrite: 'auto'
+        });
+      }
+    }, true);
+  }
+
+  // Intel field stagger — animate rows in when panel opens
+  function staggerIntelFields(){
+    const rows = document.querySelectorAll('#intelForm .intel-exp-row');
+    if(!rows.length) return;
+
+    gsap.from(rows, {
+      opacity: 0,
+      y: 12,
+      borderColor: 'rgba(0,255,136,0)',
+      duration: 0.3,
+      stagger: 0.05,
+      ease: 'power2.out',
+      clearProps: 'opacity,y'
+    });
+  }
+
+  // Expose stagger for panel open calls
+  window._staggerIntelFields = staggerIntelFields;
+
   // Initial setup on DOM ready
   function initAllEffects(){
     initTileBreathing();
@@ -414,6 +545,7 @@
     initDotBreathing();
     initTimerBreathing();
     initTopbarBreathing();
+    initIntelFieldEffects();
   }
 
   if(document.readyState === 'loading'){
