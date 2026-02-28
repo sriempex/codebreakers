@@ -527,14 +527,14 @@
 
   const CFG = {
     traceColor: 0x00d4ff,    // Cyan for admin (vs green for console)
-    traceOpacity: 0.05,
+    traceOpacity: 0.08,
     pulseColor: 0x00d4ff,
     pulseSpeed: 0.35,
-    pulseSize: 0.014,
-    pulseOpacity: 0.45,
+    pulseSize: 0.016,
+    pulseOpacity: 0.55,
     chipColor: 0x00d4ff,
-    chipOpacity: 0.03,
-    chipGlowMax: 0.07,
+    chipOpacity: 0.04,
+    chipGlowMax: 0.09,
   };
 
   function getPositionOnPath(pts, segs, total, t){

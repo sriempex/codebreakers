@@ -92,15 +92,15 @@
   position:relative;
   z-index:50;
   background:
-    repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.004) 1px,rgba(255,255,255,.004) 2px,transparent 2px,transparent 3px),
-    linear-gradient(180deg,#0c0e12,#060810);
-  border-bottom:1px solid rgba(255,255,255,.04);
-  box-shadow:0 2px 10px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.015);
+    repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.005) 1px,rgba(255,255,255,.005) 2px,transparent 2px,transparent 3px),
+    linear-gradient(180deg,#161c26,#111820);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  box-shadow:0 2px 10px rgba(0,0,0,.4),0 1px 0 rgba(255,255,255,.02);
 }
 
-/* Base settings screen background */
+/* Base settings screen background — Frosted Slate to match console */
 #settingsScreen{
-  background: linear-gradient(180deg, #0a1020 0%, #080c18 30%, #060a14 60%, #040810 100%);
+  background: linear-gradient(180deg, #1e2432 0%, #222838 30%, #1e2430 60%, #1a2028 100%);
   display:flex;
   flex-direction:column;
 }
@@ -156,8 +156,8 @@
   padding:0 24px;
   gap:14px;
   flex-shrink:0;
-  background:rgba(4,6,12,.7);
-  border-bottom:1px solid rgba(255,255,255,.05);
+  background:rgba(18,22,32,.75);
+  border-bottom:1px solid rgba(255,255,255,.06);
 }
 #settingsScreen .admin-page-header-row{
   display:none;
@@ -186,7 +186,7 @@
   display:flex;
   justify-content:center;
   padding:28px 24px 60px;
-  background: rgba(4,6,12,.4);
+  background: rgba(18,22,32,.45);
 }
 #settingsScreen .admin-page-section.active{
   display:block;
@@ -206,8 +206,8 @@
 #settingsScreen #broadcastPanel{
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,.08);
-  background: rgba(6,8,14,.88);
-  box-shadow: 0 14px 50px rgba(0,0,0,.5);
+  background: rgba(16,20,30,.88);
+  box-shadow: 0 14px 50px rgba(0,0,0,.35);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
