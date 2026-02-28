@@ -1,0 +1,251 @@
+  /* ══════ SESSION MANAGEMENT PANEL ══════ */
+  #sessionMgmtPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
+  #sessionMgmtPanel.active{opacity:1;pointer-events:all}
+  .session-btn-group{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+  .session-btn{padding:12px 20px;border-radius:4px;font-family:'Saira',sans-serif;font-size:11px;letter-spacing:1.5px;font-weight:600;cursor:pointer;transition:all .15s;text-align:left;display:flex;align-items:center;gap:12px}
+  .session-btn .sb-icon{font-size:18px;flex-shrink:0}
+  .session-btn .sb-info{display:flex;flex-direction:column;gap:2px}
+  .session-btn .sb-title{font-size:11px;letter-spacing:1.5px}
+  .session-btn .sb-desc{font-size:9px;letter-spacing:.5px;opacity:.6;font-weight:400}
+  .session-btn-danger{background:rgba(255,51,51,.08);border:1px solid rgba(255,51,51,.2);color:#ff6655}
+  .session-btn-danger:hover{background:rgba(255,51,51,.15);border-color:rgba(255,51,51,.4)}
+  .session-btn-warn{background:rgba(255,170,51,.08);border:1px solid rgba(255,170,51,.2);color:var(--amber)}
+  .session-btn-warn:hover{background:rgba(255,170,51,.15);border-color:rgba(255,170,51,.4)}
+  .session-btn-safe{background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);color:var(--green)}
+  .session-btn-safe:hover{background:rgba(0,255,136,.15);border-color:rgba(0,255,136,.4)}
+
+  /* ══════ TUTORIAL & BRIEFING CONFIG PANEL ══════ */
+  #tutorialConfigPanel{position:fixed;inset:0;z-index:750;background:rgba(0,0,0,.94);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
+  #tutorialConfigPanel.active{opacity:1;pointer-events:all}
+  .tut-step-list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+  .tut-step-card{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:4px;transition:all .15s}
+  .tut-step-card:hover{border-color:rgba(0,212,255,.2)}
+  .tut-step-card .tut-drag{cursor:grab;font-size:14px;color:#444;padding:0 4px;user-select:none;touch-action:none}
+  .tut-step-card .tut-drag:active{cursor:grabbing}
+  .tut-step-card .tut-icon{font-size:16px;flex-shrink:0}
+  .tut-step-card .tut-text{flex:1}
+  .tut-step-card .tut-text textarea{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:#ddd;font-family:'Chakra Petch',sans-serif;font-size:11px;padding:4px 0;outline:none;letter-spacing:.3px;resize:none;overflow:hidden;height:20px;transition:height .2s ease,border-color .2s,background .2s}
+  .tut-step-card .tut-text textarea:focus{border-color:rgba(0,212,255,.3);height:72px;background:rgba(0,212,255,.03);border-radius:4px;padding:8px;border:1px solid rgba(0,212,255,.2)}
+  .tut-step-toggle{width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);cursor:pointer;position:relative;transition:all .15s;flex-shrink:0}
+  .tut-step-toggle.on{background:rgba(0,255,136,.15);border-color:rgba(0,255,136,.3)}
+  .tut-step-toggle::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#555;top:2px;left:2px;transition:all .15s}
+  .tut-step-toggle.on::after{background:var(--green);left:18px}
+
+  /* ══════ TUTORIAL SPOTLIGHT OVERLAY ══════ */
+  #tutorialOverlay{position:fixed;inset:0;z-index:9500;pointer-events:none;opacity:0;transition:opacity .3s}
+  #tutorialOverlay.active{opacity:1;pointer-events:all}
+  .tut-spotlight{position:absolute;border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.88),0 0 30px 8px rgba(0,212,255,.15);z-index:1;transition:left .3s ease,top .3s ease,width .3s ease,height .3s ease;border:2px solid rgba(0,212,255,.4);animation:tutSpotPulse 1.2s ease-in-out infinite}
+  @keyframes tutSpotPulse{
+    0%,100%{border-color:rgba(0,212,255,.4);box-shadow:0 0 0 9999px rgba(0,0,0,.88),0 0 20px 6px rgba(0,212,255,.1)}
+    50%{border-color:rgba(0,212,255,.9);box-shadow:0 0 0 9999px rgba(0,0,0,.88),0 0 35px 12px rgba(0,212,255,.25)}
+  }
+  .tut-tooltip{position:absolute;z-index:2;max-width:360px;background:#0d1018;border:1px solid rgba(0,212,255,.3);border-radius:10px;padding:22px 26px;box-shadow:0 12px 40px rgba(0,0,0,.6),0 0 20px rgba(0,212,255,.06)}
+  .tut-tooltip-title{font-family:'Saira',sans-serif;font-size:15px;letter-spacing:2.5px;color:var(--cyan);font-weight:700;margin-bottom:8px}
+  .tut-tooltip-body{font-family:'Chakra Petch',sans-serif;font-size:13px;color:#d0d0d0;line-height:1.7;margin-bottom:16px;letter-spacing:.2px}
+  .tut-tooltip-nav{display:flex;align-items:center;justify-content:space-between}
+  .tut-tooltip-dots{display:flex;gap:6px}
+  .tut-tooltip-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15)}
+  .tut-tooltip-dot.active{background:var(--cyan)}
+  .tut-tooltip-btns{display:flex;gap:8px}
+  .tut-btn{padding:6px 16px;border-radius:3px;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:1.5px;font-weight:600;cursor:pointer;transition:all .15s}
+  .tut-btn-skip{background:none;border:1px solid rgba(255,255,255,.1);color:#777}
+  .tut-btn-skip:hover{border-color:rgba(255,255,255,.2);color:#aaa}
+  .tut-btn-next{background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);color:var(--cyan)}
+  .tut-btn-next:hover{background:rgba(0,212,255,.2)}
+  .tut-btn-back{background:none;border:1px solid rgba(255,255,255,.1);color:#777}
+  .tut-btn-back:hover{border-color:rgba(255,255,255,.2);color:#aaa}
+
+  /* ══════ MISSION BRIEFING MODAL ══════ */
+  #briefingModal{position:fixed;inset:0;z-index:9200;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+  #briefingModal.active{opacity:1;pointer-events:all}
+  .briefing-container{max-width:640px;width:90%;background:#0a0c10;border:1px solid rgba(0,212,255,.15);border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .briefing-header{padding:20px 24px 12px;text-align:center}
+  .briefing-title{font-family:'Saira',sans-serif;font-size:15px;letter-spacing:3px;color:var(--cyan);font-weight:700;text-transform:uppercase}
+  .briefing-subtitle{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#777;margin-top:4px}
+  .briefing-video{position:relative;aspect-ratio:16/9;background:#000;border-radius:6px;overflow:hidden;margin:0 16px}
+  .briefing-video video,.briefing-video iframe{width:100%;height:100%;border:none;border-radius:6px}
+  .briefing-footer{padding:16px 24px 20px;text-align:center}
+  .briefing-continue{padding:10px 32px;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.25);border-radius:4px;color:var(--green);font-family:'Saira',sans-serif;font-size:11px;letter-spacing:2px;font-weight:700;cursor:pointer;transition:all .15s}
+  .briefing-continue:hover{background:rgba(0,255,136,.2);border-color:rgba(0,255,136,.4)}
+
+/* Admin console hydration (prevents settings flicker on refresh) */
+.is-hydrating-settings #settingsScreen .admin-page-body{
+  visibility:hidden;
+}
+.is-hydrating-settings #settingsScreen .admin-page-header{
+  /* header can remain visible */
+}
+.is-hydrating-settings #settingsScreen .admin-page{
+  box-shadow: none;
+}
+
+/* ── Settings screen — console-style full-viewport environment ── */
+
+/* Topbar — identical to .console-topbar, close button anchored right */
+#settingsScreen .settings-topbar{
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 24px;
+  flex-shrink:0;
+  position:relative;
+  z-index:50;
+  background:
+    repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.004) 1px,rgba(255,255,255,.004) 2px,transparent 2px,transparent 3px),
+    linear-gradient(180deg,#0c0e12,#060810);
+  border-bottom:1px solid rgba(255,255,255,.04);
+  box-shadow:0 2px 10px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.015);
+}
+#settingsScreen .settings-topbar-title{
+  font-family:'Staatliches',cursive;
+  font-size:17px;
+  letter-spacing:2px;
+  color:#b0e8cc;
+  text-transform:uppercase;
+}
+#settingsScreen .settings-topbar-close{
+  border-radius:4px;
+  cursor:pointer;
+  transition:all .2s;
+  background:rgba(255,50,50,.06);
+  border:1px solid rgba(255,50,50,.2);
+  border-bottom:2px solid rgba(255,50,50,.1);
+  color:var(--red);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  letter-spacing:2px;
+  padding:7px 18px;
+  font-weight:600;
+  text-shadow:0 0 6px rgba(255,50,50,.2);
+}
+#settingsScreen .settings-topbar-close:hover{
+  border-color:rgba(255,50,50,.45);
+  background:rgba(255,50,50,.12);
+  text-shadow:0 0 12px rgba(255,50,50,.4);
+  box-shadow:0 0 14px rgba(255,50,50,.1);
+}
+
+/* Admin page shell — fills remaining space below topbar */
+#settingsScreen .admin-page{
+  flex:1;
+  height:auto;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  position:relative;
+  z-index:1;
+  background:transparent;
+  border:none;
+  border-radius:0;
+  box-shadow:none;
+}
+
+/* Tab bar */
+#settingsScreen .admin-page-header{
+  height:48px;
+  display:flex;
+  align-items:center;
+  padding:0 24px;
+  gap:14px;
+  flex-shrink:0;
+  background:rgba(0,0,0,.15);
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+#settingsScreen .admin-page-header-row{
+  display:none;
+}
+#settingsScreen .admin-page-tabs{
+  display:flex;
+  gap:0;
+  flex-wrap:nowrap;
+  align-items:center;
+  overflow-x:auto;
+  flex:1;
+}
+#settingsScreen .admin-page-tab{
+  transition: background .12s ease, color .12s ease;
+}
+#settingsScreen .admin-page-tab:hover{color:#aab}
+#settingsScreen .admin-page-tab.active{
+  color:var(--cyan);
+  border-bottom-color:var(--cyan);
+  background:rgba(0,212,255,.03);
+}
+
+#settingsScreen .admin-page-body{
+  flex:1;
+  overflow-y:auto;
+  display:flex;
+  justify-content:center;
+  padding:28px 24px 60px;
+}
+#settingsScreen .admin-page-section.active{
+  display:block;
+}
+#settingsScreen .admin-page-section{
+  display:none;
+}
+
+/* Panels that are moved into the settings page */
+#settingsScreen .ap-container,
+#settingsScreen .keys-container,
+#settingsScreen .scoring-container,
+#settingsScreen .portal-container,
+#settingsScreen #dashboardPanel,
+#settingsScreen #leaderboardModule,
+#settingsScreen #sessionMgmtPanel,
+#settingsScreen #broadcastPanel{
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.06);
+  background: rgba(255,255,255,.02);
+  box-shadow: 0 14px 50px rgba(0,0,0,.35);
+}
+
+/* Standardize form controls inside admin panels */
+#settingsScreen select,
+#settingsScreen input[type="text"],
+#settingsScreen input[type="number"],
+#settingsScreen input[type="datetime-local"],
+#settingsScreen textarea{
+  border-radius: 4px !important;
+  border: 1px solid var(--border) !important;
+  background: #080a10 !important;
+  color: #e0e0e0 !important;
+  outline: none !important;
+}
+#settingsScreen select:focus,
+#settingsScreen input:focus,
+#settingsScreen textarea:focus{
+  border-color: var(--green-dim) !important;
+  box-shadow: 0 0 8px rgba(0,255,136,.06) !important;
+}
+
+/* Tidy close buttons embedded in panels */
+#settingsScreen .mv-close{
+  opacity:.6;
+}
+#settingsScreen .mv-close:hover{opacity:1}
+
+/* Settings responsive */
+@media(max-width:768px){
+  #settingsScreen .settings-topbar{height:50px;padding:0 14px;padding-top:env(safe-area-inset-top,0)}
+  #settingsScreen .settings-topbar-title{font-size:12px;letter-spacing:2px}
+  #settingsScreen .settings-topbar-close{padding:6px 14px;font-size:9px}
+  #settingsScreen .admin-page-header{height:44px;padding:0 14px}
+  #settingsScreen .admin-page-body{padding:16px 12px 60px}
+}
+@media(max-width:600px){
+  #settingsScreen .admin-page-tab{padding:9px 14px;font-size:10px;letter-spacing:1px}
+}
+
+
+  /* PDF.js mobile-friendly viewer */
+  .mv-pdfjs-wrap{width:100%;height:100%;overflow:auto;border-radius:4px;background:#0b0c10;border:1px solid rgba(255,255,255,.04);padding:8px}
+  .mv-pdfjs-toolbar{display:flex;gap:8px;align-items:center;justify-content:center;margin:6px 0 10px 0;flex-wrap:wrap}
+  .mv-pdfjs-btn{padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:rgba(255,255,255,.02);color:#bbb;font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer}
+  .mv-pdfjs-btn:hover{border-color:rgba(0,212,255,.25);color:#e0f7ff}
+  .mv-pdfjs-page{width:100%;display:flex;justify-content:center;margin:0 0 10px 0}
+  .mv-pdfjs-page canvas{width:100%;height:auto;max-width:980px;border-radius:3px;background:#111;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  .mv-pdfjs-status{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#777;letter-spacing:1px;text-align:center;margin-top:6px}
+

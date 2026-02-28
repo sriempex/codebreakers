@@ -1,0 +1,59 @@
+  /* ══════ REGISTRATION ══════ */
+  #regScreen{display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 30%,rgba(0,255,136,.02) 0%,transparent 60%),linear-gradient(180deg,#0c0d10,#070809)}
+  #regScreen::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);pointer-events:none;z-index:2}
+  .reg-container{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;max-width:580px;padding:20px}
+  .reg-title{font-family:'Staatliches',cursive;font-size:18px;letter-spacing:2px;color:#e0f0e8;text-transform:uppercase}
+  .reg-subtitle{font-family:'Chakra Petch',sans-serif;font-size:12px;letter-spacing:4px;color:#999;font-weight:600;text-transform:uppercase;margin-top:-8px}
+  .reg-panel{position:relative;width:100%;background:linear-gradient(175deg,#262930,#1c1e24 40%,#141620);border:1px solid #3a3d44;border-radius:10px;padding:28px 28px 24px;box-shadow:0 0 0 1px rgba(255,255,255,.015),0 2px 0 #0a0a0a,0 4px 0 #1a1a1a,0 25px 60px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.03)}
+  .reg-crt{border-radius:5px;padding:20px 18px;position:relative;overflow:hidden;margin-bottom:12px;max-height:60vh;overflow-y:auto;
+    background:linear-gradient(180deg,#020604,#040a06,#030805);
+    border:1px solid #1a2a1e;
+    box-shadow:inset 0 0 30px rgba(0,0,0,.8),inset 0 0 60px rgba(0,20,8,.3),0 1px 0 rgba(255,255,255,.03);
+  }
+  .reg-crt-inner{position:relative;z-index:1}
+  .reg-crt .reg-section-title{color:var(--green);border-bottom-color:rgba(0,255,136,.12);text-shadow:0 0 10px rgba(0,255,136,.2)}
+  .reg-crt .reg-field label{color:rgba(0,255,136,.5);font-size:10px;letter-spacing:2.5px}
+  .reg-crt .reg-field label.reg-main-label{color:var(--cyan);font-size:11px;letter-spacing:3px;font-weight:700}
+  .reg-crt .reg-field input{background:rgba(0,255,136,.03);border-color:rgba(0,255,136,.1);color:var(--green);text-shadow:0 0 6px rgba(0,255,136,.2)}
+  .reg-crt .reg-field input:focus{border-color:rgba(0,255,136,.25);box-shadow:0 0 8px rgba(0,255,136,.08)}
+  .reg-crt .reg-field input::placeholder{color:rgba(0,255,136,.12)}
+  .reg-crt .reg-field select{background:rgba(0,255,136,.03);border-color:rgba(0,255,136,.1);color:var(--green)}
+  .reg-crt .reg-member-block{background:rgba(0,255,136,.015);border-color:rgba(0,255,136,.06)}
+  .reg-crt .reg-member-label{color:var(--cyan);border-bottom-color:rgba(0,212,255,.06)}
+  .reg-crt .reg-err{color:var(--red);text-shadow:0 0 6px rgba(255,51,51,.2)}
+  .reg-section{margin-bottom:22px}
+  .reg-section-title{font-family:'Saira',sans-serif;font-size:11px;font-weight:700;letter-spacing:4px;color:var(--green);text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(0,255,136,.15);text-shadow:0 0 12px rgba(0,255,136,.15)}
+  .reg-row{display:flex;gap:12px;margin-bottom:10px}
+  .reg-field{flex:1;display:flex;flex-direction:column;gap:4px}
+  .reg-field.full{flex:none;width:100%}
+  .reg-field label{font-family:'Saira',sans-serif;font-size:11px;color:#ccc;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+  .reg-field input{background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#e0e0e0;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:1px;outline:none;transition:border-color .2s}
+  .reg-field input:focus{border-color:var(--green-dim);box-shadow:0 0 8px rgba(0,255,136,.06)}
+  .reg-field select{background:#080a10;border:1px solid var(--border);border-radius:4px;padding:10px 14px;color:#e0e0e0;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:1px;outline:none;transition:border-color .2s;width:100%}
+  .reg-field select:focus{border-color:var(--green-dim)}
+  .reg-field input::placeholder{color:#444}
+  .reg-member-block{background:rgba(0,255,136,.02);border:1px solid rgba(0,255,136,.08);border-radius:6px;padding:16px;margin-bottom:12px}
+  .reg-member-label{font-family:'Saira',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px;padding-bottom:8px;border-bottom:1px solid rgba(0,212,255,.08)}
+  .reg-member-num{width:24px;height:24px;border-radius:50%;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);display:flex;align-items:center;justify-content:center;font-family:'Oxanium',sans-serif;font-weight:700;font-size:10px;color:var(--cyan)}
+
+  /* Back / Cancel links — integrated into panels */
+  .login-back-link{text-align:center;margin-top:16px;cursor:pointer;transition:opacity .2s}
+  .login-back-link span{font-family:'Saira',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:#666;text-transform:uppercase;transition:color .2s}
+  .login-back-link:hover span{color:#aaa}
+  .reg-err{font-family:'Chakra Petch',sans-serif;font-size:12px;color:var(--red);min-height:16px;text-align:center;font-weight:600;margin:4px 0}
+
+  /* Team ID reveal */
+  #regSuccess{display:none;text-align:center}
+  #regSuccess.active{display:block}
+  #regForm.hidden{display:none}
+  .reg-id-display{background:#080a10;border:2px solid rgba(0,255,136,.2);border-radius:6px;padding:20px;margin:20px 0;position:relative}
+  .reg-id-label{font-family:'Oxanium',sans-serif;font-weight:700;font-size:10px;letter-spacing:3px;color:#999;text-transform:uppercase;margin-bottom:8px}
+  .reg-id-value{font-family:'Oxanium',sans-serif;font-weight:700;font-size:26px;letter-spacing:8px;color:#d0f0d8;-webkit-user-select:text;user-select:text}
+  .reg-id-note{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#aaa;line-height:1.8;margin:16px 0;font-weight:500}
+  .reg-id-warn{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#f0c878;letter-spacing:1px;margin-bottom:16px;font-weight:600}
+  .reg-proceed{width:100%;background:linear-gradient(180deg,#1a3a2a,#0f2a1a);border:1px solid rgba(0,255,136,.3);color:#d0f0d8;font-family:'Saira',sans-serif;font-size:13px;letter-spacing:4px;padding:14px;cursor:pointer;border-radius:5px;transition:all .2s;text-transform:uppercase;font-weight:700}
+  .reg-proceed:hover{background:rgba(0,255,136,.1);box-shadow:0 0 25px rgba(0,255,136,.12)}
+
+  /* Registration & login close buttons use .mv-close */
+
+

@@ -1,0 +1,337 @@
+  /* ══════ RESPONSIVE ══════ */
+
+  /* Allow scrolling on mobile */
+  @media(max-width:768px){
+    body{overflow-y:auto;overflow-x:hidden}
+  }
+
+  /* Tablet */
+  @media(max-width:1024px){
+    .console-grid{gap:16px;padding:16px}
+    .crt-monitor{padding:10px} .crt-screen{padding:30px 18px 24px}
+    .tile-icon{font-size:40px;margin-bottom:14px}
+    .tile-label{font-size:12px;letter-spacing:3px}
+    .expanded-panel{width:96vw;height:92vh}
+    .feed-expanded{max-width:100%}
+    .intel-expanded{max-width:100%}
+    .media-expanded{max-width:100%}
+    .confirm-box{width:90vw;max-width:600px}
+    .edit-box{width:90vw;max-width:500px}
+    .logout-box{width:90vw;max-width:380px}
+    #notepadPanel{width:90vw;max-width:480px}
+  }
+
+  /* Half-screen desktop / narrow window */
+  @media(max-width:1100px){
+
+    /* Topbar — keep horizontal, just tighter */
+    .console-topbar{height:auto;min-height:48px;padding:8px 14px}
+    .console-title{font-size:12px;letter-spacing:2px}
+    .timer-block{position:relative;left:auto;transform:none}
+    .timer-digits{font-size:18px;letter-spacing:3px}
+    .timer-label{font-size:7px;letter-spacing:2px}
+    .console-team{font-size:11px;letter-spacing:2px;padding:4px 10px}
+
+    /* Grid — 2 columns, centered */
+    .console-grid{gap:16px;padding:16px;align-content:start;padding-top:20px}
+    .crt-monitor{padding:10px}
+    .crt-screen{padding:28px 16px 22px}
+    .tile-icon{font-size:38px;margin-bottom:12px}
+    .tile-label{font-size:12px;letter-spacing:3px}
+    .tile-sub{font-size:9px}
+
+    /* Login */
+    .login-container{gap:14px}
+    .login-title{font-size:14px}
+    .login-panel{width:380px;padding:22px 18px 16px}
+
+    /* Registration */
+    .reg-container{max-width:480px}
+    .reg-panel{padding:22px 20px 18px}
+
+    /* Landing */
+    .landing-container{max-width:440px}
+
+    /* Panels */
+    .expanded-panel{width:96vw;height:92vh}
+    .confirm-box{width:90vw;max-width:500px}
+    .edit-box{width:90vw;max-width:460px}
+  }
+
+  /* Mobile */
+  @media(max-width:768px){
+    /* Login */
+    .login-panel{width:92vw;max-width:420px;padding:20px 16px 14px}
+    .login-field input{font-size:16px;letter-spacing:3px;padding:14px 14px}
+    .login-title{font-size:11px;letter-spacing:2px}
+    .vault-subtitle{font-size:8px;letter-spacing:3px}
+    .v-display{min-height:74px;padding:10px 12px}
+    #vDisp{font-size:18px;letter-spacing:6px}
+    .kb-row{max-width:100%;gap:3px;margin-bottom:3px}
+    .kb-key{height:38px}
+    .kb-key span{font-size:12px}
+
+    /* Console */
+    #consoleScreen{height:auto;min-height:100vh;min-height:100dvh}
+    .console-topbar{height:50px;padding:0 14px;padding-top:env(safe-area-inset-top,0)}
+    .console-title{font-size:9px;letter-spacing:3px}
+    .timer-digits{font-size:16px;letter-spacing:2px}
+    .timer-label{font-size:7px}
+    .console-team{font-size:10px}
+
+    /* Grid — 2x2 on mobile so all 4 tiles visible without scrolling */
+    .console-grid{grid-template-columns:1fr 1fr;gap:10px;padding:12px;align-content:center;padding-top:16px}
+
+    /* Allow console to scroll on mobile */
+    #consoleScreen{position:fixed;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .crt-monitor{padding:10px} .crt-screen{padding:24px 16px 20px}
+    .tile-icon{font-size:36px;margin-bottom:12px}
+    .tile-label{font-size:11px;letter-spacing:2px}
+    .tile-sub{font-size:9px}
+    .tile-badge{font-size:7px;letter-spacing:2px;padding:4px 12px}
+    .tile-status span{font-size:7px}
+
+    /* Expanded panels */
+    .expanded-panel{width:100vw;height:100vh;border-radius:0;border:none}
+    .exp-header{height:52px;padding:0 14px}
+    .exp-title{font-size:11px;letter-spacing:2px}
+    .exp-body{padding:12px}
+    .exp-close{padding:10px 18px;font-size:10px;min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center}
+    .feed-count-badge{font-size:10px;padding:3px 7px;letter-spacing:1px;margin-left:6px}
+
+    /* Feed — keep 3 column grid on mobile, tight gaps like IG */
+    .feed-expanded{grid-template-columns:repeat(3,1fr);gap:2px;max-width:100%}
+    .feed-card-img{font-size:24px}
+    .feed-card-cap p{font-size:9px}
+    .feed-view-btn{padding:4px 7px;font-size:7px}
+    .feed-single{max-width:100%;gap:12px}
+    .feed-single-img{border-radius:0}
+    .feed-single-caption{font-size:12px;max-width:100%;padding:0 8px}
+    .feed-nav-btn,.feed-back-grid{padding:8px 16px;font-size:9px}
+
+    /* Media */
+    .media-expanded{max-width:100%}
+    .media-exp-item{padding:12px 14px;gap:10px}
+    .media-exp-name{font-size:11px}
+    .media-exp-desc{font-size:8px}
+
+    /* Intel */
+    .intel-expanded{max-width:100%;gap:8px}
+    .intel-exp-row{max-width:100%;flex-wrap:wrap;padding:12px;gap:8px;position:relative}
+    .intel-exp-num{width:24px;font-size:10px}
+    .intel-exp-label{width:100%;font-size:10px;margin-bottom:2px}
+    .intel-exp-input{font-size:16px;padding:8px 10px;width:100%;flex:1}
+    .intel-prefix-wrap{width:100%;flex:1}
+    .intel-dual-wrap{width:100%;flex:1;flex-direction:column;gap:6px}
+    .intel-dual-sep{display:none}
+    .intel-submit-btn{padding:10px 30px;font-size:9px;letter-spacing:3px}
+
+    /* Confirm modal */
+    .confirm-box{width:94vw;max-height:85vh}
+    .confirm-header{padding:14px 16px}
+    .confirm-header h3{font-size:10px;letter-spacing:3px}
+    .confirm-body{padding:12px 16px}
+    .confirm-row{flex-direction:column;gap:4px;align-items:flex-start}
+    .confirm-value{text-align:left;max-width:100%}
+    .confirm-footer{padding:12px 16px;gap:8px}
+    .btn-standard{padding:8px 18px;font-size:9px}
+
+    /* Media Viewer */
+    .mv-container{width:100vw;height:100vh;border-radius:0}
+    .mv-header{padding:10px 14px}
+    .mv-filename{font-size:10px}
+    .mv-filedesc{font-size:8px}
+    .mv-close{padding:6px 14px;font-size:9px}
+    .mv-body{padding:12px}
+    .mv-audio-player{padding:20px}
+    .mv-nav-btn{padding:6px 14px;font-size:9px}
+    .mv-video-controls{padding:8px 12px}
+
+    /* Notepad */
+    #notepadPanel{width:100vw;max-height:85vh;border-radius:12px 12px 0 0;left:0;transform:translateY(100%)}
+    #notepadPanel.open{transform:translateY(0)}
+    .notepad-header{padding:12px 16px}
+    .notepad-header-title{font-size:10px;letter-spacing:2px}
+    .notepad-hint{padding:8px 16px;font-size:9px}
+    .notepad-body{min-height:40vh;padding:8px 16px 16px}
+    .notepad-textarea{font-size:14px;line-height:1.9;-webkit-user-select:text;user-select:text}
+    .notepad-footer{padding:10px 16px}
+    .notepad-charcount{font-size:8px}
+    .notepad-clear{padding:6px 14px;font-size:9px}
+    .notepad-trigger{bottom:calc(10px + env(safe-area-inset-bottom,0));left:10px;padding:8px 16px 8px 12px}
+    .notepad-trigger span{font-size:8px;letter-spacing:2px}
+
+    /* Logout — safe area bottom */
+    .logout-btn{bottom:calc(10px + env(safe-area-inset-bottom,0));left:10px;padding:8px 14px}
+    .logout-btn span{font-size:10px;letter-spacing:2px}
+    .logout-btn svg{width:14px;height:14px}
+
+    /* Admin */
+    .admin-login-box{width:90vw;max-width:340px;padding:22px 18px}
+    .edit-box{width:94vw;max-width:500px;padding:18px}
+    .ap-container{width:96vw;max-height:90vh}
+    .ap-section{padding:16px 20px}
+    .ap-row{flex-direction:column}
+    .bc-container{width:96vw}
+    .pb-inner{padding:10px 14px}
+    .pb-text{font-size:11px}
+    .admin-dropdown{width:200px;bottom:calc(48px + env(safe-area-inset-bottom,0));right:8px}
+    .lb-container{width:100vw;height:100vh;border-radius:0}
+    .lb-toolbar{flex-direction:column;align-items:stretch}
+    .lb-search{width:100%}
+    .lb-sort{margin-left:0}
+    .lb-rank{font-size:14px;min-width:26px}
+    .lb-score-pct{font-size:13px}
+    .kc-container{width:96vw}
+
+    /* Vault panel on mobile */
+    .v-key-list{max-height:40vh;overflow-y:auto}
+    .v-key-item{padding:10px 12px}
+    .v-key-label{font-size:10px}
+    .v-key-desc{font-size:8px}
+
+    /* Event lock overlay & public leaderboard */
+    #eventLockOverlay{padding:20px}
+    #publicLeaderboard{padding:10px}
+
+    /* Registration form on mobile — better touch targets + scrollable */
+    #regScreen{overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .reg-field input,.reg-field select{font-size:16px}
+    .reg-member-input{font-size:16px;padding:10px 12px}
+    .reg-member-input::placeholder{font-size:12px}
+
+    /* Team card on mobile */
+    .team-card{width:92vw;max-width:340px}
+    .team-card .tc-field{font-size:9px}
+
+    /* Edit modal on mobile — ensure inputs aren't tiny */
+    .edit-box input,.edit-box select,.edit-box textarea{font-size:16px}
+
+    /* Media viewer — full bleed on mobile */
+    .mv-container{border-radius:0}
+    .mv-pdf-frame{min-height:60vh}
+
+    /* Admin panels — prevent horizontal overflow + iOS input zoom prevention */
+    .ap-field input,.ap-field select{font-size:16px}
+    .ap-field label{font-size:9px}
+
+    /* All remaining inputs — prevent iOS auto-zoom */
+    #mediaSearchFilter{font-size:16px!important}
+    .intel-exp-input{font-size:16px}
+
+    /* Topbar timer — ensure visible */
+    .timer-block{flex-shrink:0}
+
+    /* Console grid tile adjustments for 2x2 layout */
+    .tile-icon{font-size:32px;margin-bottom:8px}
+    .tile-label{font-size:10px;letter-spacing:2px}
+    .tile-sub{font-size:8px}
+    .tile-badge{font-size:6px;letter-spacing:2px;padding:3px 8px}
+    .tile-status span{font-size:6px}
+    .crt-monitor{padding:6px}
+    .crt-screen{padding:16px 10px 14px}
+
+    /* Admin tab bar — safe area bottom */
+    .admin-tab-bar{padding-bottom:env(safe-area-inset-bottom,0)!important}
+  }
+
+  /* Small phones */
+  @media(max-width:380px){
+    .login-panel{padding:16px 12px 12px}
+    .kb-key{height:34px}
+    .kb-key span{font-size:11px}
+    .login-title{font-size:10px;letter-spacing:4px}
+    .tile-label{font-size:9px}
+    .tile-icon{font-size:24px}
+    .tile-sub{font-size:7px}
+    .crt-monitor{padding:5px} .crt-screen{padding:12px 8px 10px}
+    .intel-exp-label{font-size:9px}
+    .console-grid{gap:8px;padding:10px}
+  }
+
+  /* Mobile overrides for new features */
+  @media(max-width:480px){
+    .tut-tooltip{max-width:calc(100vw - 32px);padding:16px 18px}
+    .tut-tooltip-title{font-size:13px;letter-spacing:1.5px}
+    .tut-tooltip-body{font-size:12px}
+    .tut-btn{padding:5px 12px;font-size:9px}
+    .tut-step-card{padding:8px 10px;gap:8px}
+    .tut-step-card .tut-text textarea{font-size:10px}
+    .tut-step-card .tut-icon{font-size:14px}
+    .session-btn{padding:10px 14px;gap:10px}
+    .session-btn .sb-title{font-size:10px}
+    .session-btn .sb-desc{font-size:8px}
+    .briefing-container{width:96%}
+    .briefing-title{font-size:13px;letter-spacing:2px}
+    .briefing-continue{padding:8px 24px;font-size:10px}
+    /* Vault mobile — fit keypad to screen */
+    .vault-panel{width:100%;padding:20px 14px 16px}
+    .vault-puzzle-layout{max-width:100%;padding:0 4px}
+    .kb-key{height:36px}
+    .kb-key span{font-size:11px}
+    .kb-key.fn span{font-size:9px}
+    .v-display{min-height:68px;padding:8px 10px;margin-bottom:14px}
+    #vDisp{font-size:16px;letter-spacing:4px}
+    .vault-unlock-section{width:100%;max-width:100%}
+  }
+
+  /* Touch devices — always show drag handles in admin mode */
+  @media(hover:none){
+    body.admin-mode:not(.player-preview) .intel-exp-row .drag-handle{opacity:.5!important}
+    body.admin-mode:not(.player-preview) .media-exp-item .drag-handle{display:flex!important;opacity:.5!important}
+    body.admin-mode:not(.player-preview) .feed-card .drag-handle{display:flex!important;opacity:.5!important}
+  }
+
+  /* Reduced motion — helps low-end devices and accessibility */
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
+    .landing-circuits{display:none}
+    #grainCanvas{display:none}
+    .dust{display:none}
+  }
+
+  @keyframes shake{0%,100%{transform:translateX(0)}10%{transform:translateX(-5px)}20%{transform:translateX(5px)}30%{transform:translateX(-4px)}40%{transform:translateX(4px)}50%{transform:translateX(-2px)}60%{transform:translateX(2px)}}
+  .flash-green{position:fixed;inset:0;background:rgba(0,255,136,.06);z-index:8500;opacity:0;pointer-events:none;transition:opacity .3s}
+  .flash-green.on{opacity:1}
+  .flash-red{position:fixed;inset:0;background:rgba(255,30,30,.05);z-index:8500;opacity:0;pointer-events:none;transition:opacity .2s}
+  .flash-red.on{opacity:1}
+  .dust{position:fixed;width:1px;height:1px;background:rgba(255,255,255,.08);border-radius:50%;pointer-events:none;z-index:9998;animation:dustF linear infinite}
+  @keyframes dustF{0%{transform:translateY(100vh) translateX(0);opacity:0}10%{opacity:.15}90%{opacity:.15}100%{transform:translateY(-20px) translateX(20px);opacity:0}}
+  /* Drag-to-reorder */
+  .drag-handle{display:none;cursor:grab;padding:2px 4px;color:#444;font-size:14px;letter-spacing:-2px;user-select:none;-webkit-user-select:none;touch-action:none;flex-shrink:0;align-self:center}
+  .drag-handle:hover{color:#888}
+  .drag-handle:active{cursor:grabbing}
+  body.admin-mode:not(.player-preview) .media-exp-item .drag-handle{display:flex;opacity:.4}
+  body.admin-mode:not(.player-preview) .feed-card .drag-handle{display:flex;opacity:0}
+  body.admin-mode:not(.player-preview) .intel-exp-row .drag-handle{display:flex;opacity:0}
+  body.admin-mode:not(.player-preview) .feed-card:hover .drag-handle,
+  body.admin-mode:not(.player-preview) .media-exp-item:hover .drag-handle,
+  body.admin-mode:not(.player-preview) .intel-exp-row:hover .drag-handle{opacity:1}
+  @media(hover:none){body.admin-mode.reorder-mode:not(.player-preview) .drag-handle{opacity:1!important;display:flex!important}}
+  .feed-card.drag-over{border-color:var(--cyan)!important;box-shadow:0 0 12px rgba(0,212,255,.2)!important}
+  .feed-card.dragging{opacity:.35;pointer-events:none}
+  .media-exp-item.drag-over{border-color:var(--cyan)!important;box-shadow:0 0 12px rgba(0,212,255,.2)!important}
+  .intel-exp-row.drag-over{border-color:var(--cyan)!important;box-shadow:0 0 12px rgba(0,212,255,.2)!important;background:rgba(0,212,255,.04)!important}
+  .media-exp-item.dragging{opacity:.35;pointer-events:none}
+  .intel-exp-row.dragging{opacity:.35;pointer-events:none}
+  .drag-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.85;transform:scale(.95);box-shadow:0 12px 40px rgba(0,0,0,.5);border-radius:4px;overflow:hidden}
+  /* Landing Page Preview */
+  #landingPreviewOverlay{position:fixed;top:0;left:0;right:0;z-index:9500;display:none;pointer-events:none}
+  #landingPreviewOverlay.active{display:block}
+  .lp-preview-bar{display:flex;align-items:center;justify-content:center;gap:16px;padding:12px 20px;background:linear-gradient(180deg,rgba(0,0,0,.9) 60%,transparent);pointer-events:all}
+  .lp-preview-label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;opacity:.7}
+  .lp-preview-close{font-family:'Saira',sans-serif;font-size:10px;letter-spacing:2px;padding:6px 16px;border:1px solid rgba(0,212,255,.3);border-radius:3px;background:rgba(0,212,255,.08);color:var(--cyan);cursor:pointer;transition:all .2s}
+  .lp-preview-close:hover{background:rgba(0,212,255,.15);border-color:rgba(0,212,255,.5)}
+  .lp-preview-nav{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;padding:5px 12px;border:1px solid rgba(255,255,255,.12);border-radius:3px;background:rgba(255,255,255,.04);color:#888;cursor:pointer;transition:all .15s}
+  .lp-preview-nav:hover{background:rgba(255,255,255,.08);color:#ccc;border-color:rgba(255,255,255,.2)}
+  .lp-preview-nav.active{background:rgba(0,212,255,.1);border-color:rgba(0,212,255,.3);color:var(--cyan)}
+  body.landing-preview-mode .landing-banner-upload,
+  body.landing-preview-mode .admin-edit-inline,
+  body.landing-preview-mode .admin-trigger,
+  body.landing-preview-mode #logoutBtn,
+  body.landing-preview-mode #scoringPanel,
+  body.landing-preview-mode #registrationPanel,
+  body.landing-preview-mode #appearancePanel,
+  body.landing-preview-mode #dashboardPanel{display:none!important}
+  body.landing-preview-mode #adminNavBar{display:none!important}
+

@@ -1,0 +1,96 @@
+  /* ══════ LANDING PAGE ══════ */
+  #landingScreen{display:flex;align-items:center;justify-content:center;
+    background:
+      radial-gradient(ellipse at 50% 20%,rgba(0,255,136,.015) 0%,transparent 50%),
+      radial-gradient(ellipse at 20% 80%,rgba(0,212,255,.01) 0%,transparent 40%),
+      radial-gradient(ellipse at 80% 60%,rgba(255,51,136,.008) 0%,transparent 40%),
+      linear-gradient(180deg,#050607,#080a0c,#050607);
+    overflow:hidden}
+  #landingScreen::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.03) 3px,rgba(0,0,0,.03) 6px);pointer-events:none;z-index:2}
+  #landingScreen::after{content:'';position:absolute;top:-2px;left:0;right:0;height:2px;background:rgba(0,255,136,.06);z-index:3;animation:scanDown 8s linear infinite;box-shadow:0 0 15px rgba(0,255,136,.04)}
+  @keyframes scanDown{0%{top:-2px}100%{top:100%}}
+  /* Circuit board SVG background */
+  .landing-circuits{position:absolute;inset:0;z-index:1;overflow:hidden;opacity:.35}
+  .landing-circuits svg{position:absolute;width:100%;height:100%}
+
+  .landing-container{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;max-width:520px;width:90%;padding:40px 0}
+
+  .landing-banner{width:180px;height:180px;border-radius:50%;
+    background:radial-gradient(circle at 40% 35%,#1a2a1a,#0a150a);
+    border:2px solid rgba(0,255,136,.12);
+    display:flex;align-items:center;justify-content:center;margin-bottom:24px;
+    box-shadow:0 0 40px rgba(0,255,136,.04),0 0 80px rgba(0,255,136,.015),inset 0 0 30px rgba(0,0,0,.5);
+    position:relative;overflow:hidden;animation:fadeUp .8s ease both}
+  .landing-banner::before{content:'';position:absolute;inset:0;border-radius:50%;
+    background:conic-gradient(from 0deg,transparent 0%,rgba(0,255,136,.02) 25%,transparent 50%,rgba(0,255,136,.02) 75%,transparent 100%);
+    animation:rotateSlow 20s linear infinite}
+  @keyframes rotateSlow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .landing-banner-icon{font-size:64px;filter:drop-shadow(0 0 20px rgba(0,255,136,.15));z-index:1;position:relative}
+  .landing-banner-img{width:100%;height:100%;object-fit:cover;border-radius:50%;z-index:1;position:relative;display:none}
+
+  .landing-title{font-family:'Staatliches',cursive;font-size:26px;letter-spacing:3px;color:#b0e8cc;text-transform:uppercase;text-align:center;
+    animation:breatheLanding 4s ease infinite,fadeUp .8s ease .15s both;margin-bottom:4px}
+  @keyframes breatheLanding{0%,100%{text-shadow:0 0 15px rgba(0,255,136,.1),0 0 30px rgba(0,255,136,.03)}50%{text-shadow:0 0 25px rgba(0,255,136,.18),0 0 50px rgba(0,255,136,.06)}}
+  .landing-subtitle{font-family:'Chakra Petch',sans-serif;font-size:12px;letter-spacing:4px;color:#8a8a8a;font-weight:600;text-transform:uppercase;text-align:center;animation:fadeUp .8s ease .3s both;margin-bottom:40px}
+
+  .landing-actions{display:flex;flex-direction:column;gap:14px;width:100%;align-items:center;animation:fadeUp .8s ease .45s both}
+  .landing-login-btn{padding:16px 60px;border-radius:6px;cursor:pointer;transition:all .3s;
+    font-family:'Saira',sans-serif;font-size:15px;letter-spacing:6px;color:#d0f0e0;text-transform:uppercase;font-weight:700;text-align:center;
+    background:linear-gradient(180deg,#1a3a2a,#0f2a1a);
+    border:1px solid rgba(0,255,136,.25);
+    box-shadow:0 0 20px rgba(0,255,136,.04),0 4px 15px rgba(0,0,0,.4)}
+  .landing-login-btn:hover{background:linear-gradient(180deg,#1f4a32,#143520);border-color:rgba(0,255,136,.4);
+    box-shadow:0 0 30px rgba(0,255,136,.08),0 6px 20px rgba(0,0,0,.5);transform:translateY(-2px)}
+  .landing-login-btn:active{transform:translateY(0);box-shadow:0 0 15px rgba(0,255,136,.03),0 2px 8px rgba(0,0,0,.4)}
+
+  /* Landing footer */
+  .landing-footer{position:absolute;bottom:16px;left:0;right:0;text-align:center;z-index:5;animation:fadeUp .8s ease .6s both}
+  .landing-footer span{font-family:'Chakra Petch',sans-serif;font-size:10px;color:#666;letter-spacing:1.5px;font-weight:500}
+
+  /* Banner upload button (admin) */
+  .landing-banner-upload{position:absolute;bottom:-8px;right:-8px;width:28px;height:28px;border-radius:50%;background:rgba(0,212,255,.15);border:1px solid rgba(0,212,255,.3);display:none;align-items:center;justify-content:center;cursor:pointer;z-index:10;transition:all .2s;font-size:12px;color:var(--cyan)}
+  .landing-banner-upload:hover{background:rgba(0,212,255,.25);border-color:rgba(0,212,255,.5)}
+  body.admin-mode .landing-banner-upload{display:flex}
+  .save-blip{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--green);opacity:0;transition:opacity .2s;margin-left:8px;font-weight:600;vertical-align:middle;pointer-events:none}
+  .save-blip.show{opacity:1}
+  .banner-preview{width:72px;height:72px;flex-shrink:0;border-radius:50%;overflow:hidden;border:1px solid var(--border);background:#080a10;display:flex;align-items:center;justify-content:center;margin:4px 0}
+  .banner-preview img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+  .banner-preview .bp-emoji{font-size:26px}
+  .focal-point-container{position:relative;width:100%;max-width:280px;aspect-ratio:1;overflow:hidden;border:1px solid var(--border);border-radius:4px;background:#080a10;cursor:crosshair;margin:8px 0}
+  .focal-point-container img{width:100%;height:100%;object-fit:cover}
+  .focal-point-marker{position:absolute;width:24px;height:24px;border:2px solid #fff;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 0 1px rgba(0,0,0,.5),0 0 8px rgba(0,0,0,.5),inset 0 0 0 1px rgba(0,0,0,.3)}
+  .focal-point-marker::before{content:'';position:absolute;inset:9px;background:#fff;border-radius:50%;box-shadow:0 0 4px rgba(255,255,255,.8)}
+  .focal-point-crosshair{position:absolute;inset:0;pointer-events:none}
+  .focal-point-crosshair::before,.focal-point-crosshair::after{content:'';position:absolute;background:rgba(255,255,255,.2)}
+  .focal-point-crosshair::before{width:1px;height:100%;left:50%;top:0}
+  .focal-point-crosshair::after{height:1px;width:100%;top:50%;left:0}
+  #landingBannerFile{display:none}
+
+  /* Admin Choice Modal */
+  #adminChoiceModal{position:fixed;inset:0;z-index:8500;background:rgba(0,0,0,.92);opacity:0;pointer-events:none;transition:opacity .12s;display:flex;align-items:center;justify-content:center}
+  #adminChoiceModal.active{opacity:1;pointer-events:all}
+  .admin-choice-box{width:380px;background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:28px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .admin-choice-box h3{font-family:'Staatliches',cursive;font-size:14px;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;margin-bottom:8px}
+  .admin-choice-box p{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#888;margin-bottom:24px;font-weight:500}
+  .admin-choice-btns{display:flex;gap:12px;justify-content:center}
+
+  /* Admin View-as-Team toggle — now in dropdown */
+  /* Team View mode — hides all admin edit affordances */
+  .reg-type-choice{display:flex;gap:12px;width:100%;margin-bottom:16px}
+  .reg-type-btn{flex:1;padding:16px;background:rgba(255,255,255,.01);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .2s;text-align:center}
+  .reg-type-btn:hover{border-color:rgba(0,255,136,.15)}
+  .reg-type-btn.selected{border-color:rgba(0,255,136,.25);background:rgba(0,255,136,.03)}
+  .reg-type-btn .rtype-icon{font-size:24px;margin-bottom:6px}
+  .reg-type-btn .rtype-label{font-family:'Saira',sans-serif;font-size:10px;letter-spacing:3px;color:#888;text-transform:uppercase;font-weight:600}
+  .reg-type-btn.selected .rtype-label{color:var(--green)}
+
+  /* Vault rate limit overlay */
+  .v-rate-limit{position:absolute;inset:0;background:rgba(0,0,0,.92);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;z-index:10;opacity:0;pointer-events:none;transition:opacity .3s}
+  .v-rate-limit.active{opacity:1;pointer-events:all}
+  .v-rate-limit-text{font-family:'Saira',sans-serif;font-size:11px;letter-spacing:3px;color:var(--red);text-transform:uppercase;font-weight:700}
+  .v-rate-limit-timer{font-family:'IBM Plex Mono',monospace;font-size:36px;color:var(--red);letter-spacing:4px;font-weight:700;text-shadow:0 0 20px rgba(255,50,50,.4)}
+  .v-rate-limit-sub{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;color:#555;margin-top:4px}
+  .v-rate-limit-bar{width:200px;height:2px;background:#1a1a1a;border-radius:1px;overflow:hidden;margin-top:8px}
+  .v-rate-limit-fill{height:100%;background:var(--red);box-shadow:0 0 6px rgba(255,50,50,.3);transition:width .15s linear}
+

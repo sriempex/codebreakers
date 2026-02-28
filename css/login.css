@@ -1,0 +1,80 @@
+  /* ══════ LOGIN ══════ */
+  #loginScreen{display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#050607,#080a0c,#050607)}
+  #loginScreen::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);pointer-events:none;z-index:2}
+  .login-container{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;gap:20px}
+  .login-title{font-family:'Staatliches',cursive;font-size:17px;letter-spacing:2px;color:#b0e8cc;text-transform:uppercase}
+  .login-subtitle{font-family:'Chakra Petch',sans-serif;font-size:11px;letter-spacing:4px;color:#8a8a8a;font-weight:600;text-transform:uppercase;margin-top:-12px}
+  .login-panel{position:relative;width:420px;border-radius:8px;padding:28px 24px 20px;
+    background:
+      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.007) 1px,rgba(255,255,255,.007) 2px,transparent 2px,transparent 4px),
+      repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(255,255,255,.004) 60px,rgba(255,255,255,.004) 61px),
+      linear-gradient(175deg,#22252c 0%,#1a1c22 20%,#141620 50%,#111318 80%,#0e1014 100%);
+    border:1px solid #3a3d44;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.04),inset 0 -1px 0 rgba(0,0,0,.3),0 2px 0 #0a0a0c,0 4px 0 #151518,0 8px 0 #0a0a0c,0 30px 70px rgba(0,0,0,.9)}
+  /* ══════ UNIFIED LOGIN CRT ══════ */
+  .login-led{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:#2a2a2a;box-shadow:inset 0 1px 2px rgba(0,0,0,.6);z-index:10;transition:all .3s}
+  .login-led.active{background:#ffaa33;box-shadow:0 0 6px rgba(255,170,51,.5),inset 0 1px 2px rgba(0,0,0,.2);animation:ledFlash .8s ease-in-out infinite}
+  .login-led.granted{background:#00ff88;box-shadow:0 0 8px rgba(0,255,136,.6),inset 0 1px 2px rgba(0,0,0,.2);animation:none}
+  .login-led.denied{background:#ff3333;box-shadow:0 0 8px rgba(255,51,51,.6);animation:ledFlash .3s ease-in-out 3}
+  @keyframes ledFlash{0%,100%{opacity:1}50%{opacity:.3}}
+  .login-crt-unified{border-radius:5px;padding:20px 18px;position:relative;overflow:hidden;margin-bottom:12px;
+    background:linear-gradient(180deg,#020604,#040a06,#030805);
+    border:1px solid #1a2a1e;
+    box-shadow:inset 0 0 30px rgba(0,0,0,.8),inset 0 0 60px rgba(0,20,8,.3),0 1px 0 rgba(255,255,255,.03);
+  }
+  .login-crt-scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.15) 1px,rgba(0,0,0,.15) 2px);pointer-events:none;z-index:2}
+  .login-crt-inner{position:relative;z-index:1}
+  .login-crt-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(0,255,136,.3);text-transform:uppercase;display:block;margin-bottom:6px}
+  .login-crt-field{width:100%;background:transparent;border:none;outline:none;padding:8px 0;color:var(--green);font-family:'IBM Plex Mono',monospace;font-size:18px;letter-spacing:5px;text-transform:uppercase;text-align:center;text-shadow:0 0 8px rgba(0,255,136,.4),0 0 20px rgba(0,255,136,.15);caret-color:var(--green)}
+  .login-crt-field::placeholder{color:rgba(0,255,136,.12);text-transform:none;letter-spacing:2px;font-size:12px;text-shadow:none}
+  .login-crt-field[type="password"]{text-transform:none;letter-spacing:3px}
+  .login-crt-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,255,136,.12),transparent);margin:10px 0}
+  .login-crt-status{min-height:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--green);text-align:center;text-shadow:0 0 6px rgba(0,255,136,.3);margin-top:4px}
+  .login-crt-status.authenticating{animation:crtPulse 1.2s ease-in-out infinite}
+  .login-crt-status.granted{color:#0f6;text-shadow:0 0 12px rgba(0,255,136,.5);font-weight:700}
+  .login-crt-status.denied{color:var(--red);text-shadow:0 0 12px rgba(255,51,51,.4)}
+  .login-crt-spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(0,255,136,.2);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+  @keyframes crtPulse{0%,100%{opacity:1}50%{opacity:.6}}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  .login-err{font-family:'Chakra Petch',sans-serif;font-size:11px;color:var(--red);min-height:14px;text-align:center;font-weight:600;margin-bottom:4px}
+  .login-btn-row{display:flex;gap:8px;margin-top:4px}
+  .login-hw-btn{flex:1;height:46px;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;
+    border-bottom:3px solid #0a0a0e;border-right:2px solid #101014;
+    box-shadow:0 3px 6px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);
+    transition:all .05s ease;border-top:none;border-left:none;outline:none}
+  .login-hw-btn::before{content:'';position:absolute;inset:1px;border-radius:3px;border:1px solid rgba(0,255,136,.04);pointer-events:none}
+  .login-hw-btn::after{content:'';position:absolute;top:1px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);border-radius:50%;pointer-events:none}
+  .login-hw-btn:active{transform:translateY(2px);border-bottom-width:1px;border-right-width:1px;box-shadow:0 0 2px rgba(0,0,0,.4)}
+  .login-hw-btn span{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;letter-spacing:2px;pointer-events:none;text-shadow:0 1px 1px rgba(0,0,0,.6)}
+  .login-hw-btn.enter-key{flex:2;
+    background:linear-gradient(180deg,rgba(20,60,35,.5) 0%,rgba(12,40,24,.6) 50%,rgba(8,30,18,.7) 100%);
+    border-color:rgba(0,255,136,.12);border-bottom-color:#0a1a10}
+  .login-hw-btn.enter-key::before{border-color:rgba(0,255,136,.12)}
+  .login-hw-btn.enter-key span{color:var(--green);text-shadow:0 0 6px rgba(0,255,136,.2)}
+  .login-hw-btn.enter-key:hover{background:linear-gradient(180deg,rgba(25,70,40,.5) 0%,rgba(15,50,28,.6) 50%,rgba(10,35,22,.7) 100%)}
+  .login-hw-btn.esc-key{flex:1;
+    background:linear-gradient(180deg,rgba(60,40,15,.5) 0%,rgba(40,26,10,.6) 50%,rgba(28,18,8,.7) 100%);
+    border-color:rgba(255,170,51,.12);border-bottom-color:#1a1208}
+  .login-hw-btn.esc-key::before{border-color:rgba(255,170,51,.1)}
+  .login-hw-btn.esc-key span{color:var(--amber);font-size:10px;text-shadow:0 0 6px rgba(255,170,51,.2)}
+  .login-hw-btn.esc-key:hover{background:linear-gradient(180deg,rgba(70,48,18,.5) 0%,rgba(50,32,12,.6) 50%,rgba(35,22,10,.7) 100%)}
+  .upload-spinner{width:24px;height:24px;border:2px solid rgba(255,170,51,.2);border-top-color:var(--amber);border-radius:50%;animation:btnSpin .6s linear infinite;margin:0 auto}
+  @keyframes btnSpin{to{transform:rotate(360deg)}}
+  .login-register-link{font-family:'Chakra Petch',sans-serif;font-size:13px;color:#aaa;cursor:pointer;transition:color .2s;padding:16px 0 0;letter-spacing:.5px;text-align:center}
+  .login-register-link:hover{color:var(--cyan)}
+  .login-register-link span.lrl-action{color:var(--cyan);text-decoration:underline;text-underline-offset:3px;font-weight:600}
+  /* Panel blip buttons — hardware-style close/back/cancel on panel edge */
+  .panel-blip{position:absolute;top:-1px;right:20px;z-index:10;padding:5px 14px;border-radius:0 0 4px 4px;cursor:pointer;transition:all .25s;
+    background:linear-gradient(180deg,#1a1c22,#12141a);
+    border:1px solid #3a3d44;border-top:none;
+    box-shadow:0 2px 6px rgba(0,0,0,.4),inset 0 -1px 0 rgba(255,255,255,.02);
+  }
+  .panel-blip span{font-family:'Saira',sans-serif;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;transition:color .25s,text-shadow .25s}
+  .panel-blip:hover{background:linear-gradient(180deg,#22242c,#1a1c24);border-color:#4a4d55}
+  .panel-blip:hover span{color:#aaa;text-shadow:0 0 6px rgba(255,255,255,.1)}
+  .panel-blip::before{content:'';position:absolute;top:4px;left:6px;width:4px;height:4px;border-radius:50%;background:#f44;box-shadow:0 0 6px rgba(255,60,60,.4);animation:blipPulse 1.5s ease-in-out infinite;transition:all .25s}
+  .panel-blip:hover::before{background:#f44;box-shadow:0 0 8px rgba(255,60,60,.6);animation:none}
+  .screen-back-link{position:absolute;top:12px;left:14px;z-index:10;font-family:'Saira',sans-serif;font-size:11px;font-weight:600;letter-spacing:1.5px;color:#666;cursor:pointer;transition:color .2s;padding:4px 0}
+  .screen-back-link:hover{color:#aaa}
+  @keyframes blipPulse{0%,100%{opacity:.4;box-shadow:0 0 3px rgba(255,60,60,.2)}50%{opacity:1;box-shadow:0 0 8px rgba(255,60,60,.6)}}
+

@@ -1,0 +1,9 @@
+  :root{--green:#00ff88;--green-dim:rgba(0,255,136,.4);--green-glow:rgba(0,255,136,.12);--red:#ff3333;--amber:#ffaa33;--cyan:#00d4ff;--steel-light:#4a4e54;--steel-dark:#22252a;--bg-deep:#08090b;--bg-panel:#10121a;--bg-surface:#171a24;--border:#252830;--op-font:inherit;--fc-vault:inherit;--fc-feed-cap:inherit;--fc-media-name:inherit;--fc-media-desc:inherit}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg-deep);overflow:hidden;width:100vw;height:100vh;font-family:'Chakra Petch',sans-serif;font-weight:500;color:#ccc;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overscroll-behavior:none}
+  ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#2a2d35;border-radius:2px}
+
+  .screen{position:fixed;inset:0;transition:opacity .3s;opacity:0;pointer-events:none;z-index:1;will-change:opacity;transform:translateZ(0)}
+  .screen.active{opacity:1;pointer-events:all;z-index:10}
+  #grainCanvas{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.03;image-rendering:pixelated;image-rendering:crisp-edges}
+

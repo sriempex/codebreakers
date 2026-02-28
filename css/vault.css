@@ -1,0 +1,158 @@
+  /* ══════ VAULT PUZZLE (in-console) ══════ */
+  .vault-puzzle-layout{display:flex;flex-direction:column;align-items:center;gap:24px;max-width:500px;margin:0 auto}
+  .vault-keypad-section{width:420px;max-width:100%}
+  .vault-unlock-section{width:420px;max-width:100%;padding:0}
+  .vault-unlock-header{display:flex;align-items:center;justify-content:space-between;padding:0 0 10px;border-bottom:1px solid rgba(0,255,136,.08);margin-bottom:0}
+  .vault-unlock-title{font-family:'Saira',sans-serif;font-size:12px;color:#d0e8d8;letter-spacing:3px;font-weight:700;text-transform:uppercase}
+  .vault-unlock-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#888;letter-spacing:1px;text-transform:uppercase}
+  .vault-unlock-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+  .vault-unlock-empty{font-family:'Chakra Petch',sans-serif;font-size:11px;color:#555;line-height:1.8;font-weight:500;text-align:center;padding:20px 16px}
+  .vault-unlock-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(0,255,136,.1);border-radius:4px;background:rgba(0,255,136,.02)}
+  .vault-unlock-item.locked{border-color:var(--border);background:rgba(255,255,255,.01);opacity:.85}
+  .vault-unlock-item .vui-icon{font-size:16px;flex-shrink:0}
+  .vault-unlock-item .vui-info{flex:1;min-width:0}
+  .vault-unlock-item .vui-label{font-family:'Chakra Petch',sans-serif;font-size:12px;color:#ddd;font-weight:600;letter-spacing:.5px}
+  .vault-unlock-item .vui-desc{font-family:'Chakra Petch',sans-serif;font-size:9px;color:#999;letter-spacing:.5px;margin-top:2px}
+  .vault-unlock-item .vui-status{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;font-weight:600;flex-shrink:0}
+  .vault-unlock-item .vui-status.unlocked{color:var(--green)}
+  .vault-unlock-item .vui-status.locked{color:#999}
+  .vui-media-link{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--cyan);letter-spacing:1px;cursor:pointer;margin-top:4px;transition:color .2s}
+  .vui-media-link:hover{color:#fff;text-decoration:underline}
+  .vui-classified{font-family:'IBM Plex Mono',monospace!important;letter-spacing:2px!important;color:#bbb!important;font-size:11px!important}
+  .vui-classified-sub{font-family:'IBM Plex Mono',monospace!important;letter-spacing:1px!important;color:#888!important;font-size:9px!important}
+  .vui-admin-hint{font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(255,170,51,.5);letter-spacing:1px;margin-top:3px}
+  @media(max-width:768px){
+    .vault-keypad-section{width:100%;max-width:420px}
+    .vault-unlock-section{width:100%;max-width:420px}
+  }
+
+  /* Panel — cold zinc/steel with brushed texture */
+  .vault-panel{position:relative;width:420px;max-width:100%;border-radius:8px;padding:28px 24px 20px;
+    background:
+      repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(255,255,255,.007) 1px,rgba(255,255,255,.007) 2px,transparent 2px,transparent 4px),
+      repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(255,255,255,.004) 60px,rgba(255,255,255,.004) 61px),
+      linear-gradient(175deg,#22252c 0%,#1a1c22 20%,#141620 50%,#111318 80%,#0e1014 100%);
+    border:1px solid #3a3d44;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.04),
+      inset 0 -1px 0 rgba(0,0,0,.3),
+      0 2px 0 #0a0a0c,
+      0 4px 0 #151518,
+      0 8px 0 #0a0a0c,
+      0 30px 70px rgba(0,0,0,.9);
+  }
+
+  /* Mounting screws — hex bolt style */
+  .rv{position:absolute;width:14px;height:14px;border-radius:50%;
+    background:radial-gradient(circle at 40% 35%,#5a5a5a 0%,#3a3a3a 40%,#252525 100%);
+    border:1px solid #1a1a1a;
+    box-shadow:inset 0 1px 2px rgba(255,255,255,.08),inset 0 -1px 1px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.6)}
+  .rv::before{content:'';position:absolute;top:3px;left:3px;right:3px;bottom:3px;border-radius:50%;
+    background:radial-gradient(circle at 40% 35%,#4a4a4a,#2a2a2a);border:1px solid #333}
+  .rv::after{content:'⬡';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:6px;color:#1e1e1e;line-height:1}
+  .rv-1{top:7px;left:7px}.rv-2{top:7px;right:7px}.rv-3{bottom:7px;left:7px}.rv-4{bottom:7px;right:7px}
+
+  /* Display — CRT glass with scanlines and phosphor glow */
+  .v-display{width:100%;min-height:82px;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:18px;position:relative;overflow:hidden;padding:12px 16px;
+    background:linear-gradient(180deg,#020604,#040a06,#030805);
+    border:1px solid #1a2a1e;
+    box-shadow:
+      inset 0 0 20px rgba(0,0,0,.8),
+      inset 0 0 40px rgba(0,20,8,.3),
+      0 1px 0 rgba(255,255,255,.03),
+      0 0 1px rgba(0,255,136,.15);
+  }
+  /* CRT scanlines */
+  .v-display::before{content:'';position:absolute;inset:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.2) 1px,rgba(0,0,0,.2) 2px);
+    pointer-events:none;z-index:2}
+  /* Screen curvature highlight */
+  .v-display::after{content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse at 50% 0%,rgba(0,255,136,.03) 0%,transparent 60%);
+    pointer-events:none;z-index:1}
+  /* Glitch flash */
+  .v-display.glitch{animation:dispGlitch .15s ease}
+  @keyframes dispGlitch{
+    0%{filter:brightness(1)}
+    25%{filter:brightness(1.8) hue-rotate(10deg)}
+    50%{filter:brightness(.6)}
+    75%{filter:brightness(1.4)}
+    100%{filter:brightness(1)}
+  }
+
+  #vDisp{font-family:var(--fc-vault,'IBM Plex Mono',monospace);font-weight:600;color:var(--green);font-size:22px;letter-spacing:6px;z-index:3;flex-shrink:0;
+    text-shadow:0 0 8px rgba(0,255,136,.4),0 0 20px rgba(0,255,136,.15);animation:flick 5s infinite}
+  #vCursor{display:inline-block;width:2px;height:20px;background:var(--green);margin-left:4px;vertical-align:middle;animation:blink .8s step-end infinite;box-shadow:0 0 6px rgba(0,255,136,.4);z-index:3}
+  .v-disp-row{display:flex;align-items:center;justify-content:center;z-index:3;flex-shrink:0}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  @keyframes flick{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.75}94%{opacity:1}96%{opacity:.85}97%{opacity:1}}
+
+  /* Keys — glass + bevel physicality */
+  .kb-row{display:flex;justify-content:center;gap:4px;margin-bottom:4px;max-width:380px;margin-left:auto;margin-right:auto}
+  .kb-key{flex:1;height:42px;padding:0;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;
+    background:linear-gradient(180deg,rgba(60,63,70,.6) 0%,rgba(40,42,48,.7) 50%,rgba(28,30,35,.8) 100%);
+    border:1px solid rgba(255,255,255,.06);
+    border-bottom:3px solid #0a0a0e;
+    border-right:2px solid #101014;
+    box-shadow:0 3px 6px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);
+    transition:all .05s ease}
+  /* Glass edge highlight */
+  .kb-key::before{content:'';position:absolute;inset:1px;border-radius:3px;border:1px solid rgba(0,255,136,.04);pointer-events:none}
+  /* Top shine */
+  .kb-key::after{content:'';position:absolute;top:1px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);border-radius:50%;pointer-events:none}
+  /* Pressed state — sinks */
+  .kb-key:active{transform:translateY(2px);border-bottom-width:1px;border-right-width:1px;
+    box-shadow:0 0 2px rgba(0,0,0,.4);
+    background:linear-gradient(180deg,rgba(35,37,42,.8) 0%,rgba(25,27,32,.9) 100%)}
+  .kb-key:active::before{border-color:rgba(0,255,136,.08)}
+  .kb-key span{color:#c8c8c8;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;pointer-events:none;text-shadow:0 1px 1px rgba(0,0,0,.6)}
+  /* Hover */
+  .kb-key:hover{background:linear-gradient(180deg,rgba(70,73,80,.6) 0%,rgba(50,52,58,.7) 50%,rgba(35,37,42,.8) 100%);border-color:rgba(255,255,255,.1)}
+  .kb-key:hover::before{border-color:rgba(0,255,136,.08)}
+  /* Function keys */
+  .kb-key.fn{background:linear-gradient(180deg,rgba(40,42,50,.6) 0%,rgba(26,28,34,.7) 50%,rgba(18,20,26,.8) 100%);border-color:rgba(255,255,255,.04);flex:1.4}
+  .kb-key.fn span{font-size:10px;letter-spacing:1px;color:#999}
+  /* Enter key — green tint glass */
+  .kb-key.enter-key{
+    background:linear-gradient(180deg,rgba(20,60,35,.5) 0%,rgba(12,40,24,.6) 50%,rgba(8,30,18,.7) 100%);
+    border-color:rgba(0,255,136,.12);border-bottom-color:#0a1a10}
+  .kb-key.enter-key::before{border-color:rgba(0,255,136,.12)}
+  .kb-key.enter-key span{color:var(--green);font-size:11px;letter-spacing:1px;font-weight:700;text-shadow:0 0 6px rgba(0,255,136,.2)}
+  .kb-key.del-key span{color:var(--red)}
+  .kb-key.sym-key{flex:1.2}
+  .kb-key.sym-key span{color:var(--amber);font-size:9px;letter-spacing:1px}
+  .kb-key.clr-key span{color:var(--amber)}
+
+  /* Status — LED + label */
+  .v-status{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.03)}
+  .v-dot{width:8px;height:8px;border-radius:50%;
+    background:radial-gradient(circle at 40% 35%,#ff6644,#cc2211);
+    box-shadow:0 0 6px rgba(255,50,50,.5),0 0 12px rgba(255,50,50,.2);
+    animation:ledPulse 2s ease-in-out infinite}
+  @keyframes ledPulse{0%,100%{opacity:1;box-shadow:0 0 6px rgba(255,50,50,.5),0 0 12px rgba(255,50,50,.2)}50%{opacity:.5;box-shadow:0 0 3px rgba(255,50,50,.3)}}
+  .v-dot.ok{background:radial-gradient(circle at 40% 35%,#44ff88,#00cc44);box-shadow:0 0 6px rgba(0,255,136,.5),0 0 12px rgba(0,255,136,.2);animation:none}
+  .v-lbl{color:#aaa;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;font-weight:600}
+  .v-lbl.ok{color:var(--green)}
+  .v-tries{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;text-align:center;min-height:14px;font-weight:700;transition:color .3s;text-transform:uppercase;z-index:3;margin-top:4px}
+  .v-tries.plenty{color:#44aa88}
+  .v-tries.warning{color:var(--amber)}
+  .v-tries.critical{color:var(--red)}
+  
+  .v-tries.warn{color:var(--amber)}
+  .v-tries.crit{color:var(--red)}
+  .v-lockout{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--red);margin-top:6px;min-height:18px;font-weight:600}
+
+  /* ══════ VAULT OPEN ══════ */
+  #vaultOpenOverlay{position:fixed;inset:0;z-index:9000;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .5s}
+  #vaultOpenOverlay.active{opacity:1;pointer-events:all}
+  .vo-text{font-family:'Staatliches',cursive;font-size:30px;color:var(--green);letter-spacing:12px;opacity:0;transform:scale(.9);transition:all .8s;text-align:center;padding-left:12px}
+  .vo-text.show{opacity:1;transform:scale(1)}
+  .vo-sub{font-size:14px;font-family:'Saira',sans-serif;letter-spacing:4px;color:#ccc;margin-top:15px;font-weight:600;opacity:0;transition:opacity .6s ease .5s;text-align:center;text-shadow:0 0 10px rgba(255,255,255,.1)}
+  .vo-sub.show{opacity:1}
+  .vo-bar{width:300px;height:4px;background:#151515;border-radius:2px;margin-top:30px;overflow:hidden;opacity:0;transition:opacity .4s ease .8s;position:relative}
+  .vo-bar.show{opacity:1}
+  .vo-fill{width:0;height:100%;background:var(--green);box-shadow:0 0 8px var(--green);transition:width 2s ease}
+  .vo-fill.go{width:100%}
+  .vo-pct{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--green);letter-spacing:3px;margin-top:12px;opacity:0;transition:opacity .4s ease .8s}
+  .vo-pct.show{opacity:1}
+
