@@ -688,18 +688,15 @@
     const settingsScreen = document.getElementById('settingsScreen');
     if(!settingsScreen || initialized) return;
 
-    // Check if settings screen is visible
+    // Check if settings screen is actually visible and has dimensions
     const style = window.getComputedStyle(settingsScreen);
-    if(style.opacity === '0' || style.pointerEvents === 'none') return;
+    if(style.opacity === '0' || style.display === 'none' || style.pointerEvents === 'none') return;
+    if(settingsScreen.offsetWidth === 0) return;
 
     container = document.createElement('div');
     container.id = 'adminCircuitCanvas';
     container.style.cssText = 'position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;';
     settingsScreen.insertBefore(container, settingsScreen.firstChild);
-
-    // Hide old worldmap on settings
-    const oldMap = settingsScreen.querySelector('.console-worldmap');
-    if(oldMap) oldMap.style.display = 'none';
 
     scene = new THREE.Scene();
 
@@ -746,25 +743,18 @@
     renderer.render(scene, camera);
   }
 
-  // Watch for settings screen becoming visible
+  // Robust detection — poll every 500ms until settings screen appears, then init
   function watchForSettings(){
-    const ss = document.getElementById('settingsScreen');
-    if(!ss) return;
-
-    // Use MutationObserver on style/class changes
-    const observer = new MutationObserver(() => {
+    const checkInterval = setInterval(() => {
+      if(initialized){ clearInterval(checkInterval); return; }
+      const ss = document.getElementById('settingsScreen');
+      if(!ss) return;
       const style = window.getComputedStyle(ss);
-      if(style.opacity !== '0' && style.pointerEvents !== 'none' && !initialized){
+      if(style.opacity !== '0' && style.pointerEvents !== 'none' && ss.offsetWidth > 0){
+        clearInterval(checkInterval);
         setTimeout(initAdmin, 200);
       }
-    });
-    observer.observe(ss, { attributes: true, attributeFilter: ['style', 'class'] });
-
-    // Also check immediately in case already visible
-    const style = window.getComputedStyle(ss);
-    if(style.opacity !== '0' && style.pointerEvents !== 'none'){
-      setTimeout(initAdmin, 400);
-    }
+    }, 500);
   }
 
   if(document.readyState === 'loading'){
