@@ -134,13 +134,13 @@ function playConfirmPrompt(){
   o.connect(g);g.connect(c.destination);o.start(c.currentTime);o.stop(c.currentTime+.2)},150);
 }
 
-// H02 Electric Tick — close button sound (Tone.js)
+// K03 Soft Tap — close button sound (Tone.js)
 function playCloseButton(){
   if(window.Tone){
     try{
-      const s=new Tone.NoiseSynth({noise:{type:'white'},envelope:{attack:0.001,decay:0.03,sustain:0,release:0.01}}).toDestination();
-      s.volume.value=-18;
-      s.triggerAttackRelease(0.02);
+      const s=new Tone.MembraneSynth({pitchDecay:0.01,octaves:2,envelope:{attack:0.001,decay:0.05,sustain:0,release:0.03}}).toDestination();
+      s.volume.value=-14;
+      s.triggerAttackRelease('G3',0.03);
       setTimeout(()=>s.dispose(),500);
     }catch(e){}
   }
