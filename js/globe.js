@@ -513,3 +513,264 @@
   }
 
 })();
+
+// ══════ THREE.JS — Admin Console Circuit Backdrop ══════
+// Generative circuit board for the settings/admin screen
+
+(function(){
+  if(!window.THREE) return;
+
+  let scene, camera, renderer, container;
+  let pulses = [], chips = [];
+  let animId = null;
+  let initialized = false;
+
+  const CFG = {
+    traceColor: 0x00d4ff,    // Cyan for admin (vs green for console)
+    traceOpacity: 0.05,
+    pulseColor: 0x00d4ff,
+    pulseSpeed: 0.35,
+    pulseSize: 0.014,
+    pulseOpacity: 0.45,
+    chipColor: 0x00d4ff,
+    chipOpacity: 0.03,
+    chipGlowMax: 0.07,
+  };
+
+  function getPositionOnPath(pts, segs, total, t){
+    const dist = t * total;
+    let acc = 0;
+    for(let i = 0; i < segs.length; i++){
+      if(acc + segs[i].length >= dist){
+        const lt = (dist - acc) / segs[i].length;
+        return new THREE.Vector3().lerpVectors(pts[i], pts[i + 1], lt);
+      }
+      acc += segs[i].length;
+    }
+    return pts[pts.length - 1].clone();
+  }
+
+  function addTrace(points, pulseCount){
+    const geo = new THREE.BufferGeometry().setFromPoints(points);
+    const mat = new THREE.LineBasicMaterial({
+      color: CFG.traceColor, transparent: true, opacity: CFG.traceOpacity
+    });
+    scene.add(new THREE.Line(geo, mat));
+
+    for(let i = 0; i < pulseCount; i++){
+      const pGeo = new THREE.CircleGeometry(CFG.pulseSize, 8);
+      const pMat = new THREE.MeshBasicMaterial({ color: CFG.pulseColor, transparent: true, opacity: 0 });
+      const mesh = new THREE.Mesh(pGeo, pMat);
+      const glowGeo = new THREE.RingGeometry(CFG.pulseSize, CFG.pulseSize * 3, 10);
+      const glowMat = new THREE.MeshBasicMaterial({ color: CFG.pulseColor, transparent: true, opacity: 0, side: THREE.DoubleSide });
+      mesh.add(new THREE.Mesh(glowGeo, glowMat));
+
+      let total = 0;
+      const segs = [];
+      for(let j = 1; j < points.length; j++){
+        const l = points[j].distanceTo(points[j-1]);
+        segs.push({ start: total, length: l });
+        total += l;
+      }
+      mesh.userData = {
+        tracePoints: points, segments: segs, totalLength: total,
+        progress: Math.random(),
+        speed: CFG.pulseSpeed * (0.5 + Math.random() * 1.0),
+        delay: Math.random() * 6, active: true
+      };
+      scene.add(mesh);
+      pulses.push(mesh);
+    }
+  }
+
+  function buildAdminCircuit(camW, camH){
+    const hw = camW / 2 * 0.9;
+    const hh = camH / 2 * 0.9;
+
+    // Horizontal bus traces
+    for(let i = 0; i < 8; i++){
+      const y = (Math.random() - 0.5) * camH * 0.85;
+      const x1 = -hw * (0.3 + Math.random() * 0.7);
+      const x2 = hw * (0.3 + Math.random() * 0.7);
+      addTrace([new THREE.Vector3(x1, y, 0), new THREE.Vector3(x2, y, 0)], Math.random() > 0.5 ? 2 : 1);
+    }
+
+    // Vertical bus traces
+    for(let i = 0; i < 6; i++){
+      const x = (Math.random() - 0.5) * camW * 0.85;
+      const y1 = -hh * (0.3 + Math.random() * 0.7);
+      const y2 = hh * (0.3 + Math.random() * 0.7);
+      addTrace([new THREE.Vector3(x, y1, 0), new THREE.Vector3(x, y2, 0)], Math.random() > 0.5 ? 2 : 1);
+    }
+
+    // Orthogonal routed traces (L-shaped and Z-shaped)
+    for(let i = 0; i < 18; i++){
+      const sx = (Math.random() - 0.5) * camW * 0.8;
+      const sy = (Math.random() - 0.5) * camH * 0.8;
+      const ex = (Math.random() - 0.5) * camW * 0.8;
+      const ey = (Math.random() - 0.5) * camH * 0.8;
+      const pts = [];
+
+      if(Math.random() > 0.5){
+        const midX = sx + (ex - sx) * (0.3 + Math.random() * 0.4);
+        pts.push(
+          new THREE.Vector3(sx, sy, 0),
+          new THREE.Vector3(midX, sy, 0),
+          new THREE.Vector3(midX, ey, 0),
+          new THREE.Vector3(ex, ey, 0)
+        );
+      } else {
+        const midY = sy + (ey - sy) * (0.3 + Math.random() * 0.4);
+        pts.push(
+          new THREE.Vector3(sx, sy, 0),
+          new THREE.Vector3(sx, midY, 0),
+          new THREE.Vector3(ex, midY, 0),
+          new THREE.Vector3(ex, ey, 0)
+        );
+      }
+      addTrace(pts, 1);
+    }
+
+    // IC chips scattered
+    for(let i = 0; i < 16; i++){
+      const cx = (Math.random() - 0.5) * camW * 0.8;
+      const cy = (Math.random() - 0.5) * camH * 0.8;
+      const cw = 0.2 + Math.random() * 0.25;
+      const ch = 0.1 + Math.random() * 0.12;
+      const group = new THREE.Group();
+      group.position.set(cx, cy, 0);
+
+      const body = new THREE.Mesh(
+        new THREE.PlaneGeometry(cw, ch),
+        new THREE.MeshBasicMaterial({ color: CFG.chipColor, transparent: true, opacity: CFG.chipOpacity })
+      );
+      group.add(body);
+
+      const bp = [
+        new THREE.Vector3(-cw/2, -ch/2, 0), new THREE.Vector3(cw/2, -ch/2, 0),
+        new THREE.Vector3(cw/2, ch/2, 0), new THREE.Vector3(-cw/2, ch/2, 0),
+        new THREE.Vector3(-cw/2, -ch/2, 0)
+      ];
+      group.add(new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(bp),
+        new THREE.LineBasicMaterial({ color: CFG.chipColor, transparent: true, opacity: CFG.traceOpacity * 1.5 })
+      ));
+
+      const pins = Math.floor(Math.random() * 3) + 2;
+      for(let p = 0; p < pins; p++){
+        const px = -cw/2 + (cw / (pins + 1)) * (p + 1);
+        const pinMat = new THREE.LineBasicMaterial({ color: CFG.chipColor, transparent: true, opacity: CFG.traceOpacity });
+        group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(px, ch/2, 0), new THREE.Vector3(px, ch/2 + 0.04, 0)
+        ]), pinMat));
+        group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+          new THREE.Vector3(px, -ch/2, 0), new THREE.Vector3(px, -ch/2 - 0.04, 0)
+        ]), pinMat.clone()));
+      }
+
+      group.userData = { phase: Math.random() * Math.PI * 2, body };
+      scene.add(group);
+      chips.push(group);
+    }
+
+    // Vias
+    for(let i = 0; i < 35; i++){
+      const via = new THREE.Mesh(
+        new THREE.RingGeometry(0.02, 0.035, 12),
+        new THREE.MeshBasicMaterial({ color: CFG.traceColor, transparent: true, opacity: 0.035, side: THREE.DoubleSide })
+      );
+      via.position.set((Math.random() - 0.5) * camW * 0.85, (Math.random() - 0.5) * camH * 0.85, 0);
+      scene.add(via);
+    }
+  }
+
+  function initAdmin(){
+    const settingsScreen = document.getElementById('settingsScreen');
+    if(!settingsScreen || initialized) return;
+
+    // Check if settings screen is visible
+    const style = window.getComputedStyle(settingsScreen);
+    if(style.opacity === '0' || style.pointerEvents === 'none') return;
+
+    container = document.createElement('div');
+    container.id = 'adminCircuitCanvas';
+    container.style.cssText = 'position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;';
+    settingsScreen.insertBefore(container, settingsScreen.firstChild);
+
+    // Hide old worldmap on settings
+    const oldMap = settingsScreen.querySelector('.console-worldmap');
+    if(oldMap) oldMap.style.display = 'none';
+
+    scene = new THREE.Scene();
+
+    const w = container.clientWidth || window.innerWidth;
+    const h = container.clientHeight || window.innerHeight;
+    const aspect = w / h;
+    const camH = 12;
+    camera = new THREE.OrthographicCamera(-camH/2 * aspect, camH/2 * aspect, camH/2, -camH/2, 0.1, 10);
+    camera.position.z = 5;
+
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+    container.appendChild(renderer.domElement);
+
+    buildAdminCircuit(camH * aspect, camH);
+    initialized = true;
+    animateAdmin();
+  }
+
+  function animateAdmin(){
+    animId = requestAnimationFrame(animateAdmin);
+    const t = performance.now() * 0.001;
+
+    pulses.forEach(pulse => {
+      const d = pulse.userData;
+      if(!d.active || d.totalLength === 0) return;
+      if(d.delay > 0){ d.delay -= 0.016; pulse.material.opacity = 0; if(pulse.children[0]) pulse.children[0].material.opacity = 0; return; }
+      d.progress += d.speed * 0.016 / d.totalLength;
+      if(d.progress > 1){ d.progress = 0; d.delay = 0.5 + Math.random() * 4; pulse.material.opacity = 0; if(pulse.children[0]) pulse.children[0].material.opacity = 0; return; }
+      const pos = getPositionOnPath(d.tracePoints, d.segments, d.totalLength, d.progress);
+      pulse.position.copy(pos);
+      const fade = Math.min(d.progress * 5, (1 - d.progress) * 5, 1);
+      pulse.material.opacity = CFG.pulseOpacity * fade;
+      if(pulse.children[0]) pulse.children[0].material.opacity = CFG.pulseOpacity * 0.2 * fade;
+    });
+
+    chips.forEach(chip => {
+      const glow = Math.sin(t * 0.5 + chip.userData.phase) * 0.5 + 0.5;
+      if(chip.userData.body) chip.userData.body.material.opacity = CFG.chipOpacity + glow * CFG.chipGlowMax;
+    });
+
+    renderer.render(scene, camera);
+  }
+
+  // Watch for settings screen becoming visible
+  function watchForSettings(){
+    const ss = document.getElementById('settingsScreen');
+    if(!ss) return;
+
+    // Use MutationObserver on style/class changes
+    const observer = new MutationObserver(() => {
+      const style = window.getComputedStyle(ss);
+      if(style.opacity !== '0' && style.pointerEvents !== 'none' && !initialized){
+        setTimeout(initAdmin, 200);
+      }
+    });
+    observer.observe(ss, { attributes: true, attributeFilter: ['style', 'class'] });
+
+    // Also check immediately in case already visible
+    const style = window.getComputedStyle(ss);
+    if(style.opacity !== '0' && style.pointerEvents !== 'none'){
+      setTimeout(initAdmin, 400);
+    }
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', watchForSettings);
+  } else {
+    setTimeout(watchForSettings, 500);
+  }
+
+})();
