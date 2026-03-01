@@ -442,22 +442,31 @@
   }
 
   // ── Animation ──
+  let _lastFrame = 0;
+  const _frameInterval = 1000 / 30; // 30fps cap
+
   function animate(){
     animId = requestAnimationFrame(animate);
-    const t = performance.now() * 0.001;
+    const now = performance.now();
+    const elapsed = now - _lastFrame;
+    if(elapsed < _frameInterval) return;
+    const dt = Math.min(elapsed * 0.001, 0.05); // delta in seconds, capped
+    _lastFrame = now - (elapsed % _frameInterval);
+
+    const t = now * 0.001;
 
     pulses.forEach(pulse => {
       const d = pulse.userData;
       if(!d.active || d.totalLength === 0) return;
 
       if(d.delay > 0){
-        d.delay -= 0.016;
+        d.delay -= dt;
         pulse.material.opacity = 0;
         if(pulse.children[0]) pulse.children[0].material.opacity = 0;
         return;
       }
 
-      d.progress += d.speed * 0.016 / d.totalLength;
+      d.progress += d.speed * dt / d.totalLength;
 
       if(d.progress > 1){
         d.progress = 0;
@@ -718,15 +727,24 @@
     animateAdmin();
   }
 
+  let _lastFrameAdmin = 0;
+  const _frameIntervalAdmin = 1000 / 30; // 30fps cap
+
   function animateAdmin(){
     animId = requestAnimationFrame(animateAdmin);
-    const t = performance.now() * 0.001;
+    const now = performance.now();
+    const elapsed = now - _lastFrameAdmin;
+    if(elapsed < _frameIntervalAdmin) return;
+    const dt = Math.min(elapsed * 0.001, 0.05);
+    _lastFrameAdmin = now - (elapsed % _frameIntervalAdmin);
+
+    const t = now * 0.001;
 
     pulses.forEach(pulse => {
       const d = pulse.userData;
       if(!d.active || d.totalLength === 0) return;
-      if(d.delay > 0){ d.delay -= 0.016; pulse.material.opacity = 0; if(pulse.children[0]) pulse.children[0].material.opacity = 0; return; }
-      d.progress += d.speed * 0.016 / d.totalLength;
+      if(d.delay > 0){ d.delay -= dt; pulse.material.opacity = 0; if(pulse.children[0]) pulse.children[0].material.opacity = 0; return; }
+      d.progress += d.speed * dt / d.totalLength;
       if(d.progress > 1){ d.progress = 0; d.delay = 0.5 + Math.random() * 4; pulse.material.opacity = 0; if(pulse.children[0]) pulse.children[0].material.opacity = 0; return; }
       const pos = getPositionOnPath(d.tracePoints, d.segments, d.totalLength, d.progress);
       pulse.position.copy(pos);
