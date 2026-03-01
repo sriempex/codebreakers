@@ -158,7 +158,9 @@ function closePanel(){_stopAllFeedVideos();
       }
     });
   }else{
-    overlay.style.cssText='';overlay.classList.remove('active');saveGameState();setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession();renderGrid()},80);
+    overlay.style.cssText='opacity:0;pointer-events:none;transition:none';overlay.classList.remove('active');
+    document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));
+    saveGameState();saveSession();renderGrid();
   }
   try{_forceCursorKill();}catch(e){}
 }
