@@ -172,8 +172,8 @@ function renderGrid(){
   // GSAP: staggered tile entrance animation
   if(window.gsap){
     gsap.fromTo('#consoleGrid .crt-monitor',
-      {opacity:0,y:20,scale:0.95},
-      {opacity:1,y:0,scale:1,duration:0.35,ease:'power2.out',stagger:0.06,overwrite:true}
+      {opacity:0,y:12,scale:0.97},
+      {opacity:1,y:0,scale:1,duration:0.2,ease:'power2.out',stagger:0.04,overwrite:true}
     );
   }
 }

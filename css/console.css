@@ -150,14 +150,16 @@
   .crt-screen::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:4;
     background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.025) 3px,rgba(0,0,0,.025) 4px)}
 
-  /* Green border glow on hover */
-  .crt-monitor:hover .crt-screen{border-color:rgba(0,255,136,.15);
-    box-shadow:inset 0 2px 8px rgba(0,0,0,.6),inset 0 0 20px rgba(0,0,0,.3),0 0 8px rgba(0,255,136,.06),0 0 20px rgba(0,255,136,.02)}
+  /* Green border glow on hover — handled by .tile-hover class above */
 
   /* ── Tile content inside screen ── */
-  .tile-glow{position:absolute;top:25%;left:50%;transform:translate(-50%,-50%);width:100px;height:100px;background:radial-gradient(circle,rgba(0,255,136,.025) 0%,transparent 70%);pointer-events:none}
-  /* tile-glow and tile-icon hover handled by GSAP */
-  .tile-icon{font-size:clamp(52px,7vh,58px);margin-bottom:clamp(14px,2vh,20px);position:relative;z-index:2;filter:grayscale(.2) brightness(.9);transition:none}
+  .tile-glow{position:absolute;top:25%;left:50%;transform:translate(-50%,-50%);width:100px;height:100px;background:radial-gradient(circle,rgba(0,255,136,.025) 0%,transparent 70%);pointer-events:none;will-change:transform,opacity}
+  .tile-icon{font-size:clamp(52px,7vh,58px);margin-bottom:clamp(14px,2vh,20px);position:relative;z-index:2;filter:grayscale(.2) brightness(.9);transition:filter .15s ease;will-change:transform}
+  /* CSS-driven hover glow — toggled by GSAP via class, no per-frame repaint */
+  .tile-hover .crt-screen{border-color:rgba(0,255,136,.2);box-shadow:inset 0 1px 6px rgba(0,0,0,.35),inset 0 0 16px rgba(0,0,0,.15),0 0 12px rgba(0,255,136,.1),0 0 30px rgba(0,255,136,.04)}
+  .tile-hover .tile-icon{filter:grayscale(0) brightness(1.1)}
+  .crt-monitor{will-change:transform}
+  .crt-screen{transition:border-color .15s ease, box-shadow .15s ease}
   .tile-label{font-family:'Saira',sans-serif;font-weight:700;font-size:clamp(16px,2vh,18px);letter-spacing:clamp(3px,.4vw,4px);color:#d4dce4;text-transform:uppercase;text-align:center;margin-bottom:clamp(7px,1vh,10px);z-index:2;text-shadow:0 2px 4px rgba(0,0,0,.5)}
   .tile-sub{font-family:'Chakra Petch',sans-serif;font-size:clamp(11px,1.3vh,12px);color:#8899aa;letter-spacing:1px;font-weight:500;text-align:center;margin-bottom:clamp(16px,2vh,22px);z-index:2}
   .tile-badge{font-family:'Saira',sans-serif;font-size:clamp(10px,1.2vh,11px);letter-spacing:3px;font-weight:700;color:#e8eef4;border:1px solid rgba(255,255,255,.12);padding:clamp(5px,.7vh,6px) clamp(14px,1.4vw,18px);border-radius:3px;margin-bottom:clamp(12px,1.6vh,16px);z-index:2;background:rgba(255,255,255,.05)}
