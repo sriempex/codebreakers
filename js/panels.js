@@ -85,13 +85,75 @@ function _syncPanelIcon(tileId){
   if(isImg){iconEl.innerHTML='<img src="'+tile.icon+'" style="width:18px;height:18px;object-fit:contain;vertical-align:middle">';}
   else{iconEl.textContent=tile.icon;}
 }
-function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));const panel=document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]);panel.classList.add('visible');_syncPanelIcon(t);_instantShow(overlay);
-  // GSAP: animate panel entrance
-  if(window.gsap){
-    gsap.fromTo(panel,
-      {scale:0.95,opacity:0,y:15},
-      {scale:1,opacity:1,y:0,duration:0.3,ease:'power2.out'}
+function openPanel(t){playTileClick();recordTileAccess(t);adminPanelIds.forEach(id=>{const el=document.getElementById(id);if(el){el.classList.remove('active');el.style.cssText=''}});document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));const panel=document.getElementById({feed:'expFeed',media:'expMedia',intel:'expIntel',vault:'expVault'}[t]);panel.classList.add('visible');_syncPanelIcon(t);
+
+  // FLIP tile expansion
+  const tile = document.querySelector(`.crt-monitor[data-tile="${t}"]`);
+  if(window.gsap && tile){
+    const tileRect = tile.getBoundingClientRect();
+    // Show overlay instantly but transparent — we'll fade it in
+    overlay.style.cssText='opacity:0;pointer-events:all;transition:none';
+    overlay.classList.add('active');
+
+    // Force panel visible so we can measure it
+    gsap.set(panel, {opacity:0, visibility:'visible'});
+    const panelRect = panel.getBoundingClientRect();
+
+    // Calculate scale from tile size to panel size
+    const scaleX = tileRect.width / panelRect.width;
+    const scaleY = tileRect.height / panelRect.height;
+    // Calculate translate to start from tile position
+    const tileCX = tileRect.left + tileRect.width/2;
+    const tileCY = tileRect.top + tileRect.height/2;
+    const panelCX = panelRect.left + panelRect.width/2;
+    const panelCY = panelRect.top + panelRect.height/2;
+    const dx = tileCX - panelCX;
+    const dy = tileCY - panelCY;
+
+    // Store tile id for reverse animation on close
+    panel._sourceTileId = t;
+
+    const tl = gsap.timeline();
+
+    // Step 1: tactile bounce on tile (already fired via pointerdown, but reinforce)
+    tl.to(tile, {scale:0.92, duration:0.06, ease:'power2.in'}, 0);
+    tl.to(tile, {scale:1.05, duration:0.08, ease:'back.out(2)'}, 0.06);
+
+    // Step 2: fade overlay backdrop
+    tl.to(overlay, {opacity:1, duration:0.2, ease:'power2.out'}, 0.1);
+
+    // Step 3: panel expands FROM tile position
+    tl.fromTo(panel,
+      {
+        x: dx, y: dy,
+        scaleX: scaleX, scaleY: scaleY,
+        opacity: 1, visibility: 'visible',
+        borderRadius: '12px',
+        transformOrigin: '50% 50%'
+      },
+      {
+        x: 0, y: 0,
+        scaleX: 1, scaleY: 1,
+        borderRadius: '6px',
+        duration: 0.35,
+        ease: 'power3.out',
+        clearProps: 'transform,borderRadius,visibility'
+      },
+      0.12
     );
+
+    // Step 4: hide the source tile during expansion so it doesn't show underneath
+    tl.set(tile, {opacity:0}, 0.12);
+    tl.set(tile, {opacity:1, scale:1}, 0.47);
+
+  } else {
+    _instantShow(overlay);
+    if(window.gsap){
+      gsap.fromTo(panel,
+        {scale:0.95,opacity:0,y:15},
+        {scale:1,opacity:1,y:0,duration:0.3,ease:'power2.out'}
+      );
+    }
   }
   if(window._histPush)window._histPush('panel');saveSession();if(!isAdmin&&currentVaultTeam)apiCall('heartbeat',{teamId:currentVaultTeam.id});
   if(t==='feed'){renderFeed();setFeedView('grid');_refreshPanelData('feed')}if(t==='media'){renderMedia();_refreshPanelData('media')}if(t==='intel'){renderIntelForm();restoreIntelDraft();_refreshPanelData('intel')}if(t==='vault'){renderVaultPanel();_refreshPanelData('vault')}}
@@ -149,13 +211,54 @@ function closePanel(){_stopAllFeedVideos();
   if(typeof playCloseButton==='function') playCloseButton();
   const visiblePanel=document.querySelector('.expanded-panel.visible');
   if(visiblePanel&&window.gsap){
-    gsap.to(visiblePanel,{scale:0.96,opacity:0,y:10,duration:0.2,ease:'power2.in',
-      onComplete:()=>{
-        overlay.style.cssText='';overlay.classList.remove('active');
-        document.querySelectorAll('.expanded-panel').forEach(p=>{p.classList.remove('visible');gsap.set(p,{clearProps:'all'})});
-        saveGameState();saveSession();renderGrid();
-      }
-    });
+    // FLIP reverse — collapse back to source tile
+    const tileId = visiblePanel._sourceTileId;
+    const tile = tileId ? document.querySelector(`.crt-monitor[data-tile="${tileId}"]`) : null;
+
+    if(tile){
+      const panelRect = visiblePanel.getBoundingClientRect();
+      const tileRect = tile.getBoundingClientRect();
+      const scaleX = tileRect.width / panelRect.width;
+      const scaleY = tileRect.height / panelRect.height;
+      const tileCX = tileRect.left + tileRect.width/2;
+      const tileCY = tileRect.top + tileRect.height/2;
+      const panelCX = panelRect.left + panelRect.width/2;
+      const panelCY = panelRect.top + panelRect.height/2;
+      const dx = tileCX - panelCX;
+      const dy = tileCY - panelCY;
+
+      // Hide tile during collapse
+      gsap.set(tile, {opacity:0});
+
+      const tl = gsap.timeline({
+        onComplete:()=>{
+          overlay.style.cssText='';overlay.classList.remove('active');
+          document.querySelectorAll('.expanded-panel').forEach(p=>{p.classList.remove('visible');gsap.set(p,{clearProps:'all'})});
+          gsap.set(tile, {opacity:1, scale:1});
+          saveGameState();saveSession();renderGrid();
+        }
+      });
+
+      tl.to(visiblePanel, {
+        x: dx, y: dy,
+        scaleX: scaleX, scaleY: scaleY,
+        borderRadius: '12px',
+        duration: 0.3,
+        ease: 'power3.in'
+      }, 0);
+
+      tl.to(overlay, {opacity:0, duration:0.2, ease:'power2.in'}, 0.1);
+
+    } else {
+      // Fallback — no tile found, use old animation
+      gsap.to(visiblePanel,{scale:0.96,opacity:0,y:10,duration:0.2,ease:'power2.in',
+        onComplete:()=>{
+          overlay.style.cssText='';overlay.classList.remove('active');
+          document.querySelectorAll('.expanded-panel').forEach(p=>{p.classList.remove('visible');gsap.set(p,{clearProps:'all'})});
+          saveGameState();saveSession();renderGrid();
+        }
+      });
+    }
   }else{
     overlay.style.cssText='';overlay.classList.remove('active');saveGameState();setTimeout(()=>{document.querySelectorAll('.expanded-panel').forEach(p=>p.classList.remove('visible'));saveSession();renderGrid()},120);
   }
